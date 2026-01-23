@@ -19,6 +19,9 @@ export default function CandidateDashboard() {
     abstract: '',
     problemStatement: '',
     solution: '',
+    existingSystem: '',
+    architectureText: '',
+    useCase: '',
     technologies: { frontend: [], backend: [], database: [], ai_ml: [] },
     teamDetails: { teamName: '', members: [] }
   });
@@ -331,7 +334,7 @@ export default function CandidateDashboard() {
               {/* 5. System Architecture */}
               <div>
                 <h3 className="text-xl font-semibold mb-2 text-blue-600">Slide 5: System Architecture</h3>
-                <label className="block text-sm text-gray-500 mb-2">Describe the flow (e.g., User -> Frontend -> API -> DB).</label>
+                <label className="block text-sm text-gray-500 mb-2">Describe the flow (e.g., User to Frontend to API to DB).</label>
                 <textarea
                   value={formData.architectureText || ''} // Handle new field
                   onChange={(e) => setFormData({ ...formData, architectureText: e.target.value })}
