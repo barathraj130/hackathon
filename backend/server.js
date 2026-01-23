@@ -136,8 +136,8 @@ app.use('/v1/candidate', require('./routes/team')); // Alias for safety
 app.set('socketio', io);
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 SYSTEM SYNTHESIS ENGINE ONLINE`);
-  console.log(`📡 Interface: http://localhost:${PORT}`);
+  console.log(`📡 Interface: http://0.0.0.0:${PORT}`);
   console.log(`⚡ WebSocket: Synchronized\n`);
 });
