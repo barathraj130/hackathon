@@ -14,6 +14,12 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
+// Request Logging Middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] Incoming Request: ${req.method} ${req.url}`);
+  next();
+});
+
 // State (In-memory for active timer, but will persist in DB via Admin controls)
 let timeRemaining = 1440 * 60; // 24 Hours in seconds
 let timerPaused = true;
@@ -119,6 +125,8 @@ io.on('connection', (socket) => {
 });
 
 // Routes
+app.get('/health', (req, res) => res.status(200).send('OK'));
+
 app.get('/', (req, res) => {
   res.json({
     status: 'online',
