@@ -98,7 +98,8 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         }
 
         // Internal call to ppt-service (Python)
-        const response = await axios.post('http://ppt-service:8000/generate', {
+        const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://ppt-service:8000';
+        const response = await axios.post(`${pptServiceUrl}/generate`, {
             team_name: team.teamName,
             college_name: team.collegeName,
             content: team.submission.content
