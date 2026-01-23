@@ -32,13 +32,18 @@ router.post('/login', async (req, res) => {
   if (admin) {
     const validPass = await bcrypt.compare(password, admin.passwordHash);
     if (validPass) {
+      console.log(`[Auth] Admin login success: ${username}`);
       const token = jwt.sign(
         { id: admin.id, role: 'ADMIN' }, 
         process.env.JWT_SECRET, 
         { expiresIn: '24h' }
       );
       return res.json({ token, role: 'ADMIN' });
+    } else {
+      console.log(`[Auth] Admin login FAILED (Invalid Password): ${username}`);
     }
+  } else {
+    console.log(`[Auth] Admin login FAILED (User Not Found): ${username}`);
   }
 
   res.status(401).json({ error: "Verification Failed" });
