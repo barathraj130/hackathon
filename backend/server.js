@@ -33,7 +33,22 @@ async function initEngine() {
       timerPaused = config.isPaused;
       console.log('✅ System configuration loaded from database.');
     } else {
-      console.log('⚠️ No system configuration found. Run /setup-db to initialize.');
+      console.log('🚀 No system configuration found. Initializing Admin account...');
+      const bcrypt = require('bcryptjs');
+      const hash = await bcrypt.hash('admin_portal_2026', 10);
+      
+      await prisma.administrator.upsert({
+        where: { email: 'admin@institution.com' },
+        update: { passwordHash: hash },
+        create: { email: 'admin@institution.com', passwordHash: hash }
+      });
+
+      await prisma.hackathonConfig.upsert({
+        where: { id: 1 },
+        update: {},
+        create: { id: 1, durationMinutes: 1440, isPaused: true }
+      });
+      console.log('✅ Default Admin account created: admin@institution.com');
     }
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
