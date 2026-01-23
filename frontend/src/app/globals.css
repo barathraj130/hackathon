@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #001F3F;
+  --royal: #0074D9;
+  --teal: #39CCCC;
+  --bg-grey: #F4F7F6;
+  --text-main: #1A202C;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-grey);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Professional Card Style */
+.dashboard-card {
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Corporate Buttons */
+.btn-navy {
+  background-color: var(--navy);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-navy:hover {
+  background-color: #00152b;
+  transform: translateY(-1px);
+}
+
+/* Structured Inputs */
+.input-field {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #CBD5E0;
+  border-radius: 6px;
+  background: #FFFFFF;
+  color: var(--text-main);
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(57, 204, 204, 0.2);
+}
+
+.label-caps {
+  font-size: 11px;
+  font-weight: 800;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+  display: block;
+}

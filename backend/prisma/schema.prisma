@@ -1,0 +1,49 @@
+// backend/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id           String      @id @default(uuid())
+  teamName     String      @unique // Used as Username
+  collegeName  String      // Used as Password
+  member1      String
+  member2      String
+  dept         String
+  year         Int
+  isActive     Boolean     @default(true)
+  submission   Submission?
+}
+
+model Submission {
+  id        String   @id @default(uuid())
+  teamId    String   @unique
+  team      Team     @relation(fields: [teamId], references: [id])
+  content   Json     // Stores the 8 technical fields
+  status    String   @default("IN_PROGRESS") // IN_PROGRESS, SUBMITTED
+  pptUrl    String?
+  updatedAt DateTime @updatedAt
+}
+
+model HackathonConfig {
+  id              Int      @id @default(1)
+  startTime       DateTime?
+  isPaused        Boolean  @default(true)
+  durationMinutes Int      @default(1440) // Default 24 Hours
+  pptConfig       Json?    // Slide count, titles, limits
+  collegeLogo     String?
+  footerText      String?
+  eventTheme      Json?    // Colors, fonts
+}
+
+model Administrator {
+  id           String @id @default(uuid())
+  email        String @unique
+  passwordHash String
+}

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://postgres:yourpassword@db:5432/postgres?schema=public
+      PORT: 5000
+      PYTHON_SERVICE_URL: http://ppt-service:8000
+      JWT_SECRET: hackathon_super_secret_key_2024
+    ports:
+      - "5000:5000"
+    restart: on-failure
+    depends_on:
+      - db
+      - ppt-service
+
+  ppt-service:
+    build: ./ppt-service
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:5000/v1
+      NEXT_PUBLIC_WS_URL: http://localhost:5000
+      NEXT_PUBLIC_PPT_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    command: npm run dev
+    depends_on:
+      - backend
