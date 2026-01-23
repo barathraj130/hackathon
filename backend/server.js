@@ -162,6 +162,7 @@ app.set('socketio', io);
 // Start Server Immediately
 // Start Server Immediately
 const PORT = process.env.PORT || 8080;
+console.log(`[DEBUG] Attempting to bind to PORT: ${PORT}`);
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 SYSTEM SYNTHESIS ENGINE ONLINE`);
   console.log(`📡 Interface: http://0.0.0.0:${PORT}`);
