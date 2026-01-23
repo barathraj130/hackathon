@@ -21,7 +21,7 @@ router.post('/login', async (req, res) => {
   if (team) {
     const token = jwt.sign(
       { id: team.id, role: 'TEAM' }, 
-      process.env.JWT_SECRET, 
+      process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
       { expiresIn: '24h' }
     );
     return res.json({ token, role: 'TEAM' });
@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
       console.log(`[Auth] Admin login success: ${username}`);
       const token = jwt.sign(
         { id: admin.id, role: 'ADMIN' }, 
-        process.env.JWT_SECRET, 
+        process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
         { expiresIn: '24h' }
       );
       return res.json({ token, role: 'ADMIN' });
