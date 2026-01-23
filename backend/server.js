@@ -20,13 +20,59 @@ let timerPaused = true;
 
 // Initialize Timer from Database on start
 async function initEngine() {
-  const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
-  if (config) {
-    timeRemaining = config.durationMinutes * 60;
-    timerPaused = config.isPaused;
+  try {
+    const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
+    if (config) {
+      timeRemaining = config.durationMinutes * 60;
+      timerPaused = config.isPaused;
+      console.log('✅ System configuration loaded from database.');
+    } else {
+      console.log('⚠️ No system configuration found. Run /setup-db to initialize.');
+    }
+  } catch (error) {
+    console.error('❌ Database connection failed:', error.message);
   }
 }
 initEngine();
+
+// Emergency Database Setup Route
+app.get('/setup-db', async (req, res) => {
+  try {
+    const bcrypt = require('bcryptjs');
+    const email = 'admin@institution.com';
+    const password = 'admin_portal_2026';
+    const hash = await bcrypt.hash(password, 10);
+
+    // 1. Create Admin
+    await prisma.administrator.upsert({
+      where: { email },
+      update: { passwordHash: hash },
+      create: { email, passwordHash: hash }
+    });
+
+    // 2. Create Config
+    await prisma.hackathonConfig.upsert({
+      where: { id: 1 },
+      update: {},
+      create: { id: 1, durationMinutes: 1440, isPaused: true }
+    });
+
+    res.send(`
+      <div style="font-family: sans-serif; padding: 50px; text-align: center;">
+        <h1 style="color: #10b981;">✅ Database Synchronized</h1>
+        <p>Admin account and system configuration have been initialized.</p>
+        <div style="background: #f3f4f6; padding: 20px; border-radius: 10px; display: inline-block; text-align: left;">
+          <strong>Email:</strong> admin@institution.com<br>
+          <strong>Password:</strong> admin_portal_2026
+        </div>
+        <br><br>
+        <a href="${process.env.FRONTEND_URL || '#'}" style="color: #3b82f6; text-decoration: none;">Return to Login →</a>
+      </div>
+    `);
+  } catch (error) {
+    res.status(500).send(`❌ Setup failed: ${error.message}`);
+  }
+});
 
 // Master Clock Loop
 setInterval(async () => {
