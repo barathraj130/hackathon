@@ -119,6 +119,14 @@ io.on('connection', (socket) => {
 });
 
 // Routes
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    system: 'Synthesis Engine',
+    initialized: timeRemaining !== (1440 * 60) || !timerPaused
+  });
+});
+
 app.use('/v1/auth', require('./routes/auth'));
 app.use('/v1/admin', require('./routes/admin'));
 app.use('/v1/team', require('./routes/team'));
