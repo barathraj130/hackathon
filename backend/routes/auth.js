@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 // Unified Login Endpoint
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  console.log(`[Auth] Attempting login for: ${username}`);
 
   // 1. Try Team Login (Username = Team Name, Password = College Name)
   const team = await prisma.team.findFirst({
