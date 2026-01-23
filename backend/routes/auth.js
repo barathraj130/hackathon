@@ -28,7 +28,8 @@ router.post('/login', async (req, res) => {
   }
 
   // 2. Try Admin Login (Email/Password)
-  const admin = await prisma.administrator.findUnique({ where: { email: username } });
+  const loginEmail = username.toLowerCase();
+  const admin = await prisma.administrator.findUnique({ where: { email: loginEmail } });
   if (admin) {
     const validPass = await bcrypt.compare(password, admin.passwordHash);
     if (validPass) {
