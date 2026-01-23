@@ -39,7 +39,8 @@ async function initEngine() {
     console.error('❌ Database connection failed:', error.message);
   }
 }
-initEngine();
+// Initialized later in background
+// initEngine(); 
 
 // Emergency Database Setup Route
 app.get('/setup-db', async (req, res) => {
@@ -143,9 +144,13 @@ app.use('/v1/candidate', require('./routes/team')); // Alias for safety
 // Export io for use in routes if needed
 app.set('socketio', io);
 
-const PORT = process.env.PORT || 5000;
+// Start Server Immediately
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 SYSTEM SYNTHESIS ENGINE ONLINE`);
   console.log(`📡 Interface: http://0.0.0.0:${PORT}`);
-  console.log(`⚡ WebSocket: Synchronized\n`);
+  
+  // Initialize Database in background after listening
+  console.log('⏳ Connecting to database in background...');
+  initEngine();
 });
