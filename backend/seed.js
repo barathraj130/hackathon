@@ -7,12 +7,12 @@ async function main() {
   const password = 'admin_portal_2026';
   const hash = await bcrypt.hash(password, 10);
 
-  const admin = await prisma.administrator.upsert({
+  const admin = await prisma.admin.upsert({
     where: { email },
-    update: { passwordHash: hash },
+    update: { password: hash },
     create: {
       email,
-      passwordHash: hash
+      password: hash
     }
   });
 

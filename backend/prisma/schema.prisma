@@ -58,8 +58,8 @@ model ProblemStatement {
   createdAt   DateTime @default(now())
 }
 
-model Administrator {
-  id           String @id @default(uuid())
-  email        String @unique
-  passwordHash String
+model Admin {
+  id        String @id @default(uuid())
+  email     String @unique
+  password  String
 }
