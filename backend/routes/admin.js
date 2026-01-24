@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { exec } = require('child_process');
 
 // Import the correct functions from your middleware folder
 const { verifyToken, isAdmin } = require('../middleware/auth');
@@ -10,6 +11,24 @@ const { verifyToken, isAdmin } = require('../middleware/auth');
 // Apply protection to all routes in this file
 router.use(verifyToken);
 router.use(isAdmin);
+
+/**
+ * MANUAL MIGRATION TRIGGER
+ */
+router.post('/run-migration', (req, res) => {
+    console.log("⚠️ Starting Manual Migration...");
+    exec('npx prisma migrate deploy', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Migration Error: ${error.message}`);
+            return res.status(500).json({ error: error.message, stderr });
+        }
+        if (stderr) {
+            console.error(`Migration Stderr: ${stderr}`);
+        }
+        console.log(`Migration Output: ${stdout}`);
+        res.json({ success: true, stdout, stderr });
+    });
+});
 
 /**
  * 1. GET DASHBOARD STATS
