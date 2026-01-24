@@ -3,6 +3,23 @@ const { PrismaClient } = require('@prisma/client');
 const axios = require('axios');
 const prisma = new PrismaClient();
 const { verifyToken } = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Multer Setup for Assets
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = 'public/assets/uploads';
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
 
 /**
  * INTERNAL MIDDLEWARE: System Operational Check
@@ -162,6 +179,7 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
  * @route   POST /v1/team/generate-pitch-deck
  * @desc    Triggers the Expert Pitch Synthesis Engine with graphs and diagrams.
  */
+// --- EXPERT PITCH SYNTHESIS ---
 router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => {
     const teamId = req.user.id;
     const projectData = req.body;
@@ -171,7 +189,6 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             where: { id: teamId }
         });
 
-        // External call to ppt-service (Python) specialized endpoint
         const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
         console.log(`[EXPERT SYNTHESIS] Initialization at: ${pptServiceUrl}`);
         const response = await axios.post(`${pptServiceUrl}/generate-expert-pitch`, {
@@ -185,7 +202,7 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             update: { 
                 pptUrl: response.data.file_url, 
                 status: 'SUBMITTED',
-                content: projectData // Store the full pitch data
+                content: projectData
             },
             create: {
                 teamId: teamId,
@@ -195,17 +212,29 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             }
         });
 
-        res.json({ 
-            success: true, 
-            message: "Expert Pitch Deck Synthesis Complete." 
-        });
-
+        res.json({ success: true, message: "Expert Pitch Deck Synthesis Complete." });
     } catch (err) {
         const targetUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
-        console.error("Expert Synthesis Error:", err.message, "Target Link:", targetUrl);
-        res.status(500).json({ 
-            error: `Expert Synthesis Engine unreachable at ${targetUrl}. Ensure the Python service is active on Railway.` 
-        });
+        res.status(500).json({ error: `Expert Synthesis Engine unreachable at ${targetUrl}.` });
+    }
+});
+
+/**
+ * @route   POST /v1/team/upload-asset
+ * @desc    Securely uploads binary evidence (images/screenshots) to the repository.
+ */
+router.post('/upload-asset', [checkOperationalStatus, upload.single('file')], async (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ error: "No binary payload detected." });
+        
+        // Construct public URL
+        const hostname = req.get('host');
+        const protocol = req.protocol;
+        const fileUrl = `${protocol}://${hostname}/assets/uploads/${req.file.filename}`;
+        
+        res.json({ success: true, fileUrl });
+    } catch (error) {
+        res.status(500).json({ error: "Asset persistent failure." });
     }
 });
 

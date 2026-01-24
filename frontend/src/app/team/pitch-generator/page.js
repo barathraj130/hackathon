@@ -16,23 +16,25 @@ export default function PitchGenerator() {
     s2_domain: '', s2_context: '', s2_rootReason: '',
     // S3: Problem
     s3_coreProblem: '', s3_affected: '', s3_whyItMatters: '',
-    // S4: Impact Mapping
-    s4_painPoints: [
-      { point: '', impact: 'High', freq: 'Frequent' },
-      { point: '', impact: 'Medium', freq: 'Occasional' }
-    ],
+    // S4: Impact Mapping (Expanded to 10)
+    s4_painPoints: Array(10).fill({ point: '', impact: 'High', freq: 'Frequent' }),
     // S5: Stakeholders
     s5_primaryUsers: '', s5_secondaryUsers: '',
-    // S6: Persona & JTBD
-    s6_personaDetails: '', s6_jobsPainsGains: '',
+    // S6: Persona & JTBD (Atomic Fields)
+    s6_customerName: '', s6_customerJob: '', s6_pains: '', s6_gains: '',
     // S7: Gap Analysis
     s7_alternatives: '', s7_limitations: '',
-    // S8: Solution
-    s8_oneline: '', s8_howItWorks: '', s8_flow: '',
-    // S9: Features
-    s9_coreFeatures: '', s9_differentiators: '',
-    // S10: Value Identification (Balloon)
-    s10_lifts: '', s10_pulls: '', s10_fuels: '', s10_outcome: '',
+    // S8: Solution Synthesis (10 Flow Steps)
+    s8_oneline: '', s8_howItWorks: '', 
+    s8_flowSteps: Array(10).fill(''),
+    // S9: Lean Canvas
+    s9_leanProblem: '', s9_leanSolution: '', s9_leanMetrics: '', s9_leanUSP: '', 
+    s9_leanUnfair: '', s9_leanChannels: '', s9_leanSegments: '', s9_leanCosts: '', s9_leanRevenue: '',
+    // S10: Value Identification (5 items per category)
+    s10_lifts: Array(5).fill(''),
+    s10_pulls: Array(5).fill(''),
+    s10_fuels: Array(5).fill(''),
+    s10_outcomes: Array(5).fill(''),
     // S11: Market Positioning
     s11_competitors: [
       { name: '', strength: '', weakness: '' },
@@ -48,6 +50,31 @@ export default function PitchGenerator() {
     slide_assets: {}
   });
 
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = async (e, slideId) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const token = localStorage.getItem('token');
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-c6be.up.railway.app/v1';
+      const res = await axios.post(`${apiUrl}/team/upload-asset`, formData, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      updateAsset(`${slideId}_img`, res.data.fileUrl);
+    } catch (err) {
+      alert("Asset upload failed. Please use external link as backup.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setData(prev => ({ ...prev, [name]: value }));
@@ -55,7 +82,7 @@ export default function PitchGenerator() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-c6be.up.railway.app/v1';
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, {
@@ -251,34 +278,31 @@ export default function PitchGenerator() {
                 )}
 
                 {step === 4 && (
-                   <div className="space-y-6 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Impact Mapping</p>
-                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-4 text-[9px] font-black text-slate-400 tracking-widest uppercase italic">The engine will convert these points into a frequency/impact graph.</div>
+                   <div className="space-y-4 animate-fade-in font-roboto h-[500px] overflow-y-auto pr-4 custom-scrollbar">
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Impact Mapping (Max 10)</p>
                       {data.s4_painPoints.map((pp, idx) => (
-                        <div key={idx} className="glass-pane p-5 rounded-2xl flex gap-6 items-end border-slate-100/50">
+                        <div key={idx} className="glass-pane p-4 rounded-xl flex gap-4 items-end border-slate-100/50">
+                           <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">{idx+1}</div>
                            <div className="flex-grow">
-                              <label className="label-caps !text-[8px]">Pain Point</label>
-                              <input className="input-field !bg-white" value={pp.point} onChange={e => {
+                              <input className="input-field !bg-white !py-2 !text-xs" placeholder="Pain Point description" value={pp.point} onChange={e => {
                                  const updated = [...data.s4_painPoints];
-                                 updated[idx].point = e.target.value;
+                                 updated[idx] = { ...updated[idx], point: e.target.value };
                                  setData({...data, s4_painPoints: updated});
                               }} />
                            </div>
-                           <div>
-                              <label className="label-caps !text-[8px]">Impact</label>
-                              <select className="input-field !bg-white py-2" value={pp.impact} onChange={e => {
+                           <div className="w-24">
+                              <select className="input-field !bg-white !py-2 !text-[10px]" value={pp.impact} onChange={e => {
                                  const updated = [...data.s4_painPoints];
-                                 updated[idx].impact = e.target.value;
+                                 updated[idx] = { ...updated[idx], impact: e.target.value };
                                  setData({...data, s4_painPoints: updated});
                               }}>
                                  <option>Low</option><option>Medium</option><option>High</option>
                               </select>
                            </div>
-                           <div>
-                              <label className="label-caps !text-[8px]">Frequency</label>
-                              <select className="input-field !bg-white py-2" value={pp.freq} onChange={e => {
+                           <div className="w-24">
+                              <select className="input-field !bg-white !py-2 !text-[10px]" value={pp.freq} onChange={e => {
                                  const updated = [...data.s4_painPoints];
-                                 updated[idx].freq = e.target.value;
+                                 updated[idx] = { ...updated[idx], freq: e.target.value };
                                  setData({...data, s4_painPoints: updated});
                               }}>
                                  <option>Rare</option><option>Occasional</option><option>Frequent</option>
@@ -304,15 +328,27 @@ export default function PitchGenerator() {
                 )}
 
                 {step === 6 && (
-                   <div className="space-y-8 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Empathy Mapping (Persona & JTBD)</p>
-                      <div>
-                        <label className="label-caps">User Persona Details</label>
-                        <textarea className="input-field" value={data.s6_personaDetails} onChange={e => setData({...data, s6_personaDetails: e.target.value})} placeholder="Age, Role, Psychology, Technology barriers..." />
+                   <div className="space-y-6 animate-fade-in font-roboto">
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Empathy Mapping (Persona Details)</p>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <label className="label-caps">Customer Name / Persona</label>
+                          <input className="input-field" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} placeholder="Ex: Rahul (Rural Farmer)" />
+                        </div>
+                        <div>
+                          <label className="label-caps">Professional Role / Job</label>
+                          <input className="input-field" value={data.s6_customerJob} onChange={e => setData({...data, s6_customerJob: e.target.value})} placeholder="Ex: Farm Supervisor" />
+                        </div>
                       </div>
-                      <div>
-                        <label className="label-caps">Jobs, Pains & Gains</label>
-                        <textarea className="input-field min-h-[120px]" value={data.s6_jobsPainsGains} onChange={e => setData({...data, s6_jobsPainsGains: e.target.value})} placeholder="What are they trying to do? What stops them? What is the win?" />
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <label className="label-caps text-rose-500">Pains (Frustrations)</label>
+                          <textarea className="input-field min-h-[120px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} placeholder="What makes them frustrated daily?" />
+                        </div>
+                        <div>
+                          <label className="label-caps text-emerald-500">Gains (Aspirations)</label>
+                          <textarea className="input-field min-h-[120px]" value={data.s6_gains} onChange={e => setData({...data, s6_gains: e.target.value})} placeholder="What would make their life better?" />
+                        </div>
                       </div>
                    </div>
                 )}
@@ -332,60 +368,124 @@ export default function PitchGenerator() {
                 )}
 
                 {step === 8 && (
-                   <div className="space-y-8 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Solution Synthesis</p>
-                      <div>
-                        <label className="label-caps">One-line Solution</label>
-                        <input className="input-field !text-lg !font-bold" value={data.s8_oneline} onChange={e => setData({...data, s8_oneline: e.target.value})} placeholder="Elevator Definition" />
+                   <div className="space-y-6 animate-fade-in font-roboto">
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Solution Synthesis & Sequential Logic</p>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <label className="label-caps">One-line Solution</label>
+                          <input className="input-field !font-bold" value={data.s8_oneline} onChange={e => setData({...data, s8_oneline: e.target.value})} placeholder="The Core Product" />
+                        </div>
+                        <div>
+                          <label className="label-caps">Mechanism</label>
+                          <input className="input-field" value={data.s8_howItWorks} onChange={e => setData({...data, s8_howItWorks: e.target.value})} placeholder="Fundamental Logic" />
+                        </div>
                       </div>
-                      <div>
-                        <label className="label-caps">Mechanism (How it works)</label>
-                        <textarea className="input-field" value={data.s8_howItWorks} onChange={e => setData({...data, s8_howItWorks: e.target.value})} placeholder="The fundamental process logic..." />
-                      </div>
-                      <div>
-                        <label className="label-caps">Logic Flow Summary</label>
-                        <input className="input-field" value={data.s8_flow} onChange={e => setData({...data, s8_flow: e.target.value})} placeholder="Phase A -> Phase B -> Output" />
+                      <div className="border-t border-slate-100 pt-6">
+                        <label className="label-caps mb-4">Linear Logic Flow (Max 10 Steps)</label>
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-3 h-[250px] overflow-y-auto pr-4 custom-scrollbar">
+                           {data.s8_flowSteps.map((stepVal, idx) => (
+                             <div key={idx} className="flex items-center gap-3">
+                               <span className="text-[10px] font-black text-slate-300 w-4">{idx+1}</span>
+                               <input 
+                                 className="input-field !py-2 !text-[11px] !bg-slate-50 border-transparent focus:!border-teal/30" 
+                                 placeholder={`Phase ${idx+1} Action...`}
+                                 value={stepVal} 
+                                 onChange={e => {
+                                   const updated = [...data.s8_flowSteps];
+                                   updated[idx] = e.target.value;
+                                   setData({...data, s8_flowSteps: updated});
+                                 }} 
+                               />
+                             </div>
+                           ))}
+                        </div>
                       </div>
                    </div>
                 )}
 
                 {step === 9 && (
-                   <div className="space-y-8 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Feature Prioritization</p>
-                      <div className="grid grid-cols-2 gap-8">
-                        <div>
-                          <label className="label-caps">Core Features</label>
-                          <textarea className="input-field min-h-[150px]" value={data.s9_coreFeatures} onChange={e => setData({...data, s9_coreFeatures: e.target.value})} placeholder="Non-negotiable technical modules..." />
+                   <div className="animate-fade-in font-roboto h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-4 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Lean Canvas Synthesis</p>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="col-span-1 space-y-4">
+                           <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                             <label className="label-caps !text-[8px] text-navy">Problem</label>
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanProblem} onChange={e => setData({...data, s9_leanProblem: e.target.value})} />
+                           </div>
+                           <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                             <label className="label-caps !text-[8px] text-navy">Solution</label>
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanSolution} onChange={e => setData({...data, s9_leanSolution: e.target.value})} />
+                           </div>
                         </div>
-                        <div>
-                          <label className="label-caps">Differentiators</label>
-                          <textarea className="input-field min-h-[150px]" value={data.s9_differentiators} onChange={e => setData({...data, s9_differentiators: e.target.value})} placeholder="What makes this unique?" />
+                        <div className="col-span-1 space-y-4">
+                           <div className="lean-box bg-teal/5 p-4 rounded-xl border border-teal/10">
+                             <label className="label-caps !text-[8px] text-teal">Unique Value Prop</label>
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px] font-bold" value={data.s9_leanUSP} onChange={e => setData({...data, s9_leanUSP: e.target.value})} />
+                           </div>
+                           <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                             <label className="label-caps !text-[8px] text-navy">Unfair Advantage</label>
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanUnfair} onChange={e => setData({...data, s9_leanUnfair: e.target.value})} />
+                           </div>
                         </div>
+                        <div className="col-span-1 space-y-4">
+                           <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                             <label className="label-caps !text-[8px] text-navy">Channels</label>
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanChannels} onChange={e => setData({...data, s9_leanChannels: e.target.value})} />
+                           </div>
+                           <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                             <label className="label-caps !text-[8px] text-navy">Customer Segments</label>
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanSegments} onChange={e => setData({...data, s9_leanSegments: e.target.value})} />
+                           </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                         <div className="lean-box bg-rose-50/30 p-4 rounded-xl border border-rose-100">
+                           <label className="label-caps !text-[8px] text-rose-500">Cost Structure</label>
+                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanCosts} onChange={e => setData({...data, s9_leanCosts: e.target.value})} />
+                         </div>
+                         <div className="lean-box bg-emerald-50/30 p-4 rounded-xl border border-emerald-100">
+                           <label className="label-caps !text-[8px] text-emerald-500">Revenue Streams</label>
+                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanRevenue} onChange={e => setData({...data, s9_leanRevenue: e.target.value})} />
+                         </div>
                       </div>
                    </div>
                 )}
 
                 {step === 10 && (
                   <div className="space-y-6 animate-fade-in font-roboto">
-                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Value vs Constraint Mapping</p>
-                    <div className="grid grid-cols-2 gap-8">
-                       <div>
-                         <label className="label-caps text-emerald-500">🎈 Lifts (Value)</label>
-                         <textarea className="input-field !bg-emerald-50/10" value={data.s10_lifts} onChange={e => setData({...data, s10_lifts: e.target.value})} />
+                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Value vs Constraint Mapping (Atomic 5-Factor)</p>
+                    <div className="grid grid-cols-4 gap-4">
+                       <div className="space-y-2">
+                          <label className="label-caps text-emerald-500 !text-[8px]">🎈 Lifts (5)</label>
+                          {data.s10_lifts.map((val, i) => (
+                             <input key={i} className="input-field !py-2 !text-[9px]" value={val} onChange={e => {
+                                let updated = [...data.s10_lifts]; updated[i] = e.target.value; setData({...data, s10_lifts: updated});
+                             }} />
+                          ))}
                        </div>
-                       <div>
-                         <label className="label-caps text-rose-500">⚓ Pulls (Costs/Risks)</label>
-                         <textarea className="input-field !bg-rose-50/10" value={data.s10_pulls} onChange={e => setData({...data, s10_pulls: e.target.value})} />
+                       <div className="space-y-2">
+                          <label className="label-caps text-rose-500 !text-[8px]">⚓ Pulls (5)</label>
+                          {data.s10_pulls.map((val, i) => (
+                             <input key={i} className="input-field !py-2 !text-[9px]" value={val} onChange={e => {
+                                let updated = [...data.s10_pulls]; updated[i] = e.target.value; setData({...data, s10_pulls: updated});
+                             }} />
+                          ))}
                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-8">
-                       <div>
-                         <label className="label-caps text-teal">⚡ Fuel (Tech Strengths)</label>
-                         <input className="input-field" value={data.s10_fuels} onChange={e => setData({...data, s10_fuels: e.target.value})} />
+                       <div className="space-y-2">
+                          <label className="label-caps text-teal !text-[8px]">⚡ Fuels (5)</label>
+                          {data.s10_fuels.map((val, i) => (
+                             <input key={i} className="input-field !py-2 !text-[9px]" value={val} onChange={e => {
+                                let updated = [...data.s10_fuels]; updated[i] = e.target.value; setData({...data, s10_fuels: updated});
+                             }} />
+                          ))}
                        </div>
-                       <div>
-                         <label className="label-caps">🏁 Desired Outcome</label>
-                         <input className="input-field" value={data.s10_outcome} onChange={e => setData({...data, s10_outcome: e.target.value})} />
+                       <div className="space-y-2">
+                          <label className="label-caps text-navy !text-[8px]">🏁 Outcomes (5)</label>
+                          {data.s10_outcomes.map((val, i) => (
+                             <input key={i} className="input-field !py-2 !text-[9px]" value={val} onChange={e => {
+                                let updated = [...data.s10_outcomes]; updated[i] = e.target.value; setData({...data, s10_outcomes: updated});
+                             }} />
+                          ))}
                        </div>
                     </div>
                   </div>
@@ -501,15 +601,33 @@ export default function PitchGenerator() {
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 flex items-center gap-2 mb-4">
                       <span className="w-4 h-[1px] bg-current"></span> Assets & Reference Protocol
                     </p>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-4 gap-4">
+                       <div className="relative group">
+                          <label className="absolute -top-6 left-0 text-[7px] font-black text-teal uppercase">Native Upload</label>
+                          <div className="input-field !p-0 !bg-slate-50 flex items-center overflow-hidden">
+                             <input 
+                                type="file" 
+                                id={`upload-${step}`} 
+                                className="hidden" 
+                                accept="image/*"
+                                onChange={(e) => handleFileUpload(e, step)}
+                             />
+                             <label htmlFor={`upload-${step}`} className="cursor-pointer bg-teal text-white px-4 py-4 text-[9px] font-black uppercase tracking-widest hover:bg-navy transition-colors whitespace-nowrap">
+                                {uploading ? 'Processing...' : 'Upload Image'}
+                             </label>
+                             <div className="px-3 text-[8px] font-bold text-slate-400 truncate">
+                                {data.slide_assets[`s${step}_img`] ? 'Asset Secured' : 'No binary found'}
+                             </div>
+                          </div>
+                       </div>
                        <div className="relative group">
                           <input 
                             className="w-full bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-4 text-[9px] outline-none focus:border-teal/50 transition-all font-bold" 
                             placeholder="Image / Screenshot Link" 
+                            disabled={uploading}
                             value={data.slide_assets[`s${step}_img`] || ''}
                             onChange={e => updateAsset(`s${step}_img`, e.target.value)}
                           />
-                          <div className="absolute top-[-8px] left-3 px-2 bg-white text-[7px] font-black text-slate-300 uppercase letter-tracking-widest opacity-0 group-focus-within:opacity-100 transition-opacity">Image Link</div>
                        </div>
                        <div className="relative group">
                           <input 
