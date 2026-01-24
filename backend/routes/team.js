@@ -167,8 +167,9 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
     } catch (err) {
         const tried = tryUrls.join(', ');
+        const details = err.response ? `[Status ${err.response.status}] ${JSON.stringify(err.response.data)}` : err.message;
         res.status(500).json({ 
-            error: err.message.startsWith('Synthesis Logic Error') ? err.message : `Synthesis Engine unreachable. Probed locations: ${tried}` 
+            error: err.message.startsWith('Synthesis Logic Error') ? err.message : `Synthesis Engine unreachable. Probed: ${tried}. Final Error: ${details}` 
         });
     }
 });
@@ -242,9 +243,10 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
     } catch (err) {
         const tried = tryUrls.join(', ');
+        const details = err.response ? `[Status ${err.response.status}] ${JSON.stringify(err.response.data)}` : err.message;
         console.error("Expert Synthesis Error:", err.message);
         res.status(500).json({ 
-            error: err.message.startsWith('Synthesis Logic Error') ? err.message : `Expert Synthesis Engine unreachable. Probed locations: ${tried}. Ensure the Python project is active on Railway.` 
+            error: err.message.startsWith('Synthesis Logic Error') ? err.message : `Expert Synthesis Engine unreachable. Probed: ${tried}. Final Error: ${details}` 
         });
     }
 });
