@@ -190,7 +190,7 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
       
       await prisma.admin.upsert({
         where: { email: adminEmail },
-        update: {}, // Don't overwrite if exists
+        update: { password: hash }, // Force update to ensure password matches env
         create: {
           email: adminEmail,
           password: hash
