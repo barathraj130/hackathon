@@ -70,17 +70,22 @@ export default function TeamDashboard() {
       const res = await axios.get(`${apiUrl}/team/profile`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      console.log("📦 Profile Data Received:", res.data);
+      console.log("📄 Submission:", res.data.submission);
       if (res.data.submission) {
         if (res.data.submission.content?.slides) {
           setFormData(res.data.submission.content);
         }
         setSubmission(res.data.submission);
+        console.log("✅ Artifact URL:", res.data.submission.pptUrl);
         lastSavedData.current = JSON.stringify(res.data.submission.content);
       }
       if (res.data.problemStatement) {
         setProblemStatement(res.data.problemStatement);
       }
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error("❌ Profile fetch error:", err); 
+    }
   };
 
   const autoSaveSubmission = async (isManual = false) => {
@@ -117,9 +122,13 @@ export default function TeamDashboard() {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       alert("Professional Deck synthesized successfully. Check Artifacts section.");
-      fetchInitialData();
+      // Force immediate refresh to show the new artifact
+      await fetchInitialData();
+      // Refresh again after a short delay to ensure backend has fully saved
+      setTimeout(() => fetchInitialData(), 1000);
     } catch (err) {
-      const msg = err.response?.data?.error || "Synthesis Engine failure. Ensure all logic modules are populated.";
+      const msg = err.response?.data?.error || err.message || "Synthesis Engine failure.";
+      console.error("Synthesis Error Details:", err.response?.data);
       alert(`Synthesis Error: ${msg}`);
     } finally {
       setIsGenerating(false);
