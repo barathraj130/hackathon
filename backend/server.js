@@ -165,9 +165,9 @@ const PORT = process.env.PORT || 3000;
 console.log(`[STARTUP] ENV PORT: ${process.env.PORT}`);
 console.log(`[STARTUP] Resolved PORT: ${PORT}`);
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
   console.log(`\n🚀 SYSTEM SYNTHESIS ENGINE ONLINE`);
-  console.log(`📡 Listening on: http://0.0.0.0:${PORT}`);
+  console.log(`📡 Listening on PORT: ${PORT}`);
   
   // Initialize Database in background after listening
   console.log('⏳ Connecting to database in background...');
