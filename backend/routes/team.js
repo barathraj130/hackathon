@@ -126,25 +126,13 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
     try {
         const team = await prisma.team.findUnique({
-            where: { id: teamId }
+            where: { id: teamId },
+            include: { submission: true }
         });
 
-        // TEMPORARY FIX: Strict Select for Submission to avoid schema error
-        const submission = await prisma.submission.findUnique({
-            where: { teamId: teamId },
-            select: { id: true, content: true, pptUrl: true, status: true }
-        });
-
-        if (!submission || !submission.content) {
+        if (!team.submission || !team.submission.content) {
             return res.status(400).json({ error: "Insufficient data for synthesis." });
         }
-
-        /* 
-        // TEMPORARY DISABLE: Schema migration pending
-        if (submission.pptUrl && !submission.canRegenerate) {
-            return res.status(403).json({ error: "Locked..." });
-        }
-        */
 
         let response;
         let lastErr;
@@ -155,7 +143,7 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
                 response = await axios.post(`${url}/generate`, {
                     team_name: team.teamName,
                     college_name: team.collegeName,
-                    content: submission.content
+                    content: team.submission.content
                 }, { timeout: 15000 });
 
                 if (response.data.success) break;
@@ -169,14 +157,12 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
         if (!response || !response.data.success) throw lastErr || new Error("All uplinks exhausted.");
 
-        // UPDATE WITHOUT NEW COLUMNS
         await prisma.submission.update({
             where: { teamId: teamId },
             data: { 
                 pptUrl: response.data.file_url, 
                 status: 'SUBMITTED'
-            },
-            select: { id: true, pptUrl: true, status: true }
+            }
         });
 
         res.json({ success: true, message: "Document Synthesis Complete. Please submit your prototype link and certificate details to finalize." });
@@ -255,7 +241,7 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
         if (!response || !response.data.success) throw lastErr || new Error("All expert uplinks exhausted.");
 
-        // UPSERT WITHOUT NEW COLUMNS & STRICT SELECT
+        // UPSERT SYNC
         await prisma.submission.upsert({
             where: { teamId: teamId },
             update: { 
@@ -268,11 +254,6 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
                 content: projectData,
                 status: 'SUBMITTED',
                 pptUrl: response.data.file_url
-            },
-            select: {
-                id: true,
-                pptUrl: true,
-                status: true
             }
         });
 
