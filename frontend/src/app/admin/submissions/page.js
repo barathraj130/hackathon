@@ -16,7 +16,7 @@ export default function AdminSubmissions() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const res = await axios.get(`${apiUrl}/admin/submissions`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setSubmissions(res.data);
     } catch (err) {
@@ -34,7 +34,7 @@ export default function AdminSubmissions() {
     try {
       await axios.post(`${apiUrl}/admin/toggle-regenerate`, 
         { teamId, canRegenerate: !currentValue },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` }}
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }}
       );
       alert('Permission updated');
       fetchSubmissions();

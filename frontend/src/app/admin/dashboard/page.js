@@ -11,12 +11,16 @@ export default function AdminDashboard() {
   const [newTeam, setNewTeam] = useState({ teamName: '', collegeName: '', member1: '', member2: '', dept: '', year: 1 });
   const [problemStatements, setProblemStatements] = useState([]);
   const [newStatement, setNewStatement] = useState({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' });
+  const [submissions, setSubmissions] = useState([]);
+  const [subLoading, setSubLoading] = useState(false);
+  const [subFilter, setSubFilter] = useState('ALL');
   const socketRef = useRef();
 
   useEffect(() => {
     fetchStats();
     fetchTeams();
     fetchProblemStatements();
+    fetchSubmissions();
 
     const socketUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:5000';
     socketRef.current = io(socketUrl);
@@ -96,16 +100,42 @@ export default function AdminDashboard() {
     } catch (err) { alert("Failed to deploy challenge."); }
   };
 
-  const handleDeleteStatement = async (id) => {
-    if (!confirm("Remove this challenge from repository?")) return;
+  const fetchSubmissions = async () => {
+    setSubLoading(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
-      await axios.delete(`${apiUrl}/admin/problem-statements/${id}`, {
+      const res = await axios.get(`${apiUrl}/admin/submissions`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      fetchProblemStatements();
-    } catch (err) { alert("Purge failed."); }
+      setSubmissions(res.data || []);
+    } catch (err) { console.error(err); }
+    finally { setSubLoading(false); }
   };
+
+  const toggleRegenerate = async (teamId, currentValue) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    if (!confirm(`${currentValue ? 'Lock' : 'Unlock'} regeneration for this team?`)) return;
+    try {
+      await axios.post(`${apiUrl}/admin/toggle-regenerate`, 
+        { teamId, canRegenerate: !currentValue },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }}
+      );
+      fetchSubmissions();
+    } catch (err) { alert(err.response?.data?.error || 'Update failed'); }
+  };
+
+  const downloadPPT = (pptUrl) => {
+    const fullUrl = `${process.env.NEXT_PUBLIC_PPT_URL || 'https://hackathon-production-c6be.up.railway.app'}/outputs/${pptUrl.split('/').pop()}`;
+    window.open(fullUrl, '_blank');
+  };
+
+  const filteredSubmissions = submissions.filter(s => {
+    if (subFilter === 'ALL') return true;
+    if (subFilter === 'SUBMITTED') return s.status === 'SUBMITTED';
+    if (subFilter === 'LOCKED') return s.status === 'LOCKED';
+    if (subFilter === 'PENDING') return !s.pptUrl;
+    return true;
+  });
 
   const sendCommand = (action) => socketRef.current.emit('adminCommand', { action });
 
@@ -132,7 +162,7 @@ export default function AdminDashboard() {
         </div>
         
         <nav className="flex-grow space-y-2 p-6 relative z-10 mt-6 overflow-y-auto">
-          {['overview', 'teams', 'problem statements', 'configuration', 'audit logs'].map(tab => (
+          {['overview', 'teams', 'submissions', 'problem statements', 'configuration', 'audit logs'].map(tab => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -306,6 +336,89 @@ export default function AdminDashboard() {
             </section>
           </div>
         )}
+        {activeTab === 'submissions' && (
+          <div className="space-y-12 animate-fade-in">
+             <section className="dashboard-card !p-10">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+                   <div>
+                      <h2 className="text-3xl font-black text-navy uppercase tracking-tighter">Submission Vault</h2>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mt-1">Artifact Oversight & Resource Management</p>
+                   </div>
+                   <div className="flex gap-2">
+                      {['ALL', 'PENDING', 'SUBMITTED', 'LOCKED'].map(f => (
+                        <button 
+                          key={f}
+                          onClick={() => setSubFilter(f)}
+                          className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${subFilter === f ? 'bg-teal text-white shadow-lg shadow-teal/20' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                        >
+                          {f}
+                        </button>
+                      ))}
+                   </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                   <table className="w-full text-left border-separate border-spacing-y-4">
+                      <thead>
+                         <tr>
+                            <th className="label-caps px-6">Candidate Entity</th>
+                            <th className="label-caps px-6">Network Status</th>
+                            <th className="label-caps px-6 text-center">PPT</th>
+                            <th className="label-caps px-6">Institutional Metadata</th>
+                            <th className="label-caps px-6">Lock State</th>
+                            <th className="label-caps px-6 text-right">Vault Actions</th>
+                         </tr>
+                      </thead>
+                      <tbody>
+                         {filteredSubmissions.map(sub => (
+                           <tr key={sub.id} className="bg-slate-50/30 hover:bg-white hover:shadow-xl hover:shadow-navy/5 transition-all group rounded-3xl overflow-hidden">
+                              <td className="py-6 px-6 first:rounded-l-3xl">
+                                 <p className="font-black text-navy uppercase text-sm tracking-tight">{sub.team.teamName}</p>
+                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{sub.team.collegeName}</p>
+                              </td>
+                              <td className="py-6 px-6">
+                                 <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${sub.status === 'LOCKED' ? 'bg-navy text-white' : sub.status === 'SUBMITTED' ? 'bg-emerald-100 text-emerald-600' : 'bg-royal/10 text-royal'}`}>
+                                    {sub.status}
+                                 </div>
+                              </td>
+                              <td className="py-6 px-6 text-center">
+                                 {sub.pptUrl ? <span className="text-emerald-500 text-lg">●</span> : <span className="text-slate-200 text-lg">○</span>}
+                              </td>
+                              <td className="py-6 px-6">
+                                 {sub.prototypeUrl ? (
+                                    <div className="max-w-[150px]">
+                                       <p className="text-[9px] font-black uppercase text-navy mb-1 leading-none">Prototype Link</p>
+                                       <a href={sub.prototypeUrl} target="_blank" rel="noopener noreferrer" className="text-[8px] text-teal font-bold uppercase truncate block hover:underline">{sub.prototypeUrl}</a>
+                                    </div>
+                                 ) : <span className="text-[9px] font-bold text-slate-300 uppercase italic">Pending Data</span>}
+                              </td>
+                              <td className="py-6 px-6">
+                                 <button 
+                                    onClick={() => toggleRegenerate(sub.teamId, sub.canRegenerate)}
+                                    className={`text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border transition-all ${sub.canRegenerate ? 'border-emerald-100 text-emerald-600 hover:bg-emerald-50' : 'border-rose-100 text-rose-500 hover:bg-rose-50'}`}
+                                 >
+                                    {sub.canRegenerate ? '🔓 Open' : '🔒 Locked'}
+                                 </button>
+                              </td>
+                              <td className="py-6 px-6 text-right last:rounded-r-3xl">
+                                 {sub.pptUrl && (
+                                    <button 
+                                       onClick={() => downloadPPT(sub.pptUrl)}
+                                       className="p-3 bg-white text-navy border border-slate-100 rounded-xl hover:bg-navy hover:text-white hover:border-navy transition-all shadow-sm"
+                                    >
+                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                    </button>
+                                 )}
+                              </td>
+                           </tr>
+                         ))}
+                      </tbody>
+                   </table>
+                </div>
+             </section>
+          </div>
+        )}
+
         {activeTab === 'problem statements' && (
           <div className="space-y-12 animate-fade-in">
             <section className="dashboard-card !p-12">
