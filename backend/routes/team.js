@@ -192,6 +192,13 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => {
     const teamId = req.user.id;
     const projectData = req.body;
+    console.log("🔍 [EXPERT SYNTHESIS DEBUG]");
+    console.log("User Context:", req.user);
+    console.log("Target Team ID:", teamId);
+    
+    if (!teamId) {
+        return res.status(500).json({ error: "Authentication Context Failure: No Team ID." });
+    }
 
     const tryUrls = [
         process.env.PYTHON_SERVICE_URL,
