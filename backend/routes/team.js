@@ -215,17 +215,17 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
     let lastErr;
 
     try {
+        // TEMPORARY FIX: Removed include submission to avoid schema mismatch error
         const team = await prisma.team.findUnique({
-            where: { id: teamId },
-            include: { submission: true }
+            where: { id: teamId }
         });
 
-        // Check if already submitted and regeneration is not allowed
+        /* 
+        // TEMPORARY DISABLE: Schema migration pending
         if (team.submission?.pptUrl && !team.submission.canRegenerate) {
-            return res.status(403).json({ 
-                error: "Submission locked. You have already generated your presentation. Contact admin for regeneration permission." 
-            });
+           return res.status(403).json({ error: "Submission locked..." });
         }
+        */
 
         for (const url of tryUrls) {
             try {
@@ -251,22 +251,19 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
         if (!response || !response.data.success) throw lastErr || new Error("All expert uplinks exhausted.");
 
+        // UPSERT WITHOUT NEW COLUMNS
         await prisma.submission.upsert({
             where: { teamId: teamId },
             update: { 
                 pptUrl: response.data.file_url, 
                 status: 'SUBMITTED',
-                content: projectData,
-                canRegenerate: false,
-                submittedAt: new Date()
+                content: projectData
             },
             create: {
                 teamId: teamId,
                 content: projectData,
                 status: 'SUBMITTED',
-                pptUrl: response.data.file_url,
-                canRegenerate: false,
-                submittedAt: new Date()
+                pptUrl: response.data.file_url
             }
         });
 
