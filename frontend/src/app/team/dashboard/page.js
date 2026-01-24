@@ -68,25 +68,29 @@ export default function TeamDashboard() {
 
   const fetchInitialData = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    console.log("🔄 Synchronizing system states...");
     try {
       const res = await axios.get(`${apiUrl}/team/profile`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      console.log("📦 Profile Data Received:", res.data);
-      console.log("📄 Submission:", res.data.submission);
-      if (res.data.submission) {
-        if (res.data.submission.content?.slides) {
-          setFormData(res.data.submission.content);
+      
+      const teamData = res.data;
+      if (teamData?.submission) {
+        console.log("✅ Artifact Synced:", teamData.submission.pptUrl);
+        setSubmission(teamData.submission);
+        if (teamData.submission.content?.slides) {
+          setFormData(teamData.submission.content);
+          lastSavedData.current = JSON.stringify(teamData.submission.content);
         }
-        setSubmission(res.data.submission);
-        console.log("✅ Artifact URL:", res.data.submission.pptUrl);
-        lastSavedData.current = JSON.stringify(res.data.submission.content);
+      } else {
+        console.log("⚠️ No submission record found.");
       }
-      if (res.data.problemStatement) {
-        setProblemStatement(res.data.problemStatement);
+      
+      if (teamData?.problemStatement) {
+        setProblemStatement(teamData.problemStatement);
       }
     } catch (err) { 
-      console.error("❌ Profile fetch error:", err); 
+      console.error("❌ Link synchronization failure:", err); 
     }
   };
 
@@ -123,9 +127,13 @@ export default function TeamDashboard() {
        const res = await axios.post(`${apiUrl}/team/generate-ppt`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      console.log("📥 Synthesis Response:", res.data);
+      if (res.data.submission) {
+        setSubmission(res.data.submission);
+      }
       // Show workflow modal for prototype and certificate submission
       setShowWorkflowModal(true);
-      // Force immediate refresh to show the new artifact
+      // Force immediate refresh to secondary verify
       await fetchInitialData();
     } catch (err) {
       const msg = err.response?.data?.error || err.message || "Synthesis Engine failure.";
@@ -271,7 +279,15 @@ export default function TeamDashboard() {
 
           {/* Artifact Repository */}
           <div className="glass-pane p-8 rounded-[2rem]">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">Submission Status</h3>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Submission Status</h3>
+              <button 
+                onClick={fetchInitialData}
+                className="text-[9px] font-bold text-teal uppercase hover:underline"
+              >
+                Sync ⟳
+              </button>
+            </div>
             
             {submission?.pptUrl ? (
               <div className="space-y-3">
@@ -366,6 +382,22 @@ export default function TeamDashboard() {
 
         </div>
       </main>
+
+      {/* Technical Diagnostic Overlay (Temporary) */}
+      <div className="max-w-7xl mx-auto px-10 pb-10 opacity-30 hover:opacity-100 transition-opacity">
+        <details className="cursor-pointer">
+          <summary className="text-[8px] font-black uppercase tracking-widest text-slate-400">Vault Diagnostic Tools</summary>
+          <div className="mt-4 p-6 bg-navy text-teal-400 rounded-2xl font-mono text-[9px] overflow-auto max-h-[300px]">
+             <p className="mb-2 uppercase border-b border-teal-400/20 pb-2">Technical Handshake Summary</p>
+             <pre>{JSON.stringify({ 
+               status: submission?.status || 'N/A',
+               ppt: submission?.pptUrl || 'NULL',
+               hasSubmission: !!submission,
+               syncTime: new Date().toLocaleTimeString()
+             }, null, 2)}</pre>
+          </div>
+        </details>
+      </div>
 
       {/* Submission Workflow Modal */}
       <SubmissionWorkflowModal

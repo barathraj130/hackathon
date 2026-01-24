@@ -105,10 +105,11 @@ export default function PitchGenerator() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, {
+      const res = await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert("Venture-Journey Synthesis Complete. Final Artifact generated in repository.");
+      console.log("🌟 Expert Synthesis Success:", res.data);
+      alert(res.data.message || "Venture-Journey Synthesis Complete. Final Artifact generated in repository.");
       router.push('/team/dashboard');
     } catch (err) {
       const msg = err.response?.data?.error || "Synthesis failed.";

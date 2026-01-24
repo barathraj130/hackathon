@@ -65,7 +65,16 @@ router.get('/profile', async (req, res) => {
             }
         });
         
-        res.json({ ...team, problemStatement });
+        console.log(`🔍 [PROFILE SYNC] Team: ${team.teamName}, Artifact: ${team.submission?.pptUrl || 'NONE'}`);
+        
+        // Return a flattened, clean object
+        res.json({
+            id: team.id,
+            teamName: team.teamName,
+            collegeName: team.collegeName,
+            submission: team.submission, // Still nested but explicit
+            problemStatement
+        });
     } catch (error) {
         res.status(500).json({ error: "Failed to sync with repository." });
     }
@@ -188,7 +197,16 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
             throw new Error(`Technical vault persistence failure: ${dbSaveErr.message}`);
         }
 
-        res.json({ success: true, message: "Document Synthesis Complete. Please submit your prototype link and certificate details to finalize." });
+        // Fetch the final state to return to frontend
+        const finalSubmission = await prisma.submission.findUnique({
+            where: { teamId: teamId }
+        });
+
+        res.json({ 
+            success: true, 
+            message: "Document Synthesis Complete.",
+            submission: finalSubmission
+        });
 
     } catch (err) {
         const tried = tryUrls.join(', ');
@@ -297,7 +315,16 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             throw new Error(`Expert vaulted persistence failure: ${dbSaveErr.message}`);
         }
 
-        res.json({ success: true, message: "Expert Pitch Deck Synthesis Complete." });
+        // Fetch the final state to return to frontend
+        const finalSubmission = await prisma.submission.findUnique({
+            where: { teamId: teamId }
+        });
+
+        res.json({ 
+            success: true, 
+            message: "Expert Pitch Deck Synthesis Complete.",
+            submission: finalSubmission
+        });
 
     } catch (err) {
         const tried = tryUrls.join(', ');
