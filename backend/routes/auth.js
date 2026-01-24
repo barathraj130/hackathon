@@ -7,24 +7,35 @@ const prisma = new PrismaClient();
 
 // Unified Login Endpoint
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  console.log(`[Auth] Attempting login for: ${username}`);
+  const username = String(req.body.username || "").trim();
+  const password = String(req.body.password || "").trim();
+  
+  console.log(`[Auth] Attempting login: ${username}`);
 
   // 1. Try Team Login (Username = Team Name, Password = College Name)
-  const team = await prisma.team.findFirst({
+  // Search for the team name case-insensitively for better UX
+  const targetTeam = await prisma.team.findFirst({
     where: { 
-      teamName: username, 
-      collegeName: password 
+      teamName: {
+        equals: username,
+        mode: 'insensitive'
+      }
     }
   });
 
-  if (team) {
-    const token = jwt.sign(
-      { id: team.id, role: 'TEAM' }, 
-      process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
-      { expiresIn: '24h' }
-    );
-    return res.json({ token, role: 'TEAM' });
+  if (targetTeam) {
+    // Check password (college name) - passwords usually remain case-sensitive for security
+    if (targetTeam.collegeName === password) {
+      console.log(`[Auth] Team login success: ${username}`);
+      const token = jwt.sign(
+        { id: targetTeam.id, role: 'TEAM' }, 
+        process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
+        { expiresIn: '24h' }
+      );
+      return res.json({ token, role: 'TEAM' });
+    } else {
+      console.log(`[Auth] Team password mismatch for: ${username}`);
+    }
   }
 
   // 2. Try Admin Login (Email/Password)
