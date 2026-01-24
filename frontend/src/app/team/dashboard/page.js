@@ -68,12 +68,12 @@ export default function TeamDashboard() {
     } catch (err) { console.error(err); }
   };
 
-  const autoSaveSubmission = async () => {
+  const autoSaveSubmission = async (isManual = false) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     setSaveStatus('SAVING');
     
-    // Even if no change, we show feedback to user
-    if (JSON.stringify(formData) === lastSavedData.current) {
+    // Manual sync skips the equality check to be absolutely sure
+    if (!isManual && JSON.stringify(formData) === lastSavedData.current) {
       setTimeout(() => {
         setSaveStatus('SAVED');
         setTimeout(() => setSaveStatus('IDLE'), 3000);
@@ -98,13 +98,14 @@ export default function TeamDashboard() {
     setIsGenerating(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
-       await axios.post(`${apiUrl}/team/generate-ppt`, {}, {
+       const res = await axios.post(`${apiUrl}/team/generate-ppt`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       alert("Professional Deck synthesized successfully. Check Artifacts section.");
       fetchInitialData();
     } catch (err) {
-      alert("Synthesis Engine failure. Ensure logic parameters are complete.");
+      const msg = err.response?.data?.error || "Synthesis Engine failure. Ensure all logic modules are populated.";
+      alert(`Synthesis Error: ${msg}`);
     } finally {
       setIsGenerating(false);
     }
@@ -250,7 +251,7 @@ export default function TeamDashboard() {
 
               <div className="pt-6">
                 <button 
-                  onClick={autoSaveSubmission}
+                  onClick={() => autoSaveSubmission(true)}
                   disabled={saveStatus === 'SAVING'}
                   className="w-full bg-navy text-white text-[11px] font-black py-6 rounded-[2rem] tracking-[0.4em] uppercase hover:scale-[1.01] active:scale-95 transition-all shadow-2xl shadow-navy/30 flex items-center justify-center gap-4 group disabled:opacity-70 disabled:cursor-not-allowed"
                 >

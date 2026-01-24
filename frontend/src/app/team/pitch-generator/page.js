@@ -44,7 +44,8 @@ export default function PitchGenerator() {
       alert("Pitch Deck Synthesis Initialized. Check your dashboard for the download link.");
       router.push('/team/dashboard');
     } catch (err) {
-      alert("Synthesis process failed. Ensure infrastructure is online.");
+      const msg = err.response?.data?.error || "Synthesis process failed. Ensure infrastructure is online.";
+      alert(`Synthesis Error: ${msg}`);
     } finally {
       setLoading(false);
     }

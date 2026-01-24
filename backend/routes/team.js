@@ -94,7 +94,17 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         });
 
         if (!team.submission || !team.submission.content) {
-            return res.status(400).json({ error: "Insufficient data for synthesis." });
+            return res.status(400).json({ error: "Insufficient data for synthesis. Please populate all form modules." });
+        }
+
+        const content = team.submission.content;
+        const requiredFields = ['title', 'abstract', 'problem', 'solution', 'architecture', 'technologies', 'impact', 'outcome'];
+        const missing = requiredFields.filter(f => !content[f] || content[f].length < 2);
+
+        if (missing.length > 0) {
+            return res.status(400).json({ 
+                error: `Synthesis halted. Incomplete modules: ${missing.join(', ')}. Please fill these out and sync before generating.` 
+            });
         }
 
         // Internal call to ppt-service (Python)
