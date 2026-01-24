@@ -161,13 +161,20 @@ app.set('socketio', io);
 
 // Start Server Immediately
 // Start Server Immediately
-const PORT = process.env.PORT || 8080;
-console.log(`[DEBUG] Attempting to bind to PORT: ${PORT}`);
+const PORT = process.env.PORT || 3000;
+console.log(`[STARTUP] ENV PORT: ${process.env.PORT}`);
+console.log(`[STARTUP] Resolved PORT: ${PORT}`);
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 SYSTEM SYNTHESIS ENGINE ONLINE`);
-  console.log(`📡 Interface: http://0.0.0.0:${PORT}`);
+  console.log(`📡 Listening on: http://0.0.0.0:${PORT}`);
   
   // Initialize Database in background after listening
   console.log('⏳ Connecting to database in background...');
   initEngine();
+});
+
+// Explicit Health Check for Railway
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
 });
