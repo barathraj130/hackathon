@@ -136,6 +136,9 @@ export default function AdminDashboard() {
 
   const getPublicLink = (url) => {
     if (!url) return '';
+    // If it's already a public railway link, don't mess with it
+    if (url.includes('.up.railway.app')) return url.replace('http://', 'https://');
+    
     return url
       .replace(/([a-zA-Z0-9-]+\.)+railway\.internal(:\d+)?/, (match) => {
         if (match.includes('python') || match.includes('liberation')) 

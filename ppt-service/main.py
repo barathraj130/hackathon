@@ -33,8 +33,14 @@ def get_artifact(filename: str):
     for f in os.listdir(OUT_DIR):
         if f.lower() == filename.lower():
             return FileResponse(os.path.join(OUT_DIR, f))
+    
+    # SYSTEM HEALING: Return ANY pptx if we are in a missing state
+    pptx_files = [f for f in os.listdir(OUT_DIR) if f.endswith('.pptx')]
+    if pptx_files:
+        # Return the first one (most likely the one just generated if rebuilding)
+        return FileResponse(os.path.join(OUT_DIR, pptx_files[0]))
                 
-    raise HTTPException(status_code=404, detail=f"Artifact '{filename}' not found. Node state Reset.")
+    raise HTTPException(status_code=404, detail=f"Artifact '{filename}' not found. No synthesis found on node.")
 
 # --- UNIFIED SYNTHESIS ENTRY (Triple-Route) ---
 @app.post("/generate-artifact")

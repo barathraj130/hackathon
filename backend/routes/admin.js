@@ -260,11 +260,11 @@ router.post('/force-regenerate', async (req, res) => {
         let successfulHost;
         let lastErrorMsg = "Cluster synthesis nodes unreachable.";
 
-        // UNIFIED RECONSTRUCTION LOGIC: Use the new robust endpoint
+        // UNIFIED RECONSTRUCTION LOGIC: Use the new single endpoint
         const content = team.submission.content;
         const endpoint = '/generate-artifact';
         
-        console.log(`[FORCE RECON] Reassembling artifacts for team: ${team.teamName}`);
+        console.log(`[FORCE RECON] Reassembling pitch deck for: ${team.teamName}`);
 
         for (const url of tryUrls) {
             try {
