@@ -204,58 +204,23 @@ export default function TeamDashboard() {
             </div>
           )}
 
-          <div className={`glass-pane p-12 rounded-[2.5rem] transition-all duration-500 ${isPaused ? 'opacity-30 pointer-events-none grayscale blur-sm scale-[0.98]' : ''}`}>
-            <div className="flex flex-col gap-2 mb-12 border-b border-slate-100 pb-8">
-               <h2 className="text-4xl font-black text-navy tracking-tighter uppercase leading-none">High-Fidelity Artifact Synthesis</h2>
-               <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em]">Construct a 14-slide professional artifacts series</p>
+          <div className="glass-pane p-12 rounded-[2.5rem] bg-white border-0 shadow-2xl shadow-navy/5">
+            <div className="max-w-2xl">
+              <span className="text-[10px] font-black text-teal uppercase tracking-[0.4em] mb-4 block">Operation Protocol</span>
+              <h2 className="text-4xl font-black text-navy tracking-tighter uppercase leading-tight mb-6">Create Your Professional <br/>Venture Artifacts</h2>
+              <p className="text-slate-500 font-medium text-base leading-relaxed mb-10">
+                The institutional standard requires a strict, guided synthesis process. Use the **Expert Venture Journey** engine to build your 15-slide pitch deck following a strict slide-by-slide design thinking workflow.
+              </p>
+              
+              <Link 
+                href="/team/pitch-generator" 
+                className="inline-flex items-center gap-6 bg-navy text-white px-10 py-6 rounded-2xl font-black uppercase text-[11px] tracking-[0.4em] hover:shadow-2xl shadow-navy/30 transition-all hover:-translate-y-1 active:scale-95 group"
+              >
+                <span>Initialize Venture Journey</span>
+                <span className="w-8 h-px bg-teal group-hover:w-12 transition-all"></span>
+              </Link>
             </div>
-
-            <div className="space-y-16">
-              {formData.slides.map((slide, index) => (
-                <div key={slide.id} className="group relative">
-                  <div className="flex items-center gap-6 mb-6">
-                    <span className="text-5xl font-black text-slate-100 tabular-nums leading-none group-focus-within:text-teal/20 transition-colors">0{index + 1}</span>
-                    <div>
-                      <span className="label-caps !mb-1">{slide.label} Protocol</span>
-                      <h3 className="text-xl font-black text-navy uppercase tracking-tight">{slide.title}</h3>
-                    </div>
-                  </div>
-                  
-                  <div className="relative">
-                    <textarea 
-                      className="input-field min-h-[160px] !text-base !py-6 !px-8 !bg-slate-50/30 font-medium focus:!bg-white shadow-sm border-slate-100" 
-                      placeholder={`Detail the ${slide.title} logic... (bullet points recommended)`}
-                      value={slide.content}
-                      onChange={e => handleInputChange(slide.id, e.target.value)}
-                    />
-                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Active Module</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-              <div className="pt-6">
-                <button 
-                  onClick={() => autoSaveSubmission(true)}
-                  disabled={saveStatus === 'SAVING'}
-                  className="w-full bg-navy text-white text-[11px] font-black py-6 rounded-[2rem] tracking-[0.4em] uppercase hover:scale-[1.01] active:scale-95 transition-all shadow-2xl shadow-navy/30 flex items-center justify-center gap-4 group disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {saveStatus === 'SAVING' ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4 text-teal" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                      Synchronizing State...
-                    </>
-                  ) : (
-                    <>
-                      <span className="w-2 h-2 bg-teal rounded-full animate-ping"></span>
-                      Manual Pulse Force Sync
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
+          </div>
           </div>
 
         {/* Right Column: Control & Artifacts */}
