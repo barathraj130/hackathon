@@ -13,14 +13,16 @@ export default function TeamDashboard() {
   const [submission, setSubmission] = useState(null);
   
   const [formData, setFormData] = useState({
-    title: '', 
-    abstract: '', 
-    problem: '', 
-    solution: '', 
-    architecture: '', 
-    technologies: '', 
-    impact: '', 
-    outcome: ''
+    slides: [
+      { id: 'S1', title: 'Abstract', content: '', label: 'Slide 01' },
+      { id: 'S2', title: 'Problem Statement', content: '', label: 'Slide 02' },
+      { id: 'S3', title: 'Proposed Solution', content: '', label: 'Slide 03' },
+      { id: 'S4', title: 'System Architecture', content: '', label: 'Slide 04' },
+      { id: 'S5', title: 'Technical Stack', content: '', label: 'Slide 05' },
+      { id: 'S6', title: 'Development Lifecycle', content: '', label: 'Slide 06' },
+      { id: 'S7', title: 'Impact & Metrics', content: '', label: 'Slide 07' },
+      { id: 'S8', title: 'Conclusion', content: '', label: 'Slide 08' }
+    ]
   });
 
   const lastSavedData = useRef(null);
@@ -61,7 +63,24 @@ export default function TeamDashboard() {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.data.submission) {
-        setFormData(res.data.submission.content || formData);
+        if (res.data.submission.content?.slides) {
+          setFormData(res.data.submission.content);
+        } else {
+          // Migration/Old Data fallback 
+          const old = res.data.submission.content;
+          setFormData({
+            slides: [
+              { id: 'S1', title: 'Abstract', content: old.abstract || '', label: 'Slide 01' },
+              { id: 'S2', title: 'Problem Statement', content: old.problem || '', label: 'Slide 02' },
+              { id: 'S3', title: 'Proposed Solution', content: old.solution || '', label: 'Slide 03' },
+              { id: 'S4', title: 'System Architecture', content: old.architecture || '', label: 'Slide 04' },
+              { id: 'S5', title: 'Technical Stack', content: old.technologies || '', label: 'Slide 05' },
+              { id: 'S6', title: 'Development Lifecycle', content: '', label: 'Slide 06' },
+              { id: 'S7', title: 'Impact & Metrics', content: old.impact || '', label: 'Slide 07' },
+              { id: 'S8', title: 'Conclusion', content: old.outcome || '', label: 'Slide 08' }
+            ]
+          });
+        }
         setSubmission(res.data.submission);
         lastSavedData.current = JSON.stringify(res.data.submission.content);
       }
@@ -111,8 +130,11 @@ export default function TeamDashboard() {
     }
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (id, value) => {
+    setFormData(prev => ({
+      ...prev,
+      slides: prev.slides.map(s => s.id === id ? { ...s, content: value } : s)
+    }));
   };
 
   return (
@@ -176,78 +198,36 @@ export default function TeamDashboard() {
           )}
 
           <div className={`glass-pane p-12 rounded-[2.5rem] transition-all duration-500 ${isPaused ? 'opacity-30 pointer-events-none grayscale blur-sm scale-[0.98]' : ''}`}>
-            <div className="flex flex-col gap-2 mb-12">
-               <h2 className="text-4xl font-black text-navy tracking-tighter uppercase leading-none">Architecture Synthesis</h2>
-               <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em]">Module Configuration System v4.0</p>
+            <div className="flex flex-col gap-2 mb-12 border-b border-slate-100 pb-8">
+               <h2 className="text-4xl font-black text-navy tracking-tighter uppercase leading-none">Slide-by-Slide Synthesis</h2>
+               <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em]">Construct your technical artifact module by module</p>
             </div>
 
-            <div className="space-y-12">
-              <div className="group">
-                <label className="label-caps !text-teal">01. Central Logic Identity</label>
-                <input 
-                  className="w-full text-3xl font-black text-navy border-b-4 border-slate-100 focus:border-teal bg-transparent outline-none transition-all py-2 placeholder:text-slate-200" 
-                  placeholder="System Official Name" 
-                  value={formData.title}
-                  onChange={e => handleInputChange('title', e.target.value)}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div>
-                  <label className="label-caps">02. Abstract (Internal Flow)</label>
-                  <textarea 
-                    className="input-field min-h-[160px] !bg-slate-50/50 !border-slate-100 focus:!bg-white" 
-                    placeholder="Provide detailed project summary..."
-                    value={formData.abstract}
-                    onChange={e => handleInputChange('abstract', e.target.value)}
-                  />
+            <div className="space-y-16">
+              {formData.slides.map((slide, index) => (
+                <div key={slide.id} className="group relative">
+                  <div className="flex items-center gap-6 mb-6">
+                    <span className="text-5xl font-black text-slate-100 tabular-nums leading-none group-focus-within:text-teal/20 transition-colors">0{index + 1}</span>
+                    <div>
+                      <span className="label-caps !mb-1">{slide.label} Protocol</span>
+                      <h3 className="text-xl font-black text-navy uppercase tracking-tight">{slide.title}</h3>
+                    </div>
+                  </div>
+                  
+                  <div className="relative">
+                    <textarea 
+                      className="input-field min-h-[160px] !text-base !py-6 !px-8 !bg-slate-50/30 font-medium focus:!bg-white shadow-sm border-slate-100" 
+                      placeholder={`Detail the ${slide.title} logic... (bullet points recommended)`}
+                      value={slide.content}
+                      onChange={e => handleInputChange(slide.id, e.target.value)}
+                    />
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Active Module</span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="label-caps">03. Target Inefficiency</label>
-                  <textarea 
-                    className="input-field min-h-[160px] !bg-slate-50/50 !border-slate-100 focus:!bg-white" 
-                    placeholder="What problem does the system resolve?"
-                    value={formData.problem}
-                    onChange={e => handleInputChange('problem', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div>
-                  <label className="label-caps">04. Strategic Solution</label>
-                  <textarea 
-                    className="input-field min-h-[160px] !bg-slate-50/50 !border-slate-100 focus:!bg-white" 
-                    placeholder="Deployment methodology..."
-                    value={formData.solution}
-                    onChange={e => handleInputChange('solution', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="label-caps">05. Data Hierarchies</label>
-                  <textarea 
-                    className="input-field min-h-[160px] !bg-slate-50/50 !border-slate-100 focus:!bg-white" 
-                    placeholder="System architecture and protocols..."
-                    value={formData.architecture}
-                    onChange={e => handleInputChange('architecture', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="glass-pane !p-6 !bg-white/40 !rounded-3xl border-slate-100">
-                  <label className="label-caps">06. Tech Stack</label>
-                  <input className="input-field !bg-white border-none shadow-sm" placeholder="Component comma list" value={formData.technologies} onChange={e => handleInputChange('technologies', e.target.value)} />
-                </div>
-                <div className="glass-pane !p-6 !bg-white/40 !rounded-3xl border-slate-100">
-                  <label className="label-caps">07. System Impact</label>
-                  <input className="input-field !bg-white border-none shadow-sm" placeholder="Global influence" value={formData.impact} onChange={e => handleInputChange('impact', e.target.value)} />
-                </div>
-                <div className="glass-pane !p-6 !bg-white/40 !rounded-3xl border-slate-100">
-                  <label className="label-caps">08. Final Metric</label>
-                  <input className="input-field !bg-white border-none shadow-sm" placeholder="Quantifiable result" value={formData.outcome} onChange={e => handleInputChange('outcome', e.target.value)} />
-                </div>
-              </div>
+              ))}
+            </div>
 
               <div className="pt-6">
                 <button 
@@ -270,7 +250,6 @@ export default function TeamDashboard() {
               </div>
             </div>
           </div>
-        </div>
 
         {/* Right Column: Control & Artifacts */}
         <div className="lg:col-span-4 space-y-8 sticky top-32 animate-fade-in delay-200">

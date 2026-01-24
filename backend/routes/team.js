@@ -98,13 +98,24 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         }
 
         const content = team.submission.content;
-        const requiredFields = ['title', 'abstract', 'problem', 'solution', 'architecture', 'technologies', 'impact', 'outcome'];
-        const missing = requiredFields.filter(f => !content[f] || content[f].length < 2);
-
-        if (missing.length > 0) {
-            return res.status(400).json({ 
-                error: `Synthesis halted. Incomplete modules: ${missing.join(', ')}. Please fill these out and sync before generating.` 
-            });
+        
+        // Handle new slide format validation
+        if (content.slides && Array.isArray(content.slides)) {
+            const incomplete = content.slides.filter(s => !s.content || s.content.trim().length < 10);
+            if (incomplete.length > 3) { // Allow some empty slides but not most
+                return res.status(400).json({ 
+                    error: `Synthesis halted. ${incomplete.length} slides have insufficient detail. Please populate your technical slides before generating.` 
+                });
+            }
+        } else {
+            // Legacy fallback validation
+            const requiredFields = ['abstract', 'problem', 'solution', 'architecture', 'technologies', 'impact', 'outcome'];
+            const missing = requiredFields.filter(f => !content[f] || content[f].length < 10);
+            if (missing.length > 0) {
+                return res.status(400).json({ 
+                    error: `Synthesis halted. Incomplete modules: ${missing.join(', ')}.` 
+                });
+            }
         }
 
         // Internal call to ppt-service (Python)
