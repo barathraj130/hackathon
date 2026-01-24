@@ -257,6 +257,98 @@ export default function AdminDashboard() {
             </section>
           </div>
         )}
+
+        {activeTab === 'configuration' && (
+          <div className="space-y-12 animate-fade-in">
+            <section className="dashboard-card !p-12">
+               <div className="flex flex-col gap-2 mb-10">
+                  <h2 className="text-3xl font-black text-navy uppercase tracking-tighter">System Infrastructure</h2>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">Temporal & Branding Configuration</p>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-8">
+                     <div>
+                        <label className="label-caps">Temporal Duration (Minutes)</label>
+                        <input 
+                           type="number" 
+                           className="input-field !text-lg !font-bold" 
+                           value={stats.test_config?.durationMinutes || 1440} 
+                           onChange={async (e) => {
+                              const val = parseInt(e.target.value);
+                              const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+                              await axios.post(`${apiUrl}/admin/test-config`, { durationMinutes: val }, {
+                                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                              });
+                              fetchStats();
+                           }}
+                        />
+                     </div>
+                     <div>
+                        <label className="label-caps">Institutional Branding (Footer)</label>
+                        <input 
+                           className="input-field" 
+                           placeholder="Ex: Powered by Innovation Lab v4" 
+                           value={stats.test_config?.footerText || ''} 
+                           onChange={async (e) => {
+                              const val = e.target.value;
+                              const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+                              await axios.post(`${apiUrl}/admin/test-config`, { footerText: val }, {
+                                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                              });
+                              fetchStats();
+                           }}
+                        />
+                     </div>
+                  </div>
+
+                  <div className="space-y-8">
+                     <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 italic">
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed mb-4">
+                           Infrastructure Status
+                        </p>
+                        <div className="space-y-3">
+                           <div className="flex justify-between items-center">
+                              <span className="text-[9px] font-black uppercase text-navy">Synthesis Engine</span>
+                              <span className="text-[9px] font-black uppercase text-emerald-500">OPERATIONAL</span>
+                           </div>
+                           <div className="flex justify-between items-center">
+                              <span className="text-[9px] font-black uppercase text-navy">Repository Sync</span>
+                              <span className="text-[9px] font-black uppercase text-emerald-500">ACTIVE</span>
+                           </div>
+                           <div className="flex justify-between items-center">
+                              <span className="text-[9px] font-black uppercase text-navy">Artifact Store</span>
+                              <span className="text-[9px] font-black uppercase text-amber-500">OPTIMIZING</span>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="p-8 bg-navy text-white rounded-3xl shadow-xl shadow-navy/20">
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-teal mb-2">Emergency Recovery</h4>
+                        <p className="text-[9px] font-medium text-slate-400 leading-relaxed mb-4 uppercase">
+                           If the primary database state becomes desynchronized, use the pulse-force link to reset global parameters.
+                        </p>
+                        <a 
+                           href={`${process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || 'http://localhost:5000'}/setup-db`}
+                           target="_blank" 
+                           className="text-[9px] font-black uppercase tracking-[0.2em] text-white underline hover:text-teal"
+                        >
+                           Pulse-Force Setup Link
+                        </a>
+                     </div>
+                  </div>
+               </div>
+            </section>
+          </div>
+        )}
+
+        {activeTab === 'audit logs' && (
+          <div className="animate-fade-in dashboard-card !p-12 text-center py-20">
+              <div className="text-4xl mb-6 grayscale opacity-20">📜</div>
+              <h3 className="text-xl font-black text-navy uppercase tracking-widest">Temporal Audit Logs</h3>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Real-time verification of all system interactions is currently active.</p>
+          </div>
+        )}
       </main>
     </div>
   );

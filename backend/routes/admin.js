@@ -88,15 +88,29 @@ router.post('/create-team', async (req, res) => {
  * 4. SET HACKATHON CONFIG (Timer, PPT Structure, etc)
  */
 router.post('/test-config', async (req, res) => {
-    const { durationMinutes, pptConfig, footerText } = req.body;
+    const { durationMinutes, pptConfig, footerText, collegeLogo, eventTheme } = req.body;
     try {
         const config = await prisma.hackathonConfig.upsert({
             where: { id: 1 },
-            update: { durationMinutes, pptConfig, footerText },
-            create: { id: 1, durationMinutes, pptConfig, footerText }
+            update: { 
+                durationMinutes, 
+                pptConfig, 
+                footerText,
+                collegeLogo,
+                eventTheme
+            },
+            create: { 
+                id: 1, 
+                durationMinutes, 
+                pptConfig, 
+                footerText,
+                collegeLogo,
+                eventTheme
+            }
         });
         res.json({ success: true, config });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Failed to update infrastructure parameters." });
     }
 });
