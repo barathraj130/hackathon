@@ -147,7 +147,11 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         const tryUrls = [
             process.env.PYTHON_SERVICE_URL,
             'http://ppt-service.railway.internal:8000',
-            'https://hackathon-production-c6be.up.railway.app'
+            'http://python-service.railway.internal:8000',
+            'http://ppt-service:8000',
+            'http://python-service:8000',
+            'https://hackathon-production-c6be.up.railway.app',
+            'https://sincere-abundance-70.up.railway.app'
         ].filter(Boolean);
 
         let response;
@@ -184,11 +188,10 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         });
 
     } catch (err) {
-        const externalUrl = 'https://hackathon-production-c6be.up.railway.app';
-        const targetUrl = process.env.PYTHON_SERVICE_URL || externalUrl;
+        const tried = tryUrls.join(', ');
         console.error("Synthesis Service Error:", err.message);
         res.status(500).json({ 
-            error: `Synthesis Engine unreachable. Ensure the Python project is active on Railway. (Technical Uplink: ${targetUrl})` 
+            error: `Synthesis Engine unreachable. Probed locations: ${tried}. Ensure the Python project is active on Railway.` 
         });
     }
 });
@@ -210,7 +213,11 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         const tryUrls = [
             process.env.PYTHON_SERVICE_URL,
             'http://ppt-service.railway.internal:8000',
-            'https://hackathon-production-c6be.up.railway.app'
+            'http://python-service.railway.internal:8000',
+            'http://ppt-service:8000',
+            'http://python-service:8000',
+            'https://hackathon-production-c6be.up.railway.app',
+            'https://sincere-abundance-70.up.railway.app'
         ].filter(Boolean);
 
         let response;
@@ -250,14 +257,10 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
         res.json({ success: true, message: "Expert Pitch Deck Synthesis Complete." });
     } catch (err) {
-        // Fallback Strategy: Internal Discovery
-        const internalUrl = 'http://ppt-service.railway.internal:8000';
-        const externalUrl = 'https://hackathon-production-c6be.up.railway.app';
-        const targetUrl = process.env.PYTHON_SERVICE_URL || externalUrl;
-        
+        const tried = tryUrls.join(', ');
         console.error("Expert Synthesis Error:", err.message);
         res.status(500).json({ 
-            error: `Expert Synthesis Engine unreachable. Ensure the Python project is active on Railway. (Technical Uplink: ${targetUrl})` 
+            error: `Expert Synthesis Engine unreachable. Probed locations: ${tried}. Ensure the Python project is active on Railway.` 
         });
     }
 });
