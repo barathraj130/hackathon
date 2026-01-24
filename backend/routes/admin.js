@@ -1,6 +1,6 @@
-// backend/routes/admin.js
 const express = require('express');
 const router = express.Router();
+const axios = require('axios');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { exec } = require('child_process');
@@ -219,7 +219,7 @@ function calculateProgress(submission) {
 }
 
 /**
- * FORCE RE-GENERATION FOR A TEAM
+ * FORCE RE-GENERATION FOR A TEAM (Administrative Reconstruction)
  */
 router.post('/force-regenerate', async (req, res) => {
     try {
@@ -230,7 +230,7 @@ router.post('/force-regenerate', async (req, res) => {
         });
 
         if (!team || !team.submission || !team.submission.content) {
-            return res.status(404).json({ error: "No submission data found for reconstruction." });
+            return res.status(404).json({ error: "Institutional vault empty for this team. No data to reconstruct." });
         }
 
         const tryUrls = [
@@ -241,41 +241,61 @@ router.post('/force-regenerate', async (req, res) => {
 
         let response;
         let successfulHost;
-        const axios = require('axios');
+        let lastErrorMsg = "No nodes responded.";
+
+        // RECONSTRUCTION LOGIC: Detect if it was an Expert or Standard deck
+        const content = team.submission.content;
+        const isExpertDeck = !!content.projectName || !!content.s2_domain; // Expert fields
+        const endpoint = isExpertDeck ? '/generate-expert-pitch' : '/generate';
+        
+        const payload = isExpertDeck 
+            ? { team_name: team.teamName, college_name: team.collegeName, project_data: content }
+            : { team_name: team.teamName, college_name: team.collegeName, content: content };
+
+        console.log(`[FORCE RECON] Starting ${isExpertDeck ? 'EXPERT' : 'STANDARD'} sync for team ${team.teamName}`);
 
         for (const url of tryUrls) {
             try {
-                // Determine which engine to use based on content structure
-                const endpoint = team.submission.content.slides ? '/generate' : '/generate-expert-pitch';
-                const payload = team.submission.content.slides 
-                    ? { team_name: team.teamName, college_name: team.collegeName, content: team.submission.content }
-                    : { team_name: team.teamName, college_name: team.collegeName, project_data: team.submission.content };
-
-                response = await axios.post(`${url}${endpoint}`, payload, { timeout: 15000 });
-
+                response = await axios.post(`${url}${endpoint}`, payload, { timeout: 45000 });
                 if (response.data.success) {
                     successfulHost = url;
                     break;
                 }
+                else { lastErrorMsg = response.data.error || "Engine Logic Error"; }
             } catch (e) {
-                console.log(`[FORCE] Skip node ${url}`);
+                console.warn(`[FORCE] Node ${url} unreachable: ${e.message}`);
+                lastErrorMsg = e.message;
             }
         }
 
-        if (!response || !response.data.success) throw new Error("Distributed synthesis nodes unavailable.");
+        if (!response || !response.data.success) {
+            throw new Error(`Cloud Synthesis Cluster Unreachable. Technical reason: ${lastErrorMsg}`);
+        }
 
-        const fileName = response.data.file_url.split('/').pop();
+        // Construct absolute verified URL from filename
+        const rawFile = response.data.file_url;
+        const fileName = rawFile.split('/').pop();
         const finalPptUrl = `${successfulHost}/outputs/${fileName}`;
 
+        // Persist to repository
         await prisma.submission.update({
             where: { teamId },
-            data: { pptUrl: finalPptUrl, status: 'SUBMITTED' }
+            data: { 
+                pptUrl: finalPptUrl, 
+                status: 'SUBMITTED',
+                updatedAt: new Date()
+            }
         });
 
-        res.json({ success: true, message: "Artifact reconstructed successfully.", pptUrl: finalPptUrl });
+        res.json({ 
+            success: true, 
+            message: `Artifact reconstructed on node: ${successfulHost}`, 
+            pptUrl: finalPptUrl 
+        });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: `Reconstruction Failed: ${error.message}` });
+        console.error("❌ RECONSTRUCTION CRITICAL FAILURE:", error.message);
+        res.status(500).json({ error: `System Reconstruction Failed: ${error.message}` });
     }
 });
 

@@ -352,31 +352,86 @@ export default function PitchGenerator() {
                    </div>
                 )}
 
-                {step === 6 && (
-                   <div className="space-y-6 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Empathy Mapping (Persona Details)</p>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div>
-                          <label className="label-caps">Customer Name / Persona</label>
-                          <input className="input-field" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} placeholder="Ex: Rahul (Rural Farmer)" />
-                        </div>
-                        <div>
-                          <label className="label-caps">Professional Role / Job</label>
-                          <input className="input-field" value={data.s6_customerJob} onChange={e => setData({...data, s6_customerJob: e.target.value})} placeholder="Ex: Farm Supervisor" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div>
-                          <label className="label-caps text-rose-500">Pains (Frustrations)</label>
-                          <textarea className="input-field min-h-[120px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} placeholder="What makes them frustrated daily?" />
-                        </div>
-                        <div>
-                          <label className="label-caps text-emerald-500">Gains (Aspirations)</label>
-                          <textarea className="input-field min-h-[120px]" value={data.s6_gains} onChange={e => setData({...data, s6_gains: e.target.value})} placeholder="What would make their life better?" />
-                        </div>
-                      </div>
-                   </div>
-                )}
+                 {step === 6 && (
+                    <div className="space-y-6 animate-fade-in font-roboto h-[500px] overflow-y-auto pr-4 custom-scrollbar">
+                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Empathy Mapping (High Fidelity Persona)</p>
+                       
+                       <div className="grid grid-cols-3 gap-4">
+                         <div>
+                           <label className="label-caps">Name / Persona</label>
+                           <input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} placeholder="Ex: Rahul" />
+                         </div>
+                         <div>
+                           <label className="label-caps">Age</label>
+                           <input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} placeholder="Ex: 34" />
+                         </div>
+                         <div>
+                           <label className="label-caps">Location</label>
+                           <input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} placeholder="Ex: Rural Karnataka" />
+                         </div>
+                       </div>
+
+                       <div className="grid grid-cols-2 gap-4">
+                         <div>
+                           <label className="label-caps">Professional Role</label>
+                           <input className="input-field !py-2 !text-xs" value={data.s6_customerJob} onChange={e => setData({...data, s6_customerJob: e.target.value})} placeholder="Ex: Lead Supervisor" />
+                         </div>
+                         <div>
+                           <label className="label-caps">Institutional Ethos / Motto</label>
+                           <input className="input-field !py-2 !text-xs" value={data.s6_customerEthos} onChange={e => setData({...data, s6_customerEthos: e.target.value})} placeholder="Ex: Efficiency at scale" />
+                         </div>
+                       </div>
+
+                       <div className="grid grid-cols-2 gap-4">
+                         <div>
+                           <label className="label-caps text-rose-500">Pains (Frustrations)</label>
+                           <textarea className="input-field !py-2 !text-xs min-h-[80px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} placeholder="Specific daily frustrations..." />
+                         </div>
+                         <div>
+                           <label className="label-caps text-emerald-500">Core Goals</label>
+                           <textarea className="input-field !py-2 !text-xs min-h-[80px]" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} placeholder="What are they trying to achieve?" />
+                         </div>
+                       </div>
+
+                       <div>
+                         <label className="label-caps">Narrative Bio</label>
+                         <textarea className="input-field !py-2 !text-xs min-h-[80px]" value={data.s6_bio} onChange={e => setData({...data, s6_bio: e.target.value})} placeholder="Brief background story of the persona..." />
+                       </div>
+
+                       <div className="grid grid-cols-2 gap-8 pt-4 border-t border-slate-100">
+                          <div className="space-y-4">
+                             <label className="label-caps !mb-4">Personality Spectrums</label>
+                             {Object.entries(data.s6_personality).map(([trait, val]) => (
+                               <div key={trait} className="space-y-1">
+                                  <div className="flex justify-between items-center px-1">
+                                     <span className="text-[8px] font-black uppercase text-slate-400">{trait}</span>
+                                     <span className="text-[8px] font-black text-teal">{val}%</span>
+                                  </div>
+                                  <input type="range" className="w-full accent-teal h-1" value={val} onChange={e => {
+                                     const updated = { ...data.s6_personality, [trait]: parseInt(e.target.value) };
+                                     setData({...data, s6_personality: updated});
+                                  }} />
+                               </div>
+                             ))}
+                          </div>
+                          <div className="space-y-4">
+                             <label className="label-caps !mb-4">Motivation Triggers</label>
+                             {Object.entries(data.s6_motivations).map(([motive, val]) => (
+                               <div key={motive} className="space-y-1">
+                                  <div className="flex justify-between items-center px-1">
+                                     <span className="text-[8px] font-black uppercase text-slate-400">{motive}</span>
+                                     <span className="text-[8px] font-black text-orange-500">{val}%</span>
+                                  </div>
+                                  <input type="range" className="w-full accent-orange-500 h-1" value={val} onChange={e => {
+                                     const updated = { ...data.s6_motivations, [motive]: parseInt(e.target.value) };
+                                     setData({...data, s6_motivations: updated});
+                                  }} />
+                               </div>
+                             ))}
+                          </div>
+                       </div>
+                    </div>
+                 )}
 
                 {step === 7 && (
                    <div className="space-y-8 animate-fade-in font-roboto">
@@ -430,47 +485,55 @@ export default function PitchGenerator() {
 
                 {step === 9 && (
                    <div className="animate-fade-in font-roboto h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-4 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Lean Canvas Synthesis</p>
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-4 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Lean Canvas Synthesis (High Fidelity)</p>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="col-span-1 space-y-4">
                            <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                              <label className="label-caps !text-[8px] text-navy">Problem</label>
-                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanProblem} onChange={e => setData({...data, s9_leanProblem: e.target.value})} />
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanProblem} onChange={e => setData({...data, s9_leanProblem: e.target.value})} placeholder="What is the pain?" />
+                             <label className="label-caps !text-[7px] text-slate-400 mt-2">Alternatives</label>
+                             <input className="input-field !bg-transparent !border-0 !p-0 !text-[9px]" value={data.s9_leanAlternatives} onChange={e => setData({...data, s9_leanAlternatives: e.target.value})} placeholder="Current methods..." />
                            </div>
                            <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                              <label className="label-caps !text-[8px] text-navy">Solution</label>
-                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanSolution} onChange={e => setData({...data, s9_leanSolution: e.target.value})} />
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanSolution} onChange={e => setData({...data, s9_leanSolution: e.target.value})} placeholder="What is the fix?" />
+                             <label className="label-caps !text-[7px] text-slate-400 mt-2">Key Metrics</label>
+                             <input className="input-field !bg-transparent !border-0 !p-0 !text-[9px]" value={data.s9_leanMetrics} onChange={e => setData({...data, s9_leanMetrics: e.target.value})} placeholder="How to measure success?" />
                            </div>
                         </div>
                         <div className="col-span-1 space-y-4">
-                           <div className="lean-box bg-teal/5 p-4 rounded-xl border border-teal/10">
+                           <div className="lean-box bg-teal/5 p-4 rounded-xl border border-teal/10 min-h-[140px]">
                              <label className="label-caps !text-[8px] text-teal">Unique Value Prop</label>
-                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px] font-bold" value={data.s9_leanUSP} onChange={e => setData({...data, s9_leanUSP: e.target.value})} />
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px] font-bold" value={data.s9_leanUSP} onChange={e => setData({...data, s9_leanUSP: e.target.value})} placeholder="Why you?" />
+                             <label className="label-caps !text-[7px] text-teal/40 mt-2 uppercase">High-Level Concept</label>
+                             <input className="input-field !bg-transparent !border-0 !p-0 !text-[9px] italic" value={data.s9_leanConcepts} onChange={e => setData({...data, s9_leanConcepts: e.target.value})} placeholder="The X for Y analogy..." />
                            </div>
                            <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                              <label className="label-caps !text-[8px] text-navy">Unfair Advantage</label>
-                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanUnfair} onChange={e => setData({...data, s9_leanUnfair: e.target.value})} />
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanUnfair} onChange={e => setData({...data, s9_leanUnfair: e.target.value})} placeholder="Can't be copied..." />
                            </div>
                         </div>
                         <div className="col-span-1 space-y-4">
                            <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                              <label className="label-caps !text-[8px] text-navy">Channels</label>
-                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanChannels} onChange={e => setData({...data, s9_leanChannels: e.target.value})} />
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanChannels} onChange={e => setData({...data, s9_leanChannels: e.target.value})} placeholder="How to reach them?" />
                            </div>
                            <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                              <label className="label-caps !text-[8px] text-navy">Customer Segments</label>
-                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-[10px]" value={data.s9_leanSegments} onChange={e => setData({...data, s9_leanSegments: e.target.value})} />
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanSegments} onChange={e => setData({...data, s9_leanSegments: e.target.value})} placeholder="Target audience..." />
+                             <label className="label-caps !text-[7px] text-slate-400 mt-2">Early Adopters</label>
+                             <input className="input-field !bg-transparent !border-0 !p-0 !text-[9px]" value={data.s9_leanAdopters} onChange={e => setData({...data, s9_leanAdopters: e.target.value})} placeholder="First users..." />
                            </div>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4 mt-4">
                          <div className="lean-box bg-rose-50/30 p-4 rounded-xl border border-rose-100">
                            <label className="label-caps !text-[8px] text-rose-500">Cost Structure</label>
-                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanCosts} onChange={e => setData({...data, s9_leanCosts: e.target.value})} />
+                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-[10px]" value={data.s9_leanCosts} onChange={e => setData({...data, s9_leanCosts: e.target.value})} placeholder="Major expenses..." />
                          </div>
                          <div className="lean-box bg-emerald-50/30 p-4 rounded-xl border border-emerald-100">
                            <label className="label-caps !text-[8px] text-emerald-500">Revenue Streams</label>
-                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanRevenue} onChange={e => setData({...data, s9_leanRevenue: e.target.value})} />
+                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-[10px]" value={data.s9_leanRevenue} onChange={e => setData({...data, s9_leanRevenue: e.target.value})} placeholder="How to make money?" />
                          </div>
                       </div>
                    </div>
