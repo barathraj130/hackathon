@@ -162,15 +162,28 @@ app.use('/v1/candidate', require('./routes/team')); // Alias for safety
 app.set('socketio', io);
 
 // Start Server Immediately
-// Start Server Immediately
 const PORT = process.env.PORT || 3000;
 console.log(`[STARTUP] ENV PORT: ${process.env.PORT}`);
 console.log(`[STARTUP] Resolved PORT: ${PORT}`);
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await inside
   console.log(`\n🚀 SYSTEM SYNTHESIS ENGINE ONLINE`);
   console.log(`📡 Listening on: http://0.0.0.0:${PORT}`);
   
+  // EMERGENCY DB SYNC: Force columns using Native SQL to bypass migration issues
+  try {
+    console.log("🛠 Checking Database Integrity...");
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "canRegenerate" BOOLEAN DEFAULT true;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "prototypeUrl" TEXT;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "certificateName" TEXT;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "certificateCollege" TEXT;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "certificateYear" INTEGER;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "submittedAt" TIMESTAMP WITH TIME ZONE;`);
+    console.log("✅ Database Integrity Verified.");
+  } catch (dbErr) {
+    console.warn("⚠️ Native Sync Warning (Non-critical):", dbErr.message);
+  }
+
   // Initialize Database in background after listening
   console.log('⏳ Connecting to database in background...');
   initEngine();

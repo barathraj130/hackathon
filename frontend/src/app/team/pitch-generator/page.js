@@ -2,12 +2,32 @@
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function PitchGenerator() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  
+  useEffect(() => {
+    const checkStatus = async () => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(`${apiUrl}/team/profile`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        // If they already have a PPT and it's locked, don't let them stay here
+        if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
+           router.push('/team/dashboard');
+        }
+      } catch (err) {
+        console.error("Status check failed", err);
+      }
+    };
+    checkStatus();
+  }, [router]);
   
   const [data, setData] = useState({
     // S1: Identity

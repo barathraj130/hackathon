@@ -22,13 +22,19 @@ model Team {
 }
 
 model Submission {
-  id        String   @id @default(uuid())
-  teamId    String   @unique
-  team      Team     @relation(fields: [teamId], references: [id])
-  content   Json     // Stores the technical data
-  status    String   @default("IN_PROGRESS") // IN_PROGRESS, SUBMITTED
-  pptUrl    String?
-  updatedAt DateTime @updatedAt
+  id                String    @id @default(uuid())
+  teamId            String    @unique
+  team              Team      @relation(fields: [teamId], references: [id])
+  content           Json      // Stores the 15-slide venture journey data
+  status            String    @default("IN_PROGRESS") // IN_PROGRESS, SUBMITTED, LOCKED
+  pptUrl            String?
+  canRegenerate     Boolean   @default(true)  // Admin can set to false to lock
+  prototypeUrl      String?   // Link to prototype (Google Drive, form, image, etc.)
+  certificateName   String?   // Name for certificate
+  certificateCollege String?  // College for certificate  
+  certificateYear   Int?      // Year for certificate
+  submittedAt       DateTime? // Final submission timestamp
+  updatedAt         DateTime  @updatedAt
 }
 
 model HackathonConfig {

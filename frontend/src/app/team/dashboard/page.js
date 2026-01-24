@@ -329,6 +329,17 @@ export default function TeamDashboard() {
                     <p className="text-[8px] text-slate-500 mt-1">Contact admin for changes</p>
                   </div>
                 )}
+
+                {/* Direct Download Link */}
+                <a 
+                  href={`${process.env.NEXT_PUBLIC_PPT_URL || 'https://hackathon-production-c6be.up.railway.app'}/outputs/${submission.pptUrl.split('/').pop()}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 flex items-center justify-center gap-3 w-full py-4 bg-navy text-white rounded-xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-teal transition-all shadow-xl shadow-navy/20"
+                >
+                  <span>Download Artifact</span>
+                  <span className="text-base text-teal">↓</span>
+                </a>
               </div>
             ) : (
               <div className="text-center py-10 opacity-30">
