@@ -146,12 +146,11 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
         const tryUrls = [
             process.env.PYTHON_SERVICE_URL,
+            'http://endearing-liberation.railway.internal:8000',
             'http://ppt-service.railway.internal:8000',
             'http://python-service.railway.internal:8000',
-            'http://ppt-service:8000',
-            'http://python-service:8000',
-            'https://hackathon-production-c6be.up.railway.app',
-            'https://sincere-abundance-70.up.railway.app'
+            'https://endearing-liberation-production.up.railway.app',
+            'https://hackathon-production-c6be.up.railway.app'
         ].filter(Boolean);
 
         let response;
@@ -212,12 +211,11 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
         const tryUrls = [
             process.env.PYTHON_SERVICE_URL,
+            'http://endearing-liberation.railway.internal:8000',
             'http://ppt-service.railway.internal:8000',
             'http://python-service.railway.internal:8000',
-            'http://ppt-service:8000',
-            'http://python-service:8000',
-            'https://hackathon-production-c6be.up.railway.app',
-            'https://sincere-abundance-70.up.railway.app'
+            'https://endearing-liberation-production.up.railway.app',
+            'https://hackathon-production-c6be.up.railway.app'
         ].filter(Boolean);
 
         let response;
