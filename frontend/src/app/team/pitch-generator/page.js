@@ -41,7 +41,10 @@ export default function PitchGenerator() {
     // S5: Stakeholders
     s5_primaryUsers: '', s5_secondaryUsers: '',
     // S6: Persona & JTBD (Atomic Fields)
-    s6_customerName: '', s6_customerJob: '', s6_pains: '', s6_gains: '',
+    s6_customerName: '', s6_customerJob: '', s6_customerAge: '', s6_customerLocation: '', s6_customerEthos: '',
+    s6_pains: '', s6_gains: '', s6_bio: '', s6_goals: '', 
+    s6_personality: { introvert: 50, thinking: 50, sensing: 50, judging: 50 },
+    s6_motivations: { growth: 50, fear: 50, security: 50, recognition: 50, funding: 50 },
     // S7: Gap Analysis
     s7_alternatives: '', s7_limitations: '',
     // S8: Solution Synthesis (10 Flow Steps)
@@ -50,6 +53,7 @@ export default function PitchGenerator() {
     // S9: Lean Canvas
     s9_leanProblem: '', s9_leanSolution: '', s9_leanMetrics: '', s9_leanUSP: '', 
     s9_leanUnfair: '', s9_leanChannels: '', s9_leanSegments: '', s9_leanCosts: '', s9_leanRevenue: '',
+    s9_leanConcepts: '', s9_leanAdopters: '', s9_leanAlternatives: '',
     // S10: Value Identification (5 items per category)
     s10_lifts: Array(5).fill(''),
     s10_pulls: Array(5).fill(''),

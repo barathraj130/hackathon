@@ -53,25 +53,92 @@ def create_expert_deck(team_name, college, data):
     add_text_to_slide(slide, f"Primary Users: {data.get('s5_primaryUsers', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(1.5), size=16)
     add_text_to_slide(slide, f"Secondary Users: {data.get('s5_secondaryUsers', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(1.5), size=16)
 
-    # 6. PERSONA & JTBD
-    slide = add_diagram_slide(prs, f"Empathy Mapping: Persona ({data.get('s6_customerName', 'User')})")
+    # 6. PERSONA & JTBD (High Fidelity)
+    slide = add_diagram_slide(prs, "Customer Persona: Empathy Spectrum")
     add_corner_logo(slide)
-    table = slide.shapes.add_table(4, 2, Inches(1), Inches(1.5), Inches(8), Inches(4.5)).table
-    rows = [
-        ("Persona Name", data.get('s6_customerName', 'N/A')),
-        ("Professional Role", data.get('s6_customerJob', 'N/A')),
-        ("Pains / Frustrations", data.get('s6_pains', 'N/A')),
-        ("Gains / Aspirations", data.get('s6_gains', 'N/A'))
-    ]
-    for i, (label, val) in enumerate(rows):
-        table.cell(i, 0).text = label
-        table.cell(i, 1).text = str(val)
+    
+    # Left Sidebar - Demographics
+    sidebar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(1.0), Inches(2.5), Inches(6.0))
+    sidebar.fill.solid()
+    sidebar.fill.fore_color.rgb = RGBColor(245, 158, 11) # Orange
+    sidebar.line.color.rgb = RGBColor(245, 158, 11)
+    
+    # Placeholder for Photo
+    photo_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.7), Inches(1.2), Inches(2.1), Inches(1.8))
+    photo_box.fill.solid()
+    photo_box.fill.fore_color.rgb = RGBColor(255, 255, 255)
+    
+    # Name & Ethos
+    add_text_to_slide(slide, data.get('s6_customerName', 'PERSONA'), Inches(0.5), Inches(3.1), Inches(2.5), Inches(0.5), size=14, bold=True, color=RGBColor(255,255,255))
+    add_text_to_slide(slide, data.get('s6_customerEthos', 'Contextual Identity'), Inches(0.5), Inches(3.4), Inches(2.5), Inches(0.4), size=10, italic=True, color=RGBColor(255,255,255))
+    
+    # Demographics
+    demo_text = f"Age: {data.get('s6_customerAge', 'N/A')}\nJob: {data.get('s6_customerJob', 'N/A')}\nLoc: {data.get('s6_customerLocation', 'N/A')}"
+    add_text_to_slide(slide, demo_text, Inches(0.6), Inches(3.9), Inches(2.3), Inches(1), size=11, color=RGBColor(255,255,255))
+    
+    # Personality Sliders
+    add_text_to_slide(slide, "Personality", Inches(0.6), Inches(5.1), Inches(2.3), Inches(0.3), size=10, bold=True, color=RGBColor(255,255,255))
+    persistence = data.get('s6_personality', {})
+    if not isinstance(persistence, dict): persistence = {}
+    
+    pers_labels = ["Introvert/Extrovert", "Sensing/Intuition", "Thinking/Feeling", "Judging/Perceiving"]
+    for i, lab in enumerate(pers_labels):
+        y = 5.4 + (i*0.35)
+        slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.7), Inches(y), Inches(2.3), Inches(y)).line.color.rgb = RGBColor(255,255,255)
+        slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(1.5), Inches(y-0.05), Inches(0.1), Inches(0.1)).fill.solid().fore_color.rgb = RGBColor(255,255,255)
 
-    # 7. GAP ANALYSIS
-    slide = add_diagram_slide(prs, "Gap Analysis: Alternatives")
+    # Top Content Boxes
+    goal_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.2), Inches(1.0), Inches(4.5), Inches(1.2))
+    goal_box.fill.solid()
+    goal_box.fill.fore_color.rgb = RGBColor(245, 158, 11)
+    add_text_to_slide(slide, f"Core Goals:\n{data.get('s6_goals', 'N/A')}", Inches(3.3), Inches(1.1), Inches(4.3), Inches(1.0), size=11, color=RGBColor(255,255,255), bold=True)
+    
+    frust_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.2), Inches(2.4), Inches(4.5), Inches(1.2))
+    frust_box.fill.solid()
+    frust_box.fill.fore_color.rgb = RGBColor(253, 186, 116)
+    add_text_to_slide(slide, f"Frustrations:\n{data.get('s6_pains', 'N/A')}", Inches(3.3), Inches(2.5), Inches(4.3), Inches(1.0), size=11, color=RGBColor(255,255,255), bold=True)
+    
+    # Bio
+    add_text_to_slide(slide, f"Bio:\n{data.get('s6_bio', 'N/A')}", Inches(3.2), Inches(3.8), Inches(4.5), Inches(3.0), size=11)
+
+    # Motivations (Right)
+    add_text_to_slide(slide, "Motivations", Inches(8.0), Inches(1.0), Inches(1.5), Inches(0.4), size=12, bold=True, color=RGBColor(245, 158, 11))
+    for i, label in enumerate(["Growth", "Fear", "Security", "Recognition", "Funding"]):
+        y = 1.4 + (i*0.8)
+        add_text_to_slide(slide, label, Inches(8.0), Inches(y), Inches(1.5), Inches(0.3), size=8)
+        bar_bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(8.0), Inches(y+0.25), Inches(1.5), Inches(0.12))
+        bar_bg.fill.solid().fore_color.rgb = RGBColor(230,230,230)
+        bar_val = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(8.0), Inches(y+0.25), Inches(0.8), Inches(0.12))
+        bar_val.fill.solid().fore_color.rgb = RGBColor(245, 158, 11)
+
+    # 7. VALUE PROPOSITION CANVAS (High Fidelity)
+    slide = add_diagram_slide(prs, "Value Proposition Canvas")
     add_corner_logo(slide)
-    add_text_to_slide(slide, f"Alternatives: {data.get('s7_alternatives', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(1.5), size=16)
-    add_text_to_slide(slide, f"Limitations: {data.get('s7_limitations', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(1.5), size=16)
+    
+    # Left Square - Value Map
+    v_map = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(1.5), Inches(4.0), Inches(4.0))
+    v_map.line.color.rgb = RGBColor(13, 148, 136) # Teal
+    v_map.fill.background()
+    # Cross
+    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.5), Inches(3.5), Inches(4.5), Inches(3.5)).line.color.rgb = RGBColor(13, 148, 136)
+    
+    add_text_to_slide(slide, "GAIN CREATORS", Inches(0.6), Inches(1.6), Inches(3.8), Inches(0.3), size=11, color=RGBColor(13, 148, 136), bold=True)
+    add_text_to_slide(slide, data.get('s6_gains', 'Proactive benefits...'), Inches(0.6), Inches(1.9), Inches(3.8), Inches(1.5), size=10)
+    
+    add_text_to_slide(slide, "PAIN KILLERS", Inches(0.6), Inches(3.6), Inches(3.8), Inches(0.3), size=11, color=RGBColor(13, 148, 136), bold=True)
+    add_text_to_slide(slide, data.get('s6_pains', 'Risk mitigation...'), Inches(0.6), Inches(3.9), Inches(3.8), Inches(1.5), size=10)
+    
+    # Right Circle - Customer Profile
+    c_prof = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(5.5), Inches(1.5), Inches(4.0), Inches(4.0))
+    c_prof.line.color.rgb = RGBColor(245, 158, 11) # Orange
+    c_prof.fill.background()
+    # Cross in circle
+    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(5.5), Inches(3.5), Inches(7.5), Inches(3.5)).line.color.rgb = RGBColor(245, 158, 11)
+    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(7.5), Inches(1.5), Inches(7.5), Inches(5.5)).line.color.rgb = RGBColor(245, 158, 11)
+    
+    add_text_to_slide(slide, "GAINS", Inches(5.8), Inches(1.6), Inches(1.5), Inches(0.3), size=11, color=RGBColor(245, 158, 11), bold=True)
+    add_text_to_slide(slide, "PAINS", Inches(5.8), Inches(3.6), Inches(1.5), Inches(0.3), size=11, color=RGBColor(245, 158, 11), bold=True)
+    add_text_to_slide(slide, "CUSTOMER JOBS", Inches(7.7), Inches(2.5), Inches(1.6), Inches(0.5), size=11, color=RGBColor(245, 158, 11), bold=True)
 
     # 8. PROPOSED SOLUTION
     slide = add_diagram_slide(prs, "Proposed Solution & Sequential Logic")
@@ -87,19 +154,39 @@ def create_expert_deck(team_name, college, data):
     elif data.get('s8_flow'): # Legacy fallback
         draw_flow_diagram(slide, data.get('s8_flow'))
 
-    # 9. LEAN CANVAS
+    # 9. LEAN CANVAS (High Fidelity Grid)
     slide = add_diagram_slide(prs, "Strategic Framework: Lean Canvas")
     add_corner_logo(slide)
-    # Using a 3x3 grid for Lean Canvas representation
-    table = slide.shapes.add_table(3, 3, Inches(0.5), Inches(1.2), Inches(9), Inches(5)).table
-    table.cell(0,0).text = f"PROBLEM:\n{data.get('s9_leanProblem', 'N/A')}"
-    table.cell(1,0).text = f"SOLUTION:\n{data.get('s9_leanSolution', 'N/A')}"
-    table.cell(0,1).text = f"USP:\n{data.get('s9_leanUSP', 'N/A')}"
-    table.cell(1,1).text = f"UNFAIR ADV:\n{data.get('s9_leanUnfair', 'N/A')}"
-    table.cell(0,2).text = f"CHANNELS:\n{data.get('s9_leanChannels', 'N/A')}"
-    table.cell(1,2).text = f"CUSTOMER SEG:\n{data.get('s9_leanSegments', 'N/A')}"
-    table.cell(2,0).text = f"COSTS:\n{data.get('s9_leanCosts', 'N/A')}"
-    table.cell(2,2).text = f"REVENUE:\n{data.get('s9_leanRevenue', 'N/A')}"
+    
+    width_col = 1.8
+    config = [
+        ("PROBLEM", 's9_leanProblem', 0.5, 4.0),
+        ("SOLUTION", 's9_leanSolution', 0.5+width_col, 2.0),
+        ("USP", 's9_leanUSP', 0.5+2*width_col, 4.0),
+        ("UNFAIR ADV", 's9_leanUnfair', 0.5+3*width_col, 2.0),
+        ("CUSTOMER SEG", 's9_leanSegments', 0.5+4*width_col, 4.0)
+    ]
+    
+    for label, key, x, h in config:
+        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x), Inches(1.2), Inches(width_col-0.1), Inches(h))
+        box.line.color.rgb = RGBColor(15, 23, 42) # Navy
+        box.fill.background()
+        add_text_to_slide(slide, label, Inches(x+0.1), Inches(1.25), Inches(width_col-0.2), Inches(0.3), size=9, bold=True, color=RGBColor(15, 23, 42))
+        add_text_to_slide(slide, data.get(key, 'N/A'), Inches(x+0.1), Inches(1.6), Inches(width_col-0.2), Inches(h-0.5), size=8)
+
+    # Sub-boxes (Metrics & Channels)
+    add_text_to_slide(slide, "METRICS", Inches(0.5+width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(15, 23, 42))
+    add_text_to_slide(slide, data.get('s9_leanMetrics', 'N/A'), Inches(0.5+width_col), Inches(3.6), Inches(width_col-0.1), Inches(1.5), size=7)
+    
+    add_text_to_slide(slide, "CHANNELS", Inches(0.5+3*width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(15, 23, 42))
+    add_text_to_slide(slide, data.get('s9_leanChannels', 'N/A'), Inches(0.5+3*width_col), Inches(3.6), Inches(width_col-0.1), Inches(1.5), size=7)
+
+    # Bottom Row
+    add_text_to_slide(slide, "COST STRUCTURE", Inches(0.5), Inches(5.3), Inches(4.5), Inches(0.3), size=9, bold=True, color=RGBColor(244, 63, 94))
+    add_text_to_slide(slide, data.get('s9_leanCosts', 'N/A'), Inches(0.6), Inches(5.6), Inches(4), Inches(0.8), size=8)
+    
+    add_text_to_slide(slide, "REVENUE STREAMS", Inches(5.0), Inches(5.3), Inches(4.5), Inches(0.3), size=9, bold=True, color=RGBColor(16, 185, 129))
+    add_text_to_slide(slide, data.get('s9_leanRevenue', 'N/A'), Inches(5.1), Inches(5.6), Inches(4), Inches(0.8), size=8)
 
     # 10. VALUE BALLOON
     slide = add_diagram_slide(prs, "Value Identification: Advanced Balloon")
@@ -174,13 +261,17 @@ def add_diagram_slide(prs, title_text):
     tf.paragraphs[0].font.bold = True
     return slide
 
-def add_text_to_slide(slide, text, left, top, width, height, size=18):
+def add_text_to_slide(slide, text, left, top, width, height, size=18, color=None, bold=False, italic=False):
     txBox = slide.shapes.add_textbox(left, top, width, height)
     tf = txBox.text_frame
     tf.word_wrap = True
     p = tf.paragraphs[0]
     p.text = text
     p.font.size = Pt(size)
+    p.font.bold = bold
+    p.font.italic = italic
+    if color:
+        p.font.color.rgb = color
 
 def draw_impact_graph_detailed(slide, pain_points):
     # Axes
