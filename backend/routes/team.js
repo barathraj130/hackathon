@@ -207,8 +207,16 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
     try {
         const team = await prisma.team.findUnique({
-            where: { id: teamId }
+            where: { id: teamId },
+            include: { submission: true }
         });
+
+        // Check if already submitted and regeneration is not allowed
+        if (team.submission?.pptUrl && !team.submission.canRegenerate) {
+            return res.status(403).json({ 
+                error: "Submission locked. You have already generated your presentation. Contact admin for regeneration permission." 
+            });
+        }
 
         for (const url of tryUrls) {
             try {
@@ -239,13 +247,17 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             update: { 
                 pptUrl: response.data.file_url, 
                 status: 'SUBMITTED',
-                content: projectData
+                content: projectData,
+                canRegenerate: false,
+                submittedAt: new Date()
             },
             create: {
                 teamId: teamId,
                 content: projectData,
                 status: 'SUBMITTED',
-                pptUrl: response.data.file_url
+                pptUrl: response.data.file_url,
+                canRegenerate: false,
+                submittedAt: new Date()
             }
         });
 
