@@ -66,17 +66,22 @@ export default function PitchGenerator() {
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[600px]">
             
             {/* Sidebar Status */}
-            <div className="lg:col-span-4 bg-navy p-12 text-white flex flex-col justify-between relative overflow-hidden">
+            <div className="lg:col-span-4 bg-navy p-8 md:p-12 text-white flex flex-col justify-between relative overflow-hidden min-h-[400px] lg:min-h-0">
               <div className="absolute top-0 right-0 w-32 h-32 bg-teal/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
               
               <div className="relative z-10">
-                <Link href="/team/dashboard" className="text-[9px] font-black uppercase tracking-[0.3em] text-teal hover:text-white transition-colors flex items-center gap-3 mb-10">
-                  <span className="w-5 h-px bg-current"></span> Sequential Return
-                </Link>
+                <div className="flex justify-between items-start mb-10">
+                  <Link href="/team/dashboard" className="text-[9px] font-black uppercase tracking-[0.3em] text-teal hover:text-white transition-colors flex items-center gap-3">
+                    <span className="w-5 h-px bg-current"></span> Sequential Return
+                  </Link>
+                  <div className="w-12 h-12 relative lg:hidden">
+                    <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
+                  </div>
+                </div>
                 
-                <h1 className="text-4xl font-black tracking-tighter uppercase leading-tight mb-4">Pitch <br/>Synthesis <br/>Engine</h1>
+                <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase leading-tight mb-4">Pitch <br/>Synthesis <br/>Engine</h1>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-loose max-w-[200px]">
-                  Professional Grade Artifact Generation System v4.0.2
+                  JIT Institutional Standard v4.0
                 </p>
               </div>
 
@@ -101,7 +106,12 @@ export default function PitchGenerator() {
             </div>
 
             {/* Main Form Content */}
-            <div className="lg:col-span-8 p-16 flex flex-col justify-center">
+            <div className="lg:col-span-8 p-8 md:p-16 flex flex-col justify-center relative">
+              <div className="absolute top-8 right-8 hidden lg:block">
+                <div className="w-20 h-20 relative">
+                  <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
+                </div>
+              </div>
               
               <div className="mb-10 flex justify-between items-end">
                 <div>

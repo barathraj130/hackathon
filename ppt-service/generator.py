@@ -6,22 +6,48 @@ import os
 def create_pptx(team_name, college, slides_data):
     prs = Presentation()
     
-    # 1. Title Slide
-    title_slide_layout = prs.slide_layouts[0]
-    slide = prs.slides.add_slide(title_slide_layout)
-    title = slide.shapes.title
-    subtitle = slide.placeholders[1]
+    def add_corner_logo(slide):
+        if os.path.exists("institution_logo.png"):
+            slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
+
+    # 1. Title Slide (Idea and team identification)
+    slide = prs.slides.add_slide(prs.slide_layouts[6]) # Blank layout
+    add_corner_logo(slide)
     
-    title.text = slides_data.get('title', {}).get('bullets', ['My Project'])[0]
-    subtitle.text = f"Team: {team_name}\nCollege: {college}"
+    # Title Text
+    left, top, width, height = Inches(0.5), Inches(0.5), Inches(9), Inches(1)
+    tx_title = slide.shapes.add_textbox(left, top, width, height)
+    tf_title = tx_title.text_frame
+    tf_title.text = "Idea and team identification"
+    tf_title.paragraphs[0].font.size = Pt(36)
+    tf_title.paragraphs[0].font.bold = True
+
+    # Details Text
+    left, top, width, height = Inches(1.5), Inches(2), Inches(7.5), Inches(5)
+    tx_details = slide.shapes.add_textbox(left, top, width, height)
+    tf_details = tx_details.text_frame
+    tf_details.word_wrap = True
+
+    details = [
+        ("S. No.", "100"),
+        ("Name of the Institution", college),
+        ("Faculty Name", slides_data.get('facultyName', 'P. Eswari')),
+        ("Idea Description", slides_data.get('title', {}).get('bullets', ['Weather Adaptive System'])[0]),
+        ("Student Names", f"• {team_name}\n• Collaborators")
+    ]
+
+    for label, value in details:
+        p = tf_details.add_paragraph()
+        p.text = f"{label} : {value}"
+        p.font.size = Pt(24)
+        p.space_after = Pt(12)
 
     # 2. Add Content Slides
-    # We skip 'title' because we already made it
     for key, data in slides_data.items():
         if key == 'title': continue
         
-        bullet_slide_layout = prs.slide_layouts[1]
-        slide = prs.slides.add_slide(bullet_slide_layout)
+        slide = prs.slides.add_slide(prs.slide_layouts[1])
+        add_corner_logo(slide)
         
         # Set Header
         title_shape = slide.shapes.title

@@ -15,12 +15,41 @@ def create_expert_deck(team_name, college, data):
         fill.solid()
         fill.fore_color.rgb = RGBColor(0, 31, 63) # Brand Navy
 
-    # 1. Title Slide
-    slide = prs.slides.add_slide(prs.slide_layouts[0])
-    title = slide.shapes.title
-    subtitle = slide.placeholders[1]
-    title.text = data.get('projectName', 'Project Synthesis')
-    subtitle.text = f"Team: {team_name}\nInstitution: {college}"
+    def add_corner_logo(slide):
+        if os.path.exists("institution_logo.png"):
+            slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
+
+    # 1. Title Slide (Idea and team identification)
+    slide = prs.slides.add_slide(prs.slide_layouts[6]) # Reset to match specific user screenshot
+    add_corner_logo(slide)
+    
+    # Title Text
+    left, top, width, height = Inches(0.5), Inches(0.5), Inches(9), Inches(1)
+    tx_title = slide.shapes.add_textbox(left, top, width, height)
+    tf_title = tx_title.text_frame
+    tf_title.text = "Idea and team identification"
+    tf_title.paragraphs[0].font.size = Pt(36)
+    tf_title.paragraphs[0].font.bold = True
+
+    # Details Text
+    left, top, width, height = Inches(1.5), Inches(2), Inches(7.5), Inches(5)
+    tx_details = slide.shapes.add_textbox(left, top, width, height)
+    tf_details = tx_details.text_frame
+    tf_details.word_wrap = True
+
+    details = [
+        ("S. No.", "100"),
+        ("Name of the Institution", college),
+        ("Faculty Name", data.get('facultyName', 'P. Eswari')),
+        ("Idea Description", data.get('projectName', 'Weather Adaptive Intelligent Street Lighting')),
+        ("Student Names", f"• {data.get('teamName', 'Team members')}\n• Collaborators")
+    ]
+
+    for label, value in details:
+        p = tf_details.add_paragraph()
+        p.text = f"{label} : {value}"
+        p.font.size = Pt(24)
+        p.space_after = Pt(12)
 
     # 2. Problem Statement
     add_bullet_slide(prs, "Problem Statement", [
@@ -37,13 +66,15 @@ def create_expert_deck(team_name, college, data):
     ])
 
     # 4. Problem Identification (Graph)
-    slide = add_diagram_slide(prs, "Design Thinking: Problem Identification")
+    slide = add_diagram_slide(prs, "Design Thinking: Game Activity - Optimization Graph")
+    add_corner_logo(slide)
     draw_impact_graph(slide)
-    add_text_to_slide(slide, "System Analysis: Priority Mapping", Inches(0.5), Inches(5), Inches(8), Inches(1))
+    add_text_to_slide(slide, "Game Activity: Efficiency Logic Mapping", Inches(0.5), Inches(5), Inches(8), Inches(1))
 
     # 5. Solution Mapping (Hot Air Balloon)
-    slide = add_diagram_slide(prs, "Design Thinking: Solution Mapping")
-    draw_hot_air_balloon(slide, "Proposed Solution", "Market Realities")
+    slide = add_diagram_slide(prs, "Design Thinking: Game Activity - Solution Uplift")
+    add_corner_logo(slide)
+    draw_hot_air_balloon(slide, "Game Solution", "System Weight")
 
     # 6. TAM • SAM • SOM
     slide = add_diagram_slide(prs, "TAM • SAM • SOM Analysis")

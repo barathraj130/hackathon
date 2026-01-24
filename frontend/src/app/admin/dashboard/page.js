@@ -76,8 +76,15 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen bg-bg-light font-sans text-slate-800">
       
-      {/* Sleek Side Navigation */}
-      <aside className="w-80 bg-navy text-white flex flex-col relative overflow-hidden sticky top-0 h-screen">
+      {/* Logo Overlay for Mobile */}
+      <div className="fixed top-6 right-6 lg:hidden z-50">
+        <div className="w-12 h-12 relative">
+          <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
+        </div>
+      </div>
+
+      {/* Side Navigation */}
+      <aside className="w-full lg:w-80 bg-navy text-white flex flex-col relative overflow-hidden lg:sticky lg:top-0 lg:h-screen transition-all">
         <div className="absolute top-0 right-0 w-64 h-64 bg-teal/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
         
         <div className="flex items-center gap-4 py-12 px-10 relative z-10 border-b border-white/5">
@@ -120,23 +127,29 @@ export default function AdminDashboard() {
             <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.4em] mt-3 italic">Autonomous Environment Management System v4.0.0A</p>
           </div>
           
-          <div className="flex gap-4 items-center">
-            <button 
-              onClick={() => {
-                localStorage.removeItem('token');
-                localStorage.removeItem('role');
-                window.location.href = '/';
-              }}
-              className="px-8 py-4 border border-slate-200 rounded-2xl font-black text-[10px] tracking-[0.2em] text-slate-400 hover:text-navy hover:border-navy transition-all uppercase"
-            >
-              Secure Exit
-            </button>
-            <button 
-              onClick={() => sendCommand(timer.timerPaused ? 'start' : 'pause')}
-              className={`px-10 py-5 rounded-2xl font-black text-[11px] tracking-[0.3em] transition-all shadow-2xl active:scale-95 ${timer.timerPaused ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-rose-500 text-white shadow-rose-500/20'}`}
-            >
-              {timer.timerPaused ? 'RESUME SYNTHESIS PIPELINE' : 'INITIATE SYSTEM HALT'}
-            </button>
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="flex gap-4">
+              <button 
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('role');
+                  window.location.href = '/';
+                }}
+                className="px-6 py-4 border border-slate-200 rounded-2xl font-black text-[9px] md:text-[10px] tracking-[0.2em] text-slate-400 hover:text-navy hover:border-navy transition-all uppercase"
+              >
+                Secure Exit
+              </button>
+              <button 
+                onClick={() => sendCommand(timer.timerPaused ? 'start' : 'pause')}
+                className={`px-6 py-4 md:px-10 md:py-5 rounded-2xl font-black text-[9px] md:text-[11px] tracking-[0.3em] transition-all shadow-2xl active:scale-95 ${timer.timerPaused ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-rose-500 text-white shadow-rose-500/20'}`}
+              >
+                {timer.timerPaused ? 'RESUME SYNTHESIS' : 'SYSTEM HALT'}
+              </button>
+            </div>
+            {/* Institutional Logo - Right Corner */}
+            <div className="w-16 h-16 md:w-24 md:h-24 relative">
+              <img src="/images/institution_logo.png" alt="Institutional Logo" className="w-full h-full object-contain" />
+            </div>
           </div>
         </header>
 

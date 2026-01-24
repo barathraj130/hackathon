@@ -111,27 +111,31 @@ export default function TeamDashboard() {
       <nav className="sticky top-0 z-50 glass-pane border-b border-gray-100 flex justify-between items-center px-10 py-5">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center text-white font-black shadow-xl shadow-navy/20">S</div>
-          <div className="hidden md:block">
+          <div className="hidden sm:block">
             <h1 className="text-sm font-black uppercase tracking-widest text-navy leading-none">Synthesis Portal</h1>
-            <p className="text-[9px] font-bold text-teal uppercase tracking-[0.2em] mt-1">Status: Fully Operational</p>
+            <p className="text-[9px] font-bold text-teal uppercase tracking-[0.2em] mt-1">Institutional Access: JIT</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-8">
-          <div className="text-right">
+        <div className="flex items-center gap-4 md:gap-8">
+          <div className="text-right hidden xs:block">
             <p className="text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">Temporal sync</p>
-            <p className={`text-2xl font-mono font-black tabular-nums transition-colors ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-navy'}`}>
+            <p className={`text-xl md:text-2xl font-mono font-black tabular-nums transition-colors ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-navy'}`}>
               {formattedTime}
             </p>
           </div>
 
-          <div className="h-10 w-px bg-slate-200"></div>
+          <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
 
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center hidden sm:flex">
             {saveStatus === 'SAVING' && <span className="text-[10px] font-black text-teal animate-pulse uppercase tracking-widest">Saving...</span>}
             {saveStatus === 'SAVED' && <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Secured ✓</span>}
             {saveStatus === 'ERROR' && <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Sync Error</span>}
             {saveStatus === 'IDLE' && <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Sync Idle</span>}
+          </div>
+
+          <div className="w-10 h-10 md:w-12 md:h-12 relative">
+            <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
 
           <button 
@@ -140,14 +144,14 @@ export default function TeamDashboard() {
               localStorage.removeItem('role');
               window.location.href = '/';
             }}
-            className="btn-ghost !px-6 !py-2.5 rounded-lg border-slate-200"
+            className="btn-ghost !px-4 !py-2 md:!px-6 md:!py-2.5 rounded-lg border-slate-200 text-[9px] md:text-[10px]"
           >
             Logout
           </button>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-12 px-10 gap-10 grid grid-cols-1 lg:grid-cols-12 items-start">
+      <main className="max-w-7xl mx-auto py-8 md:py-12 px-6 md:px-10 gap-10 grid grid-cols-1 lg:grid-cols-12 items-start">
         
         {/* Left Column: Input Form */}
         <div className="lg:col-span-8 space-y-8 animate-fade-in">

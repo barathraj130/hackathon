@@ -39,15 +39,21 @@ export default function LoginPage() {
       <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-royal/5 blur-[120px] rounded-full z-0"></div>
       <div className="absolute bottom-0 right-0 w-[40%] h-[40%] bg-teal/5 blur-[100px] rounded-full z-0"></div>
 
-      <Link href="/" className="fixed top-12 left-12 flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-navy transition-all group z-50">
+      <Link href="/" className="fixed top-8 md:top-12 left-8 md:left-12 flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-navy transition-all group z-50">
         <span className="w-8 h-px bg-slate-200 group-hover:w-12 transition-all"></span> Sequential Return
       </Link>
+
+      <div className="fixed top-8 md:top-12 right-8 md:right-12 z-50">
+        <div className="w-16 h-16 md:w-24 md:h-24 relative">
+          <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
+        </div>
+      </div>
       
-      <div className="relative z-10 w-full max-w-md animate-fade-in text-center">
+      <div className="relative z-10 w-full max-w-md px-6 animate-fade-in text-center">
         <div className="mb-12">
            <div className="w-16 h-16 bg-navy rounded-[1.5rem] flex items-center justify-center text-white font-black text-3xl shadow-2xl mx-auto mb-6">S</div>
            <h1 className="text-4xl font-black text-navy tracking-tighter uppercase leading-none">Access Portal</h1>
-           <p className="text-[10px] font-bold text-teal uppercase tracking-[0.3em] mt-3">Identity Verification System</p>
+           <p className="text-[10px] font-bold text-teal uppercase tracking-[0.3em] mt-3">JIT IDENTITY VERIFICATION SYSTEM</p>
         </div>
 
         <div className="glass-pane p-12 rounded-[2.5rem] text-left">
