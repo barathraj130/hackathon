@@ -1,69 +1,80 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --navy: #001F3F;
-  --royal: #0074D9;
-  --teal: #39CCCC;
-  --bg-grey: #F4F7F6;
-  --text-main: #1A202C;
+  --navy: #0F172A;
+  --royal: #2563EB;
+  --teal: #0D9488;
+  --bg-light: #F8FAFC;
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-grey);
-  color: var(--text-main);
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-light);
+  color: #1E293B;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Professional Card Style */
+/* Premium Glassmorphism */
+.glass-pane {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
 .dashboard-card {
-  background: #ffffff;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  @apply glass-pane rounded-2xl p-8 transition-all duration-300;
 }
 
-/* Corporate Buttons */
-.btn-navy {
-  background-color: var(--navy);
-  color: white;
-  padding: 10px 24px;
-  border-radius: 6px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+.dashboard-card:hover {
+  @apply -translate-y-1 shadow-xl border-white/80;
 }
 
-.btn-navy:hover {
-  background-color: #00152b;
-  transform: translateY(-1px);
+/* Premium Buttons */
+.btn-primary {
+  @apply bg-navy text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
+  transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] 
+  shadow-lg shadow-navy/10 hover:shadow-navy/20 flex items-center justify-center gap-2;
+}
+
+.btn-teal {
+  @apply bg-teal text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
+  transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] 
+  shadow-lg shadow-teal/10 hover:shadow-teal/20 flex items-center justify-center gap-2;
+}
+
+.btn-ghost {
+  @apply px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
+  transition-all duration-300 border border-gray-200 text-gray-400 hover:text-navy hover:border-navy hover:bg-white;
 }
 
 /* Structured Inputs */
 .input-field {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #CBD5E0;
-  border-radius: 6px;
-  background: #FFFFFF;
-  color: var(--text-main);
-  outline: none;
-}
-
-.input-field:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 2px rgba(57, 204, 204, 0.2);
+  @apply w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm 
+  transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-teal/20 focus:border-teal outline-none;
 }
 
 .label-caps {
-  font-size: 11px;
-  font-weight: 800;
-  color: #718096;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 6px;
-  display: block;
+  @apply text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block;
 }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

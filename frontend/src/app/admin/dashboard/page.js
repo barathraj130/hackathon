@@ -41,7 +41,7 @@ export default function AdminDashboard() {
       const res = await axios.get(`${apiUrl}/admin/candidates`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      setTeams(res.data.candidates);
+      setTeams(res.data.candidates || []);
     } catch (err) { console.error(err); }
   };
 
@@ -74,40 +74,50 @@ export default function AdminDashboard() {
   const sendCommand = (action) => socketRef.current.emit('adminCommand', { action });
 
   return (
-    <div className="flex min-h-screen bg-bg-light font-sans text-text-main">
-      {/* Side Navigation */}
-      <aside className="w-64 bg-brand-navy text-white flex flex-col pt-10 px-4">
-        <div className="flex items-center gap-2 mb-10 px-4">
-          <div className="w-8 h-8 bg-brand-teal rounded flex items-center justify-center text-white font-bold">S</div>
-          <span className="text-xl font-bold tracking-tight">Synthesis</span>
+    <div className="flex min-h-screen bg-bg-light font-sans text-slate-800">
+      
+      {/* Sleek Side Navigation */}
+      <aside className="w-80 bg-navy text-white flex flex-col relative overflow-hidden sticky top-0 h-screen">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-teal/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+        
+        <div className="flex items-center gap-4 py-12 px-10 relative z-10 border-b border-white/5">
+          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-navy font-black text-2xl shadow-2xl">S</div>
+          <div>
+             <span className="text-xl font-black tracking-tighter uppercase block leading-none">Authority</span>
+             <span className="text-[10px] font-bold text-teal tracking-[0.2em] uppercase leading-none mt-1">Command Engine</span>
+          </div>
         </div>
         
-        <nav className="flex-grow space-y-2">
-          {['overview', 'teams', 'configuration', 'verification'].map(tab => (
+        <nav className="flex-grow space-y-2 p-6 relative z-10 mt-6">
+          {['overview', 'teams', 'configuration', 'audit logs'].map(tab => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-colors ${activeTab === tab ? 'bg-brand-blue text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+              className={`w-full text-left px-8 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-300 flex items-center justify-between group ${activeTab === tab ? 'bg-white text-navy shadow-2xl shadow-white/5' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
             >
               {tab}
+              <div className={`w-1.5 h-1.5 rounded-full transition-all ${activeTab === tab ? 'bg-teal scale-100' : 'bg-transparent scale-0 group-hover:scale-100 group-hover:bg-white/20'}`}></div>
             </button>
           ))}
         </nav>
 
-        <div className="p-4 mb-8 bg-white/5 rounded-xl border border-white/10 text-center">
-          <p className="text-[10px] text-gray-400 uppercase font-bold mb-1">System Clock</p>
-          <p className={`text-2xl font-mono ${timer.timerPaused ? 'text-amber-400' : 'text-brand-teal'}`}>
-            {timer.formattedTime}
-          </p>
+        <div className="p-8 relative z-10">
+          <div className="p-8 bg-white/5 rounded-[2rem] border border-white/10 text-center shadow-inner">
+            <p className="text-[9px] text-slate-500 uppercase font-black tracking-[0.3em] mb-4">Master Temporal Clock</p>
+            <p className={`text-4xl font-mono leading-none font-black tabular-nums tracking-tighter ${timer.timerPaused ? 'text-amber-400' : 'text-teal animate-pulse'}`}>
+              {timer.formattedTime}
+            </p>
+          </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-grow p-10 overflow-y-auto">
-        <header className="mb-10 flex justify-between items-end">
+      <main className="flex-grow p-16 overflow-y-auto">
+        
+        <header className="mb-16 flex justify-between items-center animate-fade-in">
           <div>
-            <h1 className="text-3xl font-extrabold text-brand-navy uppercase tracking-tighter">Command Center</h1>
-            <p className="text-gray-500 font-medium italic mt-1 text-sm">Synchronized presentation infrastructure management.</p>
+            <h1 className="text-5xl font-black text-navy uppercase tracking-tighter leading-none">Command Center</h1>
+            <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.4em] mt-3 italic">Autonomous Environment Management System v4.0.0A</p>
           </div>
           
           <div className="flex gap-4 items-center">
@@ -117,103 +127,133 @@ export default function AdminDashboard() {
                 localStorage.removeItem('role');
                 window.location.href = '/';
               }}
-              className="px-6 py-3 border border-gray-200 rounded-lg font-bold text-[10px] tracking-widest text-gray-400 hover:text-brand-navy hover:border-brand-navy transition-all uppercase"
+              className="px-8 py-4 border border-slate-200 rounded-2xl font-black text-[10px] tracking-[0.2em] text-slate-400 hover:text-navy hover:border-navy transition-all uppercase"
             >
-              Authority Exit
+              Secure Exit
             </button>
             <button 
               onClick={() => sendCommand(timer.timerPaused ? 'start' : 'pause')}
-              className={`px-8 py-3 rounded-lg font-bold text-sm tracking-widest transition-all ${timer.timerPaused ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' : 'bg-rose-600 text-white shadow-lg shadow-rose-900/20'}`}
+              className={`px-10 py-5 rounded-2xl font-black text-[11px] tracking-[0.3em] transition-all shadow-2xl active:scale-95 ${timer.timerPaused ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-rose-500 text-white shadow-rose-500/20'}`}
             >
-              {timer.timerPaused ? 'RESUME SYNTHESIS' : 'HALT ENVIRONMENT'}
+              {timer.timerPaused ? 'RESUME SYNTHESIS PIPELINE' : 'INITIATE SYSTEM HALT'}
             </button>
           </div>
         </header>
 
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="dashboard-card p-8 group hover:border-brand-blue transition-colors">
-              <p className="label-caps">Total Enrollment</p>
-              <div className="text-5xl font-black text-brand-navy mt-2">{stats.total_candidates || 0}</div>
-              <p className="text-xs text-brand-blue font-bold mt-2 italic shadow-blue-500">Verified Teams</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 animate-fade-in">
+            <div className="dashboard-card !p-10 group relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-royal/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+               <span className="text-[10px] font-black text-royal uppercase tracking-[0.3em] block mb-2">Total Enrollment</span>
+               <div className="text-7xl font-black text-navy tabular-nums leading-none tracking-tighter mt-4">{stats.total_candidates || 0}</div>
+               <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Verified Credentials</span>
+                  <span className="w-2 h-2 bg-royal rounded-full"></span>
+               </div>
             </div>
-            <div className="dashboard-card p-8 group hover:border-brand-teal transition-colors">
-              <p className="label-caps">In Synthesis</p>
-              <div className="text-5xl font-black text-brand-teal mt-2">{stats.statuses?.in_progress || 0}</div>
-              <p className="text-xs text-brand-teal font-bold mt-2 italic">Active Progress</p>
+
+            <div className="dashboard-card !p-10 group relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-teal/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+               <span className="text-[10px] font-black text-teal uppercase tracking-[0.3em] block mb-2">In Synthesis</span>
+               <div className="text-7xl font-black text-teal tabular-nums leading-none tracking-tighter mt-4">{stats.statuses?.in_progress || 0}</div>
+               <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Data Flow</span>
+                  <span className="w-2 h-2 bg-teal rounded-full animate-ping"></span>
+               </div>
             </div>
-            <div className="dashboard-card p-8 group hover:border-brand-navy transition-colors">
-              <p className="label-caps">Final Submissions</p>
-              <div className="text-5xl font-black text-gray-400 mt-2">{stats.statuses?.submitted || 0}</div>
-              <p className="text-xs text-gray-400 font-bold mt-2 italic">Awaiting Review</p>
+
+            <div className="dashboard-card !p-10 group relative overflow-hidden">
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] block mb-2">Final Locked</span>
+               <div className="text-7xl font-black text-slate-300 tabular-nums leading-none tracking-tighter mt-4">{stats.statuses?.submitted || 0}</div>
+               <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Validated Artifacts</span>
+                  <div className="w-2 h-2 bg-slate-200 rounded-full"></div>
+               </div>
             </div>
           </div>
         )}
 
         {activeTab === 'teams' && (
-          <div className="space-y-10">
+          <div className="space-y-12 animate-fade-in">
             {/* Enrollment Form */}
-            <section className="bg-white p-10 rounded-2xl border border-gray-100">
-              <h2 className="text-xl font-extrabold text-brand-navy mb-2 border-b pb-4">New Team Enrollment</h2>
-              <p className="text-[10px] text-gray-400 font-bold uppercase mb-8">Admin Generated Credentials for Institutional Access</p>
+            <section className="dashboard-card !p-12">
+               <div className="flex flex-col gap-2 mb-10">
+                  <h2 className="text-3xl font-black text-navy uppercase tracking-tighter">Enrollment Pipeline</h2>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">Generate Secure Institutional Bundles</p>
+               </div>
               
-              <form onSubmit={handleCreateTeam} className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="label-caps text-[10px]">Portal Identity (Team Name)</label>
-                  <input className="input-field" placeholder="Ex: Team Logic" value={newTeam.teamName} onChange={e => setNewTeam({...newTeam, teamName: e.target.value})} required />
+              <form onSubmit={handleCreateTeam} className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-8">
+                  <div>
+                    <label className="label-caps">Portal Identity (Unique Username)</label>
+                    <input className="input-field !text-lg !font-bold" placeholder="Ex: Team_Logic_2026" value={newTeam.teamName} onChange={e => setNewTeam({...newTeam, teamName: e.target.value})} required />
+                  </div>
+                  <div>
+                    <label className="label-caps">Institutional Key (Password)</label>
+                    <input className="input-field !text-lg !font-bold" placeholder="Ex: MIT_Innovation_Hub" value={newTeam.collegeName} onChange={e => setNewTeam({...newTeam, collegeName: e.target.value})} required />
+                  </div>
                 </div>
-                <div>
-                  <label className="label-caps text-[10px]">Institutional Key (College Name)</label>
-                  <input className="input-field" placeholder="Ex: MIT Engineering" value={newTeam.collegeName} onChange={e => setNewTeam({...newTeam, collegeName: e.target.value})} required />
+                
+                <div className="space-y-8">
+                  <div>
+                    <label className="label-caps">Lead Component Designer</label>
+                    <input className="input-field" placeholder="Full Legal Name" value={newTeam.member1} onChange={e => setNewTeam({...newTeam, member1: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className="label-caps">Strategic Collaborator</label>
+                    <input className="input-field" placeholder="Full Legal Name" value={newTeam.member2} onChange={e => setNewTeam({...newTeam, member2: e.target.value})} />
+                  </div>
                 </div>
-                <div>
-                  <label className="label-caps text-[10px]">Lead Researcher / Member 1</label>
-                  <input className="input-field" placeholder="Full Name" value={newTeam.member1} onChange={e => setNewTeam({...newTeam, member1: e.target.value})} />
-                </div>
-                <div>
-                  <label className="label-caps text-[10px]">Collaborator / Member 2</label>
-                  <input className="input-field" placeholder="Full Name" value={newTeam.member2} onChange={e => setNewTeam({...newTeam, member2: e.target.value})} />
-                </div>
-                <div className="col-span-2">
-                  <button type="submit" className="btn-navy w-full text-xs tracking-widest uppercase py-4">Generate and Authenticate Bundle</button>
+
+                <div className="md:col-span-2 pt-6">
+                  <button type="submit" className="w-full bg-navy text-white text-[11px] font-black py-6 rounded-[2rem] tracking-[0.4em] uppercase hover:scale-[1.01] active:scale-95 transition-all shadow-2xl shadow-navy/30">
+                    Generate and Authenticate Portal Credentials
+                  </button>
                 </div>
               </form>
             </section>
 
             {/* Team List */}
-            <section className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-              <h2 className="text-lg font-bold text-brand-navy mb-6">Active Credential Directory</h2>
-              <table className="w-full text-left">
-                <thead className="border-b">
-                  <tr>
-                    <th className="label-caps py-4">Identity</th>
-                    <th className="label-caps py-4">Institutional Key</th>
-                    <th className="label-caps py-4">Status</th>
-                    <th className="label-caps py-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {teams.map(t => (
-                    <tr key={t.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="py-5 font-bold text-sm text-brand-navy">{t.teamName}</td>
-                      <td className="py-5 text-sm text-gray-500">{t.collegeName}</td>
-                      <td className="py-5">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tight ${t.status === 'SUBMITTED' ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-blue/10 text-brand-blue'}`}>
-                          {t.status}
-                        </span>
-                      </td>
-                      <td className="py-5 text-right">
-                        <button 
-                          onClick={() => handleDeleteTeam(t.id)}
-                          className="text-[10px] font-black text-rose-400 hover:text-rose-600 uppercase tracking-widest px-4 py-2 border border-rose-100 rounded-lg hover:bg-rose-50 transition-all"
-                        >
-                          Revoke
-                        </button>
-                      </td>
+            <section className="dashboard-card !p-10">
+              <div className="flex justify-between items-end mb-8">
+                 <h2 className="text-xl font-black text-navy uppercase tracking-widest">Active Credential directory</h2>
+                 <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">{teams.length} Enrolled Entities</span>
+              </div>
+
+              <div className="overflow-hidden">
+                <table className="w-full text-left">
+                  <thead className="border-b border-slate-100">
+                    <tr>
+                      <th className="label-caps py-6">Operational Identity</th>
+                      <th className="label-caps py-6">Institutional Key</th>
+                      <th className="label-caps py-6">System Status</th>
+                      <th className="label-caps py-6 text-right">Repository Access</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {teams.map(t => (
+                      <tr key={t.id} className="hover:bg-slate-50/50 transition-colors group">
+                        <td className="py-8 font-black text-navy uppercase tracking-tight text-sm">{t.teamName}</td>
+                        <td className="py-8 text-xs font-bold text-slate-400 tabular-nums italic group-hover:text-navy group-hover:not-italic transition-all">••••••••••••</td>
+                        <td className="py-8">
+                          <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${t.status === 'SUBMITTED' ? 'bg-emerald-100 text-emerald-600' : 'bg-royal/10 text-royal'}`}>
+                            <span className={`w-1 h-1 rounded-full ${t.status === 'SUBMITTED' ? 'bg-emerald-500' : 'bg-royal animate-pulse'}`}></span>
+                            {t.status}
+                          </div>
+                        </td>
+                        <td className="py-8 text-right">
+                          <button 
+                            onClick={() => handleDeleteTeam(t.id)}
+                            className="text-[9px] font-black text-rose-400 hover:text-white uppercase tracking-[0.2em] px-6 py-2.5 border border-rose-100 rounded-xl hover:bg-rose-500 hover:border-rose-500 transition-all active:scale-95"
+                          >
+                            Revoke Access
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </section>
           </div>
         )}
