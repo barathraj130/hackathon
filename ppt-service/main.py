@@ -6,14 +6,33 @@ from generator import create_pptx
 import uvicorn
 import os
 import traceback
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi import HTTPException
 
 app = FastAPI()
 
+# Ensure output directory exists at startup
 if not os.path.exists("ppt_outputs"):
     os.makedirs("ppt_outputs")
 
-app.mount("/outputs", StaticFiles(directory="ppt_outputs"), name="outputs")
+@app.get("/outputs/{filename}")
+def get_artifact(filename: str):
+    base_dir = "ppt_outputs"
+    file_path = os.path.join(base_dir, filename)
+    
+    # 1. High-Priority Direct Match
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    
+    # 2. Case-Insensitive Recovery Logic
+    if os.path.exists(base_dir):
+        existing_files = os.listdir(base_dir)
+        for f in existing_files:
+            if f.lower() == filename.lower():
+                return FileResponse(os.path.join(base_dir, f))
+                
+    # 3. Cluster Metadata 404
+    raise HTTPException(status_code=404, detail=f"Artifact '{filename}' not found on this node. State may have been reset by deployment.")
 
 @app.get("/")
 def home():
