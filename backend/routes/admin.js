@@ -251,12 +251,8 @@ router.post('/force-regenerate', async (req, res) => {
 
         const tryUrls = [
             'https://endearing-liberation-production.up.railway.app',
-            'https://hackathon-production-c6be.up.railway.app',
-            process.env.PYTHON_SERVICE_URL,
-            'http://endearing-liberation.railway.internal:8000',
-            'http://ppt-service.railway.internal:8000',
-            'http://python-service.railway.internal:8000'
-        ].filter(Boolean).map(u => u.replace(/\/$/, ""));
+            'https://hackathon-production-c6be.up.railway.app'
+        ];
 
         let response;
         let successfulHost;
