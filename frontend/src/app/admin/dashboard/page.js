@@ -125,8 +125,7 @@ export default function AdminDashboard() {
   };
 
   const downloadPPT = (pptUrl) => {
-    const fullUrl = `${process.env.NEXT_PUBLIC_PPT_URL || 'https://hackathon-production-c6be.up.railway.app'}/outputs/${pptUrl.split('/').pop()}`;
-    window.open(fullUrl, '_blank');
+    window.open(pptUrl, '_blank');
   };
 
   const filteredSubmissions = submissions.filter(s => {
