@@ -100,7 +100,10 @@ export default function AdminDashboard() {
       });
       setNewStatement({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' });
       fetchProblemStatements();
-    } catch (err) { alert("Failed to deploy challenge."); }
+    } catch (err) { 
+      const msg = err.response?.data?.error || "Failed to deploy challenge.";
+      alert(msg); 
+    }
   };
 
   const fetchSubmissions = async () => {

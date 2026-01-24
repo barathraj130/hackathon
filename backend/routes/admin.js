@@ -185,7 +185,8 @@ router.post('/problem-statements', async (req, res) => {
         });
         res.json({ success: true, statement });
     } catch (error) {
-        res.status(500).json({ error: "Failed to create statement" });
+        console.error("❌ Problem Statement Deployment Error:", error);
+        res.status(500).json({ error: `Deployment Logic Error: ${error.message}` });
     }
 });
 

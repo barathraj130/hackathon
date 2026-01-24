@@ -180,6 +180,25 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
     await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "certificateYear" INTEGER;`);
     await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "submittedAt" TIMESTAMP WITH TIME ZONE;`);
     
+    // EMERGENCY TABLE RECOVERY: Ensure ProblemStatement exists
+    try {
+      await prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "ProblemStatement" (
+          "id" TEXT NOT NULL,
+          "questionNo" TEXT NOT NULL,
+          "subDivisions" TEXT,
+          "title" TEXT NOT NULL,
+          "description" TEXT NOT NULL,
+          "allottedTo" TEXT,
+          "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT "ProblemStatement_pkey" PRIMARY KEY ("id")
+        );
+      `);
+      console.log("📑 Challenge Registry Verified.");
+    } catch (tblErr) {
+      console.warn("⚠️ Registry Sync Warning:", tblErr.message);
+    }
+    
     // REPOSITORY RECALIBRATION: Fix legacy relative PPT links to absolute verified paths
     try {
       console.log("📂 Recalibrating Artifact Repository...");
