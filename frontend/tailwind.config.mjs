@@ -8,14 +8,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        'brand-navy': '#001F3F',
-        'brand-blue': '#0074D9',
-        'brand-teal': '#39CCCC',
-        'bg-light': '#F4F7F6',
-        'text-main': '#1A202C'
+        'navy': '#0F172A',
+        'royal': '#2563EB',
+        'teal': '#0D9488',
+        'bg-light': '#F8FAFC',
+        'text-main': '#1E293B'
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Outfit', 'sans-serif'],
       },
     },
   },
