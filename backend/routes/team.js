@@ -164,16 +164,29 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
         if (!response || !response.data.success) throw lastErr || new Error("All uplinks exhausted.");
 
-        // Lock the submission after first generation
-        await prisma.submission.update({
-            where: { teamId: teamId },
-            data: { 
-                pptUrl: response.data.file_url, 
-                status: 'SUBMITTED',
-                canRegenerate: false,
-                submittedAt: new Date()
-            }
-        });
+        console.log("📝 [SYNTHESIS SUCCESS] Response Data:", response.data);
+        const finalPptUrl = response.data.file_url;
+        
+        if (!finalPptUrl) {
+            throw new Error("Synthesis engine reported success but failed to provide an artifact URL.");
+        }
+
+        // Lock the submission after first generation with redundant verification
+        try {
+            await prisma.submission.update({
+                where: { teamId: teamId },
+                data: { 
+                    pptUrl: String(finalPptUrl), 
+                    status: 'SUBMITTED',
+                    canRegenerate: false,
+                    submittedAt: new Date()
+                }
+            });
+            console.log(`✅ [REPOSITORY] Artifact persisted for team: ${teamId}`);
+        } catch (dbSaveErr) {
+            console.error("❌ [REPOSITORY ERROR] Failed to persist artifact:", dbSaveErr.message);
+            throw new Error(`Technical vault persistence failure: ${dbSaveErr.message}`);
+        }
 
         res.json({ success: true, message: "Document Synthesis Complete. Please submit your prototype link and certificate details to finalize." });
 
@@ -251,25 +264,38 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
         if (!response || !response.data.success) throw lastErr || new Error("All expert uplinks exhausted.");
 
+        console.log("🌟 [EXPERT SUCCESS] Response Data:", response.data);
+        const finalExpertUrl = response.data.file_url;
+
+        if (!finalExpertUrl) {
+           throw new Error("Expert engine reported success but failed to provide an artifact URL.");
+        }
+
         // Lock the submission after first generation
-        await prisma.submission.upsert({
-            where: { teamId: teamId },
-            update: { 
-                pptUrl: response.data.file_url, 
-                status: 'SUBMITTED',
-                content: projectData,
-                canRegenerate: false,
-                submittedAt: new Date()
-            },
-            create: {
-                teamId: teamId,
-                content: projectData,
-                status: 'SUBMITTED',
-                pptUrl: response.data.file_url,
-                canRegenerate: false,
-                submittedAt: new Date()
-            }
-        });
+        try {
+            await prisma.submission.upsert({
+                where: { teamId: teamId },
+                update: { 
+                    pptUrl: String(finalExpertUrl), 
+                    status: 'SUBMITTED',
+                    content: projectData,
+                    canRegenerate: false,
+                    submittedAt: new Date()
+                },
+                create: {
+                    teamId: teamId,
+                    content: projectData,
+                    status: 'SUBMITTED',
+                    pptUrl: String(finalExpertUrl),
+                    canRegenerate: false,
+                    submittedAt: new Date()
+                }
+            });
+            console.log(`✅ [REPOSITORY] Expert Artifact persisted for team: ${teamId}`);
+        } catch (dbSaveErr) {
+            console.error("❌ [REPOSITORY ERROR] Failed to persist expert artifact:", dbSaveErr.message);
+            throw new Error(`Expert vaulted persistence failure: ${dbSaveErr.message}`);
+        }
 
         res.json({ success: true, message: "Expert Pitch Deck Synthesis Complete." });
 

@@ -180,6 +180,26 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
     await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "certificateYear" INTEGER;`);
     await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "submittedAt" TIMESTAMP WITH TIME ZONE;`);
     console.log("✅ Database Integrity Verified.");
+
+    // AUTO-SEED ADMIN: Ensure admin@institution.com exists
+    try {
+      const bcrypt = require('bcryptjs');
+      const adminEmail = 'admin@institution.com';
+      const adminPassword = 'admin_portal_2026';
+      const hash = await bcrypt.hash(adminPassword, 10);
+      
+      await prisma.admin.upsert({
+        where: { email: adminEmail },
+        update: {}, // Don't overwrite if exists
+        create: {
+          email: adminEmail,
+          password: hash
+        }
+      });
+      console.log("👤 Administrative Profile Secured.");
+    } catch (seedErr) {
+      console.warn("⚠️ Admin Seed Warning:", seedErr.message);
+    }
   } catch (dbErr) {
     console.warn("⚠️ Native Sync Warning (Non-critical):", dbErr.message);
   }
