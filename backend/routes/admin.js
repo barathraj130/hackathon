@@ -188,3 +188,52 @@ function calculateProgress(submission) {
 }
 
 module.exports = router;
+/**
+ * GET ALL SUBMISSIONS WITH DETAILS
+ */
+router.get('/submissions', async (req, res) => {
+    try {
+        const submissions = await prisma.submission.findMany({
+            include: {
+                team: {
+                    select: {
+                        id: true,
+                        teamName: true,
+                        collegeName: true,
+                        member1: true,
+                        member2: true
+                    }
+                }
+            },
+            orderBy: { updatedAt: 'desc' }
+        });
+
+        res.json(submissions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch submissions" });
+    }
+});
+
+/**
+ * TOGGLE REGENERATION PERMISSION
+ */
+router.post('/toggle-regenerate', async (req, res) => {
+    try {
+        const { teamId, canRegenerate } = req.body;
+
+        if (!teamId || typeof canRegenerate !== 'boolean') {
+            return res.status(400).json({ error: "Invalid request data" });
+        }
+
+        await prisma.submission.update({
+            where: { teamId },
+            data: { canRegenerate }
+        });
+
+        res.json({ success: true, message: `Regeneration ${canRegenerate ? 'enabled' : 'disabled'} for team` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to update permission" });
+    }
+});

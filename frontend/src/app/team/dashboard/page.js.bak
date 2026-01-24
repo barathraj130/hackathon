@@ -354,20 +354,4 @@ export default function TeamDashboard() {
 
         </div>
       </main>
-
-        </div>
-      </main>
-
-      {/* Submission Workflow Modal */}
-      <SubmissionWorkflowModal
-        isOpen={showWorkflowModal}
-        onClose={() => setShowWorkflowModal(false)}
-        onComplete={() => {
-          fetchInitialData();
-          setShowWorkflowModal(false);
-        }}
-        apiUrl={process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1'}
-      />
     </div>
-  );
-}
