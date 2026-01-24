@@ -7,6 +7,19 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+/**
+ * TECHNICAL OVERRIDE: Institutional Host Mapping
+ * Converts restricted internal DNS routes to public production repositories.
+ */
+const mapInternalToPublic = (internalUrl) => {
+    if (!internalUrl) return internalUrl;
+    return internalUrl
+        .replace('python-service.railway.internal:8000', 'endearing-liberation-production.up.railway.app')
+        .replace('endearing-liberation.railway.internal:8000', 'endearing-liberation-production.up.railway.app')
+        .replace('ppt-service.railway.internal:8000', 'hackathon-production-c6be.up.railway.app')
+        .replace('http://', 'https://'); // Enforce high-security SSL
+};
+
 // Multer Setup for Assets
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -184,7 +197,7 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         // Construct Absolute verified URL
         // If engine returns "ppt_outputs/name.pptx", we need to serve it via "/outputs/name.pptx"
         const fileName = rawPath.split('/').pop();
-        const finalPptUrl = `${successfulHost}/outputs/${fileName}`;
+        const finalPptUrl = mapInternalToPublic(`${successfulHost}/outputs/${fileName}`);
 
         // Lock the submission after first generation with redundant verification
         try {
@@ -297,7 +310,7 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         if (!rawFileName) throw new Error("Expert artifact URL missing from engine response.");
 
         // Construct Absolute verified URL
-        const finalExpertUrl = `${successfulHost}/outputs/${rawFileName.split('/').pop()}`;
+        const finalExpertUrl = mapInternalToPublic(`${successfulHost}/outputs/${rawFileName.split('/').pop()}`);
 
         // Lock the submission after first generation
         try {
