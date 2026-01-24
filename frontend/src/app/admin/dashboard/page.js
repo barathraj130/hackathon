@@ -421,7 +421,7 @@ export default function AdminDashboard() {
                               <td className="py-6 px-6 text-right last:rounded-r-3xl border-y border-transparent group-hover:border-slate-100">
                                  {sub.pptUrl && (
                                     <a 
-                                       href={sub.pptUrl}
+                                       href={sub.pptUrl.startsWith('http') ? sub.pptUrl : `https://endearing-liberation-production.up.railway.app/outputs/${sub.pptUrl.split('/').pop()}`}
                                        target="_blank"
                                        rel="noopener noreferrer"
                                        className="px-4 py-2 bg-teal text-white rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-navy transition-all shadow-lg shadow-teal/20 flex items-center gap-2 justify-center ml-auto w-fit"
