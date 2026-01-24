@@ -109,6 +109,7 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
         // Internal call to ppt-service (Python)
         const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
+        console.log(`[SYNTHESIS] Routing request to: ${pptServiceUrl}`);
         const response = await axios.post(`${pptServiceUrl}/generate`, {
             team_name: team.teamName,
             college_name: team.collegeName,
