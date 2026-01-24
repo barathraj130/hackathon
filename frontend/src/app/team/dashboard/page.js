@@ -65,7 +65,7 @@ export default function TeamDashboard() {
   }, [isPaused]);
 
   const fetchInitialData = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-c6be.up.railway.app/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const res = await axios.get(`${apiUrl}/team/profile`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -84,7 +84,7 @@ export default function TeamDashboard() {
   };
 
   const autoSaveSubmission = async (isManual = false) => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-c6be.up.railway.app/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     setSaveStatus('SAVING');
     
     // Manual sync skips the equality check to be absolutely sure
@@ -111,7 +111,7 @@ export default function TeamDashboard() {
 
   const handleGenerateStandardPPT = async () => {
     setIsGenerating(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-c6be.up.railway.app/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
        const res = await axios.post(`${apiUrl}/team/generate-ppt`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }

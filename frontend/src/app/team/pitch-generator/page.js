@@ -60,7 +60,7 @@ export default function PitchGenerator() {
     formData.append('file', file);
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-c6be.up.railway.app/v1';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
       const res = await axios.post(`${apiUrl}/team/upload-asset`, formData, {
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -82,7 +82,7 @@ export default function PitchGenerator() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-c6be.up.railway.app/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, {
@@ -604,7 +604,7 @@ export default function PitchGenerator() {
                     <div className="grid grid-cols-4 gap-4">
                        <div className="relative group">
                           <label className="absolute -top-6 left-0 text-[7px] font-black text-teal uppercase">Native Upload</label>
-                          <div className="input-field !p-0 !bg-slate-50 flex items-center overflow-hidden">
+                          <div className="input-field !p-0 !bg-slate-50 flex items-center overflow-hidden h-[75px]">
                              <input 
                                 type="file" 
                                 id={`upload-${step}`} 
@@ -612,11 +612,18 @@ export default function PitchGenerator() {
                                 accept="image/*"
                                 onChange={(e) => handleFileUpload(e, step)}
                              />
-                             <label htmlFor={`upload-${step}`} className="cursor-pointer bg-teal text-white px-4 py-4 text-[9px] font-black uppercase tracking-widest hover:bg-navy transition-colors whitespace-nowrap">
-                                {uploading ? 'Processing...' : 'Upload Image'}
+                             <label htmlFor={`upload-${step}`} className="cursor-pointer bg-teal text-white px-6 h-full flex items-center text-[10px] font-black uppercase tracking-widest hover:bg-navy transition-colors whitespace-nowrap">
+                                {uploading ? '...' : 'Upload'}
                              </label>
-                             <div className="px-3 text-[8px] font-bold text-slate-400 truncate">
-                                {data.slide_assets[`s${step}_img`] ? 'Asset Secured' : 'No binary found'}
+                             <div className="px-4 flex-grow flex items-center justify-between overflow-hidden">
+                                {data.slide_assets[`s${step}_img`] ? (
+                                   <>
+                                      <img src={data.slide_assets[`s${step}_img`]} alt="Preview" className="h-12 w-12 object-cover rounded-lg border border-slate-200" />
+                                      <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter">Secured ✓</span>
+                                   </>
+                                ) : (
+                                   <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">No Binary</span>
+                                )}
                              </div>
                           </div>
                        </div>
