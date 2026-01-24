@@ -113,6 +113,14 @@ router.post('/submission', checkOperationalStatus, async (req, res) => {
  */
 router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
     const teamId = req.user.id;
+    const tryUrls = [
+        process.env.PYTHON_SERVICE_URL,
+        'http://endearing-liberation.railway.internal:8000',
+        'http://ppt-service.railway.internal:8000',
+        'http://python-service.railway.internal:8000',
+        'https://endearing-liberation-production.up.railway.app',
+        'https://hackathon-production-c6be.up.railway.app'
+    ].filter(Boolean);
 
     try {
         const team = await prisma.team.findUnique({
@@ -121,37 +129,8 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         });
 
         if (!team.submission || !team.submission.content) {
-            return res.status(400).json({ error: "Insufficient data for synthesis. Please populate all form modules." });
+            return res.status(400).json({ error: "Insufficient data for synthesis." });
         }
-
-        const content = team.submission.content;
-        
-        // Handle new slide format validation
-        if (content.projectName || content.s2_problem) {
-            // New High-Fidelity Schema detected - allow generation
-            console.log("[SYNTHESIS] High-Fidelity schema detected. Proceeding.");
-        } else if (content.slides && Array.isArray(content.slides)) {
-            const incomplete = content.slides.filter(s => !s.content || s.content.trim().length < 10);
-            if (incomplete.length > 5) { // Relax validation to encourage progress
-                return res.status(400).json({ 
-                    error: `Synthesis halted. Insufficient detail in ${incomplete.length} slides.` 
-                });
-            }
-        } else {
-            // Legacy/Basic validation
-            if (Object.keys(content).length < 3) {
-                return res.status(400).json({ error: "Insufficient data for synthesis." });
-            }
-        }
-
-        const tryUrls = [
-            process.env.PYTHON_SERVICE_URL,
-            'http://endearing-liberation.railway.internal:8000',
-            'http://ppt-service.railway.internal:8000',
-            'http://python-service.railway.internal:8000',
-            'https://endearing-liberation-production.up.railway.app',
-            'https://hackathon-production-c6be.up.railway.app'
-        ].filter(Boolean);
 
         let response;
         let lastErr;
@@ -164,14 +143,17 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
                     college_name: team.collegeName,
                     content: team.submission.content
                 }, { timeout: 15000 });
+
                 if (response.data.success) break;
+                else throw new Error(`Synthesis Logic Error: ${response.data.error}`);
             } catch (e) {
                 lastErr = e;
                 console.log(`[SYNTHESIS] Uplink failed at ${url}: ${e.message}`);
+                if (e.message.startsWith('Synthesis Logic Error')) break;
             }
         }
 
-        if (!response) throw lastErr;
+        if (!response || !response.data.success) throw lastErr || new Error("All uplinks exhausted.");
 
         await prisma.submission.update({
             where: { teamId: teamId },
@@ -181,16 +163,12 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
             }
         });
 
-        res.json({ 
-            success: true, 
-            message: "Document Synthesis Complete. Artifact available in repository." 
-        });
+        res.json({ success: true, message: "Document Synthesis Complete." });
 
     } catch (err) {
         const tried = tryUrls.join(', ');
-        console.error("Synthesis Service Error:", err.message);
         res.status(500).json({ 
-            error: `Synthesis Engine unreachable. Probed locations: ${tried}. Ensure the Python project is active on Railway.` 
+            error: err.message.startsWith('Synthesis Logic Error') ? err.message : `Synthesis Engine unreachable. Probed locations: ${tried}` 
         });
     }
 });
@@ -204,22 +182,22 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
     const teamId = req.user.id;
     const projectData = req.body;
 
+    const tryUrls = [
+        process.env.PYTHON_SERVICE_URL,
+        'http://endearing-liberation.railway.internal:8000',
+        'http://ppt-service.railway.internal:8000',
+        'http://python-service.railway.internal:8000',
+        'https://endearing-liberation-production.up.railway.app',
+        'https://hackathon-production-c6be.up.railway.app'
+    ].filter(Boolean);
+
+    let response;
+    let lastErr;
+
     try {
         const team = await prisma.team.findUnique({
             where: { id: teamId }
         });
-
-        const tryUrls = [
-            process.env.PYTHON_SERVICE_URL,
-            'http://endearing-liberation.railway.internal:8000',
-            'http://ppt-service.railway.internal:8000',
-            'http://python-service.railway.internal:8000',
-            'https://endearing-liberation-production.up.railway.app',
-            'https://hackathon-production-c6be.up.railway.app'
-        ].filter(Boolean);
-
-        let response;
-        let lastErr;
 
         for (const url of tryUrls) {
             try {
@@ -229,14 +207,21 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
                     college_name: team.collegeName,
                     project_data: projectData
                 }, { timeout: 15000 });
+                
                 if (response.data.success) break;
+                else {
+                   // Engine reached but logic failed
+                   throw new Error(`Synthesis Logic Error: ${response.data.error}`);
+                }
             } catch (e) {
                 lastErr = e;
                 console.log(`[EXPERT SYNTHESIS] Uplink failed at ${url}: ${e.message}`);
+                // If it was a logic error (we threw it above), don't try other URLs
+                if (e.message.startsWith('Synthesis Logic Error')) break;
             }
         }
 
-        if (!response) throw lastErr;
+        if (!response || !response.data.success) throw lastErr || new Error("All expert uplinks exhausted.");
 
         await prisma.submission.upsert({
             where: { teamId: teamId },
@@ -254,11 +239,12 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         });
 
         res.json({ success: true, message: "Expert Pitch Deck Synthesis Complete." });
+
     } catch (err) {
         const tried = tryUrls.join(', ');
         console.error("Expert Synthesis Error:", err.message);
         res.status(500).json({ 
-            error: `Expert Synthesis Engine unreachable. Probed locations: ${tried}. Ensure the Python project is active on Railway.` 
+            error: err.message.startsWith('Synthesis Logic Error') ? err.message : `Expert Synthesis Engine unreachable. Probed locations: ${tried}. Ensure the Python project is active on Railway.` 
         });
     }
 });

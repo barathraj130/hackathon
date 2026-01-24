@@ -40,16 +40,31 @@ def generate_ppt(data: PPTRequest):
         "message": "PPT Generated successfully"
     }
 
+import traceback
+
 @app.post("/generate-expert-pitch")
 def generate_expert_pitch(data: ExpertPPTRequest):
-    # This calls the advanced synthesis engine with diagrams
-    file_path = create_expert_deck(data.team_name, data.college_name, data.project_data)
-    
-    return {
-        "success": True, 
-        "file_url": file_path,
-        "message": "Expert Pitch Deck Generated"
-    }
+    try:
+        # This calls the advanced synthesis engine with diagrams
+        file_path = create_expert_deck(data.team_name, data.college_name, data.project_data)
+        
+        # Return only the filename for the frontend to construct the URL
+        filename = os.path.basename(file_path)
+        
+        return {
+            "success": True, 
+            "file_url": filename,
+            "message": "Expert Pitch Deck Generated"
+        }
+    except Exception as e:
+        error_msg = str(e)
+        stack = traceback.format_exc()
+        print(f"!!! SYNTHESIS CRITICAL FAILURE !!!\n{error_msg}\n{stack}")
+        return {
+            "success": False,
+            "error": error_msg,
+            "trace": stack
+        }
 
 @app.get("/")
 def health_check():
