@@ -251,7 +251,7 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
         if (!response || !response.data.success) throw lastErr || new Error("All expert uplinks exhausted.");
 
-        // UPSERT WITHOUT NEW COLUMNS
+        // UPSERT WITHOUT NEW COLUMNS & STRICT SELECT
         await prisma.submission.upsert({
             where: { teamId: teamId },
             update: { 
@@ -264,6 +264,11 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
                 content: projectData,
                 status: 'SUBMITTED',
                 pptUrl: response.data.file_url
+            },
+            select: {
+                id: true,
+                pptUrl: true,
+                status: true
             }
         });
 
