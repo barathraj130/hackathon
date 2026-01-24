@@ -14,7 +14,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-c6be.up.railway.app/v1';
       const res = await axios.post(`${apiUrl}/auth/login`, { username, password });
       
       localStorage.setItem('token', res.data.token);
