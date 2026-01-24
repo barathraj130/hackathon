@@ -359,31 +359,32 @@ export default function AdminDashboard() {
                 <div className="overflow-x-auto">
                    <table className="w-full text-left border-separate border-spacing-y-4">
                       <thead>
-                         <tr>
-                            <th className="label-caps px-6">Candidate Entity</th>
-                            <th className="label-caps px-6">Network Status</th>
-                            <th className="label-caps px-6 text-center">PPT</th>
-                            <th className="label-caps px-6">Institutional Metadata</th>
-                            <th className="label-caps px-6">Lock State</th>
-                            <th className="label-caps px-6 text-right">Vault Actions</th>
+                         <tr className="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em]">
+                            <th className="px-6 pb-2">Candidate Entity</th>
+                            <th className="px-6 pb-2">Network Status</th>
+                            <th className="px-6 pb-2 text-center">PPT</th>
+                            <th className="px-6 pb-2">Institutional Metadata</th>
+                            <th className="px-6 pb-2">Lock State</th>
+                            <th className="px-6 pb-2 text-right">Vault Actions</th>
                          </tr>
                       </thead>
                       <tbody>
                          {filteredSubmissions.map(sub => (
                            <tr key={sub.id} className="bg-slate-50/30 hover:bg-white hover:shadow-xl hover:shadow-navy/5 transition-all group rounded-3xl overflow-hidden">
-                              <td className="py-6 px-6 first:rounded-l-3xl">
+                              <td className="py-6 px-6 first:rounded-l-3xl border-y border-transparent group-hover:border-slate-100">
                                  <p className="font-black text-navy uppercase text-sm tracking-tight">{sub.team.teamName}</p>
                                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{sub.team.collegeName}</p>
                               </td>
-                              <td className="py-6 px-6">
+                              <td className="py-6 px-6 border-y border-transparent group-hover:border-slate-100">
                                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${sub.status === 'LOCKED' ? 'bg-navy text-white' : sub.status === 'SUBMITTED' ? 'bg-emerald-100 text-emerald-600' : 'bg-royal/10 text-royal'}`}>
+                                    <span className={`w-1 h-1 rounded-full ${sub.status === 'SUBMITTED' ? 'bg-emerald-500' : 'bg-royal animate-pulse'}`}></span>
                                     {sub.status}
                                  </div>
                               </td>
-                              <td className="py-6 px-6 text-center">
+                              <td className="py-6 px-6 text-center border-y border-transparent group-hover:border-slate-100">
                                  {sub.pptUrl ? <span className="text-emerald-500 text-lg">●</span> : <span className="text-slate-200 text-lg">○</span>}
                               </td>
-                              <td className="py-6 px-6">
+                              <td className="py-6 px-6 border-y border-transparent group-hover:border-slate-100">
                                  {sub.prototypeUrl ? (
                                     <div className="max-w-[150px]">
                                        <p className="text-[9px] font-black uppercase text-navy mb-1 leading-none">Prototype Link</p>
@@ -391,22 +392,25 @@ export default function AdminDashboard() {
                                     </div>
                                  ) : <span className="text-[9px] font-bold text-slate-300 uppercase italic">Pending Data</span>}
                               </td>
-                              <td className="py-6 px-6">
+                              <td className="py-6 px-6 border-y border-transparent group-hover:border-slate-100">
                                  <button 
                                     onClick={() => toggleRegenerate(sub.teamId, sub.canRegenerate)}
-                                    className={`text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border transition-all ${sub.canRegenerate ? 'border-emerald-100 text-emerald-600 hover:bg-emerald-50' : 'border-rose-100 text-rose-500 hover:bg-rose-50'}`}
+                                    className={`text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border transition-all ${sub.canRegenerate ? 'border-emerald-100 text-emerald-600 hover:bg-emerald-50 shadow-sm' : 'border-rose-100 text-rose-500 hover:bg-rose-50 shadow-sm'}`}
                                  >
                                     {sub.canRegenerate ? '🔓 Open' : '🔒 Locked'}
                                  </button>
                               </td>
-                              <td className="py-6 px-6 text-right last:rounded-r-3xl">
+                              <td className="py-6 px-6 text-right last:rounded-r-3xl border-y border-transparent group-hover:border-slate-100">
                                  {sub.pptUrl && (
-                                    <button 
-                                       onClick={() => downloadPPT(sub.pptUrl)}
-                                       className="p-3 bg-white text-navy border border-slate-100 rounded-xl hover:bg-navy hover:text-white hover:border-navy transition-all shadow-sm"
+                                    <a 
+                                       href={sub.pptUrl}
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       className="px-4 py-2 bg-teal text-white rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-navy transition-all shadow-lg shadow-teal/20 flex items-center gap-2 justify-center ml-auto w-fit"
                                     >
-                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                    </button>
+                                       <span>Download</span>
+                                       <span className="text-xs font-bold">↓</span>
+                                    </a>
                                  )}
                               </td>
                            </tr>
