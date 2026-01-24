@@ -63,7 +63,7 @@ def create_pptx(team_name, college, slides_data):
             p.level = 0
 
     # Save the file
-    file_name = f"ppt_outputs/{team_name.replace(' ', '_')}_presentation.pptx"
+    file_name = f"ppt_outputs/{team_name.lower().replace(' ', '_')}_presentation.pptx"
     
     # Ensure directory exists
     if not os.path.exists('ppt_outputs'):

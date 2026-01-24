@@ -204,7 +204,7 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
       console.log("📂 Recalibrating Artifact Repository...");
       await prisma.$executeRawUnsafe(`
         UPDATE "Submission" 
-        SET "pptUrl" = 'https://endearing-liberation-production.up.railway.app/outputs/' || split_part("pptUrl", '/', 2) 
+        SET "pptUrl" = 'https://endearing-liberation-production.up.railway.app/outputs/' || LOWER(split_part("pptUrl", '/', 2))
         WHERE "pptUrl" LIKE 'ppt_outputs/%';
       `);
       console.log("✅ Relative URLs converted to absolute verified paths.");

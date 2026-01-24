@@ -151,7 +151,7 @@ def create_expert_deck(team_name, college, data):
     if not os.path.exists('ppt_outputs'):
         os.makedirs('ppt_outputs')
     
-    file_path = f"ppt_outputs/{team_name.replace(' ', '_')}_venture_journey.pptx"
+    file_path = f"ppt_outputs/{team_name.lower().replace(' ', '_')}_venture_journey.pptx"
     prs.save(file_path)
     return file_path
 # --- Helper Functions ---
