@@ -46,6 +46,8 @@ router.use(verifyToken);
 router.get('/profile', async (req, res) => {
     try {
         const teamId = req.user.id;
+        if (!teamId) return res.status(400).json({ error: 'Invalid Token' });
+
         const team = await prisma.team.findUnique({ 
             where: { id: teamId },
             include: { submission: true } 
