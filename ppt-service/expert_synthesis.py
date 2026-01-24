@@ -193,7 +193,7 @@ def draw_impact_graph_detailed(slide, pain_points):
     colors = [RGBColor(57, 204, 204), RGBColor(0, 116, 217), RGBColor(1, 22, 39)]
 
     for i, pp in enumerate(pain_points[:10]):
-        if not pp.get('point'): continue
+        if not isinstance(pp, dict) or not pp.get('point'): continue
         x_val = mapping.get(pp.get('freq'), 2) * 2.5
         y_val = 6 - (mapping.get(pp.get('impact'), 2) * 1.4)
         dot = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(1+x_val), Inches(y_val), Inches(0.3), Inches(0.3))

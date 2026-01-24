@@ -4,17 +4,20 @@ from pydantic import BaseModel
 from synthesis_logic import polish_content
 from generator import create_pptx
 import uvicorn
+import os
+import traceback
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
-
-from expert_synthesis import create_expert_deck
-from fastapi.staticfiles import StaticFiles
-import os
 
 if not os.path.exists("ppt_outputs"):
     os.makedirs("ppt_outputs")
 
 app.mount("/outputs", StaticFiles(directory="ppt_outputs"), name="outputs")
+
+@app.get("/")
+def home():
+    return {"status": "online", "service": "Synthesis Engine"}
 
 class PPTRequest(BaseModel):
     team_name: str
@@ -45,6 +48,7 @@ import traceback
 @app.post("/generate-expert-pitch")
 def generate_expert_pitch(data: ExpertPPTRequest):
     try:
+        from expert_synthesis import create_expert_deck
         # This calls the advanced synthesis engine with diagrams
         file_path = create_expert_deck(data.team_name, data.college_name, data.project_data)
         
@@ -62,7 +66,7 @@ def generate_expert_pitch(data: ExpertPPTRequest):
         print(f"!!! SYNTHESIS CRITICAL FAILURE !!!\n{error_msg}\n{stack}")
         return {
             "success": False,
-            "error": error_msg,
+            "error": f"Synthesis Narrative Problem: {error_msg}. Check inputs.",
             "trace": stack
         }
 
