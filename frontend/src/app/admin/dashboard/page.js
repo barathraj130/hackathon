@@ -137,7 +137,11 @@ export default function AdminDashboard() {
   const getPublicLink = (url) => {
     if (!url) return '';
     return url
-      .replace('.railway.internal:8000', '-production.up.railway.app')
+      .replace(/([a-zA-Z0-9-]+\.)+railway\.internal(:\d+)?/, (match) => {
+        if (match.includes('python') || match.includes('liberation')) 
+          return 'endearing-liberation-production.up.railway.app';
+        return 'hackathon-production-c6be.up.railway.app';
+      })
       .replace('http://', 'https://');
   };
 

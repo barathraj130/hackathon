@@ -9,13 +9,16 @@ const { exec } = require('child_process');
  * TECHNICAL OVERRIDE: Institutional Host Mapping
  * Converts restricted internal DNS routes to public production repositories.
  */
-const mapInternalToPublic = (internalUrl) => {
-    if (!internalUrl) return internalUrl;
-    return internalUrl
-        .replace('python-service.railway.internal:8000', 'endearing-liberation-production.up.railway.app')
-        .replace('endearing-liberation.railway.internal:8000', 'endearing-liberation-production.up.railway.app')
-        .replace('ppt-service.railway.internal:8000', 'hackathon-production-c6be.up.railway.app')
-        .replace('http://', 'https://'); // Enforce high-security SSL
+const mapInternalToPublic = (url) => {
+    if (!url) return url;
+    // REGEX OVERRIDE: Neutralize all internal railway DNS variants
+    return url
+        .replace(/([a-zA-Z0-9-]+\.)+railway\.internal(:\d+)?/, (match) => {
+            if (match.includes('python') || match.includes('liberation')) 
+                return 'endearing-liberation-production.up.railway.app';
+            return 'hackathon-production-c6be.up.railway.app';
+        })
+        .replace('http://', 'https://'); 
 };
 
 // Import the correct functions from your middleware folder
@@ -247,12 +250,12 @@ router.post('/force-regenerate', async (req, res) => {
         }
 
         const tryUrls = [
+            'https://endearing-liberation-production.up.railway.app',
+            'https://hackathon-production-c6be.up.railway.app',
             process.env.PYTHON_SERVICE_URL,
             'http://endearing-liberation.railway.internal:8000',
             'http://ppt-service.railway.internal:8000',
-            'http://python-service.railway.internal:8000',
-            'https://endearing-liberation-production.up.railway.app',
-            'https://hackathon-production-c6be.up.railway.app'
+            'http://python-service.railway.internal:8000'
         ].filter(Boolean).map(u => u.replace(/\/$/, ""));
 
         let response;
