@@ -8,133 +8,122 @@ import os
 def create_expert_deck(team_name, college, data):
     prs = Presentation()
     
-    # helper for navy theme
-    def set_navy_background(slide):
-        background = slide.background
-        fill = background.fill
-        fill.solid()
-        fill.fore_color.rgb = RGBColor(0, 31, 63) # Brand Navy
-
     def add_corner_logo(slide):
         if os.path.exists("institution_logo.png"):
             slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
 
-    # 1. Title Slide (Idea and team identification)
-    slide = prs.slides.add_slide(prs.slide_layouts[6]) # Reset to match specific user screenshot
+    # --- 1. Organizational Identity ---
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_corner_logo(slide)
-    
-    # Title Text
-    left, top, width, height = Inches(0.5), Inches(0.5), Inches(9), Inches(1)
-    tx_title = slide.shapes.add_textbox(left, top, width, height)
-    tf_title = tx_title.text_frame
-    tf_title.text = "Idea and team identification"
-    tf_title.paragraphs[0].font.size = Pt(36)
-    tf_title.paragraphs[0].font.bold = True
+    tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(9), Inches(1))
+    tf = tx_title.text_frame
+    tf.text = "Organizational Identity"
+    tf.paragraphs[0].font.size = Pt(36)
+    tf.paragraphs[0].font.bold = True
 
-    # Details Text
     left, top, width, height = Inches(1.5), Inches(2), Inches(7.5), Inches(5)
     tx_details = slide.shapes.add_textbox(left, top, width, height)
     tf_details = tx_details.text_frame
     tf_details.word_wrap = True
 
     details = [
-        ("S. No.", "100"),
-        ("Name of the Institution", college),
-        ("Faculty Name", data.get('facultyName', 'P. Eswari')),
-        ("Idea Description", data.get('projectName', 'Weather Adaptive Intelligent Street Lighting')),
-        ("Student Names", f"• {data.get('teamName', 'Team members')}\n• Collaborators")
+        ("Product Name", data.get('projectName', 'N/A')),
+        ("Team Name", f"• {team_name}"),
+        ("College Name", college),
+        ("Institutional Status", "Operational Hub v4.0")
     ]
-
     for label, value in details:
         p = tf_details.add_paragraph()
         p.text = f"{label} : {value}"
-        p.font.size = Pt(24)
-        p.space_after = Pt(12)
+        p.font.size = Pt(28)
+        p.space_after = Pt(14)
 
-    # 2. Problem Statement (Admin Allotted)
-    problem_text = data.get('problemDescription', 'N/A')
-    add_bullet_slide(prs, "Problem Identification", [
-        f"Critical Challenge: {problem_text}",
-        f"Primary Inefficiency: {data.get('existingLimitations', 'N/A')}",
-        "Complexity Level: High Institutional standard"
+    # --- 2. Problem Statement (Design Activity: Problem Framing) ---
+    add_bullet_slide(prs, "Problem Framing & Impact Mapping", [
+        f"Core Inefficiency: {data.get('problemDescription', 'N/A')}",
+        f"Stakeholder Impact: {data.get('targetUsers', 'General Public')}",
+        "Criticality Index: High Infrastructure Dependency"
     ])
 
-    # 3. Target Stakeholders
-    add_bullet_slide(prs, "Strategic Stakeholders", [
-        f"Primary Users: {data.get('targetUsers', 'General Public')}",
-        "Secondary Beneficiaries: Institutional partners",
-        "Ecosystem Alignment: Direct domain integration"
-    ])
-
-    # 4. Design Thinking: Problem Identification (Graph)
-    slide = add_diagram_slide(prs, "Problem Intensity Mapping")
+    # --- 3. Problem Identification (Visual: Impact Graph) ---
+    slide = add_diagram_slide(prs, "Problem-Impact Grid")
     add_corner_logo(slide)
     draw_impact_graph(slide)
-    add_text_to_slide(slide, "Intensity vs Frequency Analysis", Inches(0.5), Inches(5), Inches(8), Inches(1))
+    add_text_to_slide(slide, "Design Context: Frequency vs Global Impact", Inches(0.5), Inches(5), Inches(8), Inches(1))
 
-    # 5. Proposed Solution
-    add_bullet_slide(prs, "Proposed Solution: Architectural Model", [
-        f"Core Innovation: {data.get('proposedSolution', 'N/A')}",
-        f"Strategic Features: {data.get('keyFeatures', 'N/A')}",
-        "State: Synchronized Protocol"
+    # --- 4. Existing Limitations ---
+    add_bullet_slide(prs, "Market Research: Existing Limitations", [
+        f"Current Hurdles: {data.get('existingLimitations', 'N/A')}",
+        "Shortcoming: Scalability & Dynamic Sync issues",
+        "Result: Systemic technical debt"
     ])
 
-    # 6. Design Thinking: Solution Uplift (Hot Air Balloon)
-    slide = add_diagram_slide(prs, "System Uplift: Solution Potential")
+    # --- 5. Proposed Solution (Visual: Flow Diagram) ---
+    slide = add_diagram_slide(prs, "Proposed Solution: System Synthesis")
     add_corner_logo(slide)
-    draw_hot_air_balloon(slide, "Solution Power", "Current Limitations")
+    draw_arch_diagram(slide) # Using arch diagram for flow concept
+    add_text_to_slide(slide, f"Solution: {data.get('proposedSolution', 'N/A')}", Inches(0.5), Inches(5.5), Inches(9), Inches(1))
 
-    # 7. Industry & Market Segment
+    # --- 6. Value Identification (Design Activity: Balloon Activity) ---
+    slide = add_diagram_slide(prs, "Balloon Activity: Value Identification")
+    add_corner_logo(slide)
+    # drivers (top), constraints (bottom), fuel (side), outcome (far top)
+    draw_hot_air_balloon_labeled(slide, 
+        data.get('drivers', 'Value Drivers'),
+        data.get('constraints', 'System Weights'),
+        data.get('fuel', 'Tech Fuel'),
+        data.get('futureOutcome', 'Future Altitude'))
+
+    # --- 7. Market Strategic Positioning ---
     slide = add_diagram_slide(prs, "TAM • SAM • SOM Analysis")
     add_corner_logo(slide)
     draw_concentric_circles(slide)
-    add_text_to_slide(slide, f"Sector: {data.get('industrySegment', 'General')}", Inches(0.5), Inches(0.8), Inches(4), Inches(0.5))
+    add_text_to_slide(slide, f"Sector: {data.get('industrySegment', 'N/A')}", Inches(0.5), Inches(0.8), Inches(4), Inches(0.5))
 
-    # 8. Competitive Landscape
-    slide = add_diagram_slide(prs, "Competitive Positioning")
+    # --- 8. Competitive Landscape (Visual: Quadrant) ---
+    slide = add_diagram_slide(prs, "Competitive Differentiation Matrix")
     add_corner_logo(slide)
     draw_quadrant(slide, "Integration", "Efficiency")
     add_text_to_slide(slide, f"Landscape: {data.get('competitors', 'Traditional Methods')}", Inches(0.5), Inches(6), Inches(9), Inches(1))
 
-    # 9. Economic Model & Total Cost
-    add_bullet_slide(prs, "Project Economics & Total Cost", [
-        f"Economic Structure: {data.get('revenueModel', 'Institutional Funding')}",
-        "Budget Allocation: Research (40%), Development (60%)",
-        "Projected Cost: High Fidelity Implementation"
+    # --- 9. Economic Model ---
+    add_bullet_slide(prs, "Strategic Economic Strategy", [
+        f"Revenue Methodology: {data.get('revenueModel', 'N/A')}",
+        "Monetization: Scalable licensing & API access",
+        "Market Expansion: Unified global sync"
     ])
 
-    # 10. Projected Impact
-    add_bullet_slide(prs, "System Impact & Value Proposition", [
-        f"Projected Outcome: {data.get('expectedImpact', 'Operational Excellence')}",
-        "Scalability Target: Logarithmic expansion",
-        "Social/Economic Value: Quantifiable system efficiency"
+    # --- 10. Cost & Value Analysis (Visual: Breakdown Table) ---
+    slide = add_diagram_slide(prs, "Cost-Value Assessment Table")
+    add_corner_logo(slide)
+    add_cost_table(slide, data.get('costComponents', 'Development, Ops'), data.get('totalEstimatedCost', '$0'))
+    add_text_to_slide(slide, f"Value Projection: {data.get('valueVsCost', 'High return')}", Inches(0.5), Inches(5.5), Inches(9), Inches(1))
+
+    # --- 11. Technology Stack ---
+    add_bullet_slide(prs, "High-Fidelity Technology Stack", [
+        f"Primary Frameworks: {data.get('techStack', 'React, Node, Prisma')}",
+        "Infrastructure: Serverless cloud nodes with SSL/TLS",
+        "Intelligence: Behavioral data synthesis"
     ])
 
-    # 11. Technology Stack
-    add_bullet_slide(prs, "Integrated Technology Stack", [
-        f"Core Components: {data.get('techStack', 'N/A')}",
-        "Framework Architecture: Modern Distributed Ledger",
-        "Security Protocol: SSL/TLS End-to-end encryption"
-    ])
-
-    # 12. System Architecture
-    slide = add_diagram_slide(prs, "Technical Architecture Flow")
+    # --- 12. System Architecture (Visual: Block Diagram) ---
+    slide = add_diagram_slide(prs, "Technical Architecture Blueprint")
     add_corner_logo(slide)
     draw_arch_diagram(slide)
-    add_text_to_slide(slide, data.get('architectureExplanation', 'System synchronization protocol...'), Inches(0.5), Inches(5.5), Inches(9), Inches(1.5))
+    add_text_to_slide(slide, data.get('architectureExplanation', 'System flow overview...'), Inches(0.5), Inches(5.5), Inches(9), Inches(1.5))
 
-    # 13. Validation & Evidence (Numerical Charts)
-    add_bullet_slide(prs, "Validation & Metrics Registry", [
-        f"Benchmark Data: {data.get('dataMetrics', 'N/A')}",
-        "Confidence Interval: 95.8% (Targeted)",
-        "Validation Status: Prototype Phase Complete"
+    # --- 13. Validation & Evidence ---
+    add_bullet_slide(prs, "Validation & Quantifiable Metrics", [
+        f"Evidence: {data.get('dataMetrics', 'N/A')}",
+        f"Performance Indicator: {data.get('validationMetrics', 'Reliable synthesis')}",
+        "Status: Prototype Verification Complete"
     ])
 
-    # 14. Conclusion & Final Synthesis
-    add_bullet_slide(prs, "Conclusion & Future Outlook", [
-        f"Summary: {data.get('validationMetrics', 'Reliable synthesis achieved.')}",
-        "Next Steps: Scaling & Global Deployment",
-        "Final Status: Artifact Locked for Submission"
+    # --- 14. Final Synthesis & Pitch Outlook ---
+    add_bullet_slide(prs, "Strategic Conclusion & Next Step", [
+        "Final Synthesis: System state stabilized",
+        "Future Roadmap: Global scale & deployment",
+        "Final Pitch: Professional Artifact Locked"
     ])
 
     # Save
@@ -157,55 +146,81 @@ def add_bullet_slide(prs, title_text, bullets):
         p.level = 0
 
 def add_diagram_slide(prs, title_text):
-    slide = prs.slides.add_slide(prs.slide_layouts[6]) # Blank layout
-    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.2), Inches(9), Inches(1))
-    title_box.text_frame.text = title_text
+    slide = prs.slides.add_slide(prs.slide_layouts[6]) 
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.2), Inches(9), Inches(0.8))
+    tf = title_box.text_frame
+    tf.text = title_text
+    tf.paragraphs[0].font.size = Pt(28)
+    tf.paragraphs[0].font.bold = True
     return slide
 
-def add_text_to_slide(slide, text, left, top, width, height):
+def add_text_to_slide(slide, text, left, top, width, height, size=18):
     txBox = slide.shapes.add_textbox(left, top, width, height)
     tf = txBox.text_frame
-    tf.text = text
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = text
+    p.font.size = Pt(size)
 
-# Diagrams
-
-def draw_impact_graph(slide):
-    # Axes
-    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(5), Inches(8), Inches(5)) # X
-    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(5), Inches(1), Inches(1.5)) # Y
-    
-    # Labels
-    add_text_to_slide(slide, "Frequency", Inches(4), Inches(5.1), Inches(2), Inches(0.5))
-    add_text_to_slide(slide, "Impact", Inches(0.2), Inches(3), Inches(1), Inches(0.5))
-    
-    # Points
-    circle = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(6), Inches(2), Inches(0.5), Inches(0.5))
-    circle.fill.solid()
-    circle.fill.fore_color.rgb = RGBColor(57, 204, 204) # Teal
-    add_text_to_slide(slide, "Hurdle identified", Inches(6.5), Inches(2.1), Inches(2), Inches(0.5))
-
-def draw_hot_air_balloon(slide, top_label, bot_label):
-    # Balloon
+def draw_hot_air_balloon_labeled(slide, drivers, constraints, fuel, outcome):
+    # Balloon (Drivers)
     balloon = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(3.5), Inches(1.5), Inches(3), Inches(3))
     balloon.fill.solid()
-    balloon.fill.fore_color.rgb = RGBColor(0, 116, 217) # Royal Blue
-    add_text_to_slide(slide, top_label, Inches(4.5), Inches(2.7), Inches(2), Inches(0.5))
+    balloon.fill.fore_color.rgb = RGBColor(0, 116, 217)
+    add_text_to_slide(slide, f"Drivers (UP):\n{drivers}", Inches(3.7), Inches(2.2), Inches(2.6), Inches(1.5), size=14)
     
-    # Basket
+    # Basket (Constraints)
     basket = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(4.5), Inches(5), Inches(1), Inches(0.8))
     basket.fill.solid()
     basket.fill.fore_color.rgb = RGBColor(100, 100, 100)
-    add_text_to_slide(slide, bot_label, Inches(4.2), Inches(5.8), Inches(2), Inches(0.5))
+    add_text_to_slide(slide, f"Weights (Constraints):\n{constraints}", Inches(3.5), Inches(6), Inches(3), Inches(0.8), size=14)
     
+    # Fuel (Side Indicator)
+    fuel_box = slide.shapes.add_shape(MSO_SHAPE.HEXAGON, Inches(7), Inches(3), Inches(1.8), Inches(1.2))
+    fuel_box.fill.solid()
+    fuel_box.fill.fore_color.rgb = RGBColor(57, 204, 204)
+    add_text_to_slide(slide, f"FUEL:\n{fuel}", Inches(7.1), Inches(3.2), Inches(1.6), Inches(0.8), size=12)
+
+    # Future Outcome (Top)
+    add_text_to_slide(slide, f"Target Outcome: {outcome}", Inches(3), Inches(0.8), Inches(4), Inches(0.5), size=16)
+
     # Ropes
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(4), Inches(4), Inches(4.5), Inches(5))
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(6), Inches(4), Inches(5.5), Inches(5))
+
+def add_cost_table(slide, components, total):
+    rows, cols = 5, 2
+    left, top, width, height = Inches(1), Inches(1.8), Inches(8), Inches(3)
+    table_shape = slide.shapes.add_table(rows, cols, left, top, width, height)
+    table = table_shape.table
+    table.columns[0].width = Inches(5)
+    table.columns[1].width = Inches(3)
+    
+    table.cell(0, 0).text = "Cost Component"
+    table.cell(0, 1).text = "Estimated Budget"
+    
+    comp_list = components.split(',')[:3]
+    for i, name in enumerate(comp_list):
+        table.cell(i+1, 0).text = name.strip()
+        table.cell(i+1, 1).text = "High Impact Allocation"
+        
+    table.cell(4, 0).text = "TOTAL ESTIMATED COST"
+    table.cell(4, 1).text = total
+
+def draw_impact_graph(slide):
+    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(4.5), Inches(8), Inches(4.5))
+    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(4.5), Inches(1), Inches(1.5))
+    add_text_to_slide(slide, "Frequency", Inches(4), Inches(4.6), Inches(2), Inches(0.5))
+    add_text_to_slide(slide, "Impact", Inches(0.2), Inches(3), Inches(1), Inches(0.5))
+    circle = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(6), Inches(2), Inches(0.4), Inches(0.4))
+    circle.fill.solid()
+    circle.fill.fore_color.rgb = RGBColor(57, 204, 204)
+    add_text_to_slide(slide, "Hurdle identified", Inches(6.5), Inches(2.1), Inches(2), Inches(0.5))
 
 def draw_concentric_circles(slide):
     labels = ["TAM", "SAM", "SOM"]
     sizes = [4, 2.5, 1.2]
     colors = [RGBColor(0, 31, 63), RGBColor(0, 116, 217), RGBColor(57, 204, 204)]
-    
     for i in range(3):
         s = Inches(sizes[i])
         shp = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(5 - sizes[i]/2), Inches(3.5 - sizes[i]/2), s, s)
@@ -214,32 +229,21 @@ def draw_concentric_circles(slide):
         add_text_to_slide(slide, labels[i], Inches(5 - 0.5), Inches(3.5 - sizes[i]/2 + 0.2), Inches(1), Inches(0.5))
 
 def draw_quadrant(slide, x_label, y_label):
-    # Cross
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(3.5), Inches(9), Inches(3.5))
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(5), Inches(1), Inches(5), Inches(6))
-    
     add_text_to_slide(slide, x_label, Inches(8), Inches(3.6), Inches(2), Inches(0.5))
     add_text_to_slide(slide, y_label, Inches(5.1), Inches(1.1), Inches(2), Inches(0.5))
-    
-    # Points
-    star = slide.shapes.add_shape(MSO_SHAPE.STAR_5_POINT, Inches(7), Inches(2), Inches(0.6), Inches(0.6))
+    star = slide.shapes.add_shape(MSO_SHAPE.STAR_5_POINT, Inches(7), Inches(2), Inches(0.5), Inches(0.5))
     star.fill.solid()
     star.fill.fore_color.rgb = RGBColor(57, 204, 204)
-    add_text_to_slide(slide, "Our Venture", Inches(7.7), Inches(2.1), Inches(2), Inches(0.5))
+    add_text_to_slide(slide, "Our Enterprise", Inches(7.6), Inches(2.1), Inches(2), Inches(0.5))
 
 def draw_arch_diagram(slide):
-    components = ["Interface", "Logic Tier", "Repository"]
+    components = ["Client Interface", "Synthesis Logic", "Repository"]
     for i in range(3):
-        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1 + i*3), Inches(3), Inches(2), Inches(1))
+        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1 + i*3), Inches(3), Inches(2), Inches(0.8))
         box.fill.solid()
         box.fill.fore_color.rgb = RGBColor(0, 116, 217)
-        add_text_to_slide(slide, components[i], Inches(1 + i*3), Inches(3.2), Inches(2), Inches(0.5))
+        add_text_to_slide(slide, components[i], Inches(1 + i*3), Inches(3.2), Inches(2), Inches(0.5), size=12)
         if i < 2:
-            slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3 + i*3), Inches(3.5), Inches(4 + i*3), Inches(3.5))
-
-def draw_timeline(slide):
-    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(4), Inches(9), Inches(4))
-    milestones = ["Phase 1: Alpha", "Phase 2: Sync", "Phase 3: Scale"]
-    for i in range(3):
-        slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(2 + i*3), Inches(3.8), Inches(2 + i*3), Inches(4.2))
-        add_text_to_slide(slide, milestones[i], Inches(1.5 + i*3), Inches(4.3), Inches(2), Inches(0.5))
+            slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3 + i*3), Inches(3.4), Inches(4 + i*3), Inches(3.4))

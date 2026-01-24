@@ -29,7 +29,16 @@ export default function PitchGenerator() {
     keyFeatures: '',
     industrySegment: '',
     revenueModel: '',
-    dataMetrics: ''
+    dataMetrics: '',
+    // Balloon Activity
+    drivers: '',
+    constraints: '',
+    fuel: '',
+    futureOutcome: '',
+    // Cost Analysis
+    costComponents: '',
+    totalEstimatedCost: '',
+    valueVsCost: ''
   });
 
   const handleInputChange = (e) => {
@@ -92,17 +101,18 @@ export default function PitchGenerator() {
 
               <div className="relative z-10">
                 <div className="space-y-4">
-                  {[1, 2, 3, 4, 5].map((s) => (
+                  {[1, 2, 3, 4, 5, 6].map((s) => (
                     <div key={s} className="flex items-center gap-4 transition-all duration-500">
                       <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-black tracking-tighter transition-all ${step === s ? 'bg-teal border-teal text-white shadow-lg shadow-teal/50 scale-110' : s < step ? 'bg-white border-white text-navy scale-90 opacity-50' : 'border-white/20 text-white/40'}`}>
                         {s < step ? '✓' : `0${s}`}
                       </div>
                       <span className={`text-[9px] font-black uppercase tracking-[0.2em] transition-all ${step === s ? 'text-white translate-x-2' : 'text-white/30 translate-x-0'}`}>
-                        {s === 1 && 'Infrastructure'}
+                        {s === 1 && 'Identity'}
                         {s === 2 && 'Alignment'}
-                        {s === 3 && 'Economics'}
-                        {s === 4 && 'Blueprint'}
-                        {s === 5 && 'Validation'}
+                        {s === 3 && 'Value Balloon'}
+                        {s === 4 && 'Market'}
+                        {s === 5 && 'Economics'}
+                        {s === 6 && 'Architecture'}
                       </span>
                     </div>
                   ))}
@@ -122,11 +132,12 @@ export default function PitchGenerator() {
                 <div>
                   <span className="text-[9px] font-black text-teal uppercase tracking-[0.4em] block mb-2">Target Module</span>
                   <h2 className="text-3xl font-black text-navy uppercase tracking-tighter">
-                    {step === 1 && 'Basic Infrastructure'}
-                    {step === 2 && 'Solution Alignment'}
-                    {step === 3 && 'Structural Economics'}
-                    {step === 4 && 'Technical Blueprint'}
-                    {step === 5 && 'Metric Validation'}
+                    {step === 1 && 'Organizational Identity'}
+                    {step === 2 && 'Problem & Solution'}
+                    {step === 3 && 'Value Identification (Balloon)'}
+                    {step === 4 && 'Market Positioning'}
+                    {step === 5 && 'Cost & Value Analysis'}
+                    {step === 6 && 'System Architecture'}
                   </h2>
                 </div>
                 <div className="text-right">
@@ -181,6 +192,32 @@ export default function PitchGenerator() {
 
                 {step === 3 && (
                   <div className="space-y-8 animate-fade-in">
+                    <p className="text-[10px] font-bold text-teal uppercase tracking-[0.2em] bg-teal/5 p-4 rounded-xl border border-teal/10">Design Activity: Balloon Uplift Analysis</p>
+                    <div className="grid grid-cols-2 gap-8">
+                      <div>
+                        <label className="label-caps">Drivers (What pulls you up?)</label>
+                        <input name="drivers" className="input-field" value={data.drivers} onChange={handleInputChange} placeholder="Core value, Unique strength" />
+                      </div>
+                      <div>
+                        <label className="label-caps">Fuel (What powers innovation?)</label>
+                        <input name="fuel" className="input-field" value={data.fuel} onChange={handleInputChange} placeholder="Specific technology, Data source" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-8">
+                       <div>
+                          <label className="label-caps">Constraints (Weights)</label>
+                          <input name="constraints" className="input-field" value={data.constraints} onChange={handleInputChange} placeholder="Costs, Risks, Competition" />
+                       </div>
+                       <div>
+                          <label className="label-caps">Future Altitude (Outcome)</label>
+                          <input name="futureOutcome" className="input-field" value={data.futureOutcome} onChange={handleInputChange} placeholder="Target impact milestone" />
+                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {step === 4 && (
+                  <div className="space-y-8 animate-fade-in">
                     <div className="grid grid-cols-2 gap-8">
                        <div>
                           <label className="label-caps">Industry / Market Sector</label>
@@ -192,43 +229,53 @@ export default function PitchGenerator() {
                        </div>
                     </div>
                     <div>
-                      <label className="label-caps">Economic Model & Total Project Cost</label>
-                      <textarea name="revenueModel" className="input-field min-h-[100px]" value={data.revenueModel} onChange={handleInputChange} placeholder="Describe revenue streams, pricing, and the estimated total budget..." />
-                    </div>
-                    <div>
                       <label className="label-caps">Competitive Landscape</label>
                       <textarea name="competitors" className="input-field min-h-[100px]" value={data.competitors} onChange={handleInputChange} placeholder="Existing players or traditional methods..." />
+                    </div>
+                    <div>
+                      <label className="label-caps">Business / Revenue Model</label>
+                      <input name="revenueModel" className="input-field" value={data.revenueModel} onChange={handleInputChange} placeholder="Subscription, Licensing, Social Benefit" />
                     </div>
                   </div>
                 )}
 
-                {step === 4 && (
+                {step === 5 && (
+                   <div className="space-y-8 animate-fade-in">
+                      <p className="text-[10px] font-bold text-teal uppercase tracking-[0.2em] bg-teal/5 p-4 rounded-xl border border-teal/10">Design Activity: Cost-Value Assessment</p>
+                      <div>
+                         <label className="label-caps">Cost Components (Breakdown)</label>
+                         <textarea name="costComponents" className="input-field min-h-[100px]" value={data.costComponents} onChange={handleInputChange} placeholder="Development, Tools, Manpower, Operations..." />
+                      </div>
+                      <div className="grid grid-cols-2 gap-8">
+                         <div>
+                            <label className="label-caps">Estimated Total Cost</label>
+                            <input name="totalEstimatedCost" className="input-field" value={data.totalEstimatedCost} onChange={handleInputChange} placeholder="Ex: $45,000" />
+                         </div>
+                         <div>
+                            <label className="label-caps">Value Delivered vs Cost</label>
+                            <input name="valueVsCost" className="input-field" value={data.valueVsCost} onChange={handleInputChange} placeholder="High return, Social impact" />
+                         </div>
+                      </div>
+                   </div>
+                )}
+
+                {step === 6 && (
                   <div className="space-y-8 animate-fade-in">
                     <div>
                       <label className="label-caps">Integrated Technology Stack</label>
                       <input name="techStack" className="input-field" value={data.techStack} onChange={handleInputChange} placeholder="React, Node.js, TensorFlow, AWS" />
                     </div>
                     <div>
-                      <label className="label-caps">Architecture Logic</label>
-                      <textarea name="architectureExplanation" className="input-field min-h-[140px]" value={data.architectureExplanation} onChange={handleInputChange} placeholder="System hierarchy and data synchronization logic..." />
-                    </div>
-                  </div>
-                )}
-
-                {step === 5 && (
-                  <div className="space-y-8 animate-fade-in">
-                    <div>
-                      <label className="label-caps">Quantitative Metrics (Balloon/Graph Data)</label>
-                      <textarea name="dataMetrics" className="input-field min-h-[120px]" value={data.dataMetrics} onChange={handleInputChange} placeholder="Ex: Reduces cost by 25%, 40% faster latency, 99.9% Up-time..." />
+                      <label className="label-caps">Architecture Overview</label>
+                      <textarea name="architectureExplanation" className="input-field min-h-[140px]" value={data.architectureExplanation} onChange={handleInputChange} placeholder="System hierarchy and data flow..." />
                     </div>
                     <div>
-                      <label className="label-caps">Final Validation Summary</label>
-                      <textarea name="validationMetrics" className="input-field min-h-[100px]" value={data.validationMetrics} onChange={handleInputChange} placeholder="Conclusion of the prototype performance..." />
+                       <label className="label-caps">Validation Metrics (Data Points)</label>
+                       <input name="dataMetrics" className="input-field" value={data.dataMetrics} onChange={handleInputChange} placeholder="40% faster, Reduces cost by 25%" />
                     </div>
-                    <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 italic">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
-                        Notice: The engine will automatically generate system performance visuals and comparative charts based on these inputs.
-                      </p>
+                    <div>
+                       <label className="label-caps">Final Evidence Summary</label>
+                       <input name="validationMetrics" className="input-field" value={data.validationMetrics} onChange={handleInputChange} placeholder="Conclusion of findings" />
                     </div>
                   </div>
                 )}
@@ -241,7 +288,7 @@ export default function PitchGenerator() {
                     Sequential Back
                   </button>
                 )}
-                {step < 5 ? (
+                {step < 6 ? (
                   <button 
                     onClick={nextStep} 
                     className="ml-auto bg-navy text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] hover:shadow-2xl shadow-navy/20 transition-all hover:-translate-y-0.5 active:scale-95"
