@@ -85,7 +85,7 @@ router.get('/candidates', async (req, res) => {
  * 3. CREATE NEW TEAM
  */
 router.post('/create-team', async (req, res) => {
-    const { teamName, collegeName, member1, member2, dept, year } = req.body;
+    const { teamName, collegeName, member1, member2, dept, year, problemStatementId } = req.body;
     try {
         const newTeam = await prisma.team.create({
             data: {
@@ -97,9 +97,20 @@ router.post('/create-team', async (req, res) => {
                 year: parseInt(year)
             }
         });
+
+        // If a problem statement was selected, allot it immediately
+        if (problemStatementId) {
+            await prisma.problemStatement.update({
+                where: { id: problemStatementId },
+                data: { allottedTo: teamName }
+            });
+            console.log(`🎯 Challenge Q.${problemStatementId} allotted to ${teamName}`);
+        }
+
         res.json({ success: true, team: newTeam });
     } catch (error) {
-        res.status(400).json({ error: "Team name already exists" });
+        console.error("Team Creation Error:", error);
+        res.status(400).json({ error: "Team name already exists or system conflict" });
     }
 });
 

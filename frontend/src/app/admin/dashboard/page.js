@@ -8,7 +8,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({});
   const [teams, setTeams] = useState([]);
   const [timer, setTimer] = useState({ timeLeft: 0, formattedTime: '24:00:00', timerPaused: true });
-  const [newTeam, setNewTeam] = useState({ teamName: '', collegeName: '', member1: '', member2: '', dept: '', year: 1 });
+  const [newTeam, setNewTeam] = useState({ teamName: '', collegeName: '', member1: '', member2: '', dept: '', year: 1, problemStatementId: '' });
   const [problemStatements, setProblemStatements] = useState([]);
   const [newStatement, setNewStatement] = useState({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' });
   const [submissions, setSubmissions] = useState([]);
@@ -68,11 +68,14 @@ export default function AdminDashboard() {
     e.preventDefault();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
-      await axios.post(`${apiUrl}/admin/create-team`, newTeam, {
+      await axios.post(`${apiUrl}/admin/create-team`, {
+        ...newTeam,
+        problemStatementId: newTeam.problemStatementId
+      }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       alert("Portal credentials generated and enrolled successfully.");
-      setNewTeam({ teamName: '', collegeName: '', member1: '', member2: '', dept: '', year: 1 });
+      setNewTeam({ teamName: '', collegeName: '', member1: '', member2: '', dept: '', year: 1, problemStatementId: '' });
       fetchTeams();
       fetchStats();
     } catch (err) { alert("Error: Logic conflict or duplicate identity detected."); }
@@ -161,7 +164,7 @@ export default function AdminDashboard() {
         </div>
         
         <nav className="flex-grow space-y-2 p-6 relative z-10 mt-6 overflow-y-auto">
-          {['overview', 'teams', 'submissions', 'problem statements', 'configuration', 'audit logs'].map(tab => (
+          {['overview', 'submissions', 'problem statements', 'teams', 'configuration', 'audit logs'].map(tab => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -241,10 +244,10 @@ export default function AdminDashboard() {
             </div>
 
             <div className="dashboard-card !p-10 group relative overflow-hidden">
-               <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] block mb-2">Final Locked</span>
-               <div className="text-7xl font-black text-slate-300 tabular-nums leading-none tracking-tighter mt-4">{stats.statuses?.submitted || 0}</div>
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] block mb-2">Challenges Defined</span>
+               <div className="text-7xl font-black text-slate-300 tabular-nums leading-none tracking-tighter mt-4">{problemStatements.length}</div>
                <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Validated Artifacts</span>
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Master Registry</span>
                   <div className="w-2 h-2 bg-slate-200 rounded-full"></div>
                </div>
             </div>
@@ -269,6 +272,21 @@ export default function AdminDashboard() {
                   <div>
                     <label className="label-caps">Institutional Key (Password)</label>
                     <input className="input-field !text-lg !font-bold" placeholder="Ex: MIT_Innovation_Hub" value={newTeam.collegeName} onChange={e => setNewTeam({...newTeam, collegeName: e.target.value})} required />
+                  </div>
+                  <div>
+                    <label className="label-caps">Challenge Alignment (Problem Statement)</label>
+                    <select 
+                       className="input-field !text-base font-bold bg-white"
+                       value={newTeam.problemStatementId}
+                       onChange={e => setNewTeam({...newTeam, problemStatementId: e.target.value})}
+                    >
+                       <option value="">-- UNMATCHED --</option>
+                       {problemStatements.map(ps => (
+                         <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo}>
+                           Q.{ps.questionNo}: {ps.title} {ps.allottedTo ? '(Already Allotted)' : ''}
+                         </option>
+                       ))}
+                    </select>
                   </div>
                 </div>
                 
