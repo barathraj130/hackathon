@@ -14,10 +14,10 @@ export default function HomePage() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 glass-pane border-b border-gray-100 px-10 py-5 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-navy/20">S</div>
+          <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-navy/20">H</div>
           <div>
-            <span className="text-xl font-black text-navy tracking-tighter uppercase leading-none block">System</span>
-            <span className="text-[10px] font-bold text-teal tracking-[0.2em] uppercase leading-none">Synthesis</span>
+            <span className="text-xl font-black text-navy tracking-tighter uppercase leading-none block">hack</span>
+            <span className="text-[10px] font-bold text-teal tracking-[0.2em] uppercase leading-none">@jit</span>
           </div>
         </div>
         

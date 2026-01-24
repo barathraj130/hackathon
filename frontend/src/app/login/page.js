@@ -51,8 +51,8 @@ export default function LoginPage() {
       
       <div className="relative z-10 w-full max-w-md px-6 animate-fade-in text-center">
         <div className="mb-12">
-           <div className="w-16 h-16 bg-navy rounded-[1.5rem] flex items-center justify-center text-white font-black text-3xl shadow-2xl mx-auto mb-6">S</div>
-           <h1 className="text-4xl font-black text-navy tracking-tighter uppercase leading-none">Access Portal</h1>
+           <div className="w-16 h-16 bg-navy rounded-[1.5rem] flex items-center justify-center text-white font-black text-3xl shadow-2xl mx-auto mb-6">H</div>
+           <h1 className="text-4xl font-black text-navy tracking-tighter uppercase leading-none">hack@jit</h1>
            <p className="text-[10px] font-bold text-teal uppercase tracking-[0.3em] mt-3">JIT IDENTITY VERIFICATION SYSTEM</p>
         </div>
 

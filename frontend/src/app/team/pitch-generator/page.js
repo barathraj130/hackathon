@@ -35,7 +35,7 @@ export default function PitchGenerator() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, {
@@ -79,7 +79,7 @@ export default function PitchGenerator() {
                   </div>
                 </div>
                 
-                <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase leading-tight mb-4">Pitch <br/>Synthesis <br/>Engine</h1>
+                <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase leading-tight mb-4">hack@jit <br/>Engine</h1>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-loose max-w-[200px]">
                   JIT Institutional Standard v4.0
                 </p>

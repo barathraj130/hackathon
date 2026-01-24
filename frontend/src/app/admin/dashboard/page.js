@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   }, []);
 
   const fetchStats = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const res = await axios.get(`${apiUrl}/admin/dashboard`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
   };
 
   const fetchTeams = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const res = await axios.get(`${apiUrl}/admin/candidates`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -47,7 +47,7 @@ export default function AdminDashboard() {
 
   const handleDeleteTeam = async (id) => {
     if (!confirm("Are you sure you want to revoke this team's credentials? All synthesis data will be purged.")) return;
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       await axios.delete(`${apiUrl}/admin/teams/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -59,7 +59,7 @@ export default function AdminDashboard() {
 
   const handleCreateTeam = async (e) => {
     e.preventDefault();
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       await axios.post(`${apiUrl}/admin/create-team`, newTeam, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -88,10 +88,10 @@ export default function AdminDashboard() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-teal/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
         
         <div className="flex items-center gap-4 py-12 px-10 relative z-10 border-b border-white/5">
-          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-navy font-black text-2xl shadow-2xl">S</div>
+          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-navy font-black text-2xl shadow-2xl">H</div>
           <div>
-             <span className="text-xl font-black tracking-tighter uppercase block leading-none">Authority</span>
-             <span className="text-[10px] font-bold text-teal tracking-[0.2em] uppercase leading-none mt-1">Command Engine</span>
+             <span className="text-xl font-black tracking-tighter uppercase block leading-none text-white transition-opacity group-hover:opacity-80">hack@jit</span>
+             <span className="text-[10px] font-bold text-teal tracking-[0.2em] uppercase leading-none mt-1">Authority</span>
           </div>
         </div>
         

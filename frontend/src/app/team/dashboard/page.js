@@ -55,7 +55,7 @@ export default function TeamDashboard() {
   }, [isPaused]);
 
   const fetchInitialData = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const res = await axios.get(`${apiUrl}/team/profile`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -69,9 +69,18 @@ export default function TeamDashboard() {
   };
 
   const autoSaveSubmission = async () => {
-    if (JSON.stringify(formData) === lastSavedData.current) return;
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     setSaveStatus('SAVING');
+    
+    // Even if no change, we show feedback to user
+    if (JSON.stringify(formData) === lastSavedData.current) {
+      setTimeout(() => {
+        setSaveStatus('SAVED');
+        setTimeout(() => setSaveStatus('IDLE'), 3000);
+      }, 500);
+      return;
+    }
+
     try {
       await axios.post(`${apiUrl}/team/submission`, { content: formData }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -87,7 +96,7 @@ export default function TeamDashboard() {
 
   const handleGenerateStandardPPT = async () => {
     setIsGenerating(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
        await axios.post(`${apiUrl}/team/generate-ppt`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -110,9 +119,9 @@ export default function TeamDashboard() {
       {/* Premium Header */}
       <nav className="sticky top-0 z-50 glass-pane border-b border-gray-100 flex justify-between items-center px-10 py-5">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center text-white font-black shadow-xl shadow-navy/20">S</div>
+          <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center text-white font-black shadow-xl shadow-navy/20">H</div>
           <div className="hidden sm:block">
-            <h1 className="text-sm font-black uppercase tracking-widest text-navy leading-none">Synthesis Portal</h1>
+            <h1 className="text-sm font-black uppercase tracking-widest text-navy leading-none">hack@jit</h1>
             <p className="text-[9px] font-bold text-teal uppercase tracking-[0.2em] mt-1">Institutional Access: JIT</p>
           </div>
         </div>
@@ -242,10 +251,20 @@ export default function TeamDashboard() {
               <div className="pt-6">
                 <button 
                   onClick={autoSaveSubmission}
-                  className="w-full bg-navy text-white text-[11px] font-black py-6 rounded-[2rem] tracking-[0.4em] uppercase hover:scale-[1.01] active:scale-95 transition-all shadow-2xl shadow-navy/30 flex items-center justify-center gap-4 group"
+                  disabled={saveStatus === 'SAVING'}
+                  className="w-full bg-navy text-white text-[11px] font-black py-6 rounded-[2rem] tracking-[0.4em] uppercase hover:scale-[1.01] active:scale-95 transition-all shadow-2xl shadow-navy/30 flex items-center justify-center gap-4 group disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  <span className="w-2 h-2 bg-teal rounded-full animate-ping"></span>
-                  Manual Pulse Force Sync
+                  {saveStatus === 'SAVING' ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-teal" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      Synchronizing State...
+                    </>
+                  ) : (
+                    <>
+                      <span className="w-2 h-2 bg-teal rounded-full animate-ping"></span>
+                      Manual Pulse Force Sync
+                    </>
+                  )}
                 </button>
               </div>
             </div>
