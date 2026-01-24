@@ -36,7 +36,17 @@ router.get('/profile', async (req, res) => {
         
         if (!team) return res.status(404).json({ error: "Identity not found." });
         
-        res.json(team);
+        // Find problem statement allotted to this team name or team ID
+        const problemStatement = await prisma.problemStatement.findFirst({
+            where: {
+                OR: [
+                    { allottedTo: team.teamName },
+                    { allottedTo: teamId }
+                ]
+            }
+        });
+        
+        res.json({ ...team, problemStatement });
     } catch (error) {
         res.status(500).json({ error: "Failed to sync with repository." });
     }

@@ -25,7 +25,11 @@ export default function PitchGenerator() {
     techStack: '',
     architectureExplanation: '',
     validationMetrics: '',
-    userFeedback: ''
+    existingLimitations: '',
+    keyFeatures: '',
+    industrySegment: '',
+    revenueModel: '',
+    dataMetrics: ''
   });
 
   const handleInputChange = (e) => {
@@ -160,14 +164,36 @@ export default function PitchGenerator() {
                       <label className="label-caps">Primary Stakeholders</label>
                       <input name="targetUsers" className="input-field" value={data.targetUsers} onChange={handleInputChange} placeholder="Ex: Rural farmers, Urban commuters" />
                     </div>
+                    <div>
+                      <label className="label-caps">Existing Limitations</label>
+                      <textarea name="existingLimitations" className="input-field min-h-[100px]" value={data.existingLimitations} onChange={handleInputChange} placeholder="What are the gaps in today's solutions?" />
+                    </div>
+                    <div>
+                      <label className="label-caps">Proposed Solution</label>
+                      <textarea name="proposedSolution" className="input-field min-h-[120px]" value={data.proposedSolution} onChange={handleInputChange} placeholder="How does your system resolve the challenge?" />
+                    </div>
+                    <div>
+                      <label className="label-caps">Strategic Features</label>
+                      <input name="keyFeatures" className="input-field" value={data.keyFeatures} onChange={handleInputChange} placeholder="Scalability, Real-time sync, AI-driven" />
+                    </div>
                   </div>
                 )}
 
                 {step === 3 && (
                   <div className="space-y-8 animate-fade-in">
+                    <div className="grid grid-cols-2 gap-8">
+                       <div>
+                          <label className="label-caps">Industry / Market Sector</label>
+                          <input name="industrySegment" className="input-field" value={data.industrySegment} onChange={handleInputChange} placeholder="Ex: FinTech, SaaS" />
+                       </div>
+                       <div>
+                          <label className="label-caps">Market Reach (Projected)</label>
+                          <input name="targetMarket" className="input-field" value={data.targetMarket} onChange={handleInputChange} placeholder="Ex: $2B Target" />
+                       </div>
+                    </div>
                     <div>
-                      <label className="label-caps">Target Market Segment</label>
-                      <input name="targetMarket" className="input-field" value={data.targetMarket} onChange={handleInputChange} placeholder="Ex: $2B Renewable Energy Sector" />
+                      <label className="label-caps">Economic Model & Total Project Cost</label>
+                      <textarea name="revenueModel" className="input-field min-h-[100px]" value={data.revenueModel} onChange={handleInputChange} placeholder="Describe revenue streams, pricing, and the estimated total budget..." />
                     </div>
                     <div>
                       <label className="label-caps">Competitive Landscape</label>
@@ -192,8 +218,12 @@ export default function PitchGenerator() {
                 {step === 5 && (
                   <div className="space-y-8 animate-fade-in">
                     <div>
-                      <label className="label-caps">Quantitative Validation Metrics</label>
-                      <textarea name="validationMetrics" className="input-field min-h-[140px]" value={data.validationMetrics} onChange={handleInputChange} placeholder="Ex: 40% efficiency boost, 25% cost reduction..." />
+                      <label className="label-caps">Quantitative Metrics (Balloon/Graph Data)</label>
+                      <textarea name="dataMetrics" className="input-field min-h-[120px]" value={data.dataMetrics} onChange={handleInputChange} placeholder="Ex: Reduces cost by 25%, 40% faster latency, 99.9% Up-time..." />
+                    </div>
+                    <div>
+                      <label className="label-caps">Final Validation Summary</label>
+                      <textarea name="validationMetrics" className="input-field min-h-[100px]" value={data.validationMetrics} onChange={handleInputChange} placeholder="Conclusion of the prototype performance..." />
                     </div>
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 italic">
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">

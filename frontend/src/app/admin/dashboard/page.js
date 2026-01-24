@@ -9,11 +9,14 @@ export default function AdminDashboard() {
   const [teams, setTeams] = useState([]);
   const [timer, setTimer] = useState({ timeLeft: 0, formattedTime: '24:00:00', timerPaused: true });
   const [newTeam, setNewTeam] = useState({ teamName: '', collegeName: '', member1: '', member2: '', dept: '', year: 1 });
+  const [problemStatements, setProblemStatements] = useState([]);
+  const [newStatement, setNewStatement] = useState({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' });
   const socketRef = useRef();
 
   useEffect(() => {
     fetchStats();
     fetchTeams();
+    fetchProblemStatements();
 
     const socketUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:5000';
     socketRef.current = io(socketUrl);
@@ -71,6 +74,39 @@ export default function AdminDashboard() {
     } catch (err) { alert("Error: Logic conflict or duplicate identity detected."); }
   };
 
+  const fetchProblemStatements = async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      const res = await axios.get(`${apiUrl}/admin/problem-statements`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setProblemStatements(res.data || []);
+    } catch (err) { console.error(err); }
+  };
+
+  const handleCreateStatement = async (e) => {
+    e.preventDefault();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      await axios.post(`${apiUrl}/admin/problem-statements`, newStatement, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNewStatement({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' });
+      fetchProblemStatements();
+    } catch (err) { alert("Failed to deploy challenge."); }
+  };
+
+  const handleDeleteStatement = async (id) => {
+    if (!confirm("Remove this challenge from repository?")) return;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      await axios.delete(`${apiUrl}/admin/problem-statements/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      fetchProblemStatements();
+    } catch (err) { alert("Purge failed."); }
+  };
+
   const sendCommand = (action) => socketRef.current.emit('adminCommand', { action });
 
   return (
@@ -95,8 +131,8 @@ export default function AdminDashboard() {
           </div>
         </div>
         
-        <nav className="flex-grow space-y-2 p-6 relative z-10 mt-6">
-          {['overview', 'teams', 'configuration', 'audit logs'].map(tab => (
+        <nav className="flex-grow space-y-2 p-6 relative z-10 mt-6 overflow-y-auto">
+          {['overview', 'teams', 'problem statements', 'configuration', 'audit logs'].map(tab => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -267,6 +303,72 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+            </section>
+          </div>
+        )}
+        {activeTab === 'problem statements' && (
+          <div className="space-y-12 animate-fade-in">
+            <section className="dashboard-card !p-12">
+               <div className="flex flex-col gap-2 mb-10">
+                  <h2 className="text-3xl font-black text-navy uppercase tracking-tighter">Challenge Allotment</h2>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">Deploy Problem Statements to Candidates</p>
+               </div>
+              
+              <form onSubmit={handleCreateStatement} className="space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                   <div>
+                      <label className="label-caps">Question No.</label>
+                      <input className="input-field !text-lg !font-bold" placeholder="Ex: 402" value={newStatement.questionNo} onChange={e => setNewStatement({...newStatement, questionNo: e.target.value})} required />
+                   </div>
+                   <div>
+                      <label className="label-caps">Sub Divisions</label>
+                      <input className="input-field !text-lg !font-bold" placeholder="Ex: IV.a" value={newStatement.subDivisions} onChange={e => setNewStatement({...newStatement, subDivisions: e.target.value})} />
+                   </div>
+                   <div>
+                      <label className="label-caps">Allot to Team (Name/ID)</label>
+                      <input className="input-field !text-lg !font-bold" placeholder="Optional" value={newStatement.allottedTo} onChange={e => setNewStatement({...newStatement, allottedTo: e.target.value})} />
+                   </div>
+                </div>
+                <div>
+                   <label className="label-caps">Challenge Title</label>
+                   <input className="input-field" placeholder="Ex: Autonomous Waste Management System" value={newStatement.title} onChange={e => setNewStatement({...newStatement, title: e.target.value})} required />
+                </div>
+                <div>
+                   <label className="label-caps">Core Description</label>
+                   <textarea className="input-field min-h-[120px]" placeholder="Detailed problem summary for the team..." value={newStatement.description} onChange={e => setNewStatement({...newStatement, description: e.target.value})} required />
+                </div>
+                <button type="submit" className="w-full bg-teal text-white text-[11px] font-black py-6 rounded-[2rem] tracking-[0.4em] uppercase hover:scale-[1.01] active:scale-95 transition-all shadow-2xl shadow-teal/30">
+                  Deploy Problem Statement to Registry
+                </button>
+              </form>
+            </section>
+
+            <section className="dashboard-card !p-10">
+               <div className="flex justify-between items-end mb-8">
+                  <h2 className="text-xl font-black text-navy uppercase tracking-widest">Master Registry</h2>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">{problemStatements.length} Active Challenges</span>
+               </div>
+
+               <div className="space-y-6">
+                  {problemStatements.map(ps => (
+                    <div key={ps.id} className="p-8 border border-slate-100 rounded-3xl hover:border-teal/30 transition-all group flex justify-between items-start">
+                       <div className="flex-grow max-w-4xl">
+                          <div className="flex items-center gap-3 mb-3">
+                             <span className="text-[10px] font-black bg-navy text-white px-3 py-1 rounded-lg tabular-nums">Q.{ps.questionNo}</span>
+                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{ps.subDivisions || 'Main division'}</span>
+                             {ps.allottedTo && <span className="text-[9px] font-black text-teal uppercase tracking-widest ml-4">Allotted: {ps.allottedTo}</span>}
+                          </div>
+                          <h4 className="text-xl font-black text-navy uppercase tracking-tight mb-2">{ps.title}</h4>
+                          <p className="text-sm font-medium text-slate-500 leading-relaxed truncate group-hover:whitespace-normal group-hover:overflow-visible transition-all">
+                            {ps.description}
+                          </p>
+                       </div>
+                       <button onClick={() => handleDeleteStatement(ps.id)} className="p-4 rounded-xl text-rose-300 hover:bg-rose-50 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                       </button>
+                    </div>
+                  ))}
+               </div>
             </section>
           </div>
         )}

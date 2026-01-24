@@ -51,66 +51,90 @@ def create_expert_deck(team_name, college, data):
         p.font.size = Pt(24)
         p.space_after = Pt(12)
 
-    # 2. Problem Statement
-    add_bullet_slide(prs, "Problem Statement", [
-        f"Critical Challenge: {data.get('problemDescription', 'N/A')}",
-        f"Target User Group: {data.get('targetUsers', 'General Public')}",
-        f"Limitations: {data.get('currentLimitations', 'Inefficient manual processes')}"
+    # 2. Problem Statement (Admin Allotted)
+    problem_text = data.get('problemDescription', 'N/A')
+    add_bullet_slide(prs, "Problem Identification", [
+        f"Critical Challenge: {problem_text}",
+        f"Primary Inefficiency: {data.get('existingLimitations', 'N/A')}",
+        "Complexity Level: High Institutional standard"
     ])
 
-    # 3. Solution Overview
-    add_bullet_slide(prs, "Solution Overview", [
-        f"Core Innovation: {data.get('proposedSolution', 'N/A')}",
-        "Methodology: High-precision architectural mapping",
-        f"Key Capabilities: {data.get('keyFeatures', 'Scalability, Efficiency, Accuracy')}"
+    # 3. Target Stakeholders
+    add_bullet_slide(prs, "Strategic Stakeholders", [
+        f"Primary Users: {data.get('targetUsers', 'General Public')}",
+        "Secondary Beneficiaries: Institutional partners",
+        "Ecosystem Alignment: Direct domain integration"
     ])
 
-    # 4. Problem Identification (Graph)
-    slide = add_diagram_slide(prs, "Design Thinking: Game Activity - Optimization Graph")
+    # 4. Design Thinking: Problem Identification (Graph)
+    slide = add_diagram_slide(prs, "Problem Intensity Mapping")
     add_corner_logo(slide)
     draw_impact_graph(slide)
-    add_text_to_slide(slide, "Game Activity: Efficiency Logic Mapping", Inches(0.5), Inches(5), Inches(8), Inches(1))
+    add_text_to_slide(slide, "Intensity vs Frequency Analysis", Inches(0.5), Inches(5), Inches(8), Inches(1))
 
-    # 5. Solution Mapping (Hot Air Balloon)
-    slide = add_diagram_slide(prs, "Design Thinking: Game Activity - Solution Uplift")
-    add_corner_logo(slide)
-    draw_hot_air_balloon(slide, "Game Solution", "System Weight")
-
-    # 6. TAM • SAM • SOM
-    slide = add_diagram_slide(prs, "TAM • SAM • SOM Analysis")
-    draw_concentric_circles(slide)
-
-    # 7. Market Opportunity
-    add_bullet_slide(prs, "Market Opportunity", [
-        f"Primary Vertical: {data.get('targetMarket', 'Emerging Markets')}",
-        "Growth Trajectory: Logarithmic expansion projected",
-        "Economic Reach: Unified global synchronization"
+    # 5. Proposed Solution
+    add_bullet_slide(prs, "Proposed Solution: Architectural Model", [
+        f"Core Innovation: {data.get('proposedSolution', 'N/A')}",
+        f"Strategic Features: {data.get('keyFeatures', 'N/A')}",
+        "State: Synchronized Protocol"
     ])
 
-    # 8. Competitor Analysis
-    slide = add_diagram_slide(prs, "Competitor Analysis")
-    draw_quadrant(slide, "Standardization", "Efficiency")
+    # 6. Design Thinking: Solution Uplift (Hot Air Balloon)
+    slide = add_diagram_slide(prs, "System Uplift: Solution Potential")
+    add_corner_logo(slide)
+    draw_hot_air_balloon(slide, "Solution Power", "Current Limitations")
 
-    # 11. Tech Stack
-    add_bullet_slide(prs, "Technology Stack", [
-        f"Component Hierarchy: {data.get('techStack', 'N/A')}",
-        "Infrastructure: Cloud-native cluster nodes",
-        "Security: Institutional-grade encryption"
+    # 7. Industry & Market Segment
+    slide = add_diagram_slide(prs, "TAM • SAM • SOM Analysis")
+    add_corner_logo(slide)
+    draw_concentric_circles(slide)
+    add_text_to_slide(slide, f"Sector: {data.get('industrySegment', 'General')}", Inches(0.5), Inches(0.8), Inches(4), Inches(0.5))
+
+    # 8. Competitive Landscape
+    slide = add_diagram_slide(prs, "Competitive Positioning")
+    add_corner_logo(slide)
+    draw_quadrant(slide, "Integration", "Efficiency")
+    add_text_to_slide(slide, f"Landscape: {data.get('competitors', 'Traditional Methods')}", Inches(0.5), Inches(6), Inches(9), Inches(1))
+
+    # 9. Economic Model & Total Cost
+    add_bullet_slide(prs, "Project Economics & Total Cost", [
+        f"Economic Structure: {data.get('revenueModel', 'Institutional Funding')}",
+        "Budget Allocation: Research (40%), Development (60%)",
+        "Projected Cost: High Fidelity Implementation"
+    ])
+
+    # 10. Projected Impact
+    add_bullet_slide(prs, "System Impact & Value Proposition", [
+        f"Projected Outcome: {data.get('expectedImpact', 'Operational Excellence')}",
+        "Scalability Target: Logarithmic expansion",
+        "Social/Economic Value: Quantifiable system efficiency"
+    ])
+
+    # 11. Technology Stack
+    add_bullet_slide(prs, "Integrated Technology Stack", [
+        f"Core Components: {data.get('techStack', 'N/A')}",
+        "Framework Architecture: Modern Distributed Ledger",
+        "Security Protocol: SSL/TLS End-to-end encryption"
     ])
 
     # 12. System Architecture
-    slide = add_diagram_slide(prs, "System Architecture")
+    slide = add_diagram_slide(prs, "Technical Architecture Flow")
+    add_corner_logo(slide)
     draw_arch_diagram(slide)
+    add_text_to_slide(slide, data.get('architectureExplanation', 'System synchronization protocol...'), Inches(0.5), Inches(5.5), Inches(9), Inches(1.5))
 
-    # 13. Roadmap & Future Scope
-    slide = add_diagram_slide(prs, "Roadmap & Future Scope")
-    draw_timeline(slide)
+    # 13. Validation & Evidence (Numerical Charts)
+    add_bullet_slide(prs, "Validation & Metrics Registry", [
+        f"Benchmark Data: {data.get('dataMetrics', 'N/A')}",
+        "Confidence Interval: 95.8% (Targeted)",
+        "Validation Status: Prototype Phase Complete"
+    ])
 
-    # 14. Conclusion & Impact
-    add_bullet_slide(prs, "Conclusion & Impact", [
-        f"Expected Milestone: {data.get('expectedImpact', 'Operational Excellence')}",
-        f"Validation: {data.get('validationMetrics', 'Continuous improvement cycle')}",
-        "Status: Synthesis Complete"
+    # 14. Conclusion & Final Synthesis
+    add_bullet_slide(prs, "Conclusion & Future Outlook", [
+        f"Summary: {data.get('validationMetrics', 'Reliable synthesis achieved.')}",
+        "Next Steps: Scaling & Global Deployment",
+        "Final Status: Artifact Locked for Submission"
     ])
 
     # Save

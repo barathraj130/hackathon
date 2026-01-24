@@ -11,17 +11,25 @@ export default function TeamDashboard() {
   const [saveStatus, setSaveStatus] = useState('IDLE'); 
   const [isGenerating, setIsGenerating] = useState(false);
   const [submission, setSubmission] = useState(null);
+  const [activeTab, setActiveTab] = useState('slides'); // 'slides' or 'problem'
+  const [problemStatement, setProblemStatement] = useState(null);
   
   const [formData, setFormData] = useState({
     slides: [
-      { id: 'S1', title: 'Abstract', content: '', label: 'Slide 01' },
-      { id: 'S2', title: 'Problem Statement', content: '', label: 'Slide 02' },
+      { id: 'S1', title: 'Organizational Identity', content: '', label: 'Slide 01' },
+      { id: 'S2', title: 'Problem Statement (Candidate View)', content: '', label: 'Slide 02' },
       { id: 'S3', title: 'Proposed Solution', content: '', label: 'Slide 03' },
-      { id: 'S4', title: 'System Architecture', content: '', label: 'Slide 04' },
-      { id: 'S5', title: 'Technical Stack', content: '', label: 'Slide 05' },
-      { id: 'S6', title: 'Development Lifecycle', content: '', label: 'Slide 06' },
-      { id: 'S7', title: 'Impact & Metrics', content: '', label: 'Slide 07' },
-      { id: 'S8', title: 'Conclusion', content: '', label: 'Slide 08' }
+      { id: 'S4', title: 'Target Stakeholders', content: '', label: 'Slide 04' },
+      { id: 'S5', title: 'Existing Limitations', content: '', label: 'Slide 05' },
+      { id: 'S6', title: 'Key Functional Features', content: '', label: 'Slide 06' },
+      { id: 'S7', title: 'Industry / Market Segment', content: '', label: 'Slide 07' },
+      { id: 'S8', title: 'Competitive Landscape', content: '', label: 'Slide 08' },
+      { id: 'S9', title: 'Economic Model (Total Cost)', content: '', label: 'Slide 09' },
+      { id: 'S10', title: 'Projected Impact', content: '', label: 'Slide 10' },
+      { id: 'S11', title: 'Technology Stack', content: '', label: 'Slide 11' },
+      { id: 'S12', title: 'System Architecture', content: '', label: 'Slide 12' },
+      { id: 'S13', title: 'Validation & Evidence', content: '', label: 'Slide 13' },
+      { id: 'S14', title: 'Conclusion & Outlook', content: '', label: 'Slide 14' }
     ]
   });
 
@@ -65,24 +73,12 @@ export default function TeamDashboard() {
       if (res.data.submission) {
         if (res.data.submission.content?.slides) {
           setFormData(res.data.submission.content);
-        } else {
-          // Migration/Old Data fallback 
-          const old = res.data.submission.content;
-          setFormData({
-            slides: [
-              { id: 'S1', title: 'Abstract', content: old.abstract || '', label: 'Slide 01' },
-              { id: 'S2', title: 'Problem Statement', content: old.problem || '', label: 'Slide 02' },
-              { id: 'S3', title: 'Proposed Solution', content: old.solution || '', label: 'Slide 03' },
-              { id: 'S4', title: 'System Architecture', content: old.architecture || '', label: 'Slide 04' },
-              { id: 'S5', title: 'Technical Stack', content: old.technologies || '', label: 'Slide 05' },
-              { id: 'S6', title: 'Development Lifecycle', content: '', label: 'Slide 06' },
-              { id: 'S7', title: 'Impact & Metrics', content: old.impact || '', label: 'Slide 07' },
-              { id: 'S8', title: 'Conclusion', content: old.outcome || '', label: 'Slide 08' }
-            ]
-          });
         }
         setSubmission(res.data.submission);
         lastSavedData.current = JSON.stringify(res.data.submission.content);
+      }
+      if (res.data.problemStatement) {
+        setProblemStatement(res.data.problemStatement);
       }
     } catch (err) { console.error(err); }
   };
@@ -187,20 +183,31 @@ export default function TeamDashboard() {
         
         {/* Left Column: Input Form */}
         <div className="lg:col-span-8 space-y-8 animate-fade-in">
-          {isPaused && (
-            <div className="bg-amber-500 text-white p-6 rounded-[2rem] shadow-2xl shadow-amber-500/20 flex items-center gap-6">
-              <span className="text-4xl text-white/50">⚡</span>
-              <div>
-                <h3 className="font-black uppercase text-sm tracking-widest">Environment Locked</h3>
-                <p className="text-xs font-medium text-white/80 mt-0.5 uppercase tracking-wide">Infrastructure is currently under administrative maintenance.</p>
-              </div>
+          {problemStatement && (
+            <div className="bg-indigo-600 text-white p-10 rounded-[2.5rem] shadow-2xl shadow-indigo-600/20 relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
+               <div className="relative z-10">
+                 <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-200">Admin Allotted Challenge</span>
+                      <h3 className="text-3xl font-black uppercase tracking-tighter mt-2">{problemStatement.title}</h3>
+                    </div>
+                    <div className="text-right">
+                       <span className="text-sm font-black bg-white/20 px-4 py-2 rounded-full tabular-nums">Q.{problemStatement.questionNo}</span>
+                       <p className="text-[9px] font-bold text-indigo-200 uppercase tracking-widest mt-2">{problemStatement.subDivisions || 'Main division'}</p>
+                    </div>
+                 </div>
+                 <p className="text-lg font-medium text-indigo-50 leading-relaxed max-w-3xl">
+                   {problemStatement.description}
+                 </p>
+               </div>
             </div>
           )}
 
           <div className={`glass-pane p-12 rounded-[2.5rem] transition-all duration-500 ${isPaused ? 'opacity-30 pointer-events-none grayscale blur-sm scale-[0.98]' : ''}`}>
             <div className="flex flex-col gap-2 mb-12 border-b border-slate-100 pb-8">
-               <h2 className="text-4xl font-black text-navy tracking-tighter uppercase leading-none">Slide-by-Slide Synthesis</h2>
-               <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em]">Construct your technical artifact module by module</p>
+               <h2 className="text-4xl font-black text-navy tracking-tighter uppercase leading-none">High-Fidelity Artifact Synthesis</h2>
+               <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em]">Construct a 14-slide professional artifacts series</p>
             </div>
 
             <div className="space-y-16">

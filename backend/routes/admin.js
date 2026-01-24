@@ -134,8 +134,39 @@ router.delete('/teams/:id', async (req, res) => {
 });
 
 /**
- * 6. APPROVE SUBMISSION
+ * 6. PROBLEM STATEMENTS
  */
+router.get('/problem-statements', async (req, res) => {
+    try {
+        const statements = await prisma.problemStatement.findMany({
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json(statements);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch statements" });
+    }
+});
+
+router.post('/problem-statements', async (req, res) => {
+    const { questionNo, subDivisions, title, description, allottedTo } = req.body;
+    try {
+        const statement = await prisma.problemStatement.create({
+            data: { questionNo, subDivisions, title, description, allottedTo }
+        });
+        res.json({ success: true, statement });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to create statement" });
+    }
+});
+
+router.delete('/problem-statements/:id', async (req, res) => {
+    try {
+        await prisma.problemStatement.delete({ where: { id: req.params.id } });
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to delete statement" });
+    }
+});
 
 /**
  * HELPER: Calculate progress based on 8 mandatory modules
@@ -143,6 +174,14 @@ router.delete('/teams/:id', async (req, res) => {
 function calculateProgress(submission) {
     if (!submission || !submission.content) return 0;
     const content = submission.content;
+    
+    // Check for new Slides structure first
+    if (content.slides && Array.isArray(content.slides)) {
+        const filled = content.slides.filter(s => s.content && s.content.trim().length > 10).length;
+        return Math.min(100, Math.round((filled / content.slides.length) * 100));
+    }
+
+    // Legacy fallback
     const fields = ['title', 'abstract', 'problem', 'solution', 'architecture', 'technologies', 'impact', 'outcome'];
     const filledCount = fields.filter(f => content[f] && content[f].length > 5).length;
     return Math.round((filledCount / fields.length) * 100);

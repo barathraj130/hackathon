@@ -42,6 +42,16 @@ model HackathonConfig {
   eventTheme      Json?    // Colors, fonts
 }
 
+model ProblemStatement {
+  id          String   @id @default(uuid())
+  questionNo  String
+  subDivisions String?
+  title       String
+  description String
+  allottedTo  String? // Optional: Team ID if specifically allotted
+  createdAt   DateTime @default(now())
+}
+
 model Administrator {
   id           String @id @default(uuid())
   email        String @unique
