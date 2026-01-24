@@ -12,115 +12,130 @@ def create_expert_deck(team_name, college, data):
         if os.path.exists("institution_logo.png"):
             slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
 
-    # 1. ORGANIZATIONAL IDENTITY
+    # 1. TITLE & CONTEXT
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_corner_logo(slide)
-    tx = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(9), Inches(1))
+    tx = slide.shapes.add_textbox(Inches(1), Inches(3), Inches(8), Inches(2))
     tf = tx.text_frame
-    tf.text = "Organizational Identity"
-    tf.paragraphs[0].font.size = Pt(36)
+    tf.text = data.get('projectName', 'VENTURE TITLE')
+    tf.paragraphs[0].font.size = Pt(44)
     tf.paragraphs[0].font.bold = True
+    tf.paragraphs[0].font.name = "Arial" # Standard clean sans-serif
 
-    left, top, width, height = Inches(1.5), Inches(2), Inches(7.5), Inches(5)
-    tx_details = slide.shapes.add_textbox(left, top, width, height)
-    tf_details = tx_details.text_frame
-    tf_details.word_wrap = True
-    details = [
-        ("Product / Project", data.get('projectName', 'N/A')),
-        ("Operational Team", team_name),
-        ("Institutional Hub", college)
-    ]
-    for label, value in details:
-        p = tf_details.add_paragraph()
-        p.text = f"{label} : {value}"
-        p.font.size = Pt(28)
-        p.space_after = Pt(14)
+    p = tf.add_paragraph()
+    p.text = f"{college} • Team {team_name}"
+    p.font.size = Pt(24)
+    p.font.bold = False
 
-    # 2. PROBLEM STATEMENT
-    add_bullet_slide(prs, "Problem Statement: Problem Framing", [
-        f"Core Challenge: {data.get('s2_problem', 'N/A')}",
-        f"Affected Domain: {data.get('s2_affected', 'N/A')}",
-        f"Significance: {data.get('s2_significance', 'N/A')}"
-    ])
-
-    # 3. PROBLEM IMPACT GRAPH
-    slide = add_diagram_slide(prs, "Impact vs Frequency Mapping")
+    # 2. CONTEXT / BACKGROUND
+    slide = add_diagram_slide(prs, "Venture Background: Context Mapping")
     add_corner_logo(slide)
-    draw_impact_graph_detailed(slide, data.get('s3_painPoints', []))
+    add_text_to_slide(slide, f"Real-world Context:\n{data.get('s2_context', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(2), size=20)
+    add_text_to_slide(slide, f"Domain / Region: {data.get('s2_domain', 'Global')}", Inches(1), Inches(5), Inches(8), Inches(1), size=18)
 
-    # 4. SOLUTION OVERVIEW
-    add_bullet_slide(prs, "Solution Overview: System Mapping", [
-        f"The Solution: {data.get('s4_solution', 'N/A')}",
-        "Key Capabilities:",
-        f"• {data.get('s4_features', 'N/A').replace(',', '\n• ')}"
+    # 3. PROBLEM & IMPACT
+    slide = add_diagram_slide(prs, "Problem & Impact Breakdown")
+    add_corner_logo(slide)
+    # 2-column layout
+    add_text_to_slide(slide, "CORE PROBLEM", Inches(1), Inches(1.5), Inches(3.5), Inches(0.5), size=16)
+    add_text_to_slide(slide, data.get('s3_problem', 'N/A'), Inches(1), Inches(2.2), Inches(3.5), Inches(3), size=14)
+    
+    add_text_to_slide(slide, "STAKEHOLDER IMPACT", Inches(5.5), Inches(1.5), Inches(3.5), Inches(0.5), size=16)
+    add_text_to_slide(slide, data.get('s3_affected', 'N/A'), Inches(5.5), Inches(2.2), Inches(3.5), Inches(3), size=14)
+
+    # 4. PROBLEM ANALYSIS
+    slide = add_diagram_slide(prs, "Root-Cause Analysis")
+    add_corner_logo(slide)
+    add_text_to_slide(slide, "Primary Root Causes:", Inches(1), Inches(1.5), Inches(8), Inches(0.5), size=16)
+    add_text_to_slide(slide, data.get('s4_rootCauses', 'N/A'), Inches(1), Inches(2), Inches(8), Inches(1.5), size=14)
+    add_text_to_slide(slide, "Why existing solutions fail:", Inches(1), Inches(4), Inches(8), Inches(0.5), size=16)
+    add_text_to_slide(slide, data.get('s4_failureAnalysis', 'N/A'), Inches(1), Inches(4.5), Inches(8), Inches(1.5), size=14)
+
+    # 5. CUSTOMER SEGMENTS
+    slide = add_diagram_slide(prs, "Stakeholder Segmentation")
+    add_corner_logo(slide)
+    segments = data.get('s5_customerSegments', 'N/A').split(',')
+    for i, s in enumerate(segments[:4]):
+        box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1 + i*2.2), Inches(2.5), Inches(2), Inches(1.5))
+        box.fill.solid()
+        box.fill.fore_color.rgb = RGBColor(0, 116, 217)
+        add_text_to_slide(slide, s.strip(), Inches(1 + i*2.2), Inches(2.8), Inches(2), Inches(1), size=12)
+
+    # 6. USER PERSONA & JTBD
+    slide = add_diagram_slide(prs, "Empathy Mapping: Persona & JTBD")
+    add_corner_logo(slide)
+    table = slide.shapes.add_table(2, 2, Inches(1), Inches(2), Inches(8), Inches(3)).table
+    table.cell(0, 0).text = "User Persona"
+    table.cell(0, 1).text = data.get('s6_persona', 'N/A')
+    table.cell(1, 0).text = "Jobs To Be Done"
+    table.cell(1, 1).text = data.get('s6_jtbd', 'N/A')
+
+    # 7. ALTERNATIVES & GAPS
+    slide = add_diagram_slide(prs, "Gap Analysis: Alternatives")
+    add_corner_logo(slide)
+    add_text_to_slide(slide, f"Current Alternatives: {data.get('s7_alternatives', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(1.5), size=16)
+    add_text_to_slide(slide, f"Unaddressed Gaps: {data.get('s7_gaps', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(1.5), size=16)
+
+    # 8. SOLUTION OVERVIEW
+    slide = add_diagram_slide(prs, "Solution Synthesis")
+    add_corner_logo(slide)
+    add_text_to_slide(slide, f"One-line Solution: {data.get('s8_solution', 'N/A')}", Inches(1), Inches(1.8), Inches(8), Inches(1), size=20)
+    draw_flow_diagram(slide, data.get('s8_flow', 'Input->Process->Output'))
+
+    # 9. DESIGN & FEATURES
+    add_bullet_slide(prs, "Solution Design & Prioritized Features", [
+        f"Key Features: {data.get('s9_features', 'N/A')}",
+        f"Differentiation: {data.get('s9_differentiation', 'N/A')}",
+        "Venture Edge: Proprietary Workflow Integration"
     ])
 
-    # 5. VALUE IDENTIFICATION (BALLOON)
+    # 10. VALUE IDENTIFICATION (BALLOON)
     slide = add_diagram_slide(prs, "Balloon Activity: Value vs Constraints")
     add_corner_logo(slide)
     draw_hot_air_balloon_detailed(slide, 
-        data.get('s5_lifts', 'Value Drivers'),
-        data.get('s5_pulls', 'Constraints'),
-        data.get('s5_fuels', 'Innovation Fuel'),
-        data.get('s5_outcome', 'Goal Altitude'))
+        data.get('s10_lifts', 'Value Drivers'),
+        data.get('s10_pulls', 'Constraints'),
+        data.get('s10_fuels', 'Tech Fuel'),
+        data.get('s10_outcome', 'Visionary Altitude'))
 
-    # 6. MARKET SIZE
-    slide = add_diagram_slide(prs, "Market Sizing: TAM-SAM-SOM")
+    # 11. MARKET & COMPETITORS
+    slide = add_diagram_slide(prs, "Market Positioning & Competitors")
     add_corner_logo(slide)
-    draw_concentric_circles_labeled(slide, 
-        data.get('s6_broad', 'TAM'), 
-        data.get('s6_target', 'SAM'), 
-        data.get('s6_initial', 'SOM'))
+    add_competitor_table(slide, data.get('s11_competitors', []))
 
-    # 7. MARKET OPPORTUNITY
-    slide = add_diagram_slide(prs, "Opportunity Validation")
+    # 12. BUSINESS MODEL
+    slide = add_diagram_slide(prs, "Strategic Revenue Model")
     add_corner_logo(slide)
-    draw_growth_chart(slide, data.get('s7_growth', 'Market Expansion Factors'))
-    add_text_to_slide(slide, f"Demand Signal: {data.get('s7_demand', 'N/A')}", Inches(0.5), Inches(5.5), Inches(9), Inches(1))
+    add_text_to_slide(slide, data.get('s12_revenueModel', 'N/A'), Inches(1), Inches(2), Inches(8), Inches(4), size=18)
 
-    # 8. COMPETITOR ANALYSIS
-    slide = add_diagram_slide(prs, "Differentiation: Competitor Matrix")
-    add_corner_logo(slide)
-    add_competitor_table(slide, data.get('s8_competitors', []))
-
-    # 9. COST & VALUE ANALYSIS
-    slide = add_diagram_slide(prs, "Cost-Benefit Analysis Table")
+    # 13. FINANCIAL EVALUATION
+    slide = add_diagram_slide(prs, "Financial Breakdown")
     add_corner_logo(slide)
     add_cost_breakdown_table(slide, 
-        data.get('s9_devCost', '$0'), 
-        data.get('s9_opsCost', '$0'), 
-        data.get('s9_toolsCost', '$0'))
+        data.get('s13_devCost', '$0'), 
+        data.get('s13_opsCost', '$0'), 
+        data.get('s13_toolsCost', '$0'))
 
-    # 10. TECHNOLOGY STACK
-    add_bullet_slide(prs, "Stack Engineering: Feasibility", [
-        f"Frontend: {data.get('s10_frontend', 'N/A')}",
-        f"Backend: {data.get('s10_backend', 'N/A')}",
-        f"Database: {data.get('s10_database', 'N/A')}",
-        f"Integrated Tools: {data.get('s10_tools', 'N/A')}"
+    # 14. METRICS & FUTURE
+    add_bullet_slide(prs, "Impact Assessment & Trajectory", [
+        f"Success Metrics: {data.get('s14_metrics', 'N/A')}",
+        f"Short-term Impact: {data.get('s14_shortTerm', 'N/A')}",
+        f"Long-term Vision: {data.get('s14_longTerm', 'N/A')}"
     ])
 
-    # 11. SYSTEM ARCHITECTURE
-    slide = add_diagram_slide(prs, "System Decomposition: Architecture")
+    # 15. CLOSING / THANK YOU
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_corner_logo(slide)
-    draw_flow_diagram(slide, data.get('s11_flow', 'Sequential Logic Flow'))
+    add_text_to_slide(slide, "THANK YOU.", Inches(1), Inches(3), Inches(8), Inches(1), size=44)
+    add_text_to_slide(slide, "Revolutionizing Venture Potential through Design Synthesis.", Inches(1), Inches(4.2), Inches(8), Inches(1), size=18)
 
-    # 12. VALIDATION & METRICS
-    add_bullet_slide(prs, "Evidence Validation: Metrics Registry", [
-        f"Key Metrics: {data.get('s12_metrics', 'N/A')}",
-        f"Feedback Snippet: {data.get('s12_feedback', 'N/A')}",
-        f"Benchmarks: {data.get('s12_comparisons', 'N/A')}"
-    ])
-
-    # 13. IMPACT & FUTURE SCOPE
-    add_bullet_slide(prs, "Vision Mapping: Scalability", [
-        f"Short-term Impact: {data.get('s13_shortTerm', 'N/A')}",
-        f"Long-term Vision: {data.get('s13_longTerm', 'N/A')}",
-        "Ecosystem State: Evolutionary Deployment"
-    ])
-
-    # 14. FINAL SUMMARY
-    summary_text = "Key Takeaways: Structured Synthesis Complete. System is optimized for high-impact evaluation. Closing Narrative: A future-ready resilient infrastructure."
-    add_bullet_slide(prs, "Strategic Story Closure", summary_text.split('. '))
+    # Save
+    if not os.path.exists('ppt_outputs'):
+        os.makedirs('ppt_outputs')
+    
+    file_path = f"ppt_outputs/{team_name.replace(' ', '_')}_venture_pitch.pptx"
+    prs.save(file_path)
+    return file_path
 
     # Save
     if not os.path.exists('ppt_outputs'):
