@@ -315,7 +315,7 @@ export default function TeamDashboard() {
             {submission?.pptUrl ? (
               <div className="space-y-4">
                 <a 
-                  href={`${process.env.NEXT_PUBLIC_PPT_URL || 'http://localhost:8000'}/outputs/${submission.pptUrl.split('/').pop()}`}
+                  href={`${process.env.NEXT_PUBLIC_PPT_URL || 'https://hackathon-production-c6be.up.railway.app'}/outputs/${submission.pptUrl.split('/').pop()}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex items-center justify-between p-5 bg-emerald-50 border border-emerald-100 rounded-2xl transition-all hover:bg-emerald-100"

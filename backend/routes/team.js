@@ -108,7 +108,7 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         }
 
         // Internal call to ppt-service (Python)
-        const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://ppt-service:8000';
+        const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
         const response = await axios.post(`${pptServiceUrl}/generate`, {
             team_name: team.teamName,
             college_name: team.collegeName,
@@ -129,9 +129,10 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Synthesis Service Error:", err.message);
+        const targetUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
+        console.error("Synthesis Service Error:", err.message, "Target Link:", targetUrl);
         res.status(500).json({ 
-            error: "Synthesis Engine unreachable. Contact Systems Administrator." 
+            error: `Synthesis Engine unreachable at ${targetUrl}. Ensure the Python service is active on Railway and PYTHON_SERVICE_URL is set correctly in backend variables.` 
         });
     }
 });
@@ -150,7 +151,7 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         });
 
         // External call to ppt-service (Python) specialized endpoint
-        const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://ppt-service:8000';
+        const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
         const response = await axios.post(`${pptServiceUrl}/generate-expert-pitch`, {
             team_name: team.teamName,
             college_name: team.collegeName,
@@ -178,9 +179,10 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         });
 
     } catch (err) {
-        console.error("Expert Synthesis Error:", err.message);
+        const targetUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
+        console.error("Expert Synthesis Error:", err.message, "Target Link:", targetUrl);
         res.status(500).json({ 
-            error: "Synthesis Engine unreachable. Contact Systems Administrator." 
+            error: `Expert Synthesis Engine unreachable at ${targetUrl}. Ensure the Python service is active on Railway.` 
         });
     }
 });
