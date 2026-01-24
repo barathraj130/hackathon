@@ -355,9 +355,6 @@ export default function TeamDashboard() {
         </div>
       </main>
 
-        </div>
-      </main>
-
       {/* Submission Workflow Modal */}
       <SubmissionWorkflowModal
         isOpen={showWorkflowModal}
