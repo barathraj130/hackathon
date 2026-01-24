@@ -10,38 +10,41 @@ export default function PitchGenerator() {
   const router = useRouter();
   
   const [data, setData] = useState({
-    // S1: Context framing
-    projectName: '', institutionName: '', teamName: '',
-    // S2: Problem context mapping
-    s2_context: '', s2_domain: '',
-    // S3: Problem-impact breakdown
-    s3_problem: '', s3_affected: '',
-    // S4: Root-cause analysis
-    s4_rootCauses: '', s4_failureAnalysis: '',
-    // S5: Stakeholder segmentation
-    s5_customerSegments: '',
-    // S6: User Persona & JTBD
-    s6_persona: '', s6_jtbd: '',
-    // S7: Gap analysis
-    s7_alternatives: '', s7_gaps: '',
-    // S8: Solution synthesis
-    s8_solution: '', s8_flow: '',
-    // S9: Feature prioritization
-    s9_features: '', s9_differentiation: '',
+    // S1: Identity
+    projectName: '', teamName: '', institutionName: '',
+    // S2: Background
+    s2_domain: '', s2_context: '', s2_rootReason: '',
+    // S3: Problem
+    s3_coreProblem: '', s3_affected: '', s3_whyItMatters: '',
+    // S4: Impact Mapping
+    s4_painPoints: [
+      { point: '', impact: 'High', freq: 'Frequent' },
+      { point: '', impact: 'Medium', freq: 'Occasional' }
+    ],
+    // S5: Stakeholders
+    s5_primaryUsers: '', s5_secondaryUsers: '',
+    // S6: Persona & JTBD
+    s6_personaDetails: '', s6_jobsPainsGains: '',
+    // S7: Gap Analysis
+    s7_alternatives: '', s7_limitations: '',
+    // S8: Solution
+    s8_oneline: '', s8_howItWorks: '', s8_flow: '',
+    // S9: Features
+    s9_coreFeatures: '', s9_differentiators: '',
     // S10: Value Identification (Balloon)
     s10_lifts: '', s10_pulls: '', s10_fuels: '', s10_outcome: '',
-    // S11: Market positioning
+    // S11: Market Positioning
     s11_competitors: [
-      { name: '', strength: '', gap: '' },
-      { name: '', strength: '', gap: '' }
+      { name: '', strength: '', weakness: '' },
+      { name: '', strength: '', weakness: '' }
     ],
-    // S12: Business model framing
-    s12_revenueModel: '',
-    // S13: Cost–benefit evaluation
+    // S12: Business Model
+    s12_revenueModel: '', s12_pricingLogic: '',
+    // S13: Financials
     s13_devCost: '', s13_opsCost: '', s13_toolsCost: '',
-    // S14: Impact assessment
-    s14_metrics: '', s14_shortTerm: '', s14_longTerm: '',
-    // S15: Closing (Auto)
+    // S14: Impact & Scope
+    s14_socialEconomic: '', s14_metrics: '', s14_vision: '',
+    // S15: Closure
     slide_assets: {}
   });
 
@@ -126,20 +129,20 @@ export default function PitchGenerator() {
                         </div>
                         {step === s && (
                           <span className="text-[8px] font-black uppercase tracking-widest text-white animate-fade-in">
-                             {s === 1 && 'Title'}
-                             {s === 2 && 'Context'}
+                             {s === 1 && 'Identity'}
+                             {s === 2 && 'Background'}
                              {s === 3 && 'Problem'}
-                             {s === 4 && 'Analysis'}
-                             {s === 5 && 'Segments'}
+                             {s === 4 && 'Impact'}
+                             {s === 5 && 'Stakeholders'}
                              {s === 6 && 'Persona'}
                              {s === 7 && 'Gaps'}
                              {s === 8 && 'Solution'}
-                             {s === 9 && 'Design'}
+                             {s === 9 && 'Features'}
                              {s === 10 && 'Balloon'}
-                             {s === 11 && 'Competitors'}
+                             {s === 11 && 'Market'}
                              {s === 12 && 'Revenue'}
                              {s === 13 && 'Financials'}
-                             {s === 14 && 'Impact'}
+                             {s === 14 && 'Impact/Future'}
                              {s === 15 && 'Closure'}
                           </span>
                         )}
@@ -162,21 +165,21 @@ export default function PitchGenerator() {
                 <div>
                   <span className="text-[9px] font-black text-teal uppercase tracking-[0.4em] block mb-2">Target Module</span>
                   <h2 className="text-2xl font-black text-navy uppercase tracking-tighter">
-                    {step === 1 && 'Title & Context'}
+                    {step === 1 && 'Identity & Context'}
                     {step === 2 && 'Venture Background'}
-                    {step === 3 && 'Problem & Impact'}
-                    {step === 4 && 'Root-Cause Analysis'}
-                    {step === 5 && 'Customer Segments'}
+                    {step === 3 && 'Problem Framing'}
+                    {step === 4 && 'Impact Mapping'}
+                    {step === 5 && 'Stakeholder Segments'}
                     {step === 6 && 'Persona & JTBD'}
-                    {step === 7 && 'Alternatives & Gaps'}
-                    {step === 8 && 'Solution Overview'}
-                    {step === 9 && 'Design & Features'}
+                    {step === 7 && 'Gap Analysis'}
+                    {step === 8 && 'Proposed Solution'}
+                    {step === 9 && 'Core Features'}
                     {step === 10 && 'Value Balloon'}
                     {step === 11 && 'Market Positioning'}
-                    {step === 12 && 'Business Model'}
-                    {step === 13 && 'Financial Evaluation'}
-                    {step === 14 && 'Metrics & Future'}
-                    {step === 15 && 'Story Closure'}
+                    {step === 12 && 'Revenue Model'}
+                    {step === 13 && 'Financial Analysis'}
+                    {step === 14 && 'Success & Vision'}
+                    {step === 15 && 'Synthesis Closure'}
                   </h2>
                 </div>
                 <div className="text-right">
@@ -184,64 +187,105 @@ export default function PitchGenerator() {
                 </div>
               </div>
 
-              <div className="min-h-[400px]">
+              <div className="min-h-[420px]">
                 {step === 1 && (
                   <div className="space-y-8 animate-fade-in font-roboto">
-                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Context Framing</p>
-                    <div>
-                      <label className="label-caps">Project / Venture Name</label>
-                      <input name="projectName" className="input-field !text-lg !font-bold" value={data.projectName} onChange={handleInputChange} placeholder="Official Identifier" />
+                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Identity Framing</p>
+                    <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-6">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed italic select-none">Prompt: Define the official branding for this venture. This will form your cover identification.</p>
                     </div>
                     <div>
-                      <label className="label-caps">Institution / College Name</label>
-                      <input name="institutionName" className="input-field" value={data.institutionName} onChange={e => setData({...data, institutionName: e.target.value})} placeholder="Full Institutional Title" />
+                      <label className="label-caps">Project / Product Name</label>
+                      <input name="projectName" className="input-field !text-lg !font-bold" value={data.projectName} onChange={handleInputChange} placeholder="Official Title" />
                     </div>
-                    <div>
-                      <label className="label-caps">Team Name</label>
-                      <input name="teamName" className="input-field" value={data.teamName} onChange={handleInputChange} placeholder="Operational Team Hub" />
+                    <div className="grid grid-cols-2 gap-8">
+                       <div>
+                        <label className="label-caps">Team Name</label>
+                        <input name="teamName" className="input-field" value={data.teamName} onChange={handleInputChange} placeholder="Operational Hub" />
+                       </div>
+                       <div>
+                        <label className="label-caps">College / Institution</label>
+                        <input name="institutionName" className="input-field" value={data.institutionName} onChange={e => setData({...data, institutionName: e.target.value})} placeholder="Full Institutional Hub" />
+                       </div>
                     </div>
                   </div>
                 )}
 
                 {step === 2 && (
                   <div className="space-y-8 animate-fade-in font-roboto">
-                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Problem Context Mapping</p>
-                    <div>
-                      <label className="label-caps">Real-world Context</label>
-                      <textarea className="input-field min-h-[120px]" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} placeholder="Environmental or social situation..." />
+                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Context Mapping</p>
+                    <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-6 font-medium text-[10px] text-slate-500 italic">
+                      Identify why this problem exists in its current domain.
                     </div>
                     <div>
-                      <label className="label-caps">Domain / Region</label>
-                      <input className="input-field" value={data.s2_domain} onChange={e => setData({...data, s2_domain: e.target.value})} placeholder="Geographic or industrial scope" />
+                      <label className="label-caps">Domain / Industry</label>
+                      <input className="input-field" value={data.s2_domain} onChange={e => setData({...data, s2_domain: e.target.value})} placeholder="Ex: Sustainable Logistics" />
+                    </div>
+                    <div>
+                      <label className="label-caps">Real-world Context</label>
+                      <textarea className="input-field min-h-[100px]" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} placeholder="Current situational landscape..." />
+                    </div>
+                    <div>
+                      <label className="label-caps">Why does this problem exist?</label>
+                      <input className="input-field" value={data.s2_rootReason} onChange={e => setData({...data, s2_rootReason: e.target.value})} placeholder="Root driver of existence" />
                     </div>
                   </div>
                 )}
 
                 {step === 3 && (
                    <div className="space-y-8 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Problem–Impact Breakdown</p>
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Problem Framing</p>
                       <div>
                         <label className="label-caps">Core Problem</label>
-                        <textarea className="input-field min-h-[100px]" value={data.s3_problem} onChange={e => setData({...data, s3_problem: e.target.value})} placeholder="Acute pain point identified..." />
+                        <textarea className="input-field min-h-[100px]" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: e.target.value})} placeholder="The single most acute pain point..." />
                       </div>
                       <div>
                         <label className="label-caps">Who is affected?</label>
-                        <input className="input-field" value={data.s3_affected} onChange={e => setData({...data, s3_affected: e.target.value})} placeholder="Stakeholder groups" />
+                        <input className="input-field" value={data.s3_affected} onChange={e => setData({...data, s3_affected: e.target.value})} placeholder="Target stakeholder groups" />
+                      </div>
+                      <div>
+                        <label className="label-caps">Why does it matter?</label>
+                        <input className="input-field" value={data.s3_whyItMatters} onChange={e => setData({...data, s3_whyItMatters: e.target.value})} placeholder="Consequence of inaction" />
                       </div>
                    </div>
                 )}
 
                 {step === 4 && (
-                   <div className="space-y-8 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Root-Cause Analysis</p>
-                      <div>
-                        <label className="label-caps">Root Causes</label>
-                        <textarea className="input-field min-h-[100px]" value={data.s4_rootCauses} onChange={e => setData({...data, s4_rootCauses: e.target.value})} placeholder="Underlying drivers of the problem..." />
-                      </div>
-                      <div>
-                        <label className="label-caps">Why existing solutions fail?</label>
-                        <textarea className="input-field min-h-[100px]" value={data.s4_failureAnalysis} onChange={e => setData({...data, s4_failureAnalysis: e.target.value})} placeholder="Gaps in current methodologies" />
-                      </div>
+                   <div className="space-y-6 animate-fade-in font-roboto">
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Impact Mapping</p>
+                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-4 text-[9px] font-black text-slate-400 tracking-widest uppercase italic">The engine will convert these points into a frequency/impact graph.</div>
+                      {data.s4_painPoints.map((pp, idx) => (
+                        <div key={idx} className="glass-pane p-5 rounded-2xl flex gap-6 items-end border-slate-100/50">
+                           <div className="flex-grow">
+                              <label className="label-caps !text-[8px]">Pain Point</label>
+                              <input className="input-field !bg-white" value={pp.point} onChange={e => {
+                                 const updated = [...data.s4_painPoints];
+                                 updated[idx].point = e.target.value;
+                                 setData({...data, s4_painPoints: updated});
+                              }} />
+                           </div>
+                           <div>
+                              <label className="label-caps !text-[8px]">Impact</label>
+                              <select className="input-field !bg-white py-2" value={pp.impact} onChange={e => {
+                                 const updated = [...data.s4_painPoints];
+                                 updated[idx].impact = e.target.value;
+                                 setData({...data, s4_painPoints: updated});
+                              }}>
+                                 <option>Low</option><option>Medium</option><option>High</option>
+                              </select>
+                           </div>
+                           <div>
+                              <label className="label-caps !text-[8px]">Frequency</label>
+                              <select className="input-field !bg-white py-2" value={pp.freq} onChange={e => {
+                                 const updated = [...data.s4_painPoints];
+                                 updated[idx].freq = e.target.value;
+                                 setData({...data, s4_painPoints: updated});
+                              }}>
+                                 <option>Rare</option><option>Occasional</option><option>Frequent</option>
+                              </select>
+                           </div>
+                        </div>
+                      ))}
                    </div>
                 )}
 
@@ -249,8 +293,12 @@ export default function PitchGenerator() {
                    <div className="space-y-8 animate-fade-in font-roboto">
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Stakeholder Segmentation</p>
                       <div>
-                        <label className="label-caps">Customer Segments</label>
-                        <textarea className="input-field min-h-[150px]" value={data.s5_customerSegments} onChange={e => setData({...data, s5_customerSegments: e.target.value})} placeholder="Segment A, Segment B, Segment C..." />
+                        <label className="label-caps">Primary Users</label>
+                        <textarea className="input-field min-h-[100px]" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: e.target.value})} placeholder="Those who use the core solution daily..." />
+                      </div>
+                      <div>
+                        <label className="label-caps">Secondary Users</label>
+                        <textarea className="input-field min-h-[100px]" value={data.s5_secondaryUsers} onChange={e => setData({...data, s5_secondaryUsers: e.target.value})} placeholder="Beneficiaries or peripheral stakeholders..." />
                       </div>
                    </div>
                 )}
@@ -259,12 +307,12 @@ export default function PitchGenerator() {
                    <div className="space-y-8 animate-fade-in font-roboto">
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Empathy Mapping (Persona & JTBD)</p>
                       <div>
-                        <label className="label-caps">User Persona</label>
-                        <input className="input-field" value={data.s6_persona} onChange={e => setData({...data, s6_persona: e.target.value})} placeholder="Ex: Experienced rural engineer" />
+                        <label className="label-caps">User Persona Details</label>
+                        <textarea className="input-field" value={data.s6_personaDetails} onChange={e => setData({...data, s6_personaDetails: e.target.value})} placeholder="Age, Role, Psychology, Technology barriers..." />
                       </div>
                       <div>
-                        <label className="label-caps">Jobs To Be Done (JTBD)</label>
-                        <textarea className="input-field" value={data.s6_jtbd} onChange={e => setData({...data, s6_jtbd: e.target.value})} placeholder="Primary tasks user needs to complete..." />
+                        <label className="label-caps">Jobs, Pains & Gains</label>
+                        <textarea className="input-field min-h-[120px]" value={data.s6_jobsPainsGains} onChange={e => setData({...data, s6_jobsPainsGains: e.target.value})} placeholder="What are they trying to do? What stops them? What is the win?" />
                       </div>
                    </div>
                 )}
@@ -273,12 +321,12 @@ export default function PitchGenerator() {
                    <div className="space-y-8 animate-fade-in font-roboto">
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Gap Analysis</p>
                       <div>
-                        <label className="label-caps">Current Alternatives</label>
-                        <textarea className="input-field" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} placeholder="What are they using today?" />
+                        <label className="label-caps">Existing Alternatives</label>
+                        <textarea className="input-field" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} placeholder="What is the user using right now? (Ex: Manual spreadsheets)" />
                       </div>
                       <div>
-                        <label className="label-caps">Unaddressed Gaps</label>
-                        <textarea className="input-field" value={data.s7_gaps} onChange={e => setData({...data, s7_gaps: e.target.value})} placeholder="Specific failures of alternatives" />
+                        <label className="label-caps">Critical Limitations</label>
+                        <textarea className="input-field" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: e.target.value})} placeholder="Specific failures of current methods" />
                       </div>
                    </div>
                 )}
@@ -288,11 +336,15 @@ export default function PitchGenerator() {
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Solution Synthesis</p>
                       <div>
                         <label className="label-caps">One-line Solution</label>
-                        <input className="input-field !text-lg !font-bold" value={data.s8_solution} onChange={e => setData({...data, s8_solution: e.target.value})} />
+                        <input className="input-field !text-lg !font-bold" value={data.s8_oneline} onChange={e => setData({...data, s8_oneline: e.target.value})} placeholder="Elevator Definition" />
                       </div>
                       <div>
-                        <label className="label-caps">System Flow Summary</label>
-                        <textarea className="input-field" value={data.s8_flow} onChange={e => setData({...data, s8_flow: e.target.value})} placeholder="A to B to C..." />
+                        <label className="label-caps">Mechanism (How it works)</label>
+                        <textarea className="input-field" value={data.s8_howItWorks} onChange={e => setData({...data, s8_howItWorks: e.target.value})} placeholder="The fundamental process logic..." />
+                      </div>
+                      <div>
+                        <label className="label-caps">Logic Flow Summary</label>
+                        <input className="input-field" value={data.s8_flow} onChange={e => setData({...data, s8_flow: e.target.value})} placeholder="Phase A -> Phase B -> Output" />
                       </div>
                    </div>
                 )}
@@ -300,13 +352,15 @@ export default function PitchGenerator() {
                 {step === 9 && (
                    <div className="space-y-8 animate-fade-in font-roboto">
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Feature Prioritization</p>
-                      <div>
-                        <label className="label-caps">Key Features</label>
-                        <textarea className="input-field" value={data.s9_features} onChange={e => setData({...data, s9_features: e.target.value})} placeholder="High-impact technical features" />
-                      </div>
-                      <div>
-                        <label className="label-caps">Differentiation Points</label>
-                        <textarea className="input-field" value={data.s9_differentiation} onChange={e => setData({...data, s9_differentiation: e.target.value})} placeholder="Unique Value Proposition" />
+                      <div className="grid grid-cols-2 gap-8">
+                        <div>
+                          <label className="label-caps">Core Features</label>
+                          <textarea className="input-field min-h-[150px]" value={data.s9_coreFeatures} onChange={e => setData({...data, s9_coreFeatures: e.target.value})} placeholder="Non-negotiable technical modules..." />
+                        </div>
+                        <div>
+                          <label className="label-caps">Differentiators</label>
+                          <textarea className="input-field min-h-[150px]" value={data.s9_differentiators} onChange={e => setData({...data, s9_differentiators: e.target.value})} placeholder="What makes this unique?" />
+                        </div>
                       </div>
                    </div>
                 )}
@@ -317,20 +371,20 @@ export default function PitchGenerator() {
                     <div className="grid grid-cols-2 gap-8">
                        <div>
                          <label className="label-caps text-emerald-500">🎈 Lifts (Value)</label>
-                         <textarea className="input-field" value={data.s10_lifts} onChange={e => setData({...data, s10_lifts: e.target.value})} />
+                         <textarea className="input-field !bg-emerald-50/10" value={data.s10_lifts} onChange={e => setData({...data, s10_lifts: e.target.value})} />
                        </div>
                        <div>
-                         <label className="label-caps text-rose-500">⚓ Pulls (Constraints)</label>
-                         <textarea className="input-field" value={data.s10_pulls} onChange={e => setData({...data, s10_pulls: e.target.value})} />
+                         <label className="label-caps text-rose-500">⚓ Pulls (Costs/Risks)</label>
+                         <textarea className="input-field !bg-rose-50/10" value={data.s10_pulls} onChange={e => setData({...data, s10_pulls: e.target.value})} />
                        </div>
                     </div>
                     <div className="grid grid-cols-2 gap-8">
                        <div>
-                         <label className="label-caps text-teal">⚡ Fuel (Tech)</label>
+                         <label className="label-caps text-teal">⚡ Fuel (Tech Strengths)</label>
                          <input className="input-field" value={data.s10_fuels} onChange={e => setData({...data, s10_fuels: e.target.value})} />
                        </div>
                        <div>
-                         <label className="label-caps">☁️ Outcome</label>
+                         <label className="label-caps">🏁 Desired Outcome</label>
                          <input className="input-field" value={data.s10_outcome} onChange={e => setData({...data, s10_outcome: e.target.value})} />
                        </div>
                     </div>
@@ -340,8 +394,9 @@ export default function PitchGenerator() {
                 {step === 11 && (
                    <div className="space-y-6 animate-fade-in font-roboto">
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Market Positioning</p>
+                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-4 text-[9px] font-black text-slate-400 tracking-widest uppercase italic">The engine will build a comparison matrix based on this analysis.</div>
                       {data.s11_competitors.map((c, idx) => (
-                        <div key={idx} className="glass-pane p-6 rounded-2xl grid grid-cols-3 gap-6">
+                        <div key={idx} className="glass-pane p-5 rounded-2xl grid grid-cols-3 gap-6">
                            <div>
                               <label className="label-caps !text-[8px]">Competitor</label>
                               <input className="input-field !bg-white" value={c.name} onChange={e => {
@@ -359,10 +414,10 @@ export default function PitchGenerator() {
                               }} />
                            </div>
                            <div>
-                              <label className="label-caps !text-[8px]">Gaps / Edge</label>
-                              <input className="input-field !bg-white" value={c.gap} onChange={e => {
+                              <label className="label-caps !text-[8px]">Weaknesses</label>
+                              <input className="input-field !bg-white" value={c.weakness} onChange={e => {
                                  const updated = [...data.s11_competitors];
-                                 updated[idx].gap = e.target.value;
+                                 updated[idx].weakness = e.target.value;
                                  setData({...data, s11_competitors: updated});
                               }} />
                            </div>
@@ -375,15 +430,19 @@ export default function PitchGenerator() {
                    <div className="space-y-8 animate-fade-in font-roboto">
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Business Model Framing</p>
                       <div>
-                        <label className="label-caps">Revenue Methodology</label>
-                        <textarea className="input-field min-h-[150px]" value={data.s12_revenueModel} onChange={e => setData({...data, s12_revenueModel: e.target.value})} placeholder="Monetization Strategy & Model..." />
+                        <label className="label-caps">Revenue Model</label>
+                        <textarea className="input-field min-h-[120px]" value={data.s12_revenueModel} onChange={e => setData({...data, s12_revenueModel: e.target.value})} placeholder="How does this venture sustain itself?" />
+                      </div>
+                      <div>
+                        <label className="label-caps">Pricing Logic</label>
+                        <input className="input-field" value={data.s12_pricingLogic} onChange={e => setData({...data, s12_pricingLogic: e.target.value})} placeholder="Tiered, Licensing, Subscription?" />
                       </div>
                    </div>
                 )}
 
                 {step === 13 && (
                    <div className="space-y-8 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Cost–Benefit Evaluation</p>
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Cost Analysis</p>
                       <div className="grid grid-cols-3 gap-6">
                         <div>
                            <label className="label-caps">Development</label>
@@ -394,7 +453,7 @@ export default function PitchGenerator() {
                            <input className="input-field" value={data.s13_opsCost} onChange={e => setData({...data, s13_opsCost: e.target.value})} />
                         </div>
                         <div>
-                           <label className="label-caps">Infrastructure</label>
+                           <label className="label-caps">Tools / Infra</label>
                            <input className="input-field" value={data.s13_toolsCost} onChange={e => setData({...data, s13_toolsCost: e.target.value})} />
                         </div>
                       </div>
@@ -405,34 +464,32 @@ export default function PitchGenerator() {
                    <div className="space-y-8 animate-fade-in font-roboto">
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Impact Assessment</p>
                       <div>
-                        <label className="label-caps">Key Metrics</label>
-                        <input className="input-field" value={data.s14_metrics} onChange={e => setData({...data, s14_metrics: e.target.value})} />
+                        <label className="label-caps">Social / Economic Impact</label>
+                        <textarea className="input-field" value={data.s14_socialEconomic} onChange={e => setData({...data, s14_socialEconomic: e.target.value})} placeholder="The broader win for society or industry" />
                       </div>
-                      <div className="grid grid-cols-2 gap-8">
-                        <div>
-                          <label className="label-caps">Short-term Impact</label>
-                          <textarea className="input-field" value={data.s14_shortTerm} onChange={e => setData({...data, s14_shortTerm: e.target.value})} />
-                        </div>
-                        <div>
-                          <label className="label-caps">Long-term Vision</label>
-                          <textarea className="input-field" value={data.s14_longTerm} onChange={e => setData({...data, s14_longTerm: e.target.value})} />
-                        </div>
+                      <div>
+                        <label className="label-caps">Key Metrics for Success</label>
+                        <input className="input-field" value={data.s14_metrics} onChange={e => setData({...data, s14_metrics: e.target.value})} placeholder="KPIs that matter" />
+                      </div>
+                      <div>
+                        <label className="label-caps">Future Vision</label>
+                        <input className="input-field" value={data.s14_vision} onChange={e => setData({...data, s14_vision: e.target.value})} placeholder="Project state in 5 years" />
                       </div>
                    </div>
                 )}
 
                 {step === 15 && (
                    <div className="space-y-12 animate-fade-in py-10 flex flex-col items-center justify-center text-center font-roboto">
-                      <div className="w-24 h-24 bg-teal/10 rounded-full flex items-center justify-center text-5xl mb-6 shadow-inner animate-pulse">🎯</div>
+                      <div className="w-24 h-24 bg-teal/10 rounded-full flex items-center justify-center text-5xl mb-6 shadow-inner animate-pulse">🏛️</div>
                       <div>
                         <p className="text-[10px] font-black text-teal uppercase tracking-[0.4em] mb-2">Activity: Story Closure</p>
-                        <h3 className="text-4xl font-black text-navy uppercase tracking-tighter">Venture Narrative Locked</h3>
-                        <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em] mt-3">All 15 synthesis modules are ready for generation</p>
+                        <h3 className="text-4xl font-black text-navy uppercase tracking-tighter">Venture Narrative Finalized</h3>
+                        <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em] mt-3">All 15 intelligent modules are ready for artifact synthesis</p>
                       </div>
-                      <div className="p-10 glass-pane rounded-[3rem] max-w-xl border-teal/20 italic shadow-2xl relative overflow-hidden">
+                      <div className="p-10 glass-pane rounded-[3rem] max-w-xl border-teal/20 italic shadow-2xl relative overflow-hidden bg-white">
                         <div className="absolute top-0 left-0 w-2 h-full bg-teal opacity-20"></div>
                         <p className="text-base font-medium text-slate-600 leading-relaxed">
-                          "The venture journey is complete. The engine will now compile a professional, institutionally consistent **High-Fidelity Pitch Deck** with your structured inputs and visuals."
+                          "System state is locked. The engine will now compile an investor-grade **High-Fidelity Pitch Artifact** with consistent typography, professional charts, and structured logic flows."
                         </p>
                       </div>
                    </div>
@@ -441,22 +498,35 @@ export default function PitchGenerator() {
                 {/* Per-Slide Assets Section */}
                 {step < 15 && (
                   <div className="mt-12 pt-8 border-t border-slate-50">
-                    <button className="text-[9px] font-black uppercase tracking-widest text-slate-300 hover:text-teal transition-colors flex items-center gap-2 mb-4">
-                      <span className="w-4 h-[1px] bg-current"></span> Assets & References
-                    </button>
-                    <div className="grid grid-cols-2 gap-6">
-                       <input 
-                         className="bg-transparent border border-dashed border-slate-200 rounded-xl px-4 py-3 text-[10px] outline-none focus:border-teal/50" 
-                         placeholder="External Link" 
-                         value={data.slide_assets[`s${step}_link`] || ''}
-                         onChange={e => updateAsset(`s${step}_link`, e.target.value)}
-                       />
-                       <input 
-                         className="bg-transparent border border-dashed border-slate-200 rounded-xl px-4 py-3 text-[10px] outline-none focus:border-teal/50" 
-                         placeholder="Reference Note" 
-                         value={data.slide_assets[`s${step}_note`] || ''}
-                         onChange={e => updateAsset(`s${step}_note`, e.target.value)}
-                       />
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 flex items-center gap-2 mb-4">
+                      <span className="w-4 h-[1px] bg-current"></span> Assets & Reference Protocol
+                    </p>
+                    <div className="grid grid-cols-3 gap-4">
+                       <div className="relative group">
+                          <input 
+                            className="w-full bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-4 text-[9px] outline-none focus:border-teal/50 transition-all font-bold" 
+                            placeholder="Image / Screenshot Link" 
+                            value={data.slide_assets[`s${step}_img`] || ''}
+                            onChange={e => updateAsset(`s${step}_img`, e.target.value)}
+                          />
+                          <div className="absolute top-[-8px] left-3 px-2 bg-white text-[7px] font-black text-slate-300 uppercase letter-tracking-widest opacity-0 group-focus-within:opacity-100 transition-opacity">Image Link</div>
+                       </div>
+                       <div className="relative group">
+                          <input 
+                            className="w-full bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-4 text-[9px] outline-none focus:border-teal/50 transition-all font-bold" 
+                            placeholder="External Resource URL" 
+                            value={data.slide_assets[`s${step}_link`] || ''}
+                            onChange={e => updateAsset(`s${step}_link`, e.target.value)}
+                          />
+                       </div>
+                       <div className="relative group">
+                          <input 
+                            className="w-full bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-4 text-[9px] outline-none focus:border-teal/50 transition-all font-bold" 
+                            placeholder="Reference Note / ID" 
+                            value={data.slide_assets[`s${step}_note`] || ''}
+                            onChange={e => updateAsset(`s${step}_note`, e.target.value)}
+                          />
+                       </div>
                     </div>
                   </div>
                 )}
