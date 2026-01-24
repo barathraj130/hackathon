@@ -110,21 +110,20 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         const content = team.submission.content;
         
         // Handle new slide format validation
-        if (content.slides && Array.isArray(content.slides)) {
+        if (content.projectName || content.s2_problem) {
+            // New High-Fidelity Schema detected - allow generation
+            console.log("[SYNTHESIS] High-Fidelity schema detected. Proceeding.");
+        } else if (content.slides && Array.isArray(content.slides)) {
             const incomplete = content.slides.filter(s => !s.content || s.content.trim().length < 10);
-            if (incomplete.length > 3) { // Allow some empty slides but not most
+            if (incomplete.length > 5) { // Relax validation to encourage progress
                 return res.status(400).json({ 
-                    error: `Synthesis halted. ${incomplete.length} slides have insufficient detail. Please populate your technical slides before generating.` 
+                    error: `Synthesis halted. Insufficient detail in ${incomplete.length} slides.` 
                 });
             }
         } else {
-            // Legacy fallback validation
-            const requiredFields = ['abstract', 'problem', 'solution', 'architecture', 'technologies', 'impact', 'outcome'];
-            const missing = requiredFields.filter(f => !content[f] || content[f].length < 10);
-            if (missing.length > 0) {
-                return res.status(400).json({ 
-                    error: `Synthesis halted. Incomplete modules: ${missing.join(', ')}.` 
-                });
+            // Legacy/Basic validation
+            if (Object.keys(content).length < 3) {
+                return res.status(400).json({ error: "Insufficient data for synthesis." });
             }
         }
 
@@ -174,6 +173,7 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
         // External call to ppt-service (Python) specialized endpoint
         const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
+        console.log(`[EXPERT SYNTHESIS] Initialization at: ${pptServiceUrl}`);
         const response = await axios.post(`${pptServiceUrl}/generate-expert-pitch`, {
             team_name: team.teamName,
             college_name: team.collegeName,
