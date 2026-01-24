@@ -10,14 +10,27 @@ export default function PitchGenerator() {
   const router = useRouter();
   
   const [data, setData] = useState({
-    drivers: '',
-    constraints: '',
-    fuel: '',
-    futureOutcome: '',
-    // Cost Analysis
-    costComponents: '',
-    totalEstimatedCost: '',
-    valueVsCost: ''
+    projectName: '', teamName: '', collegeName: '',
+    s2_problem: '', s2_affected: '', s2_significance: '',
+    s3_painPoints: [
+      { point: '', impact: 'Medium', freq: 'Occasional' },
+      { point: '', impact: 'Medium', freq: 'Occasional' },
+      { point: '', impact: 'Medium', freq: 'Occasional' }
+    ],
+    s4_solution: '', s4_features: '',
+    s5_lifts: '', s5_pulls: '', s5_fuels: '', s5_outcome: '',
+    s6_broad: '', s6_target: '', s6_initial: '',
+    s7_growth: '', s7_demand: '',
+    s8_competitors: [
+      { name: '', strength: '', gap: '' },
+      { name: '', strength: '', gap: '' }
+    ],
+    s9_devCost: '', s9_opsCost: '', s9_toolsCost: '',
+    s10_frontend: '', s10_backend: '', s10_database: '', s10_tools: '',
+    s11_flow: '',
+    s12_metrics: '', s12_feedback: '', s12_comparisons: '',
+    s13_shortTerm: '', s13_longTerm: '',
+    slide_assets: {}
   });
 
   const handleInputChange = (e) => {
