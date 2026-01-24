@@ -126,20 +126,25 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
     try {
         const team = await prisma.team.findUnique({
-            where: { id: teamId },
-            include: { submission: true }
+            where: { id: teamId }
         });
 
-        if (!team.submission || !team.submission.content) {
+        // TEMPORARY FIX: Strict Select for Submission to avoid schema error
+        const submission = await prisma.submission.findUnique({
+            where: { teamId: teamId },
+            select: { id: true, content: true, pptUrl: true, status: true }
+        });
+
+        if (!submission || !submission.content) {
             return res.status(400).json({ error: "Insufficient data for synthesis." });
         }
 
-        // Check if already submitted and regeneration is not allowed
-        if (team.submission.pptUrl && !team.submission.canRegenerate) {
-            return res.status(403).json({ 
-                error: "Submission locked. You have already generated your presentation. Contact admin for regeneration permission." 
-            });
+        /* 
+        // TEMPORARY DISABLE: Schema migration pending
+        if (submission.pptUrl && !submission.canRegenerate) {
+            return res.status(403).json({ error: "Locked..." });
         }
+        */
 
         let response;
         let lastErr;
@@ -150,7 +155,7 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
                 response = await axios.post(`${url}/generate`, {
                     team_name: team.teamName,
                     college_name: team.collegeName,
-                    content: team.submission.content
+                    content: submission.content
                 }, { timeout: 15000 });
 
                 if (response.data.success) break;
@@ -164,15 +169,14 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
         if (!response || !response.data.success) throw lastErr || new Error("All uplinks exhausted.");
 
-        // Lock the submission after first generation
+        // UPDATE WITHOUT NEW COLUMNS
         await prisma.submission.update({
             where: { teamId: teamId },
             data: { 
                 pptUrl: response.data.file_url, 
-                status: 'SUBMITTED',
-                canRegenerate: false, // Lock after first generation
-                submittedAt: new Date()
-            }
+                status: 'SUBMITTED'
+            },
+            select: { id: true, pptUrl: true, status: true }
         });
 
         res.json({ success: true, message: "Document Synthesis Complete. Please submit your prototype link and certificate details to finalize." });
