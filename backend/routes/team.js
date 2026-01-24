@@ -144,14 +144,31 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
             }
         }
 
-        // Internal call to ppt-service (Python)
-        const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
-        console.log(`[SYNTHESIS] Routing request to: ${pptServiceUrl}`);
-        const response = await axios.post(`${pptServiceUrl}/generate`, {
-            team_name: team.teamName,
-            college_name: team.collegeName,
-            content: team.submission.content
-        });
+        const tryUrls = [
+            process.env.PYTHON_SERVICE_URL,
+            'http://ppt-service.railway.internal:8000',
+            'https://hackathon-production-c6be.up.railway.app'
+        ].filter(Boolean);
+
+        let response;
+        let lastErr;
+
+        for (const url of tryUrls) {
+            try {
+                console.log(`[SYNTHESIS] Attempting uplink: ${url}/generate`);
+                response = await axios.post(`${url}/generate`, {
+                    team_name: team.teamName,
+                    college_name: team.collegeName,
+                    content: team.submission.content
+                }, { timeout: 15000 });
+                if (response.data.success) break;
+            } catch (e) {
+                lastErr = e;
+                console.log(`[SYNTHESIS] Uplink failed at ${url}: ${e.message}`);
+            }
+        }
+
+        if (!response) throw lastErr;
 
         await prisma.submission.update({
             where: { teamId: teamId },
@@ -167,10 +184,11 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         });
 
     } catch (err) {
-        const targetUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
-        console.error("Synthesis Service Error:", err.message, "Target Link:", targetUrl);
+        const externalUrl = 'https://hackathon-production-c6be.up.railway.app';
+        const targetUrl = process.env.PYTHON_SERVICE_URL || externalUrl;
+        console.error("Synthesis Service Error:", err.message);
         res.status(500).json({ 
-            error: `Synthesis Engine unreachable at ${targetUrl}. Ensure the Python service is active on Railway and PYTHON_SERVICE_URL is set correctly in backend variables.` 
+            error: `Synthesis Engine unreachable. Ensure the Python project is active on Railway. (Technical Uplink: ${targetUrl})` 
         });
     }
 });
@@ -189,13 +207,31 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             where: { id: teamId }
         });
 
-        const pptServiceUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
-        console.log(`[EXPERT SYNTHESIS] Initialization at: ${pptServiceUrl}`);
-        const response = await axios.post(`${pptServiceUrl}/generate-expert-pitch`, {
-            team_name: team.teamName,
-            college_name: team.collegeName,
-            project_data: projectData
-        });
+        const tryUrls = [
+            process.env.PYTHON_SERVICE_URL,
+            'http://ppt-service.railway.internal:8000',
+            'https://hackathon-production-c6be.up.railway.app'
+        ].filter(Boolean);
+
+        let response;
+        let lastErr;
+
+        for (const url of tryUrls) {
+            try {
+                console.log(`[EXPERT SYNTHESIS] Attempting uplink: ${url}/generate-expert-pitch`);
+                response = await axios.post(`${url}/generate-expert-pitch`, {
+                    team_name: team.teamName,
+                    college_name: team.collegeName,
+                    project_data: projectData
+                }, { timeout: 15000 });
+                if (response.data.success) break;
+            } catch (e) {
+                lastErr = e;
+                console.log(`[EXPERT SYNTHESIS] Uplink failed at ${url}: ${e.message}`);
+            }
+        }
+
+        if (!response) throw lastErr;
 
         await prisma.submission.upsert({
             where: { teamId: teamId },
@@ -214,8 +250,15 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
         res.json({ success: true, message: "Expert Pitch Deck Synthesis Complete." });
     } catch (err) {
-        const targetUrl = process.env.PYTHON_SERVICE_URL || 'https://hackathon-production-c6be.up.railway.app';
-        res.status(500).json({ error: `Expert Synthesis Engine unreachable at ${targetUrl}.` });
+        // Fallback Strategy: Internal Discovery
+        const internalUrl = 'http://ppt-service.railway.internal:8000';
+        const externalUrl = 'https://hackathon-production-c6be.up.railway.app';
+        const targetUrl = process.env.PYTHON_SERVICE_URL || externalUrl;
+        
+        console.error("Expert Synthesis Error:", err.message);
+        res.status(500).json({ 
+            error: `Expert Synthesis Engine unreachable. Ensure the Python project is active on Railway. (Technical Uplink: ${targetUrl})` 
+        });
     }
 });
 
