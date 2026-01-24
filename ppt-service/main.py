@@ -1,91 +1,82 @@
 # ppt-service/main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from synthesis_logic import polish_content
 from generator import create_pptx
+from expert_synthesis import create_expert_deck
+from fastapi.responses import FileResponse
 import uvicorn
 import os
 import traceback
-from fastapi.responses import FileResponse
-from fastapi import HTTPException
 
-app = FastAPI()
+app = FastAPI(title="Institutional Synthesis Engine")
 
-# Ensure output directory exists at startup
-if not os.path.exists("ppt_outputs"):
-    os.makedirs("ppt_outputs")
+# --- INITIALIZATION ---
+OUT_DIR = "ppt_outputs"
+if not os.path.exists(OUT_DIR):
+    os.makedirs(OUT_DIR)
 
+class SynthesisRequest(BaseModel):
+    team_name: str
+    college_name: str
+    content: dict = None
+    project_data: dict = None # Backward compat for expert
+
+# --- ARTIFACT DELIVERY ---
 @app.get("/outputs/{filename}")
 def get_artifact(filename: str):
-    base_dir = "ppt_outputs"
-    file_path = os.path.join(base_dir, filename)
+    file_path = os.path.join(OUT_DIR, filename)
     
-    # 1. High-Priority Direct Match
+    # Direct Match
     if os.path.exists(file_path):
         return FileResponse(file_path)
     
-    # 2. Case-Insensitive Recovery Logic
-    if os.path.exists(base_dir):
-        existing_files = os.listdir(base_dir)
-        for f in existing_files:
-            if f.lower() == filename.lower():
-                return FileResponse(os.path.join(base_dir, f))
+    # Case-Insensitive Deep Recovery
+    for f in os.listdir(OUT_DIR):
+        if f.lower() == filename.lower():
+            return FileResponse(os.path.join(OUT_DIR, f))
                 
-    # 3. Cluster Metadata 404
-    raise HTTPException(status_code=404, detail=f"Artifact '{filename}' not found on this node. State may have been reset by deployment.")
+    raise HTTPException(status_code=404, detail=f"Artifact '{filename}' not found. Node state Reset.")
 
-@app.get("/")
-def health_check():
-    return {"status": "online", "service": "Synthesis Engine"}
-
-class PPTRequest(BaseModel):
-    team_name: str
-    college_name: str
-    content: dict
-
-class ExpertPPTRequest(BaseModel):
-    team_name: str
-    college_name: str
-    project_data: dict
-
+# --- CORE SYNTHESIS ENGINE ---
+@app.post("/generate-artifact")
 @app.post("/generate")
-def generate_ppt(data: PPTRequest):
-    # 1. Format the content using our logic engine
-    processed_content = polish_content(data.content)
-    
-    # 2. Create the actual .pptx file
-    file_path = create_pptx(data.team_name, data.college_name, processed_content)
-    
-    return {
-        "success": True, 
-        "file_url": file_path,
-        "message": "PPT Generated successfully"
-    }
-
 @app.post("/generate-expert-pitch")
-def generate_expert_pitch(data: ExpertPPTRequest):
+def unified_synthesis(data: SynthesisRequest):
     try:
-        from expert_synthesis import create_expert_deck
-        # This calls the advanced synthesis engine with diagrams
-        file_path = create_expert_deck(data.team_name, data.college_name, data.project_data)
+        # 1. Route Intelligence: Detect standard vs expert
+        # Use content if available, otherwise project_data
+        payload = data.content or data.project_data
         
-        # Return only the filename for the frontend to construct the URL
-        filename = os.path.basename(file_path)
+        # EXPERT LOGIC: If it has structured persona field or no 'slides' array
+        is_expert = False
+        if payload:
+            if 'projectName' in payload or 's6_customerName' in payload:
+                is_expert = True
+            elif 'slides' not in payload:
+                is_expert = True
+        
+        if is_expert:
+            print(f"🚀 [SYNTHESIS] Executing EXPERT logic for {data.team_name}")
+            file_path = create_expert_deck(data.team_name, data.college_name, payload)
+        else:
+            print(f"📋 [SYNTHESIS] Executing STANDARD logic for {data.team_name}")
+            processed = polish_content(payload)
+            file_path = create_pptx(data.team_name, data.college_name, processed)
         
         return {
             "success": True, 
-            "file_url": filename,
-            "message": "Expert Pitch Deck Generated"
+            "file_url": os.path.basename(file_path),
+            "message": "Artifact synthesized successfully"
         }
     except Exception as e:
-        error_msg = str(e)
         stack = traceback.format_exc()
-        print(f"!!! SYNTHESIS CRITICAL FAILURE !!!\n{error_msg}\n{stack}")
-        return {
-            "success": False,
-            "error": f"Synthesis Narrative Problem: {error_msg}. Check inputs.",
-            "trace": stack
-        }
+        print(f"❌ [CRITICAL] Synthesis Failure: {str(e)}\n{stack}")
+        return {"success": False, "error": f"Synthesis Error: {str(e)}"}
+
+@app.get("/")
+def health():
+    return {"status": "online", "engine": "Institutional Synthesis 2.0"}
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))

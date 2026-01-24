@@ -260,19 +260,20 @@ router.post('/force-regenerate', async (req, res) => {
         let successfulHost;
         let lastErrorMsg = "Cluster synthesis nodes unreachable.";
 
-        // RECONSTRUCTION LOGIC: Detect if it was an Expert or Standard deck
+        // UNIFIED RECONSTRUCTION LOGIC: Use the new robust endpoint
         const content = team.submission.content;
-        const isExpertDeck = !!content.projectName || !!content.s2_domain || !!content.s6_customerName; 
-        const endpoint = isExpertDeck ? '/generate-expert-pitch' : '/generate';
+        const endpoint = '/generate-artifact';
         
-        console.log(`[FORCE RECON] Commencing ${isExpertDeck ? 'EXPERT' : 'STANDARD'} rebuild for team: ${team.teamName}`);
+        console.log(`[FORCE RECON] Reassembling artifacts for team: ${team.teamName}`);
 
         for (const url of tryUrls) {
             try {
                 console.log(`[FORCE] Probing Node: ${url}${endpoint}`);
-                const payload = isExpertDeck 
-                    ? { team_name: team.teamName, college_name: team.collegeName, project_data: content }
-                    : { team_name: team.teamName, college_name: team.collegeName, content: content };
+                const payload = { 
+                    team_name: team.teamName, 
+                    college_name: team.collegeName, 
+                    content: content 
+                };
                 
                 response = await axios.post(`${url}${endpoint}`, payload, { timeout: 45000 });
                 if (response.data.success) {
