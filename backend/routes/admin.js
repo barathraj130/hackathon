@@ -250,35 +250,38 @@ router.post('/force-regenerate', async (req, res) => {
         }
 
         const tryUrls = [
+            process.env.PYTHON_SERVICE_URL,
             'https://endearing-liberation-production.up.railway.app',
-            'https://hackathon-production-c6be.up.railway.app'
-        ];
+            'https://hackathon-production-c6be.up.railway.app',
+            'https://ppt-service-production.up.railway.app'
+        ].filter(Boolean).map(u => u.replace(/\/$/, ""));
 
         let response;
         let successfulHost;
-        let lastErrorMsg = "No nodes responded.";
+        let lastErrorMsg = "Cluster synthesis nodes unreachable.";
 
         // RECONSTRUCTION LOGIC: Detect if it was an Expert or Standard deck
         const content = team.submission.content;
-        const isExpertDeck = !!content.projectName || !!content.s2_domain; // Expert fields
+        const isExpertDeck = !!content.projectName || !!content.s2_domain || !!content.s6_customerName; 
         const endpoint = isExpertDeck ? '/generate-expert-pitch' : '/generate';
         
-        const payload = isExpertDeck 
-            ? { team_name: team.teamName, college_name: team.collegeName, project_data: content }
-            : { team_name: team.teamName, college_name: team.collegeName, content: content };
-
-        console.log(`[FORCE RECON] Starting ${isExpertDeck ? 'EXPERT' : 'STANDARD'} sync for team ${team.teamName}`);
+        console.log(`[FORCE RECON] Commencing ${isExpertDeck ? 'EXPERT' : 'STANDARD'} rebuild for team: ${team.teamName}`);
 
         for (const url of tryUrls) {
             try {
+                console.log(`[FORCE] Probing Node: ${url}${endpoint}`);
+                const payload = isExpertDeck 
+                    ? { team_name: team.teamName, college_name: team.collegeName, project_data: content }
+                    : { team_name: team.teamName, college_name: team.collegeName, content: content };
+                
                 response = await axios.post(`${url}${endpoint}`, payload, { timeout: 45000 });
                 if (response.data.success) {
                     successfulHost = url;
+                    console.log(`✅ [FORCE] Reconstruction success on node: ${url}`);
                     break;
                 }
-                else { lastErrorMsg = response.data.error || "Engine Logic Error"; }
             } catch (e) {
-                console.warn(`[FORCE] Node ${url} unreachable: ${e.message}`);
+                console.warn(`[FORCE] Node ${url} failed: ${e.message}`);
                 lastErrorMsg = e.message;
             }
         }
