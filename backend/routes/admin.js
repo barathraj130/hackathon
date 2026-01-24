@@ -253,7 +253,7 @@ router.post('/force-regenerate', async (req, res) => {
             'http://python-service.railway.internal:8000',
             'https://endearing-liberation-production.up.railway.app',
             'https://hackathon-production-c6be.up.railway.app'
-        ].filter(Boolean);
+        ].filter(Boolean).map(u => u.replace(/\/$/, ""));
 
         let response;
         let successfulHost;

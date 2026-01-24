@@ -144,7 +144,7 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         'http://python-service.railway.internal:8000',
         'https://endearing-liberation-production.up.railway.app',
         'https://hackathon-production-c6be.up.railway.app'
-    ].filter(Boolean);
+    ].filter(Boolean).map(u => u.replace(/\/$/, ""));
 
     try {
         const team = await prisma.team.findUnique({
@@ -259,7 +259,7 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         'http://python-service.railway.internal:8000',
         'https://endearing-liberation-production.up.railway.app',
         'https://hackathon-production-c6be.up.railway.app'
-    ].filter(Boolean);
+    ].filter(Boolean).map(u => u.replace(/\/$/, ""));
 
     let response;
     let lastErr;
