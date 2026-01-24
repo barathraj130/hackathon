@@ -142,6 +142,21 @@ export default function AdminDashboard() {
     return true;
   });
 
+  const handleForceRegenerate = async (teamId) => {
+    if (!confirm("🚨 FORCE SYSTEM RECONSTRUCTION?\nThis will bypass the lock and re-execute the synthesis engine for this team. Use only if artifact is missing from node.")) return;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      const res = await axios.post(`${apiUrl}/admin/force-regenerate`, { teamId }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      alert(res.data.message);
+      fetchSubmissions();
+      fetchStats();
+    } catch (err) {
+      alert(err.response?.data?.error || "Reconstruction Failed.");
+    }
+  };
+
   const sendCommand = (action) => socketRef.current.emit('adminCommand', { action });
 
   return (
@@ -414,12 +429,23 @@ export default function AdminDashboard() {
                                  ) : <span className="text-[9px] font-bold text-slate-300 uppercase italic">Pending Data</span>}
                               </td>
                               <td className="py-6 px-6 border-y border-transparent group-hover:border-slate-100">
-                                 <button 
-                                    onClick={() => toggleRegenerate(sub.teamId, sub.canRegenerate)}
-                                    className={`text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border transition-all ${sub.canRegenerate ? 'border-emerald-100 text-emerald-600 hover:bg-emerald-50 shadow-sm' : 'border-rose-100 text-rose-500 hover:bg-rose-50 shadow-sm'}`}
-                                 >
-                                    {sub.canRegenerate ? '🔓 Open' : '🔒 Locked'}
-                                 </button>
+                                 <div className="flex items-center gap-2">
+                                    <button 
+                                       onClick={() => toggleRegenerate(sub.teamId, sub.canRegenerate)}
+                                       className={`text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border transition-all ${sub.canRegenerate ? 'border-emerald-100 text-emerald-600 hover:bg-emerald-50 shadow-sm' : 'border-rose-100 text-rose-500 hover:bg-rose-50 shadow-sm'}`}
+                                    >
+                                       {sub.canRegenerate ? '🔓 Open' : '🔒 Locked'}
+                                    </button>
+                                    {sub.pptUrl && (
+                                       <button 
+                                          onClick={() => handleForceRegenerate(sub.teamId)}
+                                          title="Force Reconstruction"
+                                          className="p-2 border border-slate-100 rounded-lg hover:bg-navy hover:text-white transition-all text-xs"
+                                       >
+                                          🔄
+                                       </button>
+                                    )}
+                                 </div>
                               </td>
                               <td className="py-6 px-6 text-right last:rounded-r-3xl border-y border-transparent group-hover:border-slate-100">
                                  {sub.pptUrl && (

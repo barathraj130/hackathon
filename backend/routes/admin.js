@@ -218,6 +218,67 @@ function calculateProgress(submission) {
     return Math.round((filledCount / fields.length) * 100);
 }
 
+/**
+ * FORCE RE-GENERATION FOR A TEAM
+ */
+router.post('/force-regenerate', async (req, res) => {
+    try {
+        const { teamId } = req.body;
+        const team = await prisma.team.findUnique({
+            where: { id: teamId },
+            include: { submission: true }
+        });
+
+        if (!team || !team.submission || !team.submission.content) {
+            return res.status(404).json({ error: "No submission data found for reconstruction." });
+        }
+
+        const tryUrls = [
+            'http://python-service.railway.internal:8000',
+            'https://endearing-liberation-production.up.railway.app',
+            'https://hackathon-production-c6be.up.railway.app'
+        ];
+
+        let response;
+        let successfulHost;
+        const axios = require('axios');
+
+        for (const url of tryUrls) {
+            try {
+                // Determine which engine to use based on content structure
+                const endpoint = team.submission.content.slides ? '/generate' : '/generate-expert-pitch';
+                const payload = team.submission.content.slides 
+                    ? { team_name: team.teamName, college_name: team.collegeName, content: team.submission.content }
+                    : { team_name: team.teamName, college_name: team.collegeName, project_data: team.submission.content };
+
+                response = await axios.post(`${url}${endpoint}`, payload, { timeout: 15000 });
+
+                if (response.data.success) {
+                    successfulHost = url;
+                    break;
+                }
+            } catch (e) {
+                console.log(`[FORCE] Skip node ${url}`);
+            }
+        }
+
+        if (!response || !response.data.success) throw new Error("Distributed synthesis nodes unavailable.");
+
+        const fileName = response.data.file_url.split('/').pop();
+        const finalPptUrl = `${successfulHost}/outputs/${fileName}`;
+
+        await prisma.submission.update({
+            where: { teamId },
+            data: { pptUrl: finalPptUrl, status: 'SUBMITTED' }
+        });
+
+        res.json({ success: true, message: "Artifact reconstructed successfully.", pptUrl: finalPptUrl });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: `Reconstruction Failed: ${error.message}` });
+    }
+});
+
 module.exports = router;
 /**
  * GET ALL SUBMISSIONS WITH DETAILS
