@@ -132,6 +132,13 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
             return res.status(400).json({ error: "Insufficient data for synthesis." });
         }
 
+        // Check if already submitted and regeneration is not allowed
+        if (team.submission.pptUrl && !team.submission.canRegenerate) {
+            return res.status(403).json({ 
+                error: "Submission locked. You have already generated your presentation. Contact admin for regeneration permission." 
+            });
+        }
+
         let response;
         let lastErr;
 
@@ -155,15 +162,18 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
         if (!response || !response.data.success) throw lastErr || new Error("All uplinks exhausted.");
 
+        // Lock the submission after first generation
         await prisma.submission.update({
             where: { teamId: teamId },
             data: { 
                 pptUrl: response.data.file_url, 
-                status: 'SUBMITTED' 
+                status: 'SUBMITTED',
+                canRegenerate: false, // Lock after first generation
+                submittedAt: new Date()
             }
         });
 
-        res.json({ success: true, message: "Document Synthesis Complete." });
+        res.json({ success: true, message: "Document Synthesis Complete. Please submit your prototype link and certificate details to finalize." });
 
     } catch (err) {
         const tried = tryUrls.join(', ');

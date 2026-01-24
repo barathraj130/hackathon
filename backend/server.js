@@ -155,6 +155,7 @@ app.get('/', (req, res) => {
 app.use('/v1/auth', require('./routes/auth'));
 app.use('/v1/admin', require('./routes/admin'));
 app.use('/v1/team', require('./routes/team'));
+app.use('/v1/team', require('./routes/submission-workflow')); // Prototype and certificate submission
 app.use('/v1/candidate', require('./routes/team')); // Alias for safety
 
 // Export io for use in routes if needed
