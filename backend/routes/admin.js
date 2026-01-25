@@ -62,12 +62,13 @@ router.post('/toggle-halt', async (req, res) => {
         const io = req.app.get('socketio');
         const timerState = req.app.get('timerState');
         
+        let currentTimeRemaining = config.durationMinutes * 60;
         if (timerState) {
             timerState.setTimerPaused(newStatus);
+            currentTimeRemaining = timerState.getTimerState().timeRemaining;
         }
         
         if (io) {
-            const duration = config.durationMinutes * 60;
             const formatDuration = (seconds) => {
                 const h = Math.floor(seconds / 3600);
                 const m = Math.floor((seconds % 3600) / 60);
@@ -76,8 +77,8 @@ router.post('/toggle-halt', async (req, res) => {
             };
             io.emit('timerUpdate', { 
                 timerPaused: newStatus,
-                timeRemaining: duration,
-                formattedTime: formatDuration(duration)
+                timeRemaining: currentTimeRemaining,
+                formattedTime: formatDuration(currentTimeRemaining)
             });
         }
 

@@ -14,6 +14,7 @@ export default function TeamDashboard() {
   const [activeTab, setActiveTab] = useState('slides'); // 'slides' or 'problem'
   const [problemStatement, setProblemStatement] = useState(null);
   const [showWorkflowModal, setShowWorkflowModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
   
   const [formData, setFormData] = useState({
     slides: [
@@ -75,7 +76,13 @@ export default function TeamDashboard() {
       if (socket) socket.disconnect();
       if (autoSaveInterval) clearInterval(autoSaveInterval);
     };
-  }, []); // Only run once on mount
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <div className="min-h-screen bg-bg-light animate-pulse" />;
 
   const fetchInitialData = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';

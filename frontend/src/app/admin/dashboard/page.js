@@ -13,6 +13,7 @@ export default function AdminDashboard() {
   const [submissions, setSubmissions] = useState([]);
   const [subLoading, setSubLoading] = useState(false);
   const [subFilter, setSubFilter] = useState('ALL');
+  const [mounted, setMounted] = useState(false);
   const socketRef = useRef();
 
   useEffect(() => {
@@ -36,6 +37,12 @@ export default function AdminDashboard() {
 
     return () => socketRef.current?.disconnect();
   }, []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <div className="min-h-screen bg-bg-light" />;
 
   const fetchStats = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
