@@ -6,13 +6,21 @@ import os
 def create_pptx(team_name, college, slides_data):
     prs = Presentation()
     
-    def add_corner_logo(slide):
+    def add_branding(slide):
+        # 1. Top Left - Event Branding
+        branding_box = slide.shapes.add_textbox(Inches(0.2), Inches(0.2), Inches(2), Inches(0.4))
+        p = branding_box.text_frame.paragraphs[0]
+        p.text = "HACK@JIT 1.0"
+        p.font.size = Pt(14)
+        p.font.bold = True
+        
+        # 2. Top Right - Logo
         if os.path.exists("institution_logo.png"):
             slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
 
     # 1. Title Slide (Idea and team identification)
     slide = prs.slides.add_slide(prs.slide_layouts[6]) # Blank layout
-    add_corner_logo(slide)
+    add_branding(slide)
     
     # Title Text
     left, top, width, height = Inches(0.5), Inches(0.5), Inches(9), Inches(1)
@@ -47,7 +55,7 @@ def create_pptx(team_name, college, slides_data):
         if key == 'title': continue
         
         slide = prs.slides.add_slide(prs.slide_layouts[1])
-        add_corner_logo(slide)
+        add_branding(slide)
         
         # Set Header
         title_shape = slide.shapes.title

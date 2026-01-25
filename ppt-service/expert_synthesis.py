@@ -8,13 +8,22 @@ import os
 def create_expert_deck(team_name, college, data):
     prs = Presentation()
     
-    def add_corner_logo(slide):
+    def add_branding(slide):
+        # 1. Top Left - Event Branding
+        branding_box = slide.shapes.add_textbox(Inches(0.2), Inches(0.2), Inches(2), Inches(0.4))
+        p = branding_box.text_frame.paragraphs[0]
+        p.text = "HACK@JIT 1.0"
+        p.font.size = Pt(14)
+        p.font.bold = True
+        p.font.color.rgb = RGBColor(15, 23, 42) # Institutional Navy
+        
+        # 2. Top Right - Logo
         if os.path.exists("institution_logo.png"):
             slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
 
     # 1. IDENTITY & CONTEXT
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_corner_logo(slide)
+    add_branding(slide)
     tx = slide.shapes.add_textbox(Inches(1), Inches(3), Inches(8), Inches(2))
     tf = tx.text_frame
     tf.text = data.get('projectName', 'VENTURE TITLE')
@@ -27,14 +36,14 @@ def create_expert_deck(team_name, college, data):
 
     # 2. VENTURE BACKGROUND
     slide = add_diagram_slide(prs, "Venture Background: Context Mapping")
-    add_corner_logo(slide)
+    add_branding(slide)
     add_text_to_slide(slide, f"Domain: {data.get('s2_domain', 'N/A')}", Inches(1), Inches(1.5), Inches(8), Inches(1), size=20)
     add_text_to_slide(slide, f"Context:\n{data.get('s2_context', 'N/A')}", Inches(1), Inches(2.5), Inches(8), Inches(2), size=14)
     add_text_to_slide(slide, f"Root Driver: {data.get('s2_rootReason', 'N/A')}", Inches(1), Inches(5), Inches(8), Inches(1), size=16)
 
     # 3. PROBLEM FRAMING
     slide = add_diagram_slide(prs, "Problem Framing & Stakeholders")
-    add_corner_logo(slide)
+    add_branding(slide)
     add_text_to_slide(slide, "CORE CHALLENGE", Inches(1), Inches(1.5), Inches(8), Inches(0.5), size=16)
     add_text_to_slide(slide, data.get('s3_coreProblem', 'N/A'), Inches(1), Inches(2.2), Inches(8), Inches(1.5), size=14)
     add_text_to_slide(slide, f"Affected: {data.get('s3_affected', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(0.5), size=14)
@@ -42,20 +51,20 @@ def create_expert_deck(team_name, college, data):
 
     # 4. IMPACT MAPPING
     slide = add_diagram_slide(prs, "Impact Mapping: Pain Points (Expanded)")
-    add_corner_logo(slide)
+    add_branding(slide)
     pain_points = data.get('s4_painPoints', [])
     if not isinstance(pain_points, list): pain_points = []
     draw_impact_graph_detailed(slide, pain_points)
 
     # 5. STAKEHOLDER SEGMENTS
     slide = add_diagram_slide(prs, "Stakeholder Segmentation")
-    add_corner_logo(slide)
+    add_branding(slide)
     add_text_to_slide(slide, f"Primary Users: {data.get('s5_primaryUsers', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(1.5), size=16)
     add_text_to_slide(slide, f"Secondary Users: {data.get('s5_secondaryUsers', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(1.5), size=16)
 
     # 6. PERSONA: Empathy Spectrum (High Fidelity Quadrants)
     slide = add_diagram_slide(prs, "Buyer Persona: Target Profile")
-    add_corner_logo(slide)
+    add_branding(slide)
     
     # 4 Quadrants Coordinates
     # Top-Left: Personal Info
@@ -107,7 +116,7 @@ def create_expert_deck(team_name, college, data):
 
     # 7. VALUE PROPOSITION CANVAS (High Fidelity)
     slide = add_diagram_slide(prs, "Value Proposition Canvas")
-    add_corner_logo(slide)
+    add_branding(slide)
     
     # Left Square - Value Map
     v_map = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(1.5), Inches(4.0), Inches(4.0))
@@ -144,7 +153,7 @@ def create_expert_deck(team_name, college, data):
 
     # 8. PROPOSED SOLUTION
     slide = add_diagram_slide(prs, "Proposed Solution & Sequential Logic")
-    add_corner_logo(slide)
+    add_branding(slide)
     add_text_to_slide(slide, data.get('s8_oneline', 'N/A'), Inches(1), Inches(1.2), Inches(8), Inches(0.8), size=24)
     add_text_to_slide(slide, f"Mechanism: {data.get('s8_howItWorks', 'N/A')}", Inches(1), Inches(2.2), Inches(8), Inches(0.8), size=14)
     # Draw flow
@@ -158,7 +167,7 @@ def create_expert_deck(team_name, college, data):
 
     # 9. LEAN CANVAS (High Fidelity Grid)
     slide = add_diagram_slide(prs, "Strategic Framework: Lean Canvas")
-    add_corner_logo(slide)
+    add_branding(slide)
     
     width_col = 1.8
     config = [
@@ -198,7 +207,7 @@ def create_expert_deck(team_name, college, data):
 
     # 10. VALUE BALLOON
     slide = add_diagram_slide(prs, "Value Identification: Advanced Balloon")
-    add_corner_logo(slide)
+    add_branding(slide)
     
     def format_list(val):
         if isinstance(val, list): return "\n".join([f"• {x}" for x in val if x.strip()])
@@ -212,18 +221,18 @@ def create_expert_deck(team_name, college, data):
 
     # 11. MARKET POSITIONING
     slide = add_diagram_slide(prs, "Market Positioning Matrix")
-    add_corner_logo(slide)
+    add_branding(slide)
     add_competitor_table(slide, data.get('s11_competitors', []))
 
     # 12. REVENUE MODEL
     slide = add_diagram_slide(prs, "Business & Revenue Model")
-    add_corner_logo(slide)
+    add_branding(slide)
     add_text_to_slide(slide, f"Revenue Model: {data.get('s12_revenueModel', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(1.5), size=18)
     add_text_to_slide(slide, f"Pricing Logic: {data.get('s12_pricingLogic', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(1), size=16)
 
     # 13. FINANCIAL ANALYSIS
     slide = add_diagram_slide(prs, "Financial Analysis & Costs")
-    add_corner_logo(slide)
+    add_branding(slide)
     add_cost_breakdown_table(slide, 
         data.get('s13_devCost', '$0'), 
         data.get('s13_opsCost', '$0'), 
@@ -238,7 +247,7 @@ def create_expert_deck(team_name, college, data):
 
     # 15. SYNTHESIS CLOSURE (Thank You)
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_corner_logo(slide)
+    add_branding(slide)
     
     # Large centered Thank You
     add_text_to_slide(slide, "THANK YOU.", Inches(1), Inches(2.5), Inches(8), Inches(1.5), size=60, bold=True, color=blue_inst)
@@ -254,6 +263,14 @@ def create_expert_deck(team_name, college, data):
 
 def add_bullet_slide(prs, title_text, bullets):
     slide = prs.slides.add_slide(prs.slide_layouts[1])
+    # Inner branding call needed for standalone helper
+    def hack_branding(slide):
+        box = slide.shapes.add_textbox(Inches(0.2), Inches(0.2), Inches(2), Inches(0.4))
+        p = box.text_frame.paragraphs[0]
+        p.text = "HACK@JIT 1.0"; p.font.size = Pt(14); p.font.bold = True
+        if os.path.exists("institution_logo.png"): slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
+    
+    hack_branding(slide)
     slide.shapes.title.text = title_text
     tf = slide.placeholders[1].text_frame
     for b in bullets:
