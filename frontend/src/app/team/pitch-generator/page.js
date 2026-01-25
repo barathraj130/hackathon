@@ -21,13 +21,32 @@ export default function PitchGenerator() {
         // If they already have a PPT and it's locked, don't let them stay here
         if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
            router.push('/team/dashboard');
+        } else if (res.data.submission?.content) {
+           // LOAD PREVIOUS DATA
+           setData(prev => ({ ...prev, ...res.data.submission.content }));
         }
       } catch (err) {
         console.error("Status check failed", err);
       }
     };
     checkStatus();
+    checkStatus();
   }, [router]);
+
+  // AUTO-SAVE MECHANISM
+  useEffect(() => {
+    const saveTimer = setTimeout(() => {
+      if (data.teamName) { // Only save if minimal data exists
+        const token = localStorage.getItem('token');
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+        axios.post(`${apiUrl}/team/submission`, { content: data }, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(err => console.error("Auto-save failed implicitly", err));
+      }
+    }, 2000); // 2 second debounce
+
+    return () => clearTimeout(saveTimer);
+  }, [data]);
   
   const [data, setData] = useState({
     // S1: Identity
@@ -243,7 +262,7 @@ export default function PitchGenerator() {
               <div className="min-h-[420px]">
                 {step === 1 && (
                   <div className="space-y-8 animate-fade-in font-roboto">
-                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Identity Framing</p>
+                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Team Details</p>
                     <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-6">
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed italic select-none">Prompt: Define the official branding for this venture. This will form your cover identification.</p>
                     </div>
@@ -276,7 +295,7 @@ export default function PitchGenerator() {
 
                 {step === 2 && (
                   <div className="space-y-8 animate-fade-in font-roboto">
-                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Context Mapping</p>
+                    <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Project Background</p>
                     <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-6 font-medium text-[10px] text-slate-500 italic">
                       Identify why this problem exists in its current domain.
                     </div>
@@ -315,7 +334,7 @@ export default function PitchGenerator() {
 
                 {step === 4 && (
                    <div className="space-y-4 animate-fade-in font-roboto h-[500px] overflow-y-auto pr-4 custom-scrollbar">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Impact Mapping (Max 10)</p>
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Users & Problems (list up to 10)</p>
                        {data.s4_painPoints.map((pp, idx) => (
                         <div key={idx} className="glass-pane p-4 rounded-xl flex flex-col md:flex-row gap-4 md:items-end border-slate-100/50">
                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">{idx+1}</div>
@@ -353,7 +372,7 @@ export default function PitchGenerator() {
 
                 {step === 5 && (
                    <div className="space-y-8 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Stakeholder Segmentation</p>
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Who is this for?</p>
                       <div>
                         <label className="label-caps">Primary Users</label>
                         <textarea className="input-field min-h-[100px]" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: e.target.value})} placeholder="Those who use the core solution daily..." />
@@ -497,7 +516,7 @@ export default function PitchGenerator() {
 
                 {step === 8 && (
                    <div className="space-y-6 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Solution Synthesis & Sequential Logic</p>
+                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Your Solution</p>
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <label className="label-caps">One-line Solution</label>

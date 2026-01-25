@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/prisma');
 const { exec } = require('child_process');
 
 /**
@@ -44,6 +43,36 @@ router.post('/run-migration', (req, res) => {
         console.log(`Migration Output: ${stdout}`);
         res.json({ success: true, stdout, stderr });
     });
+});
+
+/**
+ * TOGGLE SYSTEM HALT (REST API)
+ */
+router.post('/toggle-halt', async (req, res) => {
+    try {
+        const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
+        const newStatus = !config.isPaused;
+        
+        await prisma.hackathonConfig.update({
+            where: { id: 1 },
+            data: { isPaused: newStatus }
+        });
+
+        // Broadcast via Socket
+        const io = req.app.get('socketio');
+        if (io) {
+            const duration = config.durationMinutes * 60; // Simplified sync
+            io.emit('timerUpdate', { 
+                timerPaused: newStatus,
+                timeRemaining: duration, // Note: In a real app we'd track actual remaining time better
+                formattedTime: "SYNCING..." 
+            });
+        }
+
+        res.json({ success: true, isPaused: newStatus });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to toggle system status." });
+    }
 });
 
 /**

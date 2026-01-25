@@ -1,7 +1,6 @@
 const router = require('express').Router();
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../utils/prisma');
 const axios = require('axios');
-const prisma = new PrismaClient();
 const { verifyToken } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');

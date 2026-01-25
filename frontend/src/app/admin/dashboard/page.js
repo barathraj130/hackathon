@@ -22,7 +22,10 @@ export default function AdminDashboard() {
     fetchProblemStatements();
     fetchSubmissions();
 
-    const socketUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:5000';
+    fetchSubmissions();
+    
+    // Dynamic Socket URL
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
     socketRef.current = io(socketUrl);
     
     socketRef.current.on('timerUpdate', (data) => {
@@ -171,7 +174,15 @@ export default function AdminDashboard() {
     }
   };
 
-  const sendCommand = (action) => socketRef.current.emit('adminCommand', { action });
+  const handleToggleHalt = async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      await axios.post(`${apiUrl}/admin/toggle-halt`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      // Allow socket to update the UI state naturally
+    } catch (err) { alert("Failed to toggle system status."); }
+  };
 
   return (
     <div className="flex min-h-screen bg-bg-light font-sans text-slate-800">
@@ -237,13 +248,13 @@ export default function AdminDashboard() {
                 }}
                 className="px-6 py-4 border border-slate-200 rounded-2xl font-black text-[9px] md:text-[10px] tracking-[0.2em] text-slate-400 hover:text-navy hover:border-navy transition-all uppercase"
               >
-                Secure Exit
+                Logout
               </button>
               <button 
-                onClick={() => sendCommand(timer.timerPaused ? 'start' : 'pause')}
+                onClick={handleToggleHalt}
                 className={`px-6 py-4 md:px-10 md:py-5 rounded-2xl font-black text-[9px] md:text-[11px] tracking-[0.3em] transition-all shadow-2xl active:scale-95 ${timer.timerPaused ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-rose-500 text-white shadow-rose-500/20'}`}
               >
-                {timer.timerPaused ? 'RESUME SYNTHESIS' : 'SYSTEM HALT'}
+                {timer.timerPaused ? 'START HACKATHON' : 'PAUSE HACKATHON'}
               </button>
             </div>
             {/* Institutional Logo - Right Corner */}
