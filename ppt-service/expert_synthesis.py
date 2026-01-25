@@ -287,6 +287,7 @@ def add_bullet_slide(prs, title_text, bullets):
     for b in bullets:
         p = tf.add_paragraph()
         p.text = str(b)
+        p.font.name = 'Times New Roman'
         p.level = 0
 
 def add_diagram_slide(prs, title_text):
@@ -353,11 +354,11 @@ def draw_hot_air_balloon_detailed(slide, lifts, pulls, fuels, outcomes):
     add_text_to_slide(slide, f"PULLS (ANCHORS):\n{pulls}", Inches(3.5), Inches(6.3), Inches(3), Inches(1.2), size=10, color=RGBColor(244, 63, 94), bold=True)
     
     # Fuel Strategy (Left)
-    fuel_box = slide.shapes.add_shape(MSO_SHAPE.HEXAGON, Inches(0.5), Inches(2.5), Inches(2.5), Inches(2.2))
+    fuel_box = slide.shapes.add_shape(MSO_SHAPE.HEXAGON, Inches(0.4), Inches(2.2), Inches(2.8), Inches(2.5))
     fuel_box.fill.solid()
     fuel_box.fill.fore_color.rgb = RGBColor(13, 148, 136) # Teal
     fuel_box.line.color.rgb = RGBColor(255,255,255)
-    add_text_to_slide(slide, f"FUEL STRATEGY:\n{fuels}", Inches(0.6), Inches(2.8), Inches(2.3), Inches(1.6), size=9, color=RGBColor(255,255,255))
+    add_text_to_slide(slide, f"FUEL STRATEGY:\n{fuels}", Inches(0.5), Inches(2.7), Inches(2.6), Inches(1.5), size=8, color=RGBColor(255,255,255))
 
     # Outcomes (Right)
     add_text_to_slide(slide, f"ALTITUDE / OUTCOMES:\n{outcomes}", Inches(7.0), Inches(2.5), Inches(2.5), Inches(2.5), size=10, color=RGBColor(15, 23, 42), bold=True)
@@ -416,13 +417,21 @@ def add_competitor_table(slide, competitors):
             cell = table.cell(r, c)
             for p in cell.text_frame.paragraphs:
                 p.font.size = Pt(9)
+                p.font.name = 'Times New Roman'
 
 def add_cost_breakdown_table(slide, dev, ops, tools):
     table = slide.shapes.add_table(4, 2, Inches(2), Inches(1.5), Inches(6), Inches(3)).table
-    rows = [("Development", dev), ("Operational", ops), ("Infrastructure", tools), ("TOTAL ESTIMATED", "PROJECT SUM")]
-    for i, (l, v) in enumerate(rows):
-        table.cell(i, 0).text = l
-        table.cell(i, 1).text = v
+    rows_data = [("Development", dev), ("Operational", ops), ("Infrastructure", tools), ("TOTAL ESTIMATED", "PROJECT SUM")]
+    for i, (l, v) in enumerate(rows_data):
+        # Label cell
+        cell_l = table.cell(i, 0)
+        cell_l.text = l
+        for p in cell_l.text_frame.paragraphs: p.font.name = 'Times New Roman'
+        
+        # Value cell
+        cell_v = table.cell(i, 1)
+        cell_v.text = v
+        for p in cell_v.text_frame.paragraphs: p.font.name = 'Times New Roman'
 
 def draw_flow_diagram(slide, flow):
     components = flow.split(' -> ')[:10]

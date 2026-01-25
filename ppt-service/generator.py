@@ -61,6 +61,7 @@ def create_pptx(team_name, college, slides_data):
         # Set Header
         title_shape = slide.shapes.title
         title_shape.text = data['title']
+        for p in title_shape.text_frame.paragraphs: p.font.name = 'Times New Roman'
         
         # Set Bullets
         body_shape = slide.shapes.placeholders[1]
@@ -69,6 +70,7 @@ def create_pptx(team_name, college, slides_data):
         for point in data['bullets']:
             p = tf.add_paragraph()
             p.text = point
+            p.font.name = 'Times New Roman'
             p.level = 0
 
     # Save the file
