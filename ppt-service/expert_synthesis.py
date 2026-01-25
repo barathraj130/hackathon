@@ -329,6 +329,7 @@ def add_bullet_slide(prs, title_text, bullets):
         p.text = f"• {b}"
         p.font.size = Pt(22)
         p.font.name = 'Times New Roman'
+        p.font.color.rgb = RGBColor(0, 0, 0)
         p.space_after = Pt(12)
 
 def add_diagram_slide(prs, title_text):
@@ -361,7 +362,7 @@ def add_text_to_slide(slide, text, left, top, width, height, size=18, color=None
     p = tf.paragraphs[0]
     p.text = text
     p.font.size = Pt(size); p.font.bold = bold; p.font.italic = italic; p.font.name = 'Times New Roman'
-    if color: p.font.color.rgb = color
+    p.font.color.rgb = color if color else RGBColor(0, 0, 0) # Default to Black if not specified
 
 def draw_impact_graph_detailed(slide, pain_points):
     # Axes
