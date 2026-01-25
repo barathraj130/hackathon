@@ -3,7 +3,6 @@ import SubmissionWorkflowModal from '@/components/SubmissionWorkflowModal';
 import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
 
 export default function TeamDashboard() {
   const [timeLeft, setTimeLeft] = useState(86400);
@@ -41,19 +40,21 @@ export default function TeamDashboard() {
   useEffect(() => {
     fetchInitialData();
 
-    // Dynamic Socket URL
-    const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
-    socketRef.current = io(socketUrl);
+    // Dynamic import to ensure client-side only
+    import('socket.io-client').then(({ io: socketIO }) => {
+      const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
+      socketRef.current = socketIO(socketUrl);
 
-    socketRef.current.on('timerUpdate', (data) => {
-      setTimeLeft(data.timeRemaining);
-      setIsPaused(data.timerPaused);
-      setFormattedTime(data.formattedTime);
-    });
+      socketRef.current.on('timerUpdate', (data) => {
+        setTimeLeft(data.timeRemaining);
+        setIsPaused(data.timerPaused);
+        setFormattedTime(data.formattedTime);
+      });
 
-    socketRef.current.on('test_ended', () => {
-      setIsPaused(true);
-      autoSaveSubmission();
+      socketRef.current.on('test_ended', () => {
+        setIsPaused(true);
+        autoSaveSubmission();
+      });
     });
 
     // Auto-save every 30 seconds
