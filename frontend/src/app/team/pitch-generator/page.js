@@ -17,7 +17,7 @@ export default function PitchGenerator() {
     projectName: '', teamName: '', institutionName: '', leaderName: '', memberNames: '',
     // S2: Background
     s2_domain: '', s2_context: '', s2_rootReason: '',
-    // S3: Problem
+    // S3: Problem Statement
     s3_coreProblem: '', s3_affected: '', s3_whyItMatters: '',
     // S4: Impact Mapping
     s4_painPoints: Array(10).fill({ point: '', impact: 'High', freq: 'Frequent' }),
@@ -29,7 +29,7 @@ export default function PitchGenerator() {
     s6_pains: '', s6_gains: '', s6_bio: '', s6_goals: '', s6_howWeHelp: '',
     s6_personality: { introvert: 50, thinking: 50, sensing: 50, judging: 50 },
     s6_motivations: { growth: 50, fear: 50, security: 50, recognition: 50, funding: 50 },
-    // S7: Value Prop
+    // S7: Gap Analysis
     s7_alternatives: '', s7_limitations: '', s7_gainCreators: '', s7_painKillers: '',
     // S8: Solution Flow
     s8_oneline: '', s8_howItWorks: '', 
@@ -43,15 +43,21 @@ export default function PitchGenerator() {
     s10_pulls: Array(5).fill(''),
     s10_fuels: Array(5).fill(''),
     s10_outcomes: Array(5).fill(''),
-    // S11: Market Context
+    // S11: Market Positioning (2 Competitors vs Ours)
     s11_competitors: [
       { name: '', strength: '', weakness: '' },
       { name: '', strength: '', weakness: '' }
     ],
-    // S12: Business Model
-    s12_revenueModel: '', s12_pricingLogic: '',
-    // S13: Financials
-    s13_devCost: '', s13_opsCost: '', s13_toolsCost: '',
+    s11_ourVenture: { name: 'Our Venture', strength: '', weakness: '' },
+    // S12: Revenue Model
+    s12_primaryStream: '', s12_secondaryStream: '', s12_pricingStrategy: '', s12_revenueLogic: '',
+    // S13: Financial Allocation
+    s13_allocations: [
+      { category: 'Research & Development', amount: '' },
+      { category: 'Cloud Infrastructure', amount: '' },
+      { category: 'Operations & Scaling', amount: '' },
+      { category: 'Digital Asset Acquisition', amount: '' }
+    ],
     // S14: Impact Vision
     s14_socialEconomic: '', s14_metrics: '', s14_vision: '',
     // S15: Closure
@@ -212,9 +218,9 @@ export default function PitchGenerator() {
                 <h3 className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-4 px-2 italic">Synthesis Modules</h3>
                 <nav className="space-y-1 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar pr-1">
                    {[
-                     'Identity', 'Strategic Context', 'Problem Lattice', 'Impact Matrix', 'Stakeholders',
-                     'Persona Node', 'Value Proposition', 'Solution Flow', 'Lean Logic', 'Value Metrics',
-                     'Market Context', 'Revenue Model', 'Resource Allocation', 'Impact Vision', 'Repository'
+                     'Identity', 'Strategic Context', 'Problem Statement', 'Impact Matrix', 'Stakeholders',
+                     'Persona Node', 'Gap Analysis', 'Solution Flow', 'Lean Logic', 'Value Metrics',
+                     'Market Positioning', 'Revenue Model', 'Financial Allocation', 'Impact Vision', 'Repository'
                    ].map((label, i) => (
                      <button 
                         key={i} 
@@ -235,8 +241,8 @@ export default function PitchGenerator() {
                  {step === 1 && (
                     <div className="space-y-6 animate-fade-in">
                       <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">01</span>
-                        <h2 className="text-xl font-black text-navy uppercase tracking-tight">Identity & Context</h2>
+                        <span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">01</span>
+                        <h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Identity & Context</h2>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div className="md:col-span-2">
@@ -253,7 +259,7 @@ export default function PitchGenerator() {
 
                   {step === 2 && (
                     <div className="space-y-6 animate-fade-in">
-                      <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">02</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Strategic Context</h2></div>
+                      <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">02</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Strategic Context</h2></div>
                       <div className="space-y-6">
                         <div><label className="label-caps">Domain</label><input className="input-field" value={data.s2_domain} onChange={e => setData({...data, s2_domain: e.target.value})} /></div>
                         <div><label className="label-caps">Context</label><textarea className="input-field min-h-[120px]" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} /></div>
@@ -264,7 +270,7 @@ export default function PitchGenerator() {
 
                   {step === 3 && (
                     <div className="space-y-6 animate-fade-in">
-                      <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">03</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Problem Lattice</h2></div>
+                      <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">03</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Problem Statement</h2></div>
                       <div className="space-y-6">
                         <div><label className="label-caps">Core Problem</label><textarea className="input-field min-h-[120px]" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: e.target.value})} /></div>
                         <div><label className="label-caps">Affected Personnel</label><input className="input-field" value={data.s3_affected} onChange={e => setData({...data, s3_affected: e.target.value})} /></div>
@@ -275,7 +281,7 @@ export default function PitchGenerator() {
 
                   {step === 4 && (
                     <div className="space-y-4 animate-fade-in">
-                       <div className="flex items-center gap-3 mb-4"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">04</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Impact Matrix</h2></div>
+                       <div className="flex items-center gap-3 mb-4"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">04</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Impact Matrix</h2></div>
                        <div className="max-h-[500px] overflow-y-auto pr-2 custom-scrollbar space-y-3">
                           {data.s4_painPoints.map((pp, idx) => (
                             <div key={idx} className="bg-slate-50 p-4 rounded-xl flex gap-4 items-end">
@@ -294,7 +300,7 @@ export default function PitchGenerator() {
 
                   {step === 5 && (
                     <div className="space-y-6 animate-fade-in">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">05</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Stakeholders</h2></div>
+                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">05</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Stakeholders</h2></div>
                        <div className="space-y-6">
                         <div><label className="label-caps">Primary Nodes</label><textarea className="input-field min-h-[120px]" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: e.target.value})} /></div>
                         <div><label className="label-caps">Secondary Nodes</label><textarea className="input-field min-h-[120px]" value={data.s5_secondaryUsers} onChange={e => setData({...data, s5_secondaryUsers: e.target.value})} /></div>
@@ -304,7 +310,7 @@ export default function PitchGenerator() {
 
                   {step === 6 && (
                     <div className="space-y-6 animate-fade-in max-h-[550px] overflow-y-auto pr-2">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">06</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Persona Node</h2></div>
+                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">06</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Persona Node</h2></div>
                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                          <div><label className="label-caps">Alias</label><input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} /></div>
                          <div><label className="label-caps">Age</label><input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} /></div>
@@ -334,19 +340,19 @@ export default function PitchGenerator() {
 
                   {step === 7 && (
                     <div className="space-y-6 animate-fade-in">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">07</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Gap Analysis</h2></div>
+                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">07</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Gap Analysis</h2></div>
                        <div className="grid grid-cols-2 gap-6">
                         <div><label className="label-caps">Status Quo</label><textarea className="input-field min-h-[120px]" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} /></div>
                         <div><label className="label-caps">Limitations</label><textarea className="input-field min-h-[120px]" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: e.target.value})} /></div>
                         <div><label className="label-caps text-teal-600">Gains</label><textarea className="input-field min-h-[100px] border-teal-50" value={data.s7_gainCreators} onChange={e => setData({...data, s7_gainCreators: e.target.value})} /></div>
-                        <div><label className="label-caps text-teal-600">Relief</label><textarea className="input-field min-h-[100px] border-teal-50" value={data.s7_painKillers} onChange={e => setData({...data, s7_gainCreators: e.target.value})} /></div>
+                        <div><label className="label-caps text-[#020617]">Relief</label><textarea className="input-field min-h-[100px] border-teal-50" value={data.s7_painKillers} onChange={e => setData({...data, s7_painKillers: e.target.value})} /></div>
                        </div>
                     </div>
                   )}
 
                   {step === 8 && (
                     <div className="space-y-6 animate-fade-in">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">08</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Solution Flow</h2></div>
+                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">08</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Solution Flow</h2></div>
                        <div className="grid grid-cols-2 gap-6">
                         <div><label className="label-caps">Proposed Solution</label><input className="input-field" value={data.s8_oneline} onChange={e => setData({...data, s8_oneline: e.target.value})} /></div>
                         <div><label className="label-caps">Logic</label><input className="input-field" value={data.s8_howItWorks} onChange={e => setData({...data, s8_howItWorks: e.target.value})} /></div>
@@ -364,7 +370,7 @@ export default function PitchGenerator() {
 
                   {step === 9 && (
                     <div className="space-y-4 animate-fade-in max-h-[550px] overflow-y-auto pr-2">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">09</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Lean Logic</h2></div>
+                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">09</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Lean Logic</h2></div>
                        <div className="grid grid-cols-3 gap-3">
                           <div className="p-3 bg-slate-50 rounded-lg border border-slate-100"><label className="label-caps !text-[8px]">Problem</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-xs" value={data.s9_leanProblem} onChange={e => setData({...data, s9_leanProblem: e.target.value})} /></div>
                           <div className="p-3 bg-slate-50 rounded-lg border border-slate-100"><label className="label-caps !text-[8px]">Solution</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-xs" value={data.s9_leanSolution} onChange={e => setData({...data, s9_leanSolution: e.target.value})} /></div>
@@ -381,7 +387,7 @@ export default function PitchGenerator() {
                   )}
 
                   {step === 10 && (
-                     <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">10</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Value Metrics</h2></div><div className="grid grid-cols-4 gap-4">
+                     <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">10</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Value Metrics</h2></div><div className="grid grid-cols-4 gap-4">
                         <div className="space-y-2"><label className="label-caps text-emerald-500 !text-[8px]">🎈 Lifts</label>{data.s10_lifts.map((v, i) => (<input key={i} className="input-field !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s10_lifts]; u[i] = e.target.value; setData({...data, s10_lifts: u})}} />))}</div>
                         <div className="space-y-2"><label className="label-caps text-rose-500 !text-[8px]">⚓ Pulls</label>{data.s10_pulls.map((v, i) => (<input key={i} className="input-field !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s10_pulls]; u[i] = e.target.value; setData({...data, s10_pulls: u})}} />))}</div>
                         <div className="space-y-2"><label className="label-caps text-teal-600 !text-[8px]">⚡ Fuels</label>{data.s10_fuels.map((v, i) => (<input key={i} className="input-field !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s10_fuels]; u[i] = e.target.value; setData({...data, s10_fuels: u})}} />))}</div>
@@ -390,31 +396,70 @@ export default function PitchGenerator() {
                   )}
 
                   {step === 11 && (
-                     <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">11</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Market Positioning</h2></div>
-                        {data.s11_competitors.map((c, i) => (
-                           <div key={i} className="bg-slate-50 p-4 rounded-xl grid grid-cols-3 gap-4">
-                              <div><label className="label-caps !text-[8px]">Competitor</label><input className="input-field !bg-white" value={c.name} onChange={e => { let u = [...data.s11_competitors]; u[i].name = e.target.value; setData({...data, s11_competitors: u})}} /></div>
-                              <div><label className="label-caps !text-[8px]">Strengths</label><input className="input-field !bg-white" value={c.strength} onChange={e => { let u = [...data.s11_competitors]; u[i].strength = e.target.value; setData({...data, s11_competitors: u})}} /></div>
-                              <div><label className="label-caps !text-[8px]">Weaknesses</label><input className="input-field !bg-white" value={c.weakness} onChange={e => { let u = [...data.s11_competitors]; u[i].weakness = e.target.value; setData({...data, s11_competitors: u})}} /></div>
+                     <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">11</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Market Positioning</h2></div>
+                        <div className="space-y-4">
+                           {data.s11_competitors.map((c, i) => (
+                              <div key={i} className="bg-slate-50 p-6 rounded-2xl grid grid-cols-3 gap-6 border border-slate-100">
+                                 <div><label className="label-caps !text-[8px]">Competitor {i+1}</label><input className="input-field !bg-white" value={c.name} onChange={e => { let u = [...data.s11_competitors]; u[i].name = e.target.value; setData({...data, s11_competitors: u})}} /></div>
+                                 <div><label className="label-caps !text-[8px]">Strengths</label><input className="input-field !bg-white" value={c.strength} onChange={e => { let u = [...data.s11_competitors]; u[i].strength = e.target.value; setData({...data, s11_competitors: u})}} /></div>
+                                 <div><label className="label-caps !text-[8px]">Weaknesses</label><input className="input-field !bg-white" value={c.weakness} onChange={e => { let u = [...data.s11_competitors]; u[i].weakness = e.target.value; setData({...data, s11_competitors: u})}} /></div>
+                              </div>
+                           ))}
+                           <div className="bg-[#020617] p-8 rounded-3xl grid grid-cols-3 gap-6 shadow-2xl relative overflow-hidden group">
+                              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform"></div>
+                              <div><label className="label-caps !text-[8px] text-teal-400">OUR VENTURE</label><input className="input-field !bg-white/5 !border-white/10 !text-white" value={data.s11_ourVenture.name} readOnly /></div>
+                              <div><label className="label-caps !text-[8px] text-teal-400">UNFAIR ADVANTAGE (CORE STRENGTH)</label><input className="input-field !bg-white/5 !border-white/10 !text-white" value={data.s11_ourVenture.strength} onChange={e => setData({...data, s11_ourVenture: {...data.s11_ourVenture, strength: e.target.value}})} /></div>
+                              <div><label className="label-caps !text-[8px] text-teal-400">GAP BEING BRIDGED</label><input className="input-field !bg-white/5 !border-white/10 !text-white" value={data.s11_ourVenture.weakness} onChange={e => setData({...data, s11_ourVenture: {...data.s11_ourVenture, weakness: e.target.value}})} /></div>
                            </div>
-                        ))}
+                        </div>
                      </div>
                   )}
 
                   {step === 12 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">12</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Revenue Model</h2></div>
-                        <div className="space-y-6"><div><label className="label-caps">Method</label><textarea className="input-field min-h-[120px] font-bold" value={data.s12_revenueModel} onChange={e => setData({...data, s12_revenueModel: e.target.value})} /></div><div><label className="label-caps">Pricing</label><input className="input-field" value={data.s12_pricingLogic} onChange={e => setData({...data, s12_pricingLogic: e.target.value})} /></div></div>
+                    <div className="space-y-8 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">12</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Revenue Model</h2></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                           <div className="space-y-6">
+                              <div><label className="label-caps">Primary Revenue Stream</label><input className="input-field font-black uppercase text-teal-600" placeholder="Ex: SaaS Subscription" value={data.s12_primaryStream} onChange={e => setData({...data, s12_primaryStream: e.target.value})} /></div>
+                              <div><label className="label-caps">Secondary Revenue Stream</label><input className="input-field font-black uppercase" placeholder="Ex: Marketplace Commission" value={data.s12_secondaryStream} onChange={e => setData({...data, s12_secondaryStream: e.target.value})} /></div>
+                           </div>
+                           <div className="space-y-6">
+                              <div><label className="label-caps">Pricing Strategy</label><input className="input-field font-black" placeholder="Ex: $29/mo Tiered Pricing" value={data.s12_pricingStrategy} onChange={e => setData({...data, s12_pricingStrategy: e.target.value})} /></div>
+                              <div><label className="label-caps">Economic Logic (Scaling)</label><textarea className="input-field min-h-[80px] text-xs font-bold" placeholder="How do unit economics work at scale?" value={data.s12_revenueLogic} onChange={e => setData({...data, s12_revenueLogic: e.target.value})} /></div>
+                           </div>
+                        </div>
+                        <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 italic">
+                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Global Standard Logic</p>
+                           <p className="text-xs text-slate-500 mt-2 leading-relaxed">Synthesis of World-Class revenue models prioritizing Customer Lifetime Value (LTV) relative to Acquisition Cost (CAC).</p>
+                        </div>
                     </div>
                   )}
 
                   {step === 13 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">13</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Financial Allocation</h2></div>
-                        <div className="grid grid-cols-3 gap-6"><div><label className="label-caps">Research</label><input className="input-field" value={data.s13_devCost} onChange={e => setData({...data, s13_devCost: e.target.value})} /></div><div><label className="label-caps">Operations</label><input className="input-field" value={data.s13_opsCost} onChange={e => setData({...data, s13_opsCost: e.target.value})} /></div><div><label className="label-caps">Digital Asset</label><input className="input-field" value={data.s13_toolsCost} onChange={e => setData({...data, s13_toolsCost: e.target.value})} /></div></div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">13</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Financial Allocation</h2></div>
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                           <table className="w-full text-left">
+                              <thead>
+                                 <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                    <th className="px-6 py-4">Allocation Category</th>
+                                    <th className="px-6 py-4 text-right">Value Descriptor / Pricing</th>
+                                 </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100">
+                                 {data.s13_allocations.map((alloc, i) => (
+                                    <tr key={i}>
+                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-black uppercase text-xs text-[#020617] outline-none" value={alloc.category} onChange={e => { let u = [...data.s13_allocations]; u[i].category = e.target.value; setData({...data, s13_allocations: u}) }} /></td>
+                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-bold text-xs text-teal-600 outline-none text-right" placeholder="TBD" value={alloc.amount} onChange={e => { let u = [...data.s13_allocations]; u[i].amount = e.target.value; setData({...data, s13_allocations: u}) }} /></td>
+                                    </tr>
+                                 ))}
+                              </tbody>
+                           </table>
+                        </div>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center mt-4">Decide categories in the left column // Define pricing in the right column</p>
                     </div>
                   )}
 
                   {step === 14 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-teal-500 text-white px-3 py-1 rounded uppercase tracking-widest">14</span><h2 className="text-xl font-black text-navy uppercase tracking-tight">Success Vision</h2></div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">14</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Success Vision</h2></div>
                         <div className="space-y-6"><div><label className="label-caps">Broad Impact</label><textarea className="input-field min-h-[120px]" value={data.s14_socialEconomic} onChange={e => setData({...data, s14_socialEconomic: e.target.value})} /></div><div><label className="label-caps">Long-term Vision</label><input className="input-field" value={data.s14_vision} onChange={e => setData({...data, s14_vision: e.target.value})} /></div></div>
                     </div>
                   )}
