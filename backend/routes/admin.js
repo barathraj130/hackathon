@@ -61,11 +61,17 @@ router.post('/toggle-halt', async (req, res) => {
         // Broadcast via Socket
         const io = req.app.get('socketio');
         if (io) {
-            const duration = config.durationMinutes * 60; // Simplified sync
+            const duration = config.durationMinutes * 60;
+            const formatDuration = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
+            };
             io.emit('timerUpdate', { 
                 timerPaused: newStatus,
-                timeRemaining: duration, // Note: In a real app we'd track actual remaining time better
-                formattedTime: "SYNCING..." 
+                timeRemaining: duration,
+                formattedTime: formatDuration(duration)
             });
         }
 

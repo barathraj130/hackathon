@@ -15,8 +15,8 @@ export default {
         'text-main': '#1E293B'
       },
       fontFamily: {
-        sans: ['var(--font-outfit)', 'sans-serif'],
-        roboto: ['var(--font-roboto)', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        roboto: ['Roboto', 'sans-serif'],
       },
     },
   },
