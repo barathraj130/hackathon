@@ -69,9 +69,9 @@ def create_expert_deck(team_name, college, data):
     # 2. VENTURE BACKGROUND
     slide = add_diagram_slide(prs, "Venture Background: Context Mapping")
     add_branding(slide)
-    add_text_to_slide(slide, f"DOMAIN: {data.get('s2_domain', 'N/A')}", Inches(1), Inches(1.5), Inches(8), Inches(1), size=20, boxed=True)
-    add_text_to_slide(slide, f"CONTEXT:\n{data.get('s2_context', 'N/A')}", Inches(1), Inches(2.6), Inches(8), Inches(2), size=14, boxed=True)
-    add_text_to_slide(slide, f"ROOT DRIVER: {data.get('s2_rootReason', 'N/A')}", Inches(1), Inches(4.7), Inches(8), Inches(1), size=16, boxed=True)
+    add_text_to_slide(slide, f"DOMAIN: {data.get('s2_domain', 'N/A')}", Inches(1.2), Inches(1.5), Inches(7.6), Inches(1), size=20, boxed=True)
+    add_text_to_slide(slide, f"CONTEXT: {data.get('s2_context', 'N/A')}", Inches(1.2), Inches(2.7), Inches(7.6), Inches(1.8), size=14, boxed=True)
+    add_text_to_slide(slide, f"ROOT DRIVER: {data.get('s2_rootReason', 'N/A')}", Inches(1.2), Inches(4.7), Inches(7.6), Inches(1), size=16, boxed=True)
 
     # 3. PROBLEM FRAMING
     slide = add_diagram_slide(prs, "Problem Framing & Stakeholders")
@@ -91,8 +91,8 @@ def create_expert_deck(team_name, college, data):
     # 5. STAKEHOLDER SEGMENTS
     slide = add_diagram_slide(prs, "Stakeholder Segmentation")
     add_branding(slide)
-    add_text_to_slide(slide, f"PRIMARY USERS: {data.get('s5_primaryUsers', 'N/A')}", Inches(1), Inches(1.8), Inches(8), Inches(1.5), size=16, boxed=True)
-    add_text_to_slide(slide, f"SECONDARY USERS: {data.get('s5_secondaryUsers', 'N/A')}", Inches(1), Inches(3.6), Inches(8), Inches(1.5), size=16, boxed=True)
+    add_text_to_slide(slide, f"PRIMARY USERS: {data.get('s5_primaryUsers', 'N/A')}", Inches(1.5), Inches(2.0), Inches(7), Inches(1.2), size=16, boxed=True)
+    add_text_to_slide(slide, f"SECONDARY USERS: {data.get('s5_secondaryUsers', 'N/A')}", Inches(1.5), Inches(3.8), Inches(7), Inches(1.2), size=16, boxed=True)
 
     # 6. PERSONA: Empathy Spectrum (High Fidelity Quadrants)
     slide = add_diagram_slide(prs, "Buyer Persona: Target Profile")
@@ -137,7 +137,7 @@ def create_expert_deck(team_name, college, data):
 
     # 4. HOW YOU CAN HELP
     draw_persona_box(slide, "HOW YOU CAN HELP", 6.0, 4.3, 3.5, 2.5, blue_inst)
-    add_text_to_slide(slide, data.get('s6_howWeHelp', 'N/A'), Inches(6.1), Inches(4.8), Inches(3.3), Inches(1.8), size=10)
+    add_text_to_slide(slide, data.get('s6_howWeHelp', 'N/A'), Inches(6.1), Inches(4.8), Inches(3.3), Inches(1.8), size=12)
 
     # CENTRAL AVATAR / IDENTIFIER
     avatar = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(4.2), Inches(3.0), Inches(1.6), Inches(1.6))
@@ -161,10 +161,10 @@ def create_expert_deck(team_name, college, data):
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(2.5), Inches(1.5), Inches(2.5), Inches(5.5)).line.color.rgb = RGBColor(13, 148, 136)
     
     add_text_to_slide(slide, "GAIN CREATORS", Inches(2.6), Inches(1.6), Inches(1.8), Inches(0.3), size=11, color=RGBColor(0, 0, 0), bold=True)
-    add_text_to_slide(slide, data.get('s7_gainCreators') or data.get('s6_gains', 'Proactive benefits...'), Inches(2.6), Inches(2.0), Inches(1.8), Inches(1.4), size=10, boxed=True)
+    add_text_to_slide(slide, data.get('s7_gainCreators') or data.get('s6_gains', 'Proactive benefits...'), Inches(2.6), Inches(2.0), Inches(1.8), Inches(1.4), size=11, boxed=True)
     
     add_text_to_slide(slide, "PAIN KILLERS", Inches(2.6), Inches(3.6), Inches(1.8), Inches(0.3), size=11, color=RGBColor(0, 0, 0), bold=True)
-    add_text_to_slide(slide, data.get('s7_painKillers') or data.get('s6_pains', 'Risk mitigation...'), Inches(2.6), Inches(4.0), Inches(1.8), Inches(1.4), size=10, boxed=True)
+    add_text_to_slide(slide, data.get('s7_painKillers') or data.get('s6_pains', 'Risk mitigation...'), Inches(2.6), Inches(4.0), Inches(1.8), Inches(1.4), size=11, boxed=True)
     
     add_text_to_slide(slide, "PRODUCT/\nSERVICE", Inches(0.6), Inches(2.5), Inches(1.8), Inches(2), size=12, bold=True, color=RGBColor(0, 0, 0))
     
@@ -187,7 +187,7 @@ def create_expert_deck(team_name, college, data):
     slide = add_diagram_slide(prs, "Proposed Solution & Sequential Logic")
     add_branding(slide)
     add_text_to_slide(slide, data.get('s8_oneline', 'N/A'), Inches(0.8), Inches(1.4), Inches(8.4), Inches(0.8), size=24, boxed=True)
-    add_text_to_slide(slide, f"MECHANISM: {data.get('s8_howItWorks', 'N/A')}", Inches(0.8), Inches(2.3), Inches(8.4), Inches(0.8), size=14, boxed=True)
+    add_text_to_slide(slide, f"MECHANISM: {data.get('s8_howItWorks', 'N/A')}", Inches(1.2), Inches(2.3), Inches(7.6), Inches(0.8), size=14, boxed=True)
     # Draw flow
     raw_flow = data.get('s8_flowSteps', [])
     if not isinstance(raw_flow, list): raw_flow = []
@@ -215,7 +215,7 @@ def create_expert_deck(team_name, college, data):
         box.line.color.rgb = RGBColor(15, 23, 42) # Navy
         box.fill.background()
         add_text_to_slide(slide, label, Inches(x+0.1), Inches(1.25), Inches(width_col-0.2), Inches(0.3), size=9, bold=True, color=RGBColor(0, 0, 0))
-        add_text_to_slide(slide, data.get(key, 'N/A'), Inches(x+0.1), Inches(1.6), Inches(width_col-0.2), Inches(h-0.5), size=8)
+        add_text_to_slide(slide, data.get(key, 'N/A'), Inches(x+0.1), Inches(1.6), Inches(width_col-0.2), Inches(h-0.5), size=9)
 
     # Sub-boxes (Metrics & Channels)
     add_text_to_slide(slide, "METRICS", Inches(0.5+width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(0, 0, 0))
