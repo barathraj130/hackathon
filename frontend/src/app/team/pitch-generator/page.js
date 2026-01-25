@@ -250,7 +250,7 @@ export default function PitchGenerator() {
                     const s = i + 1;
                     return (
                       <div key={s} className="flex items-center gap-4 group cursor-pointer" onClick={() => s < step && setStep(s)}>
-                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center text-[7px] font-black transition-all ${step === s ? 'bg-teal border-teal text-white' : s < step ? 'bg-white border-white text-navy' : 'border-white/10 text-white/20'}`}>
+                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center text-[7px] font-black transition-all ${step === s ? 'bg-teal border-teal text-white' : s < step ? 'bg-white border-white text-navy' : 'border-white/30 text-white/40'}`}>
                           {s < step ? '✓' : s}
                         </div>
                         {step === s && (
@@ -359,7 +359,7 @@ export default function PitchGenerator() {
                     </div>
                     <div>
                       <label className="label-caps">Real-world Context</label>
-                      <textarea className="input-field min-h-[100px]" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} placeholder="Current situational landscape..." />
+                      <textarea className="input-field min-h-[100px] !text-navy !font-bold" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} placeholder="Current situational landscape..." />
                     </div>
                     <div>
                       <label className="label-caps">Why does this problem exist?</label>
@@ -373,7 +373,7 @@ export default function PitchGenerator() {
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Problem Framing</p>
                       <div>
                         <label className="label-caps">Core Problem</label>
-                        <textarea className="input-field min-h-[100px]" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: e.target.value})} placeholder="The single most acute pain point..." />
+                        <textarea className="input-field min-h-[100px] !text-navy !font-bold" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: e.target.value})} placeholder="The single most acute pain point..." />
                       </div>
                       <div>
                         <label className="label-caps">Who is affected?</label>
@@ -429,11 +429,11 @@ export default function PitchGenerator() {
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Who is this for?</p>
                       <div>
                         <label className="label-caps">Primary Users</label>
-                        <textarea className="input-field min-h-[100px]" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: e.target.value})} placeholder="Those who use the core solution daily..." />
+                        <textarea className="input-field min-h-[100px] !text-navy !font-bold" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: e.target.value})} placeholder="Those who use the core solution daily..." />
                       </div>
                       <div>
                         <label className="label-caps">Secondary Users</label>
-                        <textarea className="input-field min-h-[100px]" value={data.s5_secondaryUsers} onChange={e => setData({...data, s5_secondaryUsers: e.target.value})} placeholder="Beneficiaries or peripheral stakeholders..." />
+                        <textarea className="input-field min-h-[100px] !text-navy !font-bold" value={data.s5_secondaryUsers} onChange={e => setData({...data, s5_secondaryUsers: e.target.value})} placeholder="Beneficiaries or peripheral stakeholders..." />
                       </div>
                    </div>
                 )}
@@ -490,22 +490,22 @@ export default function PitchGenerator() {
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                            <div className="lean-box bg-rose-50/30 p-4 rounded-2xl border border-rose-100">
                               <label className="label-caps text-rose-500">Challenges / Pains</label>
-                              <textarea className="input-field !bg-transparent !border-0 !p-0 !py-2 !text-xs min-h-[100px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} placeholder="What problems are they trying to solve? (Ex: High water waste)" />
+                              <textarea className="input-field !bg-transparent !border-0 !p-0 !py-2 !text-xs min-h-[100px] !text-navy !font-bold" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} placeholder="What problems are they trying to solve? (Ex: High water waste)" />
                            </div>
                            <div className="lean-box bg-emerald-50/30 p-4 rounded-2xl border border-emerald-100">
                               <label className="label-caps text-emerald-500">Professional Goals</label>
-                              <textarea className="input-field !bg-transparent !border-0 !p-0 !py-2 !text-xs min-h-[100px]" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} placeholder="What are their career goals? (Ex: Zero waste ops)" />
+                              <textarea className="input-field !bg-transparent !border-0 !p-0 !py-2 !text-xs min-h-[100px] !text-navy !font-bold" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} placeholder="What are their career goals? (Ex: Zero waste ops)" />
                            </div>
                          </div>
 
                         <div className="lean-box bg-teal/5 p-4 rounded-2xl border border-teal/10">
                            <label className="label-caps text-teal">How You Can Help</label>
-                           <textarea className="input-field !bg-transparent !border-0 !p-0 !py-2 !text-xs min-h-[60px]" value={data.s6_howWeHelp} onChange={e => setData({...data, s6_howWeHelp: e.target.value})} placeholder="How does your product meet their specific needs?" />
+                           <textarea className="input-field !bg-transparent !border-0 !p-0 !py-2 !text-xs min-h-[60px] !text-navy !font-bold" value={data.s6_howWeHelp} onChange={e => setData({...data, s6_howWeHelp: e.target.value})} placeholder="How does your product meet their specific needs?" />
                         </div>
 
                         <div>
                           <label className="label-caps">Narrative Bio</label>
-                          <textarea className="input-field !py-2 !text-xs min-h-[80px]" value={data.s6_bio} onChange={e => setData({...data, s6_bio: e.target.value})} placeholder="Brief background story of the persona..." />
+                          <textarea className="input-field !py-2 !text-xs min-h-[80px] !text-navy !font-bold" value={data.s6_bio} onChange={e => setData({...data, s6_bio: e.target.value})} placeholder="Brief background story of the persona..." />
                         </div>
 
                        <div className="grid grid-cols-2 gap-8 pt-4 border-t border-slate-100">
@@ -548,21 +548,21 @@ export default function PitchGenerator() {
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                            <div>
                              <label className="label-caps">Existing Alternatives</label>
-                             <textarea className="input-field" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} placeholder="What is the user using right now? (Ex: Manual spreadsheets)" />
+                             <textarea className="input-field !text-navy !font-bold" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} placeholder="What is the user using right now? (Ex: Manual spreadsheets)" />
                            </div>
                            <div>
                              <label className="label-caps">Critical Limitations</label>
-                             <textarea className="input-field" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: e.target.value})} placeholder="Specific failures of current methods" />
+                             <textarea className="input-field !text-navy !font-bold" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: e.target.value})} placeholder="Specific failures of current methods" />
                            </div>
                        </div>
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-100 pt-6">
                            <div>
                              <label className="label-caps text-teal">Gain Creators</label>
-                             <textarea className="input-field border-teal/20 focus:border-teal" value={data.s7_gainCreators} onChange={e => setData({...data, s7_gainCreators: e.target.value})} placeholder="How does your product create value for the customer?" />
+                             <textarea className="input-field border-teal/20 focus:border-teal !text-navy !font-bold" value={data.s7_gainCreators} onChange={e => setData({...data, s7_gainCreators: e.target.value})} placeholder="How does your product create value for the customer?" />
                            </div>
                            <div>
                              <label className="label-caps text-teal">Pain Killers</label>
-                             <textarea className="input-field border-teal/20 focus:border-teal" value={data.s7_painKillers} onChange={e => setData({...data, s7_painKillers: e.target.value})} placeholder="How does your product eliminate user frustrations?" />
+                             <textarea className="input-field border-teal/20 focus:border-teal !text-navy !font-bold" value={data.s7_painKillers} onChange={e => setData({...data, s7_painKillers: e.target.value})} placeholder="How does your product eliminate user frustrations?" />
                            </div>
                        </div>
                    </div>
@@ -611,13 +611,13 @@ export default function PitchGenerator() {
                          <div className="md:col-span-1 space-y-4">
                             <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                               <label className="label-caps !text-[8px] text-navy">Problem</label>
-                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanProblem} onChange={e => setData({...data, s9_leanProblem: e.target.value})} placeholder="What is the pain?" />
+                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px] !text-navy !font-bold" value={data.s9_leanProblem} onChange={e => setData({...data, s9_leanProblem: e.target.value})} placeholder="What is the pain?" />
                               <label className="label-caps !text-[7px] text-slate-400 mt-2">Alternatives</label>
                               <input className="input-field !bg-transparent !border-0 !p-0 !text-[9px]" value={data.s9_leanAlternatives} onChange={e => setData({...data, s9_leanAlternatives: e.target.value})} placeholder="Current methods..." />
                             </div>
                             <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                               <label className="label-caps !text-[8px] text-navy">Solution</label>
-                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanSolution} onChange={e => setData({...data, s9_leanSolution: e.target.value})} placeholder="What is the fix?" />
+                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px] !text-navy !font-bold" value={data.s9_leanSolution} onChange={e => setData({...data, s9_leanSolution: e.target.value})} placeholder="What is the fix?" />
                               <label className="label-caps !text-[7px] text-slate-400 mt-2">Key Metrics</label>
                               <input className="input-field !bg-transparent !border-0 !p-0 !text-[9px]" value={data.s9_leanMetrics} onChange={e => setData({...data, s9_leanMetrics: e.target.value})} placeholder="How to measure success?" />
                             </div>
@@ -631,17 +631,17 @@ export default function PitchGenerator() {
                             </div>
                             <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                               <label className="label-caps !text-[8px] text-navy">Unfair Advantage</label>
-                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanUnfair} onChange={e => setData({...data, s9_leanUnfair: e.target.value})} placeholder="Can't be copied..." />
+                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px] !text-navy !font-bold" value={data.s9_leanUnfair} onChange={e => setData({...data, s9_leanUnfair: e.target.value})} placeholder="Can't be copied..." />
                             </div>
                          </div>
                          <div className="md:col-span-1 space-y-4">
                             <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                               <label className="label-caps !text-[8px] text-navy">Channels</label>
-                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanChannels} onChange={e => setData({...data, s9_leanChannels: e.target.value})} placeholder="How to reach them?" />
+                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px] !text-navy !font-bold" value={data.s9_leanChannels} onChange={e => setData({...data, s9_leanChannels: e.target.value})} placeholder="How to reach them?" />
                             </div>
                             <div className="lean-box bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                               <label className="label-caps !text-[8px] text-navy">Customer Segments</label>
-                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px]" value={data.s9_leanSegments} onChange={e => setData({...data, s9_leanSegments: e.target.value})} placeholder="Target audience..." />
+                              <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-[10px] !text-navy !font-bold" value={data.s9_leanSegments} onChange={e => setData({...data, s9_leanSegments: e.target.value})} placeholder="Target audience..." />
                               <label className="label-caps !text-[7px] text-slate-400 mt-2">Early Adopters</label>
                               <input className="input-field !bg-transparent !border-0 !p-0 !text-[9px]" value={data.s9_leanAdopters} onChange={e => setData({...data, s9_leanAdopters: e.target.value})} placeholder="First users..." />
                             </div>
@@ -650,11 +650,11 @@ export default function PitchGenerator() {
                       <div className="grid grid-cols-2 gap-4 mt-4">
                          <div className="lean-box bg-rose-50/30 p-4 rounded-xl border border-rose-100">
                            <label className="label-caps !text-[8px] text-rose-500">Cost Structure</label>
-                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-[10px]" value={data.s9_leanCosts} onChange={e => setData({...data, s9_leanCosts: e.target.value})} placeholder="Major expenses..." />
+                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-[10px] !text-navy !font-bold" value={data.s9_leanCosts} onChange={e => setData({...data, s9_leanCosts: e.target.value})} placeholder="Major expenses..." />
                          </div>
                          <div className="lean-box bg-emerald-50/30 p-4 rounded-xl border border-emerald-100">
                            <label className="label-caps !text-[8px] text-emerald-500">Revenue Streams</label>
-                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-[10px]" value={data.s9_leanRevenue} onChange={e => setData({...data, s9_leanRevenue: e.target.value})} placeholder="How to make money?" />
+                           <textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-[10px] !text-navy !font-bold" value={data.s9_leanRevenue} onChange={e => setData({...data, s9_leanRevenue: e.target.value})} placeholder="How to make money?" />
                          </div>
                       </div>
                    </div>
@@ -740,7 +740,7 @@ export default function PitchGenerator() {
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Business Model Framing</p>
                       <div>
                         <label className="label-caps">Revenue Model</label>
-                        <textarea className="input-field min-h-[120px]" value={data.s12_revenueModel} onChange={e => setData({...data, s12_revenueModel: e.target.value})} placeholder="How does this venture sustain itself?" />
+                        <textarea className="input-field min-h-[120px] !text-navy !font-bold" value={data.s12_revenueModel} onChange={e => setData({...data, s12_revenueModel: e.target.value})} placeholder="How does this venture sustain itself?" />
                       </div>
                       <div>
                         <label className="label-caps">Pricing Logic</label>
@@ -774,7 +774,7 @@ export default function PitchGenerator() {
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Impact Assessment</p>
                       <div>
                         <label className="label-caps">Social / Economic Impact</label>
-                        <textarea className="input-field" value={data.s14_socialEconomic} onChange={e => setData({...data, s14_socialEconomic: e.target.value})} placeholder="The broader win for society or industry" />
+                        <textarea className="input-field !text-navy !font-bold" value={data.s14_socialEconomic} onChange={e => setData({...data, s14_socialEconomic: e.target.value})} placeholder="The broader win for society or industry" />
                       </div>
                       <div>
                         <label className="label-caps">Key Metrics for Success</label>

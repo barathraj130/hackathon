@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function TeamDashboard() {
   const [timeLeft, setTimeLeft] = useState(86400);
-  const [isPaused, setIsPaused] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
   const [formattedTime, setFormattedTime] = useState('24:00:00');
   const [saveStatus, setSaveStatus] = useState('IDLE'); 
   const [isGenerating, setIsGenerating] = useState(false);
