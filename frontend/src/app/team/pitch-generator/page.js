@@ -813,7 +813,7 @@ export default function PitchGenerator() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                        <div className="relative group">
                           <label className="absolute -top-7 left-0 text-[10px] font-black text-navy uppercase tracking-widest">Native Upload</label>
-                          <div className="input-field !p-0 !bg-slate-50 flex items-center overflow-hidden h-[75px] border-2 border-slate-200 focus-within:border-teal transition-all">
+                          <div className="flex items-center gap-3 bg-white border-2 border-slate-200 rounded-xl p-2 h-[58px] focus-within:border-teal transition-all shadow-inner">
                              <input 
                                 type="file" 
                                 id={`upload-${step}`} 
@@ -821,17 +821,17 @@ export default function PitchGenerator() {
                                 accept="image/*"
                                 onChange={(e) => handleFileUpload(e, step)}
                              />
-                             <label htmlFor={`upload-${step}`} className="cursor-pointer bg-teal text-white px-6 h-full flex items-center text-[10px] font-black uppercase tracking-widest hover:bg-navy transition-colors whitespace-nowrap">
+                             <label htmlFor={`upload-${step}`} className="cursor-pointer bg-teal text-white px-5 py-3 rounded-lg flex items-center justify-center text-[10px] font-black uppercase tracking-widest hover:bg-navy transition-all shadow-md active:scale-95 whitespace-nowrap">
                                 {uploading ? '...' : 'Upload'}
                              </label>
-                             <div className="px-4 flex-grow flex items-center justify-between overflow-hidden">
+                             <div className="flex-grow flex items-center justify-end px-2 overflow-hidden">
                                 {data.slide_assets[`s${step}_img`] ? (
-                                   <>
-                                      <img src={data.slide_assets[`s${step}_img`]} alt="Preview" className="h-12 w-12 object-cover rounded-lg border-2 border-teal/20" />
-                                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter">Verified ✓</span>
-                                   </>
+                                   <div className="flex items-center gap-3">
+                                      <img src={data.slide_assets[`s${step}_img`]} alt="Preview" className="h-8 w-8 object-cover rounded-md border-2 border-teal/10" />
+                                      <span className="text-[9px] font-black text-emerald-600 uppercase tracking-tighter">Verified ✓</span>
+                                   </div>
                                 ) : (
-                                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Inert / No Binary</span>
+                                   <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Empty</span>
                                 )}
                              </div>
                           </div>
