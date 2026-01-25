@@ -52,22 +52,44 @@ def add_clean_box(slide, text, left, top, width, height, size=14, bold=False, co
 def create_expert_deck(team_name, college, data):
     prs = Presentation()
     
-    # 1. FINAL COVER
+    # 1. PREMIUM COVER SLIDE
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_slide_bg(slide)
-    tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(9), Inches(1.5))
+    
+    # Large centered Logo on cover
+    if os.path.exists("institution_logo.png"):
+        slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
+
+    # High-impact Project Title
+    tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(2.0), Inches(9), Inches(1.5))
     p_title = tx_title.text_frame.paragraphs[0]
     p_title.text = data.get('projectName', 'VENTURE PROTOTYPE').upper()
-    p_title.font.size = Pt(54); p_title.font.bold = True; p_title.font.color.rgb = PRIMARY_COLOR; p_title.alignment = PP_ALIGN.CENTER
-    tx_id = slide.shapes.add_textbox(Inches(1), Inches(3.2), Inches(8), Inches(3))
+    p_title.font.size = Pt(64); p_title.font.bold = True; p_title.font.color.rgb = PRIMARY_COLOR; p_title.alignment = PP_ALIGN.CENTER
+    
+    # Elegant Underline on cover
+    line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.4), Inches(6.5), Inches(3.4))
+    line.line.color.rgb = TEXT_MAIN; line.line.width = Pt(2)
+
+    # Detailed Personnel Info (Hierarchical Typography)
+    tx_id = slide.shapes.add_textbox(Inches(1), Inches(3.8), Inches(8), Inches(3))
     tf_d = tx_id.text_frame; tf_d.word_wrap = True
-    def add_line(lb, val, sz, b=True, cl=TEXT_MAIN):
-        p = tf_d.add_paragraph(); p.alignment = PP_ALIGN.CENTER; p.text = f"{lb}: {val}"
-        p.font.size = Pt(sz); p.font.bold = b; p.font.color.rgb = cl; p.font.name = 'Arial'
-    add_line("TEAM NAME", team_name.upper(), 22, True, PRIMARY_COLOR)
-    add_line("COLLEGE", college.upper(), 18, False, SECONDARY_COLOR)
-    add_line("TEAM LEADER", data.get('leaderName', 'N/A').upper(), 20, True, TEXT_MAIN)
-    add_line("NODE MEMBERS", data.get('memberNames', 'N/A').upper(), 16, False, SECONDARY_COLOR)
+    
+    # Team Name (Sub-headline style)
+    p1 = tf_d.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
+    p1.text = f"TEAM {team_name.upper()}"; p1.font.size = Pt(28); p1.font.bold = True; p1.font.color.rgb = TEXT_MAIN
+    
+    # College (Lightweight / Italics)
+    p2 = tf_d.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
+    p2.text = f"from {college.upper()}"; p2.font.size = Pt(16); p2.font.italic = True; p2.font.color.rgb = SECONDARY_COLOR
+    
+    # Leader (Professional Label style)
+    p3 = tf_d.add_paragraph(); p3.alignment = PP_ALIGN.CENTER
+    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(20); p3.font.bold = True; p3.font.color.rgb = PRIMARY_COLOR
+    
+    # Members (Small caption style)
+    p4 = tf_d.add_paragraph(); p4.alignment = PP_ALIGN.CENTER
+    p4.text = f"NODE MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(12); p4.font.bold = False; p4.font.color.rgb = SECONDARY_COLOR; p4.font.name = 'Arial Narrow'
+    
     add_footer(slide)
 
     modules = [
@@ -94,6 +116,11 @@ def create_expert_deck(team_name, college, data):
 
     # 17. CLOSURE
     slide = prs.slides.add_slide(prs.slide_layouts[6]); set_slide_bg(slide)
+    
+    # Institution Logo on bottom centered
+    if os.path.exists("institution_logo.png"):
+        slide.shapes.add_picture("institution_logo.png", Inches(4.5), Inches(5.5), width=Inches(1.0))
+        
     tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
     p = tx.text_frame.paragraphs[0]; p.text = "THANK YOU."; p.font.size = Pt(64); p.font.bold = True; p.font.color.rgb = PRIMARY_COLOR; p.alignment = PP_ALIGN.CENTER
     add_footer(slide)
@@ -259,19 +286,15 @@ def draw_market_matrix(slide, data):
 def draw_market_sizing(slide, data):
     # Professional Bullseye Logic (TAM > SAM > SOM)
     cx, cy = 3.8, 3.8 # Center Point
-    # Circles (Perfected concentric behavior)
     configs = [ (4.4, PRIMARY_COLOR, 0.8), (3.2, SECONDARY_COLOR, 0.6), (2.0, ERROR_ZONE, 0.4) ]
     for d, cl, tr in configs:
         sh = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(cx-d/2), Inches(cy-d/2), Inches(d), Inches(d))
         sh.fill.solid(); sh.fill.fore_color.rgb = cl; sh.fill.transparency = tr
         sh.line.color.rgb = cl; sh.line.width = Pt(1.5)
     
-    # Precise Dynamic Labels
     lbls = [("TAM", 's13_tam', PRIMARY_COLOR, 2.0), ("SAM", 's13_sam', SECONDARY_COLOR, 2.8), ("SOM", 's13_som', ERROR_ZONE, 3.6)]
     for i, (name, key, col, y_pos) in enumerate(lbls):
-        # Callout Line (Institutional Anchor)
         slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(cx+0.5), Inches(y_pos), Inches(7.0), Inches(y_pos)).line.color.rgb = col
-        # Text block
         add_text_box_simple(slide, f"{name}: {data.get(key, 'N/A')}", 7.1, y_pos-0.2, 2.5, 0.4, 15, True, col)
 
     add_clean_box(slide, "VALUATION LOGIC & SOURCE DATA", Inches(0.5), Inches(6.1), Inches(9), Inches(0.35), 10, True, PRIMARY_COLOR, None, BG_LIGHT)
