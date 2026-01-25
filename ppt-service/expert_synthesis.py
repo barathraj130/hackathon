@@ -117,8 +117,8 @@ def create_expert_deck(team_name, college, data):
 
     blue_inst = RGBColor(13, 148, 136) # Institutional Teal-Blue
     
-    # 1. PERSONAL INFO
-    draw_persona_box(slide, "PERSONAL INFO", 0.5, 1.2, 3.5, 2.5, blue_inst)
+    # 1. PERSONAL INFO (Top-Left)
+    draw_persona_box(slide, "PERSONAL INFO", 0.5, 1.2, 4.0, 2.8, blue_inst)
     personal_text = (
         f"• Age: {data.get('s6_customerAge', 'N/A')}\n"
         f"• Gender: {data.get('s6_customerGender', 'N/A')}\n"
@@ -127,26 +127,27 @@ def create_expert_deck(team_name, college, data):
         f"• Interests: {data.get('s6_customerInterests', 'N/A')}\n"
         f"• Income: {data.get('s6_customerIncome', 'N/A')}"
     )
-    add_text_to_slide(slide, personal_text, Inches(0.6), Inches(1.7), Inches(3.3), Inches(1.8), size=10)
+    add_text_to_slide(slide, personal_text, Inches(0.6), Inches(1.7), Inches(3.8), Inches(2.2), size=9)
 
-    # 2. CHALLENGES
-    draw_persona_box(slide, "CHALLENGES", 6.0, 1.2, 3.5, 2.5, blue_inst)
-    add_text_to_slide(slide, data.get('s6_pains', 'N/A'), Inches(6.1), Inches(1.7), Inches(3.3), Inches(1.8), size=10)
+    # 2. CHALLENGES (Top-Right)
+    draw_persona_box(slide, "CHALLENGES", 5.5, 1.2, 4.0, 2.8, blue_inst)
+    add_text_to_slide(slide, data.get('s6_pains', 'N/A'), Inches(5.6), Inches(1.7), Inches(3.8), Inches(2.2), size=9)
 
-    # 3. PROFESSIONAL GOALS
-    draw_persona_box(slide, "PROFESSIONAL GOALS", 0.5, 4.3, 3.5, 2.5, blue_inst)
-    add_text_to_slide(slide, data.get('s6_goals', 'N/A'), Inches(0.6), Inches(4.8), Inches(3.3), Inches(1.8), size=10)
+    # 3. PROFESSIONAL GOALS (Bottom-Left)
+    draw_persona_box(slide, "PROFESSIONAL GOALS", 0.5, 4.2, 4.0, 2.8, blue_inst)
+    add_text_to_slide(slide, data.get('s6_goals', 'N/A'), Inches(0.6), Inches(4.7), Inches(3.8), Inches(2.2), size=9)
 
-    # 4. HOW YOU CAN HELP
-    draw_persona_box(slide, "HOW YOU CAN HELP", 6.0, 4.3, 3.5, 2.5, blue_inst)
-    add_text_to_slide(slide, data.get('s6_howWeHelp', 'N/A'), Inches(6.1), Inches(4.8), Inches(3.3), Inches(1.8), size=12)
+    # 4. HOW YOU CAN HELP (Bottom-Right)
+    draw_persona_box(slide, "HOW YOU CAN HELP", 5.5, 4.2, 4.0, 2.8, blue_inst)
+    add_text_to_slide(slide, data.get('s6_howWeHelp', 'N/A'), Inches(5.6), Inches(4.7), Inches(3.8), Inches(2.2), size=11)
 
     # CENTRAL AVATAR / IDENTIFIER
-    avatar = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(4.2), Inches(3.0), Inches(1.6), Inches(1.6))
+    # Adjusted to sit exactly between the expanded boxes
+    avatar = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(4.2), Inches(3.2), Inches(1.6), Inches(1.6))
     avatar.fill.solid()
     avatar.fill.fore_color.rgb = blue_inst
     avatar.line.color.rgb = RGBColor(255,255,255)
-    add_text_to_slide(slide, data.get('s6_customerName', 'PERSONA').upper(), Inches(4.0), Inches(4.7), Inches(2.0), Inches(0.5), size=14, bold=True, color=blue_inst)
+    add_text_to_slide(slide, data.get('s6_customerName', 'PERSONA').upper(), Inches(4.0), Inches(4.9), Inches(2.0), Inches(0.5), size=14, bold=True, color=blue_inst)
 
     # 7. VALUE PROPOSITION CANVAS (High Fidelity)
     slide = add_diagram_slide(prs, "Value Proposition Canvas")
@@ -403,7 +404,7 @@ def draw_impact_graph_detailed(slide, pain_points):
     # Axes
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(6), Inches(9), Inches(6)) # X
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(6), Inches(1), Inches(1.5)) # Y
-    add_text_to_slide(slide, "Probability / Frequency", Inches(4), Inches(6.1), Inches(4), Inches(0.5), size=12)
+    add_text_to_slide(slide, "Probability / Frequency", Inches(3.5), Inches(6.1), Inches(4), Inches(0.5), size=12)
     add_text_to_slide(slide, "Impact Severity", Inches(0.1), Inches(3), Inches(0.8), Inches(1), size=10)
     
     mapping = {"Low": 1, "Medium": 2, "High": 3, "Rare": 1, "Occasional": 2, "Frequent": 3}
