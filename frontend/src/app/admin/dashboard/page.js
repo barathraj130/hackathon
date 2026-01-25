@@ -1,7 +1,6 @@
 'use client';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -22,15 +21,17 @@ export default function AdminDashboard() {
     fetchProblemStatements();
     fetchSubmissions();
     
-    // Dynamic Socket URL
-    const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
-    socketRef.current = io(socketUrl);
-    
-    socketRef.current.on('timerUpdate', (data) => {
-      setTimer(data);
+    // Dynamic import to ensure client-side only
+    import('socket.io-client').then(({ default: io }) => {
+      const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
+      socketRef.current = io(socketUrl);
+      
+      socketRef.current.on('timerUpdate', (data) => {
+        setTimer(data);
+      });
     });
 
-    return () => socketRef.current.disconnect();
+    return () => socketRef.current?.disconnect();
   }, []);
 
   const fetchStats = async () => {
