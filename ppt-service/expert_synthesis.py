@@ -6,16 +6,16 @@ from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 import os
 
-def add_footer(slide, text="HACK@JIT 1.0 // PITCH PROTOCOL"):
+def add_footer(slide, text="HACK@JIT 1.0"):
     footer_box = slide.shapes.add_textbox(Inches(0.4), Inches(7.1), Inches(9.2), Inches(0.3))
     p = footer_box.text_frame.paragraphs[0]
     p.text = text
     p.font.size = Pt(8); p.font.name = 'Arial'; p.font.color.rgb = RGBColor(148, 163, 184)
     p.alignment = PP_ALIGN.RIGHT
 
-def set_dark_bg(slide, color):
+def set_light_bg(slide):
     fill = slide.background.fill
-    fill.solid(); fill.fore_color.rgb = color
+    fill.solid(); fill.fore_color.rgb = RGBColor(248, 250, 252) # Light Grey/Slate
 
 def add_diagram_slide(prs, title_text, font_name):
     slide = prs.slides.add_slide(prs.slide_layouts[6]) 
@@ -25,7 +25,6 @@ def add_diagram_slide(prs, title_text, font_name):
     p = tf.paragraphs[0]
     p.font.size = Pt(26); p.font.bold = True; p.font.name = font_name
     p.font.color.rgb = RGBColor(2, 6, 23)
-    # Highlight accent line
     line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.4), Inches(1.2), Inches(3.5), Inches(1.2))
     line.line.color.rgb = RGBColor(13, 148, 136); line.line.width = Pt(2.5)
     return slide
@@ -51,21 +50,27 @@ def create_expert_deck(team_name, college, data):
     def add_branding(slide):
         branding = slide.shapes.add_textbox(Inches(0.4), Inches(0.3), Inches(5), Inches(0.3))
         p = branding.text_frame.paragraphs[0]
-        p.text = "ENGINEERING THE FUTURE // EXPERT SYNTHESIS ARCHIVE"
-        p.font.size = Pt(10); p.font.bold = True; p.font.color.rgb = RGBColor(148, 163, 184)
+        p.text = "HACK@JIT 1.0"
+        p.font.size = Pt(12); p.font.bold = True; p.font.color.rgb = RGBColor(148, 163, 184)
         if os.path.exists("institution_logo.png"):
             slide.shapes.add_picture("institution_logo.png", Inches(8.8), Inches(0.2), width=Inches(0.8))
         add_footer(slide)
 
     # 1. COVER
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_dark_bg(slide, RGBColor(2, 6, 23))
-    tx = slide.shapes.add_textbox(Inches(0), Inches(3.0), Inches(10), Inches(1.2))
+    tx = slide.shapes.add_textbox(Inches(0), Inches(2.5), Inches(10), Inches(1.2))
     tf = tx.text_frame; tf.text = data.get('projectName', 'VENTURE PROTOYPE').upper()
-    p = tf.paragraphs[0]; p.font.size = Pt(54); p.font.bold = True; p.font.color.rgb = RGBColor(255,255,255); p.alignment = PP_ALIGN.CENTER
-    tx2 = slide.shapes.add_textbox(Inches(0), Inches(4.2), Inches(10), Inches(0.5))
-    tf2 = tx2.text_frame; tf2.text = f"ENTITY: {team_name} // NODE: {college}"
-    p2 = tf2.paragraphs[0]; p2.font.size = Pt(16); p2.font.color.rgb = RGBColor(13, 148, 136); p2.alignment = PP_ALIGN.CENTER; p2.font.bold = True
+    p = tf.paragraphs[0]; p.font.size = Pt(54); p.font.bold = True; p.font.color.rgb = RGBColor(2, 6, 23); p.alignment = PP_ALIGN.CENTER
+    
+    tx2 = slide.shapes.add_textbox(Inches(0), Inches(4.0), Inches(10), Inches(1.5))
+    tf2 = tx2.text_frame; tf2.word_wrap = True
+    p2 = tf2.paragraphs[0]
+    p2.text = f"TEAM: {data.get('memberNames', 'Team Member Names Not Provided')}"
+    p2.font.size = Pt(18); p2.font.color.rgb = RGBColor(13, 148, 136); p2.alignment = PP_ALIGN.CENTER; p2.font.bold = True
+    
+    p3 = tf2.add_paragraph()
+    p3.text = f"INSTITUTION: {college}"
+    p3.font.size = Pt(14); p3.font.color.rgb = RGBColor(100, 116, 139); p3.alignment = PP_ALIGN.CENTER; p3.font.bold = False
 
     # Systematic Drawer Mappings
     slides = [
@@ -91,12 +96,14 @@ def create_expert_deck(team_name, college, data):
 
     # CLOSURE
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_dark_bg(slide, RGBColor(2, 6, 23))
-    add_text_to_slide(slide, "SYNTHESIS PROTOCOL COMPLETE.\nTHANK YOU.", Inches(0), Inches(3.2), Inches(10), Inches(2), size=44, color=RGBColor(255,255,255), bold=True)
+    set_light_bg(slide)
+    tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
+    tf = tx.text_frame; tf.text = "THANK YOU."
+    p = tf.paragraphs[0]; p.font.size = Pt(54); p.font.bold = True; p.font.color.rgb = RGBColor(2, 6, 23); p.alignment = PP_ALIGN.CENTER
     
     if not os.path.exists('ppt_outputs'): os.makedirs('ppt_outputs')
-    path = f"ppt_outputs/{team_name.lower().replace(' ', '_')}_pitch_artifact.pptx"
-    prs.save(path); return path
+    final_path = f"ppt_outputs/{team_name.lower().replace(' ', '_')}_pitch_artifact.pptx"
+    prs.save(final_path); return final_path
 
 # --- HELPERS ---
 
@@ -108,27 +115,38 @@ def draw_strategic_context(slide, data):
 
 def draw_problem_statement(slide, data):
     add_text_to_slide(slide, "CORE PROBLEM", Inches(0.5), Inches(1.6), Inches(9), Inches(0.3), size=11, bold=True, color=RGBColor(244,63,94))
-    add_text_to_slide(slide, data.get('s3_coreProblem', 'N/A'), Inches(0.5), Inches(2.0), Inches(9), Inches(2.0), size=15, boxed=True)
-    add_text_to_slide(slide, "AFFECTED PERSONNEL", Inches(0.5), Inches(4.5), Inches(4.2), Inches(0.3), size(11), bold=True)
-    add_text_to_slide(slide, data.get('s3_affected', 'N/A'), Inches(0.5), Inches(4.9), Inches(4.2), Inches(1.5), size=13, boxed=True)
-    add_text_to_slide(slide, "CRITICAL GRAVITY", Inches(5.3), Inches(4.5), Inches(4.2), Inches(0.3), size(11), bold=True)
-    add_text_to_slide(slide, data.get('s3_whyItMatters', 'N/A'), Inches(5.3), Inches(4.9), Inches(4.2), Inches(1.5), size=13, boxed=True)
+    add_text_to_slide(slide, data.get('s3_coreProblem', 'N/A'), Inches(0.5), Inches(2.0), Inches(9), Inches(2.0), size(15), boxed=True)
+    add_text_to_slide(slide, "AFFECTED PERSONNEL", Inches(0.5), Inches(4.5), Inches(4.2), Inches(0.3), size=11, bold=True)
+    add_text_to_slide(slide, data.get('s3_affected', 'N/A'), Inches(0.5), Inches(4.9), Inches(4.2), Inches(1.5), size(13), boxed=True)
+    add_text_to_slide(slide, "CRITICAL GRAVITY", Inches(5.3), Inches(4.5), Inches(4.2), Inches(0.3), size=11, bold=True)
+    add_text_to_slide(slide, data.get('s3_whyItMatters', 'N/A'), Inches(5.3), Inches(4.9), Inches(4.2), Inches(1.5), size(13), boxed=True)
 
 def draw_impact_matrix(slide, data):
+    # Axes
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(6.5), Inches(9), Inches(6.5)) # X
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(1), Inches(6.5), Inches(1), Inches(1.8)) # Y
+    
     m = {"Low": 1, "Medium": 2, "High": 3, "Rare": 1, "Occasional": 2, "Frequent": 3}
-    for i, p in enumerate(data.get('s4_painPoints', [])[:8]):
-        if not p.get('point'): continue
-        x, y = 1+m.get(p.get('freq'), 2)*2.4, 6.5-m.get(p.get('impact'), 2)*1.4
-        dot = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(x), Inches(y), Inches(0.2), Inches(0.2))
+    pts = data.get('s4_painPoints', [])
+    valid_pts = [p for p in pts if p.get('point')]
+    
+    # Legend mapping from bottom to top
+    for i, p in enumerate(valid_pts[:8]):
+        x_val = m.get(p.get('freq'), 2)
+        y_val = m.get(p.get('impact'), 2)
+        # Position dots
+        dot = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(1 + x_val*2.4 - 0.1), Inches(6.5 - y_val*1.4 - 0.1), Inches(0.2), Inches(0.2))
         dot.fill.solid(); dot.fill.fore_color.rgb = RGBColor(13,148,136)
-        add_text_to_slide(slide, f"{i+1}. {p['point'][:30]}", Inches(x+0.2), Inches(y), Inches(2.5), Inches(0.3), size=8)
+        add_text_to_slide(slide, f"{i+1}", Inches(1 + x_val*2.4 - 0.1), Inches(6.5 - y_val*1.4 - 0.1), Inches(0.2), Inches(0.2), size=7, color=RGBColor(255,255,255))
+        
+        # Bottom to top listing (overlapping content fix)
+        y_list = 6.4 - (i * 0.5)
+        add_text_to_slide(slide, f"{i+1}. {p['point'][:60]}", Inches(5.5), Inches(y_list), Inches(4), Inches(0.4), size=9, bold=True)
 
 def draw_stakeholders(slide, data):
     for i, (l, k) in enumerate([("PRIMARY NODES", 's5_primaryUsers'), ("SECONDARY NODES", 's5_secondaryUsers')]):
         add_text_to_slide(slide, l, Inches(0.5), Inches(1.8+i*2.6), Inches(9), Inches(0.3), size=12, bold=True, color=RGBColor(13,148,136))
-        add_text_to_slide(slide, data.get(k, 'N/A'), Inches(0.5), Inches(2.2+i*2.6), Inches(9), Inches(1.8), size=14, boxed=True)
+        add_text_to_slide(slide, data.get(k, 'N/A'), Inches(0.5), Inches(2.2+i*2.6), Inches(9), Inches(1.8), size(14), boxed=True)
 
 def draw_persona(slide, data):
     inst_teal = RGBColor(13,148,136)
@@ -162,24 +180,59 @@ def draw_solution_flow(slide, data):
         add_text_to_slide(slide, f"{i+1}. {s}", Inches(x+0.1), Inches(y+0.1), Inches(2.6), Inches(1), size=10, bold=True)
 
 def draw_lean_canvas(slide, data):
-    w = 1.9; c = [(0.4, 4.2), (0.4+w, 2.1), (0.4+2*w, 4.2), (0.4+3*w, 2.1), (0.4+4*w, 4.2)]
+    w = 1.9; c = [(0.4, 4.0), (0.4+w, 2.0), (0.4+2*w, 4.0), (0.4+3*w, 2.0), (0.4+4*w, 4.0)]
     keys = [('PROBLEM', 's9_leanProblem'), ('SOLUTION', 's9_leanSolution'), ('USP', 's9_leanUSP'), ('ADVANTAGE', 's9_leanUnfair'), ('SEGMENTS', 's9_leanSegments')]
     for i, (t, k) in enumerate(keys):
-        x, h = c[i]
-        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x), Inches(1.6), Inches(w-0.1), Inches(h))
-        box.fill.background(); box.line.color.rgb = RGBColor(15, 23, 42); box.line.width = Pt(1)
-        add_text_to_slide(slide, t, Inches(x), Inches(1.65), Inches(w-0.1), Inches(0.3), size=9, bold=True)
-        add_text_to_slide(slide, data.get(k, 'N/A'), Inches(x+0.1), Inches(2.0), Inches(w-0.3), Inches(h-0.5), size=9)
+        x_pt, h_pt = c[i]
+        # Pillar Shape
+        pillar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x_pt), Inches(1.6), Inches(w-0.1), Inches(h_pt))
+        pillar.fill.solid(); pillar.fill.fore_color.rgb = RGBColor(255,255,255)
+        pillar.line.color.rgb = RGBColor(15, 23, 42); pillar.line.width = Pt(1.5)
+        
+        add_text_to_slide(slide, t, Inches(x_pt), Inches(1.65), Inches(w-0.1), Inches(0.3), size=9, bold=True, color=RGBColor(2, 6, 23))
+        add_text_to_slide(slide, data.get(k, 'N/A'), Inches(x_pt+0.05), Inches(2.0), Inches(w-0.2), Inches(h_pt-0.5), size=8)
+
+    # Sub-pillar metrics and channels (the missing half boxes)
+    add_text_to_slide(slide, "METRICS", Inches(0.4+w), Inches(3.6), Inches(w-0.1), Inches(0.3), size(8), bold=True, color=RGBColor(13,148,136))
+    sub1 = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.4+w), Inches(3.6), Inches(w-0.1), Inches(2.0))
+    sub1.fill.background(); sub1.line.color.rgb = RGBColor(13,148,136); sub1.line.width = Pt(1)
+    add_text_to_slide(slide, data.get('s9_leanMetrics', 'N/A'), Inches(0.4+w+0.05), Inches(4.0), Inches(w-0.2), Inches(1.5), size=8)
+
+    add_text_to_slide(slide, "CHANNELS", Inches(0.4+3*w), Inches(3.6), Inches(w-0.1), Inches(0.3), size(8), bold=True, color=RGBColor(13,148,136))
+    sub2 = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.4+3*w), Inches(3.6), Inches(w-0.1), Inches(2.0))
+    sub2.fill.background(); sub2.line.color.rgb = RGBColor(13,148,136); sub2.line.width = Pt(1)
+    add_text_to_slide(slide, data.get('s9_leanChannels', 'N/A'), Inches(0.4+3*w+0.05), Inches(4.0), Inches(w-0.2), Inches(1.5), size=8)
+
+    # Costs & Revenue Bottom (Full boxes)
+    for i, (t, k, x) in enumerate([("COST STRUCTURE", "s9_leanCosts", 0.4), ("REVENUE STREAMS", "s9_leanRevenue", 0.4+2.5*w)]):
+        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x), Inches(5.7), Inches(w*2), Inches(1.2))
+        box.fill.solid(); box.fill.fore_color.rgb = RGBColor(248, 250, 252)
+        box.line.color.rgb = RGBColor(148, 163, 184); box.line.width = Pt(1)
+        add_text_to_slide(slide, t, Inches(x+0.1), Inches(5.7), Inches(w*2-0.2), Inches(0.3), size=9, bold=True)
+        add_text_to_slide(slide, data.get(k, 'N/A'), Inches(x+0.1), Inches(6.0), Inches(w*2-0.2), Inches(0.8), size=8)
 
 def draw_balloon(slide, data):
-    b = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(3.2), Inches(1.8), Inches(3.6), Inches(3.2))
+    # Main Balloon
+    b = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(3.2), Inches(1.6), Inches(3.6), Inches(3.2))
     b.fill.solid(); b.fill.fore_color.rgb = RGBColor(2, 6, 23)
-    add_text_to_slide(slide, "LIFTS", Inches(3.5), Inches(2.3), Inches(3), Inches(0.3), size=12, bold=True, color=RGBColor(255,255,255))
+    add_text_to_slide(slide, "LIFTS (DRIVERS)", Inches(3.5), Inches(2.2), Inches(3), Inches(0.3), size=12, bold=True, color=RGBColor(255,255,255))
     l = "\n".join([f"• {x}" for x in data.get('s10_lifts', []) if x.strip()][:4])
-    add_text_to_slide(slide, l, Inches(3.5), Inches(2.7), Inches(3), Inches(1.5), size=10, color=RGBColor(255,255,255))
-    bk = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(4.3), Inches(5.6), Inches(1.4), Inches(1.0))
+    add_text_to_slide(slide, l, Inches(3.5), Inches(2.6), Inches(3), Inches(1.5), size=10, color=RGBColor(255,255,255))
+    
+    # Basket
+    bk = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(4.3), Inches(5.4), Inches(1.4), Inches(1.0))
     bk.fill.solid(); bk.fill.fore_color.rgb = RGBColor(13, 148, 136)
-    add_text_to_slide(slide, "VENTURE CORE", Inches(4.3), Inches(5.9), Inches(1.4), Inches(0.4), size=10, bold=True, color=RGBColor(255,255,255))
+    add_text_to_slide(slide, "VENTURE CORE", Inches(4.3), Inches(5.7), Inches(1.4), Inches(0.4), size(10), bold=True, color=RGBColor(255,255,255))
+    
+    # Anchors (Pulls) - Left Side
+    add_text_to_slide(slide, "PULLS (ANCHORS)", Inches(0.5), Inches(4.0), Inches(2.5), Inches(0.3), size=11, bold=True, color=RGBColor(244,63,94))
+    pl = "\n".join([f"• {x}" for x in data.get('s10_pulls', []) if x.strip()][:4])
+    add_text_to_slide(slide, pl, Inches(0.5), Inches(4.4), Inches(2.5), Inches(1.5), size=10, boxed=True)
+
+    # Outcomes - Right Side
+    add_text_to_slide(slide, "OUTCOMES (ALTITUDE)", Inches(7.0), Inches(4.0), Inches(2.5), Inches(0.3), size=11, bold=True, color=RGBColor(13,148,136))
+    oc = "\n".join([f"• {x}" for x in data.get('s10_outcomes', []) if x.strip()][:4])
+    add_text_to_slide(slide, oc, Inches(7.0), Inches(4.4), Inches(2.5), Inches(1.5), size=10, boxed=True)
 
 def draw_market_matrix(slide, data):
     xs = [0.5, 3.6, 6.7]; inst_navy = RGBColor(2, 6, 23); inst_teal = RGBColor(13, 148, 136)
@@ -191,7 +244,7 @@ def draw_market_matrix(slide, data):
     box.fill.solid(); box.fill.fore_color.rgb = RGBColor(241, 245, 249); box.line.color.rgb = inst_teal; box.line.width = Pt(2)
     add_text_to_slide(slide, "OUR VENTURE", Inches(xs[2]), Inches(2.0), Inches(2.8), Inches(0.4), size=12, bold=True, color=inst_teal)
     o = data.get('s11_ourVenture', {})
-    add_text_to_slide(slide, f"ADVANTAGE:\n{o.get('strength', 'N/A')}\n\nGAP BRIDGED:\n{o.get('weakness', 'N/A')}", Inches(xs[2]+0.1), Inches(2.6), Inches(2.6), Inches(3.8), size=11, bold=True)
+    add_text_to_slide(slide, f"ADVANTAGE:\n{o.get('strength', 'N/A')}\n\nGAP BRIDGED:\n{o.get('weakness', 'N/A')}", Inches(xs[2]+0.1), Inches(2.6), Inches(2.6), Inches(3.8), size(11), bold=True)
 
 def draw_revenue_model(slide, data):
     parts = [("PRIMARY STREAM", 's12_primaryStream', 0.5, 1.8), ("SECONDARY STREAM", 's12_secondaryStream', 5.1, 1.8), ("PRICING LOGIC", 's12_pricingStrategy', 0.5, 4.4), ("ECONOMIC LOGIC", 's12_revenueLogic', 5.1, 4.4)]
@@ -218,5 +271,4 @@ def draw_vision(slide, data):
     add_text_to_slide(slide, "LONG-TERM VISION", Inches(0.5), Inches(4.8), Inches(9), Inches(0.3), size=12, bold=True)
     add_text_to_slide(slide, data.get('s14_vision', 'N/A'), Inches(0.5), Inches(5.2), Inches(9), Inches(1.4), size=16, boxed=True)
 
-import sys
 def size(px): return px
