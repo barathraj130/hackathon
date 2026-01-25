@@ -151,6 +151,13 @@ export default function TeamDashboard() {
     }));
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('user');
+    window.location.href = '/';
+  };
+
   return (
     <div className="min-h-screen bg-bg-light font-sans text-slate-800">
       {/* Premium Header */}
@@ -193,11 +200,7 @@ export default function TeamDashboard() {
           </div>
 
           <button 
-            onClick={() => {
-              localStorage.removeItem('token');
-              localStorage.removeItem('role');
-              window.location.href = '/';
-            }}
+            onClick={handleLogout}
             className="btn-ghost !px-4 !py-2 md:!px-6 md:!py-2.5 rounded-lg border-slate-200 text-[9px] md:text-[10px] hidden md:block"
           >
             Logout
