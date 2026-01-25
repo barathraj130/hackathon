@@ -69,9 +69,9 @@ def create_expert_deck(team_name, college, data):
     # 2. VENTURE BACKGROUND
     slide = add_diagram_slide(prs, "Venture Background: Context Mapping")
     add_branding(slide)
-    add_text_to_slide(slide, f"DOMAIN: {data.get('s2_domain', 'N/A')}", Inches(1.2), Inches(1.5), Inches(7.6), Inches(1), size=20, boxed=True)
-    add_text_to_slide(slide, f"CONTEXT: {data.get('s2_context', 'N/A')}", Inches(1.2), Inches(2.7), Inches(7.6), Inches(1.8), size=14, boxed=True)
-    add_text_to_slide(slide, f"ROOT DRIVER: {data.get('s2_rootReason', 'N/A')}", Inches(1.2), Inches(4.7), Inches(7.6), Inches(1), size=16, boxed=True)
+    add_text_to_slide(slide, f"DOMAIN: {data.get('s2_domain', 'N/A')}", Inches(1.2), Inches(1.5), Inches(7.6), Inches(1), size=20, boxed=True, color=RGBColor(0, 0, 0))
+    add_text_to_slide(slide, f"CONTEXT: {data.get('s2_context', 'N/A')}", Inches(1.2), Inches(2.7), Inches(7.6), Inches(1.8), size=14, boxed=True, color=RGBColor(0, 0, 0))
+    add_text_to_slide(slide, f"ROOT DRIVER: {data.get('s2_rootReason', 'N/A')}", Inches(1.2), Inches(4.7), Inches(7.6), Inches(1), size=16, boxed=True, color=RGBColor(0, 0, 0))
 
     # 3. PROBLEM FRAMING
     slide = add_diagram_slide(prs, "Problem Framing & Stakeholders")
@@ -187,7 +187,7 @@ def create_expert_deck(team_name, college, data):
     slide = add_diagram_slide(prs, "Proposed Solution & Sequential Logic")
     add_branding(slide)
     add_text_to_slide(slide, data.get('s8_oneline', 'N/A'), Inches(0.8), Inches(1.4), Inches(8.4), Inches(0.8), size=24, boxed=True)
-    add_text_to_slide(slide, f"MECHANISM: {data.get('s8_howItWorks', 'N/A')}", Inches(1.2), Inches(2.3), Inches(7.6), Inches(0.8), size=14, boxed=True)
+    add_text_to_slide(slide, f"MECHANISM: {data.get('s8_howItWorks', 'N/A')}", Inches(1.2), Inches(2.3), Inches(7.6), Inches(0.8), size=14, boxed=True, color=RGBColor(0, 0, 0))
     # Draw flow
     raw_flow = data.get('s8_flowSteps', [])
     if not isinstance(raw_flow, list): raw_flow = []
@@ -407,7 +407,7 @@ def draw_hot_air_balloon_detailed(slide, lifts, pulls, fuels, outcomes):
     add_text_to_slide(slide, f"FUEL STRATEGY:\n{fuels}", Inches(0.4), Inches(2.4), Inches(3.0), Inches(2.0), size=8, color=RGBColor(255,255,255))
 
     # Outcomes (Right)
-    add_text_to_slide(slide, f"ALTITUDE / OUTCOMES:\n{outcomes}", Inches(7.0), Inches(2.5), Inches(2.5), Inches(2.5), size=10, color=RGBColor(15, 23, 42), bold=True)
+    add_text_to_slide(slide, f"ALTITUDE / OUTCOMES:\n{outcomes}", Inches(7.0), Inches(2.5), Inches(2.5), Inches(2.5), size=10, color=RGBColor(0, 0, 0), bold=True)
     
     # Connectors (Ropes)
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(4.0), Inches(3.8), Inches(4.35), Inches(5.1)).line.color.rgb = RGBColor(71, 85, 105)
