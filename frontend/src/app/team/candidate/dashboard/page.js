@@ -287,6 +287,30 @@ export default function CandidateDashboard() {
                     />
                   </div>
                 </div>
+                <div className="grid md:grid-cols-2 gap-6 mt-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Team Leader Name</label>
+                    <input
+                      type="text"
+                      value={formData.leaderName || ''}
+                      onChange={(e) => setFormData({ ...formData, leaderName: e.target.value })}
+                      className="input-field"
+                      placeholder="Full Name"
+                      disabled={testStatus?.is_paused}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Team Members</label>
+                    <input
+                      type="text"
+                      value={formData.memberNames || ''}
+                      onChange={(e) => setFormData({ ...formData, memberNames: e.target.value })}
+                      className="input-field"
+                      placeholder="Name 1, Name 2, ..."
+                      disabled={testStatus?.is_paused}
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* 2. Problem Statement */}

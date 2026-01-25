@@ -41,7 +41,9 @@ def create_pptx(team_name, college, slides_data):
         ("Name of the Institution", college),
         ("Faculty Name", slides_data.get('facultyName', 'P. Eswari')),
         ("Idea Description", slides_data.get('title', {}).get('bullets', ['Weather Adaptive System'])[0]),
-        ("Team Name", team_name)
+        ("Team Name", team_name),
+        ("Team Leader", slides_data.get('leaderName', 'N/A')),
+        ("Team Members", slides_data.get('memberNames', 'N/A'))
     ]
 
     for label, value in details:

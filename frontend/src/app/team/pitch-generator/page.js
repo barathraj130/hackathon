@@ -31,7 +31,7 @@ export default function PitchGenerator() {
   
   const [data, setData] = useState({
     // S1: Identity
-    projectName: '', teamName: '', institutionName: '',
+    projectName: '', teamName: '', institutionName: '', leaderName: '', memberNames: '',
     // S2: Background
     s2_domain: '', s2_context: '', s2_rootReason: '',
     // S3: Problem
@@ -259,6 +259,16 @@ export default function PitchGenerator() {
                        <div>
                         <label className="label-caps">College / Institution</label>
                         <input name="institutionName" className="input-field" value={data.institutionName} onChange={e => setData({...data, institutionName: e.target.value})} placeholder="Full Institutional Hub" />
+                       </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-8 border-t border-slate-50 pt-6">
+                       <div>
+                        <label className="label-caps text-teal">Team Leader Name</label>
+                        <input name="leaderName" className="input-field border-teal/20 focus:border-teal" value={data.leaderName} onChange={handleInputChange} placeholder="Leader Identity" />
+                       </div>
+                       <div>
+                        <label className="label-caps text-teal">Team Members (Comma separated)</label>
+                        <input name="memberNames" className="input-field border-teal/20 focus:border-teal" value={data.memberNames} onChange={handleInputChange} placeholder="Member 1, Member 2, ..." />
                        </div>
                     </div>
                   </div>

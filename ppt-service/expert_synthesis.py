@@ -38,9 +38,19 @@ def create_expert_deck(team_name, college, data):
     p.font.name = 'Times New Roman'
     
     p2 = tf.add_paragraph()
-    p2.text = f"Team {team_name}"
-    p2.font.size = Pt(24)
+    p2.text = f"Team: {team_name}"
+    p2.font.size = Pt(20)
     p2.font.name = 'Times New Roman'
+
+    p3 = tf.add_paragraph()
+    p3.text = f"Leader: {data.get('leaderName', 'N/A')}"
+    p3.font.size = Pt(18)
+    p3.font.name = 'Times New Roman'
+
+    p4 = tf.add_paragraph()
+    p4.text = f"Members: {data.get('memberNames', 'N/A')}"
+    p4.font.size = Pt(16)
+    p4.font.name = 'Times New Roman'
 
     # 2. VENTURE BACKGROUND
     slide = add_diagram_slide(prs, "Venture Background: Context Mapping")
