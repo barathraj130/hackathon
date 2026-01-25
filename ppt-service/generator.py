@@ -14,13 +14,22 @@ def create_pptx(team_name, college, slides_data):
         p.text = "HACK@JIT 1.0"
         p.font.size = Pt(14)
         p.font.bold = True
+        p.font.name = 'Times New Roman'
+        p.font.color.rgb = RGBColor(255, 255, 255) # White
         
         # 2. Top Right - Logo
         if os.path.exists("institution_logo.png"):
             slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
 
+    def set_dark_bg(slide):
+        background = slide.background
+        fill = background.fill
+        fill.solid()
+        fill.fore_color.rgb = RGBColor(15, 23, 42) # Premium Navy/Black
+
     # 1. Title Slide (Idea and team identification)
     slide = prs.slides.add_slide(prs.slide_layouts[6]) # Blank layout
+    set_dark_bg(slide)
     add_branding(slide)
     
     # Title Text
@@ -29,7 +38,9 @@ def create_pptx(team_name, college, slides_data):
     tf_title = tx_title.text_frame
     tf_title.text = "Idea and team identification".upper()
     p = tf_title.paragraphs[0]
-    p.font.size = Pt(40); p.font.bold = True; p.font.name = 'Times New Roman'; p.alignment = PP_ALIGN.CENTER
+    p.font.size = Pt(40); p.font.bold = True; p.font.name = 'Times New Roman'
+    p.font.color.rgb = RGBColor(255, 255, 255)
+    p.alignment = PP_ALIGN.CENTER
 
     # Details Text - BOTTOM RIGHT
     left, top, width, height = Inches(5.0), Inches(5.0), Inches(4.5), Inches(3.5)
@@ -52,6 +63,7 @@ def create_pptx(team_name, college, slides_data):
         p.text = f"{label} : {value}"
         p.font.size = Pt(16)
         p.font.name = 'Times New Roman'
+        p.font.color.rgb = RGBColor(255, 255, 255)
         p.alignment = PP_ALIGN.RIGHT
         p.space_after = Pt(6)
 
@@ -63,6 +75,7 @@ def create_pptx(team_name, college, slides_data):
         if key == 'title': continue
         
         slide = prs.slides.add_slide(prs.slide_layouts[6]) # Blank
+        set_dark_bg(slide)
         add_branding(slide)
         
         # Title - Centered
@@ -70,7 +83,9 @@ def create_pptx(team_name, college, slides_data):
         tf_t = title_box.text_frame
         tf_t.text = data['title']
         p_t = tf_t.paragraphs[0]
-        p_t.font.size = Pt(28); p_t.font.bold = True; p_t.font.name = 'Times New Roman'; p_t.alignment = PP_ALIGN.CENTER
+        p_t.font.size = Pt(28); p_t.font.bold = True; p_t.font.name = 'Times New Roman'
+        p_t.font.color.rgb = RGBColor(255, 255, 255)
+        p_t.alignment = PP_ALIGN.CENTER
         
         # Content - Box containment
         content_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.6), Inches(8.4), Inches(5.2))
@@ -87,6 +102,7 @@ def create_pptx(team_name, college, slides_data):
             p.text = f"• {point}"
             p.font.name = 'Times New Roman'
             p.font.size = Pt(22)
+            p.font.color.rgb = RGBColor(255, 255, 255)
             p.space_after = Pt(12)
 
     # Save the file
