@@ -81,6 +81,7 @@ def create_expert_deck(team_name, college, data):
     persistence = data.get('s6_personality', {})
     if not isinstance(persistence, dict): persistence = {}
     
+    pers_labels = ["Introvert/Extrovert", "Sensing/Intuition", "Thinking/Feeling", "Judging/Perceiving"]
     for i, lab in enumerate(pers_labels):
         y = 5.4 + (i*0.35)
         slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.7), Inches(y), Inches(2.3), Inches(y)).line.color.rgb = RGBColor(255,255,255)
