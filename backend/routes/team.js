@@ -141,8 +141,10 @@ router.post('/submission', checkOperationalStatus, async (req, res) => {
 router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
     const teamId = req.user.id;
     const tryUrls = [
+        process.env.PYTHON_SERVICE_URL,
+        'http://endearing-liberation.railway.internal:8000',
         'https://endearing-liberation-production.up.railway.app'
-    ];
+    ].filter(Boolean);
 
     try {
         const team = await prisma.team.findUnique({
@@ -163,38 +165,40 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 
         const endpoints = ['/generate-artifact', '/generate', '/api/generate-artifact']; 
         let successfulHost;
-        let finalError = "No synthesis nodes responded.";
+        let finalError = "No connection established to institutional synthesis cluster.";
         let response = null; // Initialize response
 
         outerLoop: for (const url of tryUrls) {
+            const cleanHost = url.replace(/\/$/, "");
             for (const endpoint of endpoints) {
                 try {
-                    const cleanUrl = url.replace(/\/$/, "");
-                    console.log(`[SYNTHESIS] Probing: ${cleanUrl}${endpoint}`);
-                    
-                    response = await axios.post(`${cleanUrl}${endpoint}`, {
+                    console.log(`[SYNTHESIS] Probing: ${cleanHost}${endpoint}`);
+                    const res = await axios.post(`${cleanHost}${endpoint}`, {
                         team_name: team.teamName,
                         college_name: team.collegeName,
                         content: team.submission.content
-                    }, { timeout: 45000 });
+                    }, { timeout: 60000 });
     
-                    if (response.data.success) {
-                        successfulHost = cleanUrl;
-                        break outerLoop; // Exit both loops on success
+                    if (res.data && res.data.success) {
+                        response = res;
+                        successfulHost = cleanHost;
+                        console.log(`✅ [SYNTHESIS] Success: ${cleanHost}${endpoint}`);
+                        break outerLoop; 
                     } else {
-                        // If the endpoint was reached but returned success: false
-                        finalError = `Synthesis Logic Error: ${response.data.error} at ${cleanUrl}${endpoint}`;
-                        // Continue to try other endpoints/urls if logic error, don't break outerLoop
+                        const msg = res.data?.error || "Unknown Synthesis Detail";
+                        console.warn(`[SYNTHESIS] Logic Fail: ${cleanHost}${endpoint} -> ${msg}`);
+                        finalError = `Synthesis Logic Failure: ${msg} at ${cleanHost}${endpoint}`;
                     }
                 } catch (e) {
                     const status = e.response ? `[Status ${e.response.status}]` : '[Network]';
-                    console.log(`[SYNTHESIS] Node ${cleanUrl}${endpoint} failed: ${e.message}`);
-                    finalError = `${status} ${e.message} at ${cleanUrl}${endpoint}`;
+                    const detail = e.response?.data?.detail || e.message;
+                    console.warn(`[SYNTHESIS] Connect Fail: ${cleanHost}${endpoint} -> ${status} ${detail}`);
+                    finalError = `${status} ${detail} at ${cleanHost}${endpoint}`;
                 }
             }
         }
 
-        if (!response || !response.data.success) throw new Error(`Synthesis Engine unreachable. Technical detail: ${finalError}`);
+        if (!response || !response.data.success) throw new Error(`Synthesis Engine unreachable. Detail: ${finalError}`);
 
         console.log("📝 [SYNTHESIS SUCCESS] Response Data:", response.data);
         const rawPath = response.data.file_url;
@@ -248,28 +252,19 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
  */
 // --- EXPERT PITCH SYNTHESIS ---
 router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => {
-    const teamId = req.user.id;
-    const projectData = req.body;
-    console.log("🔍 [EXPERT SYNTHESIS DEBUG]");
-    console.log("User Context:", req.user);
-    console.log("Target Team ID:", teamId);
-    
-    if (!teamId) {
-        return res.status(500).json({ error: "Authentication Context Failure: No Team ID." });
-    }
-
-    const tryUrls = [
-        'https://endearing-liberation-production.up.railway.app'
-    ];
-
-    let response;
-    let lastErr;
-
     try {
+        const teamId = req.user.id;
+        const projectData = req.body;
+        console.log("🔍 [EXPERT SYNTHESIS DEBUG] Team ID:", teamId);
+        
+        if (!teamId) return res.status(500).json({ error: "Authentication Context Failure: No Team ID." });
+
         const team = await prisma.team.findUnique({
             where: { id: teamId },
             include: { submission: true }
         });
+
+        if (!team) return res.status(404).json({ error: "Team profile not found in institutional vault." });
 
         // Check if already submitted and regeneration is not allowed
         if (team.submission?.pptUrl && !team.submission.canRegenerate) {
@@ -278,38 +273,46 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             });
         }
 
+        const tryUrls = [
+            process.env.PYTHON_SERVICE_URL,
+            'http://endearing-liberation.railway.internal:8000',
+            'https://endearing-liberation-production.up.railway.app'
+        ].filter(Boolean);
+
         const endpoints = ['/generate-artifact', '/generate-expert-pitch', '/api/generate-artifact']; 
         let successfulHost;
-        let finalError = "No expert synthesis nodes responded.";
+        let finalError = "No connection established to institutional expert synthesis cluster.";
         let response = null;
 
         outerLoop: for (const url of tryUrls) {
+            const cleanHost = url.replace(/\/$/, "");
             for (const endpoint of endpoints) {
                 try {
-                    const cleanUrl = url.replace(/\/$/, "");
-                    console.log(`[EXPERT SYNTHESIS] Probing: ${cleanUrl}${endpoint}`);
-                    
-                    response = await axios.post(`${cleanUrl}${endpoint}`, {
+                    console.log(`[EXPERT] Probing: ${cleanHost}${endpoint}`);
+                    const res = await axios.post(`${cleanHost}${endpoint}`, {
                         team_name: team.teamName,
                         college_name: team.collegeName,
                         project_data: projectData
-                    }, { timeout: 45000 });
+                    }, { timeout: 60000 });
                     
-                    if (response.data.success) {
-                        successfulHost = cleanUrl;
+                    if (res.data && res.data.success) {
+                        response = res;
+                        successfulHost = cleanHost;
+                        console.log(`✅ [EXPERT] Success: ${cleanHost}${endpoint}`);
                         break outerLoop;
                     } else {
-                        finalError = `Synthesis Logic Error: ${response.data.error} at ${cleanUrl}${endpoint}`;
+                        const msg = res.data?.error || "Unknown Synthesis Detail";
+                        finalError = `Expert Synthesis Logic Failure: ${msg} at ${cleanHost}${endpoint}`;
                     }
                 } catch (e) {
                     const status = e.response ? `[Status ${e.response.status}]` : '[Network]';
-                    console.log(`[EXPERT SYNTHESIS] Node ${cleanUrl}${endpoint} failed: ${e.message}`);
-                    finalError = `${status} ${e.message} at ${cleanUrl}${endpoint}`;
+                    const detail = e.response?.data?.detail || e.message;
+                    finalError = `${status} ${detail} at ${cleanHost}${endpoint}`;
                 }
             }
         }
         
-        if (!response || !response.data.success) throw new Error(`Expert Synthesis Cluster Unreachable. Technical detail: ${finalError}`);
+        if (!response || !response.data.success) throw new Error(`Expert Synthesis Cluster Unreachable. Detail: ${finalError}`);
 
         console.log("🌟 [EXPERT SUCCESS] Response Data:", response.data);
         const rawFileName = response.data.file_url;
@@ -318,33 +321,28 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         // Construct Absolute verified URL
         const finalExpertUrl = mapInternalToPublic(`${successfulHost}/outputs/${rawFileName.split('/').pop()}`);
 
-        // Lock the submission after first generation
-        try {
-            await prisma.submission.upsert({
-                where: { teamId: teamId },
-                update: { 
-                    pptUrl: finalExpertUrl, 
-                    status: 'SUBMITTED',
-                    content: projectData,
-                    canRegenerate: false,
-                    submittedAt: new Date()
-                },
-                create: {
-                    teamId: teamId,
-                    content: projectData,
-                    status: 'SUBMITTED',
-                    pptUrl: finalExpertUrl,
-                    canRegenerate: false,
-                    submittedAt: new Date()
-                }
-            });
-            console.log(`✅ [REPOSITORY] Expert Artifact persisted: ${finalExpertUrl}`);
-        } catch (dbSaveErr) {
-            console.error("❌ [REPOSITORY ERROR] Failed to persist expert artifact:", dbSaveErr.message);
-            throw new Error(`Expert vaulted persistence failure: ${dbSaveErr.message}`);
-        }
+        // Lock the submission after synthesis
+        await prisma.submission.upsert({
+            where: { teamId: teamId },
+            update: { 
+                pptUrl: finalExpertUrl, 
+                status: 'SUBMITTED',
+                content: projectData,
+                canRegenerate: false,
+                submittedAt: new Date()
+            },
+            create: {
+                teamId: teamId,
+                content: projectData,
+                status: 'SUBMITTED',
+                pptUrl: finalExpertUrl,
+                canRegenerate: false,
+                submittedAt: new Date()
+            }
+        });
 
-        // Fetch the final state to return to frontend
+        console.log(`✅ [REPOSITORY] Expert Artifact persisted: ${finalExpertUrl}`);
+
         const finalSubmission = await prisma.submission.findUnique({
             where: { teamId: teamId }
         });

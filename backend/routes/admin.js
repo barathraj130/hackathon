@@ -250,26 +250,25 @@ router.post('/force-regenerate', async (req, res) => {
         }
 
         const tryUrls = [
+            process.env.PYTHON_SERVICE_URL,
+            'http://endearing-liberation.railway.internal:8000',
             'https://endearing-liberation-production.up.railway.app'
-        ];
+        ].filter(Boolean);
 
         let response = null;
         let successfulHost = null;
-        let finalError = "Cluster synthesis nodes unreachable.";
+        let finalError = "No connection established to synthesis cluster.";
 
-        // UNIFIED RECONSTRUCTION LOGIC
+        console.log(`[FORCE RECON] Commencing rebuild for team: ${team.teamName}`);
         const content = team.submission.content;
         const endpoints = ['/generate-artifact', '/generate', '/api/generate-artifact']; 
-        
-        console.log(`[FORCE RECON] Commencing rebuild for team: ${team.teamName}`);
 
-        // Serial Robust Probing
         probeLoop: for (const url of tryUrls) {
-            const cleanUrl = url.replace(/\/$/, "");
+            const cleanHost = url.replace(/\/$/, "");
             for (const endpoint of endpoints) {
                 try {
-                    console.log(`[FORCE] Probing: ${cleanUrl}${endpoint}`);
-                    const res = await axios.post(`${cleanUrl}${endpoint}`, { 
+                    console.log(`[FORCE] Probing: ${cleanHost}${endpoint}`);
+                    const res = await axios.post(`${cleanHost}${endpoint}`, { 
                         team_name: team.teamName, 
                         college_name: team.collegeName, 
                         content: content 
@@ -277,21 +276,26 @@ router.post('/force-regenerate', async (req, res) => {
 
                     if (res.data && res.data.success) {
                         response = res;
-                        successfulHost = cleanUrl;
-                        console.log(`✅ [FORCE] Success on Node: ${cleanUrl}${endpoint}`);
+                        successfulHost = cleanHost;
+                        console.log(`✅ [FORCE] Success on Node: ${cleanHost}${endpoint}`);
                         break probeLoop;
+                    } else {
+                        // Logic Error (Node active but synthesis failed)
+                        const msg = res.data?.error || "Unknown Synthesis Detail";
+                        console.warn(`[FORCE] Node Logic Error: ${cleanHost}${endpoint} -> ${msg}`);
+                        finalError = `Synthesis Logic Failure: ${msg} at ${cleanHost}${endpoint}`;
                     }
                 } catch (e) {
-                    const status = e.response ? `[Status ${e.response.status}]` : '[Network Error]';
+                    const status = e.response ? `[Status ${e.response.status}]` : '[Network]';
                     const detail = e.response?.data?.detail || e.message;
-                    console.warn(`[FORCE] Node Fail: ${cleanUrl}${endpoint} -> ${status} ${detail}`);
-                    finalError = `${status} ${detail} at ${cleanUrl}${endpoint}`;
+                    console.warn(`[FORCE] Node Connect Fail: ${cleanHost}${endpoint} -> ${status} ${detail}`);
+                    finalError = `${status} ${detail} at ${cleanHost}${endpoint}`;
                 }
             }
         }
 
         if (!response || !response.data.success) {
-            throw new Error(`Cloud Synthesis Cluster Unreachable. Reason: ${finalError}`);
+            throw new Error(`Cloud Synthesis Cluster Unreachable. Detail: ${finalError}`);
         }
 
         // Construct absolute verified URL from filename
