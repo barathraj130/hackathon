@@ -123,27 +123,35 @@ def create_expert_deck(team_name, college, data):
     # Left Square - Value Map
     v_map = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(1.5), Inches(4.0), Inches(4.0))
     v_map.line.color.rgb = RGBColor(13, 148, 136) # Teal
+    v_map.line.width = Pt(2)
     v_map.fill.background()
-    # Cross
+    
+    # Cross in Square
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.5), Inches(3.5), Inches(4.5), Inches(3.5)).line.color.rgb = RGBColor(13, 148, 136)
+    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(2.5), Inches(1.5), Inches(2.5), Inches(5.5)).line.color.rgb = RGBColor(13, 148, 136)
     
     add_text_to_slide(slide, "GAIN CREATORS", Inches(0.6), Inches(1.6), Inches(3.8), Inches(0.3), size=11, color=RGBColor(13, 148, 136), bold=True)
-    add_text_to_slide(slide, data.get('s6_gains', 'Proactive benefits...'), Inches(0.6), Inches(1.9), Inches(3.8), Inches(1.5), size=10)
+    add_text_to_slide(slide, data.get('s7_gainCreators') or data.get('s6_gains', 'Proactive benefits...'), Inches(0.6), Inches(1.9), Inches(1.8), Inches(1.5), size=10)
     
     add_text_to_slide(slide, "PAIN KILLERS", Inches(0.6), Inches(3.6), Inches(3.8), Inches(0.3), size=11, color=RGBColor(13, 148, 136), bold=True)
-    add_text_to_slide(slide, data.get('s6_pains', 'Risk mitigation...'), Inches(0.6), Inches(3.9), Inches(3.8), Inches(1.5), size=10)
+    add_text_to_slide(slide, data.get('s7_painKillers') or data.get('s6_pains', 'Risk mitigation...'), Inches(0.6), Inches(3.9), Inches(1.8), Inches(1.5), size=10)
+    
+    add_text_to_slide(slide, "PRODUCT/\nSERVICE", Inches(2.6), Inches(2.5), Inches(1.8), Inches(2), size=12, bold=True, color=RGBColor(13, 148, 136))
     
     # Right Circle - Customer Profile
     c_prof = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(5.5), Inches(1.5), Inches(4.0), Inches(4.0))
     c_prof.line.color.rgb = RGBColor(245, 158, 11) # Orange
+    c_prof.line.width = Pt(2)
     c_prof.fill.background()
+    
     # Cross in circle
-    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(5.5), Inches(3.5), Inches(7.5), Inches(3.5)).line.color.rgb = RGBColor(245, 158, 11)
+    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(5.5), Inches(3.5), Inches(9.5), Inches(3.5)).line.color.rgb = RGBColor(245, 158, 11)
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(7.5), Inches(1.5), Inches(7.5), Inches(5.5)).line.color.rgb = RGBColor(245, 158, 11)
     
     add_text_to_slide(slide, "GAINS", Inches(5.8), Inches(1.6), Inches(1.5), Inches(0.3), size=11, color=RGBColor(245, 158, 11), bold=True)
     add_text_to_slide(slide, "PAINS", Inches(5.8), Inches(3.6), Inches(1.5), Inches(0.3), size=11, color=RGBColor(245, 158, 11), bold=True)
     add_text_to_slide(slide, "CUSTOMER JOBS", Inches(7.7), Inches(2.5), Inches(1.6), Inches(0.5), size=11, color=RGBColor(245, 158, 11), bold=True)
+    add_text_to_slide(slide, "FIT", Inches(4.7), Inches(3.3), Inches(0.6), Inches(0.4), size=14, bold=True, color=RGBColor(0,0,0))
 
     # 8. PROPOSED SOLUTION
     slide = add_diagram_slide(prs, "Proposed Solution & Sequential Logic")
@@ -186,12 +194,18 @@ def create_expert_deck(team_name, college, data):
     add_text_to_slide(slide, "CHANNELS", Inches(0.5+3*width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(15, 23, 42))
     add_text_to_slide(slide, data.get('s9_leanChannels', 'N/A'), Inches(0.5+3*width_col), Inches(3.6), Inches(width_col-0.1), Inches(1.5), size=7)
 
-    # Bottom Row
-    add_text_to_slide(slide, "COST STRUCTURE", Inches(0.5), Inches(5.3), Inches(4.5), Inches(0.3), size=9, bold=True, color=RGBColor(244, 63, 94))
-    add_text_to_slide(slide, data.get('s9_leanCosts', 'N/A'), Inches(0.6), Inches(5.6), Inches(4), Inches(0.8), size=8)
+    # Bottom Row (Boxes added)
+    cost_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(5.3), Inches(4.4), Inches(1.5))
+    cost_box.line.color.rgb = RGBColor(244, 63, 94) # Rose
+    cost_box.fill.background()
+    add_text_to_slide(slide, "COST STRUCTURE", Inches(0.6), Inches(5.35), Inches(4.3), Inches(0.3), size=9, bold=True, color=RGBColor(244, 63, 94))
+    add_text_to_slide(slide, data.get('s9_leanCosts', 'N/A'), Inches(0.6), Inches(5.7), Inches(4.3), Inches(1.0), size=8)
     
-    add_text_to_slide(slide, "REVENUE STREAMS", Inches(5.0), Inches(5.3), Inches(4.5), Inches(0.3), size=9, bold=True, color=RGBColor(16, 185, 129))
-    add_text_to_slide(slide, data.get('s9_leanRevenue', 'N/A'), Inches(5.1), Inches(5.6), Inches(4), Inches(0.8), size=8)
+    rev_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(5.1), Inches(5.3), Inches(4.4), Inches(1.5))
+    rev_box.line.color.rgb = RGBColor(16, 185, 129) # Emerald
+    rev_box.fill.background()
+    add_text_to_slide(slide, "REVENUE STREAMS", Inches(5.2), Inches(5.35), Inches(4.3), Inches(0.3), size=9, bold=True, color=RGBColor(16, 185, 129))
+    add_text_to_slide(slide, data.get('s9_leanRevenue', 'N/A'), Inches(5.2), Inches(5.7), Inches(4.3), Inches(1.0), size=8)
 
     # 10. VALUE BALLOON
     slide = add_diagram_slide(prs, "Value Identification: Advanced Balloon")
@@ -300,35 +314,88 @@ def draw_impact_graph_detailed(slide, pain_points):
         add_text_to_slide(slide, f"{i+1}. {pp.get('point')[:20]}...", Inches(1.3+x_val), Inches(y_val), Inches(2), Inches(0.5), size=7)
 
 def draw_hot_air_balloon_detailed(slide, lifts, pulls, fuels, outcomes):
-    balloon = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(3.5), Inches(1.5), Inches(3), Inches(2.5))
+    # Centered alignment logic
+    # Balloon (Lifts)
+    balloon = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(3.25), Inches(1.2), Inches(3.5), Inches(3.2))
     balloon.fill.solid()
-    balloon.fill.fore_color.rgb = RGBColor(0, 116, 217)
-    add_text_to_slide(slide, f"LIFTS:\n{lifts}", Inches(3.7), Inches(1.8), Inches(2.6), Inches(1.2), size=10)
+    balloon.fill.fore_color.rgb = RGBColor(0, 116, 217) # Royal Blue
+    balloon.line.color.rgb = RGBColor(255, 255, 255)
+    add_text_to_slide(slide, f"LIFTS:\n{lifts}", Inches(3.5), Inches(1.8), Inches(3), Inches(2), size=10, color=RGBColor(255,255,255), bold=True)
     
-    basket = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(4.5), Inches(4.5), Inches(1), Inches(0.8))
+    # Basket (Identity)
+    basket = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(4.35), Inches(5.1), Inches(1.3), Inches(1.1))
     basket.fill.solid()
-    basket.fill.fore_color.rgb = RGBColor(100, 100, 100)
-    add_text_to_slide(slide, f"PULLS:\n{pulls}", Inches(3.5), Inches(5.4), Inches(3), Inches(1.2), size=10)
+    basket.fill.fore_color.rgb = RGBColor(71, 85, 105) # Slate
+    basket.line.color.rgb = RGBColor(255,255,255)
+    add_text_to_slide(slide, "VENTURE\nCORE", Inches(4.35), Inches(5.35), Inches(1.3), Inches(0.6), size=10, color=RGBColor(255,255,255), bold=True)
     
-    fuel_box = slide.shapes.add_shape(MSO_SHAPE.HEXAGON, Inches(1.0), Inches(2.5), Inches(2.2), Inches(1.5))
+    # Pulls (Anchor)
+    add_text_to_slide(slide, f"PULLS (ANCHORS):\n{pulls}", Inches(3.5), Inches(6.3), Inches(3), Inches(1.2), size=10, color=RGBColor(244, 63, 94), bold=True)
+    
+    # Fuel Strategy (Left)
+    fuel_box = slide.shapes.add_shape(MSO_SHAPE.HEXAGON, Inches(0.5), Inches(2.5), Inches(2.5), Inches(2.2))
     fuel_box.fill.solid()
-    fuel_box.fill.fore_color.rgb = RGBColor(57, 204, 204)
-    add_text_to_slide(slide, f"FUEL STR:\n{fuels}", Inches(1.1), Inches(2.6), Inches(2), Inches(1.2), size=9)
+    fuel_box.fill.fore_color.rgb = RGBColor(13, 148, 136) # Teal
+    fuel_box.line.color.rgb = RGBColor(255,255,255)
+    add_text_to_slide(slide, f"FUEL STRATEGY:\n{fuels}", Inches(0.6), Inches(2.8), Inches(2.3), Inches(1.6), size=9, color=RGBColor(255,255,255))
 
-    add_text_to_slide(slide, f"ALTITUDE / OUTCOMES:\n{outcomes}", Inches(7.0), Inches(2.5), Inches(2.5), Inches(1.5), size=10)
-    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(4), Inches(3.8), Inches(4.5), Inches(4.5))
-    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(6), Inches(3.8), Inches(5.5), Inches(4.5))
+    # Outcomes (Right)
+    add_text_to_slide(slide, f"ALTITUDE / OUTCOMES:\n{outcomes}", Inches(7.0), Inches(2.5), Inches(2.5), Inches(2.5), size=10, color=RGBColor(15, 23, 42), bold=True)
+    
+    # Connectors (Ropes)
+    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.7), Inches(3.8), Inches(4.4), Inches(5.1)).line.color.rgb = RGBColor(71, 85, 105)
+    slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(6.3), Inches(3.8), Inches(5.6), Inches(5.1)).line.color.rgb = RGBColor(71, 85, 105)
 
 def add_competitor_table(slide, competitors):
-    table = slide.shapes.add_table(3, 3, Inches(0.5), Inches(1.5), Inches(9), Inches(3)).table
-    headers = ["Competitor", "Strengths", "Weaknesses / Edge"]
-    for i, h in enumerate(headers):
-        table.cell(0, i).text = h
+    # High Fidelity Orange Table alignment
+    rows = 4
+    cols = 4
+    left = Inches(0.5)
+    top = Inches(2.0)
+    width = Inches(9.0)
+    height = Inches(4.5)
     
+    table = slide.shapes.add_table(rows, cols, left, top, width, height).table
+    
+    # Headers
+    headers = ["Features / Benefits", "Competitor 1", "Competitor 2", "Your Venture"]
+    bg_orange = RGBColor(245, 158, 11)
+    
+    for i, h in enumerate(headers):
+        cell = table.cell(0, i)
+        cell.text = h
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = bg_orange
+        p = cell.text_frame.paragraphs[0]
+        p.font.bold = True
+        p.font.color.rgb = RGBColor(255,255,255)
+        p.font.size = Pt(11)
+
+    # Basic data filling (Fuzzy match attributes)
+    features = ["Core Product", "Pricing Strategy", "Branding Channels", "UVP / Edge"]
+    for i, feat in enumerate(features):
+        table.cell(i, 0).text = feat
+        # Style feature column
+        table.cell(i, 0).fill.solid()
+        table.cell(i, 0).fill.fore_color.rgb = RGBColor(254, 243, 199) # Light orange
+        
+    # Fill competitors
     for i, c in enumerate(competitors[:2]):
-        table.cell(i+1, 0).text = c.get('name', 'N/A')
-        table.cell(i+1, 1).text = c.get('strength', 'N/A')
-        table.cell(i+1, 2).text = c.get('weakness', 'N/A')
+        col = i + 1
+        table.cell(1, col).text = c.get('name', 'N/A')
+        table.cell(2, col).text = c.get('strength', 'N/A')
+        table.cell(3, col).text = c.get('weakness', 'N/A')
+    
+    # Highlight Your Venture (Last Column)
+    table.cell(1, 3).text = "Institutional Grade Sol"
+    table.cell(2, 3).text = "Market Disruptive"
+    table.cell(3, 3).text = "High Fidelity Synthesis"
+    
+    for r in range(rows):
+        for c in range(cols):
+            cell = table.cell(r, c)
+            for p in cell.text_frame.paragraphs:
+                p.font.size = Pt(9)
 
 def add_cost_breakdown_table(slide, dev, ops, tools):
     table = slide.shapes.add_table(4, 2, Inches(2), Inches(1.5), Inches(6), Inches(3)).table

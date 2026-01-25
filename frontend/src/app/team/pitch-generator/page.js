@@ -45,8 +45,8 @@ export default function PitchGenerator() {
     s6_pains: '', s6_gains: '', s6_bio: '', s6_goals: '', 
     s6_personality: { introvert: 50, thinking: 50, sensing: 50, judging: 50 },
     s6_motivations: { growth: 50, fear: 50, security: 50, recognition: 50, funding: 50 },
-    // S7: Gap Analysis
-    s7_alternatives: '', s7_limitations: '',
+    // S7: Value Proposition & Gap Analysis
+    s7_alternatives: '', s7_limitations: '', s7_gainCreators: '', s7_painKillers: '',
     // S8: Solution Synthesis (10 Flow Steps)
     s8_oneline: '', s8_howItWorks: '', 
     s8_flowSteps: Array(10).fill(''),
@@ -435,15 +435,26 @@ export default function PitchGenerator() {
 
                 {step === 7 && (
                    <div className="space-y-8 animate-fade-in font-roboto">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Gap Analysis</p>
-                      <div>
-                        <label className="label-caps">Existing Alternatives</label>
-                        <textarea className="input-field" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} placeholder="What is the user using right now? (Ex: Manual spreadsheets)" />
-                      </div>
-                      <div>
-                        <label className="label-caps">Critical Limitations</label>
-                        <textarea className="input-field" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: e.target.value})} placeholder="Specific failures of current methods" />
-                      </div>
+                       <div className="grid grid-cols-2 gap-6">
+                          <div>
+                            <label className="label-caps">Existing Alternatives</label>
+                            <textarea className="input-field" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} placeholder="What is the user using right now? (Ex: Manual spreadsheets)" />
+                          </div>
+                          <div>
+                            <label className="label-caps">Critical Limitations</label>
+                            <textarea className="input-field" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: e.target.value})} placeholder="Specific failures of current methods" />
+                          </div>
+                       </div>
+                       <div className="grid grid-cols-2 gap-6 border-t border-slate-100 pt-6">
+                          <div>
+                            <label className="label-caps text-teal">Gain Creators</label>
+                            <textarea className="input-field border-teal/20 focus:border-teal" value={data.s7_gainCreators} onChange={e => setData({...data, s7_gainCreators: e.target.value})} placeholder="How does your product create value for the customer?" />
+                          </div>
+                          <div>
+                            <label className="label-caps text-teal">Pain Killers</label>
+                            <textarea className="input-field border-teal/20 focus:border-teal" value={data.s7_painKillers} onChange={e => setData({...data, s7_painKillers: e.target.value})} placeholder="How does your product eliminate user frustrations?" />
+                          </div>
+                       </div>
                    </div>
                 )}
 
