@@ -41,7 +41,8 @@ export default function TeamDashboard() {
   useEffect(() => {
     fetchInitialData();
 
-    const socketUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:5000';
+    // Dynamic Socket URL
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
     socketRef.current = io(socketUrl);
 
     socketRef.current.on('timerUpdate', (data) => {
