@@ -50,7 +50,12 @@ router.post('/run-migration', (req, res) => {
  */
 router.post('/toggle-halt', async (req, res) => {
     try {
-        const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
+        let config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
+        if (!config) {
+            config = await prisma.hackathonConfig.create({
+                data: { id: 1, durationMinutes: 1440, isPaused: true }
+            });
+        }
         const newStatus = !config.isPaused;
         
         await prisma.hackathonConfig.update({

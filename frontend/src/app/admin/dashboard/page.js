@@ -161,10 +161,17 @@ export default function AdminDashboard() {
 
   async function handleToggleHalt() {
     try {
-      await axios.post(`${getApiUrl()}/admin/toggle-halt`, {}, {
+      const res = await axios.post(`${getApiUrl()}/admin/toggle-halt`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-    } catch (err) { alert("System halt toggle failed."); }
+      if (res.data.success) {
+        // Institutional refresh to align with backend atomic status
+        fetchStats();
+      }
+    } catch (err) { 
+      const msg = err.response?.data?.error || err.message || "Network Timeout";
+      alert(`System Halt Toggle Failure: ${msg}`); 
+    }
   }
 
   function getPublicLink(url) {
