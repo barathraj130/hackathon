@@ -65,7 +65,7 @@ export default function TeamDashboard() {
       socketRef.current?.disconnect();
       clearInterval(autoSaveInterval);
     };
-  }, [isPaused]);
+  }, []); // Only run once on mount
 
   const fetchInitialData = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
