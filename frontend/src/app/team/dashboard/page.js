@@ -219,10 +219,10 @@ export default function TeamDashboard() {
       <nav className="sticky top-0 z-50 glass-pane border-b border-gray-100 flex flex-col md:flex-row justify-between items-center px-6 md:px-10 py-4 md:py-5 gap-4">
         <div className="flex items-center justify-between w-full md:w-auto">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-navy rounded-lg md:rounded-xl flex items-center justify-center text-white font-black shadow-xl shadow-navy/20 text-xs md:text-sm">H</div>
-            <div className="hidden xs:block">
-              <h1 className="text-xs md:text-sm font-black uppercase tracking-widest text-navy leading-none">hack@jit</h1>
-              <p className="text-[7px] md:text-[9px] font-bold text-teal uppercase tracking-[0.2em] mt-1">Institutional Access: JIT</p>
+            <div className="w-10 h-10 md:w-11 md:h-11 bg-navy rounded-xl flex items-center justify-center text-white font-black shadow-xl shadow-navy/20 text-sm md:text-base">H</div>
+            <div className="hidden sm:block">
+              <h1 className="text-sm md:text-lg font-black uppercase tracking-[0.1em] text-navy leading-none">hack@jit</h1>
+              <p className="text-[10px] md:text-[11px] font-bold text-teal uppercase tracking-[0.2em] mt-1.5 opacity-80">Institutional Access: JIT</p>
             </div>
           </div>
           <div className="flex items-center gap-3 md:hidden">
@@ -272,26 +272,26 @@ export default function TeamDashboard() {
                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
                <div className="relative z-10">
                  <div className="flex flex-col md:flex-row justify-between items-start mb-4 md:mb-6 gap-4">
-                    <div>
-                      <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-indigo-200">Admin Allotted Challenge</span>
-                      <h3 className="text-xl md:text-3xl font-black uppercase tracking-tighter mt-2">{problemStatement.title}</h3>
+                     <div>
+                       <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-indigo-100/90">Admin Allotted Challenge</span>
+                       <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mt-3 leading-tight">{problemStatement.title}</h3>
                     </div>
                     <div className="text-left md:text-right flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-0">
-                       <span className="text-xs md:text-sm font-black bg-white/20 px-3 md:px-4 py-1 md:py-2 rounded-full tabular-nums">Q.{problemStatement.questionNo}</span>
-                       <p className="text-[7px] md:text-[9px] font-bold text-indigo-200 uppercase tracking-widest md:mt-2">{problemStatement.subDivisions || 'Main division'}</p>
+                       <span className="text-sm md:text-base font-black bg-white/20 px-4 md:px-5 py-2 rounded-full tabular-nums">Q.{problemStatement.questionNo}</span>
+                       <p className="text-[10px] md:text-xs font-bold text-indigo-200 uppercase tracking-widest md:mt-3">{problemStatement.subDivisions || 'Main division'}</p>
                     </div>
                  </div>
-                 <p className="text-sm md:text-lg font-medium text-indigo-50 leading-relaxed max-w-3xl">
+                  <p className="text-base md:text-xl font-medium text-indigo-50 leading-relaxed max-w-4xl opacity-90">
                    {problemStatement.description}
-                 </p>
+                  </p>
                </div>
             </div>
           )}
 
-          <div className="glass-pane p-6 md:p-12 rounded-3xl md:rounded-[2.5rem] bg-white border-0 shadow-2xl shadow-navy/5">
+           <div className="glass-pane p-8 md:p-14 rounded-3xl md:rounded-[2.5rem] bg-white border-0 shadow-2xl shadow-navy/5">
             <div className="max-w-2xl text-center md:text-left">
-              <span className="text-[8px] md:text-[10px] font-black text-teal uppercase tracking-[0.4em] mb-4 block">Operation Protocol</span>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-navy tracking-tighter uppercase leading-tight mb-4 md:mb-6">Create Your Professional <br className="hidden md:block"/>Venture Artifacts</h2>
+              <span className="text-[10px] md:text-xs font-black text-teal uppercase tracking-[0.4em] mb-5 block">Operation Protocol</span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-navy tracking-tighter uppercase leading-[1.1] mb-6 md:mb-8">Create Your Professional <br className="hidden md:block"/>Venture Artifacts</h2>
               <p className="text-slate-500 font-medium text-sm md:text-base leading-relaxed mb-6 md:mb-10 px-4 md:px-0">
                 The institutional standard requires a strict, guided synthesis process. Use the **Expert Venture Journey** engine to build your 15-slide pitch deck following a strict slide-by-slide design thinking workflow.
               </p>
@@ -317,10 +317,10 @@ export default function TeamDashboard() {
         <div className="lg:col-span-4 space-y-8 sticky top-32 animate-fade-in delay-200">
           
           {/* Synthesis Trigger */}
-          <div className="dashboard-card !bg-navy !border-none text-white overflow-hidden relative">
+           <div className="dashboard-card !bg-navy !border-none text-white overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-teal/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
             <div className="relative z-10">
-              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-teal mb-4">Synthesis Engine</h3>
+              <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-teal mb-5">Synthesis Engine</h3>
               <p className="text-sm font-medium text-slate-300 leading-relaxed mb-8">
                 Convert live logic parameters into professional artifacts. Ensure all data modules are synchronized before initializing.
               </p>
@@ -358,12 +358,12 @@ export default function TeamDashboard() {
           </div>
 
           {/* Artifact Repository */}
-          <div className="glass-pane p-8 rounded-[2rem]">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Submission Status</h3>
+           <div className="glass-pane p-8 rounded-[2rem]">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-slate-400">Submission Status</h3>
               <button 
                 onClick={fetchInitialData}
-                className="text-[9px] font-bold text-teal uppercase hover:underline"
+                className="text-[10px] font-black text-teal uppercase hover:underline tracking-widest"
               >
                 Sync ⟳
               </button>
@@ -372,21 +372,21 @@ export default function TeamDashboard() {
             {submission?.pptUrl ? (
               <div className="space-y-3">
                 {/* PPT Generated */}
-                <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-                  <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white text-sm">✓</div>
+                 <div className="flex items-center gap-4 p-5 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                  <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-base">✓</div>
                   <div className="flex-1">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700">PPT Generated</p>
-                    <p className="text-[8px] text-emerald-600/60 uppercase mt-0.5">Presentation Created</p>
+                    <p className="text-[11px] font-black uppercase tracking-widest text-emerald-700">PPT Generated</p>
+                    <p className="text-[10px] font-bold text-emerald-600/60 uppercase mt-1">Presentation Created</p>
                   </div>
                 </div>
 
                 {/* Prototype Submitted */}
                 {submission.prototypeUrl ? (
-                  <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-                    <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white text-sm">✓</div>
-                    <div className="flex-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700">Prototype Submitted</p>
-                      <p className="text-[8px] text-emerald-600/60 uppercase mt-0.5 truncate">{submission.prototypeUrl}</p>
+                  <div className="flex items-center gap-4 p-5 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                    <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-base">✓</div>
+                    <div className="flex-1 overflow-hidden">
+                      <p className="text-[11px] font-black uppercase tracking-widest text-emerald-700">Prototype Submitted</p>
+                      <p className="text-[10px] font-bold text-emerald-600/60 uppercase mt-1 truncate">{submission.prototypeUrl}</p>
                     </div>
                   </div>
                 ) : (
@@ -401,28 +401,28 @@ export default function TeamDashboard() {
 
                 {/* Certificate Info */}
                 {submission.certificateName ? (
-                  <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-                    <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white text-sm">✓</div>
-                    <div className="flex-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700">Certificate Details</p>
-                      <p className="text-[8px] text-emerald-600/60 uppercase mt-0.5">{submission.certificateName}</p>
+                  <div className="flex items-center gap-4 p-5 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                    <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-base">✓</div>
+                    <div className="flex-1 overflow-hidden">
+                      <p className="text-[11px] font-black uppercase tracking-widest text-emerald-700">Certificate Details</p>
+                      <p className="text-[10px] font-bold text-emerald-600/60 uppercase mt-1">{submission.certificateName}</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                    <div className="w-8 h-8 bg-slate-300 rounded-lg flex items-center justify-center text-white text-sm">○</div>
-                    <div className="flex-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Certificate Pending</p>
-                      <p className="text-[8px] text-slate-400 uppercase mt-0.5">Complete prototype first</p>
+                   <div className="flex items-center gap-4 p-5 bg-slate-50 border border-slate-100 rounded-2xl">
+                    <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center text-slate-400 text-xs">○</div>
+                    <div className="flex-1 overflow-hidden">
+                      <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">Certificate Pending</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Complete prototype first</p>
                     </div>
                   </div>
                 )}
 
                 {/* Locked Status */}
                 {submission.status === 'LOCKED' && (
-                  <div className="mt-4 p-4 bg-navy/5 border border-navy/10 rounded-xl text-center">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-navy">🔒 Submission Locked</p>
-                    <p className="text-[8px] text-slate-500 mt-1">Contact admin for changes</p>
+                   <div className="mt-6 p-5 bg-navy/5 border border-navy/10 rounded-2xl text-center">
+                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-navy">🔒 Artifact Protocol Locked</p>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase mt-1.5 tracking-wider">Contact administrator for decryption</p>
                   </div>
                 )}
 

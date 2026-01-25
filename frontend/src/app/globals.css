@@ -43,20 +43,20 @@
 
   /* Premium Buttons */
   .btn-primary {
-    @apply bg-navy text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
+    @apply bg-navy text-white px-8 py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[11px] 
     transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] 
-    shadow-lg shadow-navy/10 hover:shadow-navy/20 flex items-center justify-center gap-2;
+    shadow-lg shadow-navy/10 hover:shadow-navy/20 flex items-center justify-center gap-3;
   }
 
   .btn-teal {
-    @apply bg-teal text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
+    @apply bg-teal text-white px-8 py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[11px] 
     transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] 
-    shadow-lg shadow-teal/10 hover:shadow-teal/20 flex items-center justify-center gap-2;
+    shadow-lg shadow-teal/10 hover:shadow-teal/20 flex items-center justify-center gap-3;
   }
 
   .btn-ghost {
-    @apply px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
-    transition-all duration-300 border border-gray-200 text-gray-400 hover:text-navy hover:border-navy hover:bg-white;
+    @apply px-8 py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[11px] 
+    transition-all duration-300 border-2 border-slate-100 text-slate-400 hover:text-navy hover:border-navy hover:bg-white;
   }
 
   /* Structured Inputs */
@@ -66,11 +66,11 @@
   }
 
   .input-field::placeholder {
-    @apply text-slate-400 font-medium;
+    @apply text-slate-500 font-medium opacity-60 italic;
   }
 
   .label-caps {
-    @apply text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2 block;
+    @apply text-[11px] font-black text-slate-800 uppercase tracking-[0.2em] mb-2.5 block;
   }
 }
 

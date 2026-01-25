@@ -238,8 +238,8 @@ export default function PitchGenerator() {
                   </div>
                 </div>
                 
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter uppercase leading-tight mb-4">hack@jit <br/>Engine</h1>
-                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-loose max-w-[200px]">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase leading-[0.9] mb-6">hack@jit <br/><span className="text-teal">Engine</span></h1>
+                <p className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-[0.34em] leading-loose max-w-[250px] opacity-80">
                   JIT Institutional Standard v5.1
                 </p>
               </div>
@@ -255,21 +255,21 @@ export default function PitchGenerator() {
                         </div>
                         {step === s && (
                           <span className="text-[8px] font-black uppercase tracking-widest text-white animate-fade-in">
-                             {s === 1 && 'Identity'}
-                             {s === 2 && 'Background'}
-                             {s === 3 && 'Problem'}
-                             {s === 4 && 'Impact'}
+                             {s === 1 && 'Identity Protocol'}
+                             {s === 2 && 'Venture Context'}
+                             {s === 3 && 'Problem Core'}
+                             {s === 4 && 'Impact Scope'}
                              {s === 5 && 'Stakeholders'}
-                             {s === 6 && 'Persona'}
-                             {s === 7 && 'Gaps'}
-                             {s === 8 && 'Solution'}
-                             {s === 9 && 'Features'}
-                             {s === 10 && 'Balloon'}
-                             {s === 11 && 'Market'}
+                             {s === 6 && 'User Persona'}
+                             {s === 7 && 'Gap Mapping'}
+                             {s === 8 && 'Synthesis'}
+                             {s === 9 && 'Lean Logic'}
+                             {s === 10 && 'Value Engine'}
+                             {s === 11 && 'Competitive'}
                              {s === 12 && 'Revenue'}
                              {s === 13 && 'Financials'}
-                             {s === 14 && 'Impact/Future'}
-                             {s === 15 && 'Closure'}
+                             {s === 14 && 'Future Vision'}
+                             {s === 15 && 'Final Seal'}
                           </span>
                         )}
                       </div>
@@ -289,8 +289,8 @@ export default function PitchGenerator() {
               
               <div className="mb-6 md:mb-10 flex justify-between items-end">
                 <div>
-                  <span className="text-[8px] md:text-[9px] font-black text-teal uppercase tracking-[0.4em] block mb-2">Target Module</span>
-                  <h2 className="text-xl md:text-2xl font-black text-navy uppercase tracking-tighter">
+                  <span className="text-[10px] md:text-xs font-black text-teal uppercase tracking-[0.5em] block mb-3">Target Module</span>
+                  <h2 className="text-2xl md:text-4xl font-black text-navy uppercase tracking-tighter leading-none">
                     {step === 1 && 'Identity & Context'}
                     {step === 2 && 'Venture Background'}
                     {step === 3 && 'Problem Framing'}
@@ -872,14 +872,14 @@ export default function PitchGenerator() {
               {/* Navigation Controls */}
               <div className="mt-10 flex items-center justify-between pt-8 border-t border-slate-100">
                 {step > 1 && (
-                  <button onClick={prevStep} className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-navy transition-all">
+                  <button onClick={prevStep} className="px-8 py-4 text-[11px] font-black uppercase tracking-[0.34em] text-slate-400 hover:text-navy transition-all">
                     Back
                   </button>
                 )}
                 {step < 15 ? (
                   <button 
                     onClick={nextStep} 
-                    className="ml-auto bg-navy text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] hover:shadow-2xl shadow-navy/20 transition-all hover:-translate-y-0.5"
+                    className="ml-auto bg-navy text-white px-10 py-5 rounded-2xl font-black uppercase text-[11px] tracking-[0.4em] hover:shadow-2xl shadow-navy/20 transition-all hover:-translate-y-0.5"
                   >
                     Continue Journey
                   </button>
@@ -887,7 +887,7 @@ export default function PitchGenerator() {
                   <button 
                     onClick={handleSubmit} 
                     disabled={loading}
-                    className="ml-auto bg-teal text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] hover:shadow-2xl shadow-teal/50 transition-all hover:-translate-y-0.5 flex items-center gap-4"
+                    className="ml-auto bg-teal text-white px-10 py-5 rounded-2xl font-black uppercase text-[11px] tracking-[0.4em] hover:shadow-2xl shadow-teal/50 transition-all hover:-translate-y-0.5 flex items-center gap-4"
                   >
                     {loading ? 'Synthesizing...' : 'Generate Pitch Deck'}
                   </button>
