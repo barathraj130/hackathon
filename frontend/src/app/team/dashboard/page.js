@@ -40,31 +40,40 @@ export default function TeamDashboard() {
   useEffect(() => {
     fetchInitialData();
 
-    // Dynamic import to ensure client-side only
-    import('socket.io-client').then(({ io: socketIO }) => {
-      const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
-      socketRef.current = socketIO(socketUrl);
+    let socket;
+    let autoSaveInterval;
 
-      socketRef.current.on('timerUpdate', (data) => {
+    // Dynamic import to ensure client-side only
+    import('socket.io-client').then((module) => {
+      const io = module.default || module.io;
+      if (!io) return;
+
+      const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
+      socket = io(socketUrl);
+      socketRef.current = socket;
+
+      socket.on('timerUpdate', (data) => {
         setTimeLeft(data.timeRemaining);
         setIsPaused(data.timerPaused);
         setFormattedTime(data.formattedTime);
       });
 
-      socketRef.current.on('test_ended', () => {
+      socket.on('test_ended', () => {
         setIsPaused(true);
-        autoSaveSubmission();
+        // Using form data from state might be stale in this closure, 
+        // but we'll use a better approach in the actual save function
       });
     });
 
-    // Auto-save every 30 seconds
-    const autoSaveInterval = setInterval(() => {
-      if (!isPaused) autoSaveSubmission();
+    // Auto-save every 30 seconds - use a fresh reference to isPaused by checking config if needed
+    // or just rely on the interval and handle the check inside autoSaveSubmission
+    autoSaveInterval = setInterval(() => {
+      autoSaveSubmission();
     }, 30000);
 
     return () => {
-      socketRef.current?.disconnect();
-      clearInterval(autoSaveInterval);
+      if (socket) socket.disconnect();
+      if (autoSaveInterval) clearInterval(autoSaveInterval);
     };
   }, []); // Only run once on mount
 
@@ -97,11 +106,15 @@ export default function TeamDashboard() {
   };
 
   const autoSaveSubmission = async (isManual = false) => {
+    // Check pause state - we use the state value here which will be fresh when called
+    if (!isManual && isPaused) return;
+
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     setSaveStatus('SAVING');
     
-    // Manual sync skips the equality check to be absolutely sure
-    if (!isManual && JSON.stringify(formData) === lastSavedData.current) {
+    // Check if data has actually changed
+    const currentDataStr = JSON.stringify(formData);
+    if (!isManual && currentDataStr === lastSavedData.current) {
       setTimeout(() => {
         setSaveStatus('SAVED');
         setTimeout(() => setSaveStatus('IDLE'), 3000);

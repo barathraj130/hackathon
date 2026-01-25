@@ -22,7 +22,10 @@ export default function AdminDashboard() {
     fetchSubmissions();
     
     // Dynamic import to ensure client-side only
-    import('socket.io-client').then(({ default: io }) => {
+    import('socket.io-client').then((module) => {
+      const io = module.default || module.io;
+      if (!io) return;
+      
       const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
       socketRef.current = io(socketUrl);
       
