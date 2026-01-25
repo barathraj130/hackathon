@@ -284,7 +284,15 @@ def create_expert_deck(team_name, college, data):
     add_branding(slide)
     
     # Large centered Thank You
-    add_text_to_slide(slide, "THANK YOU.", Inches(1), Inches(2.5), Inches(8), Inches(1.5), size=60, bold=True, color=blue_inst)
+    thank_you_box = slide.shapes.add_textbox(Inches(0.5), Inches(3.0), Inches(9.0), Inches(1.5))
+    tf = thank_you_box.text_frame
+    tf.text = "THANK YOU."
+    p = tf.paragraphs[0]
+    p.font.size = Pt(60)
+    p.font.bold = True
+    p.font.name = 'Times New Roman'
+    p.font.color.rgb = blue_inst
+    p.alignment = PP_ALIGN.CENTER
 
     # Save
     if not os.path.exists('ppt_outputs'):
