@@ -367,7 +367,6 @@ router.post('/force-regenerate', async (req, res) => {
     }
 });
 
-module.exports = router;
 /**
  * GET ALL SUBMISSIONS WITH DETAILS
  */
@@ -417,3 +416,5 @@ router.post('/toggle-regenerate', async (req, res) => {
         res.status(500).json({ error: "Failed to update permission" });
     }
 });
+
+module.exports = router;
