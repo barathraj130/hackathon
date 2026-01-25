@@ -214,133 +214,131 @@ export default function TeamDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-light font-sans text-slate-800">
-      {/* Premium Header */}
-      <nav className="sticky top-0 z-50 glass-pane border-b border-gray-100 flex flex-col md:flex-row justify-between items-center px-6 md:px-10 py-4 md:py-5 gap-4">
-        <div className="flex items-center justify-between w-full md:w-auto">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 md:w-11 md:h-11 bg-navy rounded-xl flex items-center justify-center text-white font-black shadow-xl shadow-navy/20 text-sm md:text-base">H</div>
+    <div className="min-h-screen bg-[#f1f5f9] font-sans text-slate-800">
+      {/* Premium Header - Futuristic Compact */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 flex flex-col md:flex-row justify-between items-center px-4 md:px-8 py-3 md:py-4 gap-4 shadow-sm">
+        <div className="flex items-center justify-between w-full md:w-auto gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-[#020617] rounded-xl flex items-center justify-center text-white font-black shadow-lg text-sm">H</div>
             <div className="hidden sm:block">
-              <h1 className="text-sm md:text-lg font-black uppercase tracking-[0.1em] text-navy leading-none">hack@jit</h1>
-              <p className="text-[10px] md:text-[11px] font-bold text-teal uppercase tracking-[0.2em] mt-1.5 opacity-80">Institutional Access: JIT</p>
+              <h1 className="text-sm md:text-base font-black uppercase tracking-tight text-[#020617] leading-none">hack@jit</h1>
+              <p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest mt-1 opacity-70">Institutional Node</p>
             </div>
           </div>
           <div className="flex items-center gap-3 md:hidden">
-             <div className="w-8 h-8 relative">
-               <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
-             </div>
-             <button onClick={handleLogout} className="text-[10px] font-black uppercase text-rose-500">Exit</button>
+             <button onClick={handleLogout} className="text-[10px] font-black uppercase text-rose-500">Exit System</button>
           </div>
         </div>
 
-        <div className="flex items-center justify-center md:justify-end gap-4 md:gap-8 w-full md:w-auto">
+        <div className="flex items-center justify-center md:justify-end gap-6 w-full md:w-auto">
           <div className="text-center md:text-right">
-            <p className="text-[8px] md:text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">Temporal sync</p>
-            <p className={`text-lg md:text-2xl font-mono font-black tabular-nums transition-colors ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-navy'}`}>
+            <p className="text-[8px] uppercase font-black text-slate-400 tracking-widest">Temporal Clock</p>
+            <p className={`text-base md:text-xl font-mono font-black tabular-nums transition-colors ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-[#020617]'}`}>
               {formattedTime}
             </p>
           </div>
 
-          <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
+          <div className="h-8 w-px bg-slate-200 hidden md:block"></div>
 
           <div className="flex flex-col items-center hidden sm:flex">
-            {saveStatus === 'SAVING' && <span className="text-[10px] font-black text-teal animate-pulse uppercase tracking-widest">Saving...</span>}
-            {saveStatus === 'SAVED' && <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Secured ✓</span>}
-            {saveStatus === 'ERROR' && <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Sync Error</span>}
-            {saveStatus === 'IDLE' && <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Sync Idle</span>}
+            <span className={`text-[10px] font-black uppercase tracking-widest ${
+              saveStatus === 'SAVING' ? 'text-teal-500 animate-pulse' : 
+              saveStatus === 'SAVED' ? 'text-emerald-500' : 
+              saveStatus === 'ERROR' ? 'text-rose-500' : 'text-slate-300'
+            }`}>
+              {saveStatus === 'SAVING' ? 'Saving Node...' : 
+               saveStatus === 'SAVED' ? 'State Secured ✓' : 
+               saveStatus === 'ERROR' ? 'Sync Failure' : 'Sync Active'}
+            </span>
           </div>
 
-          <div className="w-10 h-10 md:w-12 md:h-12 relative hidden md:block">
+          <div className="w-9 h-9 relative hidden md:block">
             <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
 
           <button 
             onClick={handleLogout}
-            className="btn-ghost !px-4 !py-2 md:!px-6 md:!py-2.5 rounded-lg border-slate-200 text-[9px] md:text-[10px] hidden md:block"
+            className="px-5 py-2 rounded-lg border-2 border-slate-100 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-[#020617] hover:text-[#020617] transition-all hidden md:block"
           >
             Logout
           </button>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 md:py-12 px-4 md:px-10 gap-10 grid grid-cols-1 lg:grid-cols-12 items-start">
+      <main className="max-w-[1400px] mx-auto py-6 md:py-8 px-4 md:px-8 gap-6 grid grid-cols-1 lg:grid-cols-12 items-start">
         
         {/* Left Column: Input Form */}
-        <div className="lg:col-span-8 space-y-8 animate-fade-in">
+        <div className="lg:col-span-8 space-y-6 animate-fade-in">
           {problemStatement && (
-            <div className="bg-indigo-600 text-white p-6 md:p-10 rounded-3xl md:rounded-[2.5rem] shadow-2xl shadow-indigo-600/20 relative overflow-hidden group">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
+            <div className="bg-[#4f46e5] text-white p-6 md:p-8 rounded-2xl shadow-xl shadow-indigo-500/10 relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -mr-24 -mt-24"></div>
                <div className="relative z-10">
-                 <div className="flex flex-col md:flex-row justify-between items-start mb-4 md:mb-6 gap-4">
+                 <div className="flex flex-col md:flex-row justify-between items-start mb-4 gap-4">
                      <div>
-                       <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-indigo-100/90">Admin Allotted Challenge</span>
-                       <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mt-3 leading-tight">{problemStatement.title}</h3>
+                       <span className="text-[10px] font-black uppercase tracking-widest text-indigo-100/80">Active challenge</span>
+                       <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight mt-2 leading-none italic">{problemStatement.title}</h3>
                     </div>
-                    <div className="text-left md:text-right flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-0">
-                       <span className="text-sm md:text-base font-black bg-white/20 px-4 md:px-5 py-2 rounded-full tabular-nums">Q.{problemStatement.questionNo}</span>
-                       <p className="text-[10px] md:text-xs font-bold text-indigo-200 uppercase tracking-widest md:mt-3">{problemStatement.subDivisions || 'Main division'}</p>
+                    <div className="text-left md:text-right flex items-center gap-3">
+                       <span className="text-xs font-black bg-white/20 px-3 py-1.5 rounded-lg tabular-nums">Q.{problemStatement.questionNo}</span>
+                       <p className="text-[10px] font-bold text-indigo-100 uppercase tracking-widest">{problemStatement.subDivisions || 'Primary'}</p>
                     </div>
                  </div>
-                  <p className="text-base md:text-xl font-medium text-indigo-50 leading-relaxed max-w-4xl opacity-90">
+                  <p className="text-sm md:text-base font-medium text-indigo-50/90 leading-relaxed max-w-4xl">
                    {problemStatement.description}
                   </p>
                </div>
             </div>
           )}
 
-           <div className="glass-pane p-8 md:p-14 rounded-3xl md:rounded-[2.5rem] bg-white border-0 shadow-2xl shadow-navy/5">
-            <div className="max-w-2xl text-center md:text-left">
-              <span className="text-[10px] md:text-xs font-black text-teal uppercase tracking-[0.4em] mb-5 block">Operation Protocol</span>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-navy tracking-tighter uppercase leading-[1.1] mb-6 md:mb-8 italic">Intelligence Driven <br className="hidden md:block"/>Synthesis</h2>
-              <p className="text-slate-600 font-bold text-sm md:text-lg leading-relaxed mb-8 md:mb-12 px-4 md:px-0 opacity-80">
+           <div className="bg-white p-8 md:p-10 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+            <div className="max-w-2xl text-center md:text-left relative z-10">
+              <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-4 block">Operation Protocol</span>
+              <h2 className="text-2xl md:text-4xl font-black text-[#020617] tracking-tighter uppercase leading-none mb-6 italic">Intelligence Driven Synthesis</h2>
+              <p className="text-slate-500 font-bold text-sm md:text-base leading-relaxed mb-8 opacity-80 uppercase tracking-tight">
                 Transform architectural logic and technical identifiers into professional-grade artifacts. The official JIT high-fidelity innovation engine for rapid deployment cycles.
               </p>
               
               <Link 
                 href={submission?.canRegenerate === false ? '#' : "/team/pitch-generator"} 
-                className={`inline-flex items-center gap-4 md:gap-6 px-6 md:px-10 py-4 md:py-6 rounded-xl md:rounded-2xl font-black uppercase text-[9px] md:text-[11px] tracking-[0.3em] md:tracking-[0.4em] transition-all group w-full md:w-auto overflow-hidden text-center ${
+                className={`inline-flex items-center gap-4 px-8 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all group ${
                   submission?.canRegenerate === false 
-                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed border-none shadow-none pointer-events-none' 
-                    : 'bg-navy text-white hover:shadow-2xl shadow-navy/30 hover:-translate-y-1 active:scale-95'
+                    ? 'bg-slate-100 text-slate-300 cursor-not-allowed pointer-events-none' 
+                    : 'bg-[#020617] text-white hover:shadow-2xl hover:-translate-y-0.5'
                 }`}
               >
-                <span className="flex-1 md:flex-none">
-                  {submission?.canRegenerate === false ? 'Artifact Protocol Locked' : 'Initialize Venture Journey'}
-                </span>
-                <span className={`hidden md:block w-8 h-px bg-teal group-hover:w-12 transition-all ${ submission?.canRegenerate === false ? 'opacity-0' : ''}`}></span>
+                <span>{submission?.canRegenerate === false ? 'Artifact Registry Locked' : 'Initialize Innovation Engine'}</span>
+                {submission?.canRegenerate !== false && <span className="w-6 h-px bg-teal-400 group-hover:w-10 transition-all"></span>}
               </Link>
             </div>
           </div>
-          </div>
+        </div>
 
         {/* Right Column: Control & Artifacts */}
-        <div className="lg:col-span-4 space-y-8 sticky top-32 animate-fade-in delay-200">
+        <div className="lg:col-span-4 space-y-6 sticky top-24 animate-fade-in delay-200">
           
           {/* Synthesis Trigger */}
-           <div className="dashboard-card !bg-navy !border-none text-white overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-teal/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
+           <div className="bg-[#020617] p-6 rounded-2xl border border-white/5 shadow-2xl relative overflow-hidden text-white">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/10 rounded-full blur-3xl -mr-12 -mt-12"></div>
             <div className="relative z-10">
-              <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-teal mb-5">Synthesis Engine</h3>
-              <p className="text-sm font-medium text-slate-300 leading-relaxed mb-8">
-                Convert live logic parameters into professional artifacts. Ensure all data modules are synchronized before initializing.
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-teal-400 mb-4">Synthesis Engine</h3>
+              <p className="text-xs font-medium text-slate-400 leading-relaxed mb-6">
+                Generate professional artifacts from live logic modules.
               </p>
               
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <button 
                   onClick={handleGenerateStandardPPT}
                   disabled={isGenerating || isPaused || submission?.canRegenerate === false}
-                  className={`w-full py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${
+                  className={`w-full py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-3 ${
                     isGenerating || submission?.canRegenerate === false 
-                      ? 'bg-slate-700 text-slate-400 cursor-not-allowed shadow-none' 
-                      : 'bg-teal text-white hover:bg-white hover:text-navy group shadow-lg shadow-teal/20'
+                      ? 'bg-white/5 text-slate-500 cursor-not-allowed' 
+                      : 'bg-teal-500 text-white hover:bg-white hover:text-[#020617] shadow-lg shadow-teal-500/10'
                   }`}
                 >
                   {isGenerating ? (
-                    <span className="flex items-center justify-center gap-3">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                      Synthesizing...
-                    </span>
-                  ) : submission?.canRegenerate === false ? 'Synthesis Locked' : 'Generate Professional Deck'}
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  ) : submission?.canRegenerate === false ? 'Vault Locked' : 'Synthesize Professional Deck'}
                 </button>
 
                 <Link 
@@ -348,113 +346,72 @@ export default function TeamDashboard() {
                   className={`w-full py-4 rounded-xl font-black uppercase text-[10px] tracking-widest border transition-all flex items-center justify-center ${
                     submission?.canRegenerate === false
                       ? 'border-white/5 text-white/5 cursor-not-allowed pointer-events-none'
-                      : 'border-white/20 text-white hover:bg-white/10'
+                      : 'border-white/10 text-white hover:bg-white/5'
                   }`}
                 >
-                  {submission?.canRegenerate === false ? 'Module Locked' : 'Expert Pitch Synthesis ↗'}
+                  {submission?.canRegenerate === false ? 'System Locked' : 'Modular Pulse Engine ↗'}
                 </Link>
               </div>
             </div>
           </div>
 
           {/* Artifact Repository */}
-           <div className="glass-pane p-8 rounded-[2rem]">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-slate-400">Submission Status</h3>
+           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Vault status</h3>
               <button 
                 onClick={fetchInitialData}
-                className="text-[10px] font-black text-teal uppercase hover:underline tracking-widest"
+                className="text-[9px] font-black text-teal-600 uppercase tracking-widest hover:underline"
               >
                 Sync ⟳
               </button>
             </div>
             
             {submission?.pptUrl ? (
-              <div className="space-y-3">
-                {/* PPT Generated */}
-                 <div className="flex items-center gap-4 p-5 bg-emerald-50 border border-emerald-100 rounded-2xl">
-                  <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-base">✓</div>
-                  <div className="flex-1">
-                    <p className="text-[11px] font-black uppercase tracking-widest text-emerald-700">PPT Generated</p>
-                    <p className="text-[10px] font-bold text-emerald-600/60 uppercase mt-1">Presentation Created</p>
-                  </div>
-                </div>
-
-                {/* Prototype Submitted */}
-                {submission.prototypeUrl ? (
-                  <div className="flex items-center gap-4 p-5 bg-emerald-50 border border-emerald-100 rounded-2xl">
-                    <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-base">✓</div>
-                    <div className="flex-1 overflow-hidden">
-                      <p className="text-[11px] font-black uppercase tracking-widest text-emerald-700">Prototype Submitted</p>
-                      <p className="text-[10px] font-bold text-emerald-600/60 uppercase mt-1 truncate">{submission.prototypeUrl}</p>
+              <div className="space-y-2">
+                {[
+                  { label: 'Artifact Generated', active: true, value: 'PPT_MASTER_V4' },
+                  { label: 'Prototype Linked', active: !!submission.prototypeUrl, value: submission.prototypeUrl || 'Pending' },
+                  { label: 'Authentication', active: !!submission.certificateName, value: submission.certificateName || 'Scanning' }
+                ].map((item, i) => (
+                  <div key={i} className={`flex items-center gap-3 p-3 rounded-lg border ${item.active ? 'bg-emerald-50/50 border-emerald-100' : 'bg-slate-50 border-slate-100 opacity-60'}`}>
+                    <div className={`w-6 h-6 rounded flex items-center justify-center text-[10px] ${item.active ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400'}`}>
+                      {item.active ? '✓' : '○'}
+                    </div>
+                    <div className="flex-1 truncate">
+                      <p className={`text-[9px] font-black uppercase tracking-widest ${item.active ? 'text-emerald-700' : 'text-slate-400'}`}>{item.label}</p>
+                      <p className="text-[8px] font-bold text-slate-400 uppercase truncate">{item.value}</p>
                     </div>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-100 rounded-xl">
-                    <div className="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center text-white text-sm">⏳</div>
-                    <div className="flex-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-700">Prototype Pending</p>
-                      <p className="text-[8px] text-amber-600/60 uppercase mt-0.5">Submit your prototype link</p>
-                    </div>
-                  </div>
-                )}
+                ))}
 
-                {/* Certificate Info */}
-                {submission.certificateName ? (
-                  <div className="flex items-center gap-4 p-5 bg-emerald-50 border border-emerald-100 rounded-2xl">
-                    <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-base">✓</div>
-                    <div className="flex-1 overflow-hidden">
-                      <p className="text-[11px] font-black uppercase tracking-widest text-emerald-700">Certificate Details</p>
-                      <p className="text-[10px] font-bold text-emerald-600/60 uppercase mt-1">{submission.certificateName}</p>
-                    </div>
-                  </div>
-                ) : (
-                   <div className="flex items-center gap-4 p-5 bg-slate-50 border border-slate-100 rounded-2xl">
-                    <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center text-slate-400 text-xs">○</div>
-                    <div className="flex-1 overflow-hidden">
-                      <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">Certificate Pending</p>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Complete prototype first</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Locked Status */}
-                {submission.status === 'LOCKED' && (
-                   <div className="mt-6 p-5 bg-navy/5 border border-navy/10 rounded-2xl text-center">
-                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-navy">🔒 Artifact Protocol Locked</p>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase mt-1.5 tracking-wider">Contact administrator for decryption</p>
-                  </div>
-                )}
-
-                {/* Direct Download Link */}
                 <a 
                   href={submission.pptUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-6 flex items-center justify-center gap-3 w-full py-4 bg-navy text-white rounded-xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-teal transition-all shadow-xl shadow-navy/20"
+                  className="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-[#020617] text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-500 transition-all shadow-lg"
                 >
-                  <span>Download Artifact</span>
-                  <span className="text-base text-teal">↓</span>
+                  Download Artifact ↓
                 </a>
               </div>
             ) : (
-              <div className="text-center py-10 opacity-30">
-                <div className="text-3xl mb-3">📁</div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em]">No artifacts found in repository</p>
+              <div className="text-center py-6 opacity-20">
+                <div className="text-2xl mb-2">📁</div>
+                <p className="text-[8px] font-bold uppercase tracking-widest">Repository Empty</p>
               </div>
             )}
           </div>
 
           {/* Guidelines */}
-          <div className="p-8 border border-white rounded-[2rem] bg-white/40">
-             <h4 className="text-[9px] font-black uppercase tracking-widest text-navy mb-4 flex items-center gap-2">
-               <span className="w-1.5 h-1.5 bg-teal rounded-full"></span> 
-               Synthesis Protocols
+          <div className="p-6 border border-slate-200 rounded-2xl bg-white/50 backdrop-blur-sm">
+             <h4 className="text-[9px] font-black uppercase tracking-widest text-[#020617] mb-4 flex items-center gap-2">
+               <span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-ping"></span> 
+               Protocols
              </h4>
-             <ul className="space-y-3">
-               {['Minimum 8 Technical Modules', 'Verified System Architecture', 'Synchronized Infrastructure'].map((rule, i) => (
-                 <li key={i} className="text-[9px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-2">
-                   <div className="w-1 h-1 bg-slate-200 rounded-full"></div> {rule}
+             <ul className="space-y-2">
+               {['Min 8 Modules', 'Technical Architecture', 'Validation Evidence'].map((rule, i) => (
+                 <li key={i} className="text-[8px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                   <div className="w-1 h-px bg-slate-300"></div> {rule}
                  </li>
                ))}
              </ul>
@@ -463,21 +420,6 @@ export default function TeamDashboard() {
         </div>
       </main>
 
-      {/* Technical Diagnostic Overlay (Temporary) */}
-      <div className="max-w-7xl mx-auto px-10 pb-10 opacity-30 hover:opacity-100 transition-opacity">
-        <details className="cursor-pointer">
-          <summary className="text-[8px] font-black uppercase tracking-widest text-slate-400">Vault Diagnostic Tools</summary>
-          <div className="mt-4 p-6 bg-navy text-teal-400 rounded-2xl font-mono text-[9px] overflow-auto max-h-[300px]">
-             <p className="mb-2 uppercase border-b border-teal-400/20 pb-2">Technical Handshake Summary</p>
-             <pre>{JSON.stringify({ 
-               status: submission?.status || 'N/A',
-               ppt: submission?.pptUrl || 'NULL',
-               hasSubmission: !!submission,
-               syncTime: new Date().toLocaleTimeString()
-             }, null, 2)}</pre>
-          </div>
-        </details>
-      </div>
 
       {/* Submission Workflow Modal */}
       <SubmissionWorkflowModal

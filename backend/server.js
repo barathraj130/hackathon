@@ -42,10 +42,10 @@ async function initEngine() {
       const bcrypt = require('bcryptjs');
       const hash = await bcrypt.hash('admin_portal_2026', 10);
       
-      await prisma.administrator.upsert({
+      await prisma.admin.upsert({
         where: { email: 'admin@institution.com' },
-        update: { passwordHash: hash },
-        create: { email: 'admin@institution.com', passwordHash: hash }
+        update: { password: hash },
+        create: { email: 'admin@institution.com', password: hash }
       });
 
       await prisma.hackathonConfig.upsert({
@@ -71,10 +71,10 @@ app.get('/setup-db', async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
 
     // 1. Create Admin
-    await prisma.administrator.upsert({
+    await prisma.admin.upsert({
       where: { email },
-      update: { passwordHash: hash },
-      create: { email, passwordHash: hash }
+      update: { password: hash },
+      create: { email, password: hash }
     });
 
     // 2. Create Config
