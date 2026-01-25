@@ -121,16 +121,31 @@ export default function PitchGenerator() {
 
   if (isPaused) {
     return (
-      <div className="min-h-screen bg-navy flex items-center justify-center p-10 text-center font-roboto">
-        <div className="max-w-xl animate-fade-in">
-           <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center text-5xl mb-8 mx-auto animate-pulse">🛰️</div>
-           <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-4">Temporal Sync Halted</h2>
-           <p className="text-teal font-bold text-xs uppercase tracking-[0.4em] mb-8">System locked by authority</p>
-           <div className="p-10 glass-pane rounded-[3rem] border-white/10 bg-white/5 text-slate-300">
-             <p className="text-lg leading-relaxed italic">
-               "The synthesis engine has been temporarily suspended for administrative recalibration. All progress is locally cached. Please wait until the master temporal clock resumes."
+      <div className="min-h-screen bg-navy flex items-center justify-center p-10 text-center font-sans tracking-tight">
+        <div className="max-w-2xl animate-fade-in">
+           <div className="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center text-5xl mb-10 mx-auto border border-white/10 shadow-2xl relative">
+              <span className="animate-pulse">⏳</span>
+              <div className="absolute inset-0 bg-teal/20 blur-3xl rounded-full -z-10 animate-pulse"></div>
+           </div>
+           
+           <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-4 leading-none">Hackathon Paused</h2>
+           <p className="text-teal font-black text-[10px] uppercase tracking-[0.5em] mb-12 opacity-80">Standby for Admin Authorization</p>
+           
+           <div className="p-12 glass-pane rounded-[3.5rem] border-white/10 bg-white/5 text-white/90 shadow-2xl">
+             <p className="text-xl font-medium leading-relaxed">
+               "The session has been paused by the administrator. <br/> 
+               <span className="text-teal font-black uppercase text-sm tracking-widest mt-4 block">Don't worry, all your work is safely saved.</span> <br/>
+               Access will be restored once the timer resumes."
              </p>
            </div>
+           
+           <Link 
+             href="/team/dashboard" 
+             className="mt-16 text-[11px] font-black text-slate-500 uppercase tracking-[0.3em] hover:text-white transition-all group flex items-center gap-4 mx-auto w-fit"
+           >
+             <span className="w-8 h-px bg-current group-hover:w-12 transition-all"></span>
+             Return to Dashboard
+           </Link>
         </div>
       </div>
     );
