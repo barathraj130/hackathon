@@ -291,23 +291,23 @@ export default function TeamDashboard() {
            <div className="glass-pane p-8 md:p-14 rounded-3xl md:rounded-[2.5rem] bg-white border-0 shadow-2xl shadow-navy/5">
             <div className="max-w-2xl text-center md:text-left">
               <span className="text-[10px] md:text-xs font-black text-teal uppercase tracking-[0.4em] mb-5 block">Operation Protocol</span>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-navy tracking-tighter uppercase leading-[1.1] mb-6 md:mb-8">Create Your Professional <br className="hidden md:block"/>Venture Artifacts</h2>
-              <p className="text-slate-500 font-medium text-sm md:text-base leading-relaxed mb-6 md:mb-10 px-4 md:px-0">
-                The institutional standard requires a strict, guided synthesis process. Use the **Expert Venture Journey** engine to build your 15-slide pitch deck following a strict slide-by-slide design thinking workflow.
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-navy tracking-tighter uppercase leading-[1.1] mb-6 md:mb-8 italic">Intelligence Driven <br className="hidden md:block"/>Synthesis</h2>
+              <p className="text-slate-600 font-bold text-sm md:text-lg leading-relaxed mb-8 md:mb-12 px-4 md:px-0 opacity-80">
+                Transform architectural logic and technical identifiers into professional-grade artifacts. The official JIT high-fidelity innovation engine for rapid deployment cycles.
               </p>
               
               <Link 
-                href={(submission?.pptUrl && !submission?.canRegenerate) ? '#' : "/team/pitch-generator"} 
+                href={submission?.canRegenerate === false ? '#' : "/team/pitch-generator"} 
                 className={`inline-flex items-center gap-4 md:gap-6 px-6 md:px-10 py-4 md:py-6 rounded-xl md:rounded-2xl font-black uppercase text-[9px] md:text-[11px] tracking-[0.3em] md:tracking-[0.4em] transition-all group w-full md:w-auto overflow-hidden text-center ${
-                  (submission?.pptUrl && !submission?.canRegenerate) 
+                  submission?.canRegenerate === false 
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed border-none shadow-none pointer-events-none' 
                     : 'bg-navy text-white hover:shadow-2xl shadow-navy/30 hover:-translate-y-1 active:scale-95'
                 }`}
               >
                 <span className="flex-1 md:flex-none">
-                  {(submission?.pptUrl && !submission?.canRegenerate) ? 'Artifact Protocol Locked' : 'Initialize Venture Journey'}
+                  {submission?.canRegenerate === false ? 'Artifact Protocol Locked' : 'Initialize Venture Journey'}
                 </span>
-                <span className={`hidden md:block w-8 h-px bg-teal group-hover:w-12 transition-all ${ (submission?.pptUrl && !submission?.canRegenerate) ? 'opacity-0' : ''}`}></span>
+                <span className={`hidden md:block w-8 h-px bg-teal group-hover:w-12 transition-all ${ submission?.canRegenerate === false ? 'opacity-0' : ''}`}></span>
               </Link>
             </div>
           </div>
@@ -328,9 +328,9 @@ export default function TeamDashboard() {
               <div className="space-y-4">
                 <button 
                   onClick={handleGenerateStandardPPT}
-                  disabled={isGenerating || isPaused || (submission?.pptUrl && !submission?.canRegenerate)}
+                  disabled={isGenerating || isPaused || submission?.canRegenerate === false}
                   className={`w-full py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${
-                    isGenerating || (submission?.pptUrl && !submission?.canRegenerate) 
+                    isGenerating || submission?.canRegenerate === false 
                       ? 'bg-slate-700 text-slate-400 cursor-not-allowed shadow-none' 
                       : 'bg-teal text-white hover:bg-white hover:text-navy group shadow-lg shadow-teal/20'
                   }`}
@@ -340,18 +340,18 @@ export default function TeamDashboard() {
                       <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                       Synthesizing...
                     </span>
-                  ) : (submission?.pptUrl && !submission?.canRegenerate) ? 'Synthesis Locked' : 'Generate Professional Deck'}
+                  ) : submission?.canRegenerate === false ? 'Synthesis Locked' : 'Generate Professional Deck'}
                 </button>
 
                 <Link 
-                  href={(submission?.pptUrl && !submission?.canRegenerate) ? '#' : "/team/pitch-generator"}
+                  href={submission?.canRegenerate === false ? '#' : "/team/pitch-generator"}
                   className={`w-full py-4 rounded-xl font-black uppercase text-[10px] tracking-widest border transition-all flex items-center justify-center ${
-                    (submission?.pptUrl && !submission?.canRegenerate)
+                    submission?.canRegenerate === false
                       ? 'border-white/5 text-white/5 cursor-not-allowed pointer-events-none'
                       : 'border-white/20 text-white hover:bg-white/10'
                   }`}
                 >
-                  {(submission?.pptUrl && !submission?.canRegenerate) ? 'Module Locked' : 'Expert Pitch Synthesis ↗'}
+                  {submission?.canRegenerate === false ? 'Module Locked' : 'Expert Pitch Synthesis ↗'}
                 </Link>
               </div>
             </div>
