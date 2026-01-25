@@ -53,11 +53,11 @@ export default function TeamDashboard() {
     
     // Dynamic import to ensure client-side only
     import('socket.io-client').then((module) => {
-      const io = module.default || module.io;
-      if (!io) return;
+      const socketIO = module.default || module.io;
+      if (!socketIO) return;
 
       const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
-      socket = io(socketUrl);
+      socket = socketIO(socketUrl);
       socketRef.current = socket;
 
       socket.on('timerUpdate', (data) => {

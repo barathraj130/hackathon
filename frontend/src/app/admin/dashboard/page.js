@@ -24,11 +24,11 @@ export default function AdminDashboard() {
     
     // Dynamic import to ensure client-side only
     import('socket.io-client').then((module) => {
-      const io = module.default || module.io;
-      if (!io) return;
+      const socketIO = module.default || module.io;
+      if (!socketIO) return;
       
       const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
-      socketRef.current = io(socketUrl);
+      socketRef.current = socketIO(socketUrl);
       
       socketRef.current.on('timerUpdate', (data) => {
         setTimer(data);
