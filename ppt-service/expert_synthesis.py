@@ -329,6 +329,10 @@ def add_bullet_slide(prs, title_text, bullets):
 
 def add_diagram_slide(prs, title_text):
     slide = prs.slides.add_slide(prs.slide_layouts[6]) 
+    
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.6), Inches(9), Inches(0.8))
+    tf = title_box.text_frame
+    tf.text = title_text
     tf.paragraphs[0].font.size = Pt(28)
     tf.paragraphs[0].font.bold = True
     tf.paragraphs[0].font.name = 'Times New Roman'
@@ -337,6 +341,18 @@ def add_diagram_slide(prs, title_text):
 
 def add_text_to_slide(slide, text, left, top, width, height, size=18, color=None, bold=False, italic=False, boxed=False):
     # Determine shape type: Textbox or Rectangle for border
+    if boxed:
+        shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left, top, width, height)
+        shape.fill.background()
+        shape.line.color.rgb = RGBColor(13, 148, 136) # Teal border
+        shape.line.width = Pt(1.5)
+        tf = shape.text_frame
+        tf.margin_left = Inches(0.1); tf.margin_top = Inches(0.1)
+    else:
+        shape = slide.shapes.add_textbox(left, top, width, height)
+        tf = shape.text_frame
+        
+    tf.word_wrap = True
     p = tf.paragraphs[0]
     p.text = text
     p.font.size = Pt(size); p.font.bold = bold; p.font.italic = italic; p.font.name = 'Times New Roman'
