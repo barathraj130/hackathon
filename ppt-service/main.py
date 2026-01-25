@@ -64,7 +64,7 @@ def get_artifact(filename: str):
 @app.post("/api/generate")
 @app.post("/generate-expert-pitch")
 @app.post("/api/generate-artifact")
-async def unified_handler(data: dict = Body(...)):
+def unified_handler(data: dict = Body(...)):
     try:
         team_name = data.get('team_name', 'Unnamed_Team')
         college_name = data.get('college_name', 'Institution')
