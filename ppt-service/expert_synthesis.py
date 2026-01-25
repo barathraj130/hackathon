@@ -2,6 +2,7 @@
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
+from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 import os
 
@@ -25,32 +26,40 @@ def create_expert_deck(team_name, college, data):
     # 1. IDENTITY & CONTEXT
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_branding(slide)
-    tx = slide.shapes.add_textbox(Inches(1), Inches(3), Inches(8), Inches(3))
+    
+    # PROJECT TITLE - CENTERED
+    tx = slide.shapes.add_textbox(Inches(0.5), Inches(3.0), Inches(9.0), Inches(1.5))
     tf = tx.text_frame
     tf.text = data.get('projectName', 'VENTURE TITLE').upper()
-    tf.paragraphs[0].font.size = Pt(44)
-    tf.paragraphs[0].font.bold = True
-    tf.paragraphs[0].font.name = 'Times New Roman'
+    p = tf.paragraphs[0]
+    p.font.size = Pt(54); p.font.bold = True; p.font.name = 'Times New Roman'
+    p.alignment = PP_ALIGN.CENTER
     
-    p = tf.add_paragraph()
-    p.text = college
-    p.font.size = Pt(24)
-    p.font.name = 'Times New Roman'
+    # TEAM DETAILS - BOTTOM RIGHT
+    tx_team = slide.shapes.add_textbox(Inches(5.0), Inches(5.5), Inches(4.5), Inches(1.8))
+    tf_team = tx_team.text_frame
+    tf_team.word_wrap = True
     
-    p2 = tf.add_paragraph()
+    # College
+    p1 = tf_team.add_paragraph()
+    p1.text = college
+    p1.font.size = Pt(18); p1.font.name = 'Times New Roman'; p1.alignment = PP_ALIGN.RIGHT
+    
+    # Team
+    p2 = tf_team.add_paragraph()
     p2.text = f"Team: {team_name}"
-    p2.font.size = Pt(20)
-    p2.font.name = 'Times New Roman'
-
-    p3 = tf.add_paragraph()
+    p2.font.size = Pt(18); p2.font.name = 'Times New Roman'; p2.alignment = PP_ALIGN.RIGHT
+    
+    # Leader
+    p3 = tf_team.add_paragraph()
     p3.text = f"Leader: {data.get('leaderName', 'N/A')}"
-    p3.font.size = Pt(18)
-    p3.font.name = 'Times New Roman'
-
-    p4 = tf.add_paragraph()
-    p4.text = f"Members: {data.get('memberNames', 'N/A')}"
-    p4.font.size = Pt(16)
-    p4.font.name = 'Times New Roman'
+    p3.font.size = Pt(16); p3.font.name = 'Times New Roman'; p3.alignment = PP_ALIGN.RIGHT
+    
+    # Members
+    if data.get('memberNames'):
+        p4 = tf_team.add_paragraph()
+        p4.text = f"Members: {data.get('memberNames')}"
+        p4.font.size = Pt(14); p4.font.name = 'Times New Roman'; p4.alignment = PP_ALIGN.RIGHT
 
     # 2. VENTURE BACKGROUND
     slide = add_diagram_slide(prs, "Venture Background: Context Mapping")
@@ -280,25 +289,33 @@ def create_expert_deck(team_name, college, data):
 # --- Helper Functions ---
 
 def add_bullet_slide(prs, title_text, bullets):
-    slide = prs.slides.add_slide(prs.slide_layouts[1])
-    # Inner branding call needed for standalone helper
+    slide = prs.slides.add_slide(prs.slide_layouts[6]) # Blank
+    # Inner branding
     def hack_branding(slide):
         box = slide.shapes.add_textbox(Inches(0.2), Inches(0.2), Inches(2), Inches(0.4))
         p = box.text_frame.paragraphs[0]
-        p.text = "HACK@JIT 1.0"; p.font.size = Pt(14); p.font.bold = True
+        p.text = "HACK@JIT 1.0"; p.font.size = Pt(14); p.font.bold = True; p.font.name = 'Times New Roman'
         if os.path.exists("institution_logo.png"): slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
     
     hack_branding(slide)
-    slide.shapes.title.text = title_text
-    # Standardize title font
-    for p in slide.shapes.title.text_frame.paragraphs:
-        p.font.name = 'Times New Roman'
-    tf = slide.placeholders[1].text_frame
+    
+    # Title - Centered
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.6), Inches(9), Inches(0.8))
+    tf_t = title_box.text_frame
+    tf_t.text = title_text
+    p_t = tf_t.paragraphs[0]
+    p_t.font.size = Pt(28); p_t.font.bold = True; p_t.font.name = 'Times New Roman'; p_t.alignment = PP_ALIGN.CENTER
+    
+    # Content - Bullet structure
+    content_box = slide.shapes.add_textbox(Inches(1.0), Inches(1.8), Inches(8.0), Inches(5.0))
+    tf = content_box.text_frame
+    tf.word_wrap = True
     for b in bullets:
         p = tf.add_paragraph()
-        p.text = str(b)
+        p.text = f"• {b}"
+        p.font.size = Pt(24)
         p.font.name = 'Times New Roman'
-        p.level = 0
+        p.space_after = Pt(15)
 
 def add_diagram_slide(prs, title_text):
     slide = prs.slides.add_slide(prs.slide_layouts[6]) 
@@ -308,6 +325,7 @@ def add_diagram_slide(prs, title_text):
     tf.paragraphs[0].font.size = Pt(28)
     tf.paragraphs[0].font.bold = True
     tf.paragraphs[0].font.name = 'Times New Roman'
+    tf.paragraphs[0].alignment = PP_ALIGN.CENTER
     return slide
 
 def add_text_to_slide(slide, text, left, top, width, height, size=18, color=None, bold=False, italic=False):
@@ -363,12 +381,12 @@ def draw_hot_air_balloon_detailed(slide, lifts, pulls, fuels, outcomes):
     # Pulls (Anchor)
     add_text_to_slide(slide, f"PULLS (ANCHORS):\n{pulls}", Inches(3.5), Inches(6.3), Inches(3), Inches(1.2), size=10, color=RGBColor(244, 63, 94), bold=True)
     
-    # Fuel Strategy (Left)
-    fuel_box = slide.shapes.add_shape(MSO_SHAPE.HEXAGON, Inches(0.4), Inches(2.2), Inches(2.8), Inches(2.5))
+    # Fuel Strategy (Left) - Expanded further
+    fuel_box = slide.shapes.add_shape(MSO_SHAPE.HEXAGON, Inches(0.3), Inches(2.0), Inches(3.2), Inches(2.8))
     fuel_box.fill.solid()
     fuel_box.fill.fore_color.rgb = RGBColor(13, 148, 136) # Teal
     fuel_box.line.color.rgb = RGBColor(255,255,255)
-    add_text_to_slide(slide, f"FUEL STRATEGY:\n{fuels}", Inches(0.5), Inches(2.7), Inches(2.6), Inches(1.5), size=8, color=RGBColor(255,255,255))
+    add_text_to_slide(slide, f"FUEL STRATEGY:\n{fuels}", Inches(0.4), Inches(2.4), Inches(3.0), Inches(2.0), size=8, color=RGBColor(255,255,255))
 
     # Outcomes (Right)
     add_text_to_slide(slide, f"ALTITUDE / OUTCOMES:\n{outcomes}", Inches(7.0), Inches(2.5), Inches(2.5), Inches(2.5), size=10, color=RGBColor(15, 23, 42), bold=True)
@@ -430,7 +448,9 @@ def add_competitor_table(slide, competitors):
                 p.font.name = 'Times New Roman'
 
 def add_cost_breakdown_table(slide, dev, ops, tools):
-    table = slide.shapes.add_table(4, 2, Inches(2), Inches(1.5), Inches(6), Inches(3)).table
+    # Centered Table alignment
+    left = Inches(1.5); top = Inches(2.2); width = Inches(7.0); height = Inches(3.5)
+    table = slide.shapes.add_table(4, 2, left, top, width, height).table
     rows_data = [("Development", dev), ("Operational", ops), ("Infrastructure", tools), ("TOTAL ESTIMATED", "PROJECT SUM")]
     for i, (l, v) in enumerate(rows_data):
         # Label cell

@@ -1,6 +1,7 @@
 # ppt-service/generator.py
 from pptx import Presentation
 from pptx.util import Inches, Pt
+from pptx.enum.text import PP_ALIGN
 import os
 
 def create_pptx(team_name, college, slides_data):
@@ -26,16 +27,16 @@ def create_pptx(team_name, college, slides_data):
     left, top, width, height = Inches(0.5), Inches(0.5), Inches(9), Inches(1)
     tx_title = slide.shapes.add_textbox(left, top, width, height)
     tf_title = tx_title.text_frame
-    tf_title.text = "Idea and team identification"
-    tf_title.paragraphs[0].font.size = Pt(36)
-    tf_title.paragraphs[0].font.bold = True
+    tf_title.text = "Idea and team identification".upper()
+    p = tf_title.paragraphs[0]
+    p.font.size = Pt(40); p.font.bold = True; p.font.name = 'Times New Roman'; p.alignment = PP_ALIGN.CENTER
 
-    # Details Text
-    left, top, width, height = Inches(1.5), Inches(2), Inches(7.5), Inches(5)
+    # Details Text - BOTTOM RIGHT
+    left, top, width, height = Inches(5.0), Inches(5.0), Inches(4.5), Inches(3.5)
     tx_details = slide.shapes.add_textbox(left, top, width, height)
     tf_details = tx_details.text_frame
     tf_details.word_wrap = True
-
+    
     details = [
         ("S. No.", "100"),
         ("Name of the Institution", college),
@@ -49,9 +50,10 @@ def create_pptx(team_name, college, slides_data):
     for label, value in details:
         p = tf_details.add_paragraph()
         p.text = f"{label} : {value}"
-        p.font.size = Pt(24)
+        p.font.size = Pt(16)
         p.font.name = 'Times New Roman'
-        p.space_after = Pt(12)
+        p.alignment = PP_ALIGN.RIGHT
+        p.space_after = Pt(6)
 
     # 2. Add Content Slides
     for key, data in slides_data.items():
@@ -63,7 +65,9 @@ def create_pptx(team_name, college, slides_data):
         # Set Header
         title_shape = slide.shapes.title
         title_shape.text = data['title']
-        for p in title_shape.text_frame.paragraphs: p.font.name = 'Times New Roman'
+        for p in title_shape.text_frame.paragraphs:
+            p.font.name = 'Times New Roman'
+            p.alignment = PP_ALIGN.CENTER
         
         # Set Bullets
         body_shape = slide.shapes.placeholders[1]
