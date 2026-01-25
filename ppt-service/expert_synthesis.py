@@ -324,21 +324,39 @@ def add_bullet_slide(prs, title_text, bullets):
     p_t.font.color.rgb = RGBColor(0, 0, 0)
     
     # Content - Box containment
-    content_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.6), Inches(8.4), Inches(5.2))
-    content_box.fill.background()
-    content_box.line.color.rgb = RGBColor(13, 148, 136) # Institutional Teal
-    content_box.line.width = Pt(1.5)
-    
-    tf = content_box.text_frame
-    tf.word_wrap = True
-    tf.margin_left = Inches(0.2); tf.margin_top = Inches(0.2)
-    for b in bullets:
-        p = tf.add_paragraph()
-        p.text = f"• {b}"
-        p.font.size = Pt(22)
-        p.font.name = 'Times New Roman'
-        p.font.color.rgb = RGBColor(0, 0, 0)
-        p.space_after = Pt(12)
+    # 3 Separate Boxes for Impact/Metrics/Vision
+    # Box 1
+    box1 = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.6), Inches(8.4), Inches(1.5))
+    box1.fill.background()
+    box1.line.color.rgb = RGBColor(13, 148, 136)
+    box1.line.width = Pt(1.5)
+    tf1 = box1.text_frame
+    tf1.margin_left = Inches(0.2); tf1.margin_top = Inches(0.2)
+    p1 = tf1.paragraphs[0]
+    p1.text = f"• {bullets[0]}" if len(bullets) > 0 else "• Social/Economic: N/A"
+    p1.font.size = Pt(20); p1.font.name = 'Times New Roman'; p1.font.color.rgb = RGBColor(0,0,0)
+
+    # Box 2
+    box2 = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(3.3), Inches(8.4), Inches(1.5))
+    box2.fill.background()
+    box2.line.color.rgb = RGBColor(13, 148, 136)
+    box2.line.width = Pt(1.5)
+    tf2 = box2.text_frame
+    tf2.margin_left = Inches(0.2); tf2.margin_top = Inches(0.2)
+    p2 = tf2.paragraphs[0]
+    p2.text = f"• {bullets[1]}" if len(bullets) > 1 else "• Key Metrics: N/A"
+    p2.font.size = Pt(20); p2.font.name = 'Times New Roman'; p2.font.color.rgb = RGBColor(0,0,0)
+
+    # Box 3
+    box3 = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(5.0), Inches(8.4), Inches(1.5))
+    box3.fill.background()
+    box3.line.color.rgb = RGBColor(13, 148, 136)
+    box3.line.width = Pt(1.5)
+    tf3 = box3.text_frame
+    tf3.margin_left = Inches(0.2); tf3.margin_top = Inches(0.2)
+    p3 = tf3.paragraphs[0]
+    p3.text = f"• {bullets[2]}" if len(bullets) > 2 else "• Future Vision: N/A"
+    p3.font.size = Pt(20); p3.font.name = 'Times New Roman'; p3.font.color.rgb = RGBColor(0,0,0)
 
 def add_diagram_slide(prs, title_text):
     slide = prs.slides.add_slide(prs.slide_layouts[6]) 
