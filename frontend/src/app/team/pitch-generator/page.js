@@ -147,32 +147,32 @@ export default function PitchGenerator() {
           style={{ width: `${(step / 15) * 100}%` }}
         ></div>
       </div>
-        <div className="glass-pane rounded-[3rem] shadow-2xl shadow-navy/5 border border-white/50 overflow-hidden bg-white/70">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[600px]">
+      <main className="min-h-screen bg-slate-50 md:p-8 flex items-center justify-center p-4">
+        <div className="glass-pane rounded-2xl md:rounded-[3rem] shadow-2xl shadow-navy/5 border border-white/50 overflow-hidden bg-white/70 w-full max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-0 lg:min-h-[600px]">
             
             {/* Sidebar Status */}
-            <div className="lg:col-span-4 bg-navy p-8 md:p-12 text-white flex flex-col justify-between relative overflow-hidden min-h-[400px] lg:min-h-0">
+            <div className="lg:col-span-4 bg-navy p-6 md:p-12 text-white flex flex-col justify-between relative overflow-hidden min-h-0 lg:min-h-0">
               <div className="absolute top-0 right-0 w-32 h-32 bg-teal/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
               
               <div className="relative z-10">
-                <div className="flex justify-between items-start mb-10">
+                <div className="flex justify-between items-start mb-6 md:mb-10">
                   <Link href="/team/dashboard" className="text-[9px] font-black uppercase tracking-[0.3em] text-teal hover:text-white transition-colors flex items-center gap-3">
                     <span className="w-5 h-px bg-current"></span> Sequential Return
                   </Link>
-                  <div className="w-12 h-12 relative lg:hidden">
+                  <div className="w-10 h-10 md:w-12 md:h-12 relative lg:hidden">
                     <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
                   </div>
                 </div>
                 
-                <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase leading-tight mb-4">hack@jit <br/>Engine</h1>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-loose max-w-[200px]">
-                  JIT Institutional Standard v4.0
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter uppercase leading-tight mb-4">hack@jit <br/>Engine</h1>
+                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-loose max-w-[200px]">
+                  JIT Institutional Standard v5.1
                 </p>
               </div>
 
-              <div className="relative z-10 w-full">
-                <div className="flex flex-col gap-2">
+              <div className="relative z-10 w-full hidden md:block">
+                <div className="flex flex-col gap-1 md:gap-2">
                   {[...Array(15)].map((_, i) => {
                     const s = i + 1;
                     return (
@@ -207,17 +207,17 @@ export default function PitchGenerator() {
             </div>
 
             {/* Main Form Content */}
-            <div className="lg:col-span-8 p-8 md:p-16 flex flex-col justify-center relative">
-              <div className="absolute top-8 right-8 hidden lg:block">
-                <div className="w-20 h-20 relative">
+            <div className="lg:col-span-8 p-6 md:p-16 flex flex-col justify-center relative bg-white md:bg-transparent">
+              <div className="absolute top-6 right-6 md:top-8 md:right-8 hidden lg:block">
+                <div className="w-16 h-16 md:w-20 md:h-20 relative">
                   <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
                 </div>
               </div>
               
-              <div className="mb-10 flex justify-between items-end">
+              <div className="mb-6 md:mb-10 flex justify-between items-end">
                 <div>
-                  <span className="text-[9px] font-black text-teal uppercase tracking-[0.4em] block mb-2">Target Module</span>
-                  <h2 className="text-2xl font-black text-navy uppercase tracking-tighter">
+                  <span className="text-[8px] md:text-[9px] font-black text-teal uppercase tracking-[0.4em] block mb-2">Target Module</span>
+                  <h2 className="text-xl md:text-2xl font-black text-navy uppercase tracking-tighter">
                     {step === 1 && 'Identity & Context'}
                     {step === 2 && 'Venture Background'}
                     {step === 3 && 'Problem Framing'}
@@ -817,7 +817,8 @@ export default function PitchGenerator() {
               </div>
             </div>
           </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

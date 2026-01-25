@@ -64,17 +64,17 @@ def create_expert_deck(team_name, college, data):
     # 2. VENTURE BACKGROUND
     slide = add_diagram_slide(prs, "Venture Background: Context Mapping")
     add_branding(slide)
-    add_text_to_slide(slide, f"Domain: {data.get('s2_domain', 'N/A')}", Inches(1), Inches(1.5), Inches(8), Inches(1), size=20)
-    add_text_to_slide(slide, f"Context:\n{data.get('s2_context', 'N/A')}", Inches(1), Inches(2.5), Inches(8), Inches(2), size=14)
-    add_text_to_slide(slide, f"Root Driver: {data.get('s2_rootReason', 'N/A')}", Inches(1), Inches(5), Inches(8), Inches(1), size=16)
+    add_text_to_slide(slide, f"DOMAIN: {data.get('s2_domain', 'N/A')}", Inches(1), Inches(1.5), Inches(8), Inches(1), size=20, boxed=True)
+    add_text_to_slide(slide, f"CONTEXT:\n{data.get('s2_context', 'N/A')}", Inches(1), Inches(2.6), Inches(8), Inches(2), size=14, boxed=True)
+    add_text_to_slide(slide, f"ROOT DRIVER: {data.get('s2_rootReason', 'N/A')}", Inches(1), Inches(4.7), Inches(8), Inches(1), size=16, boxed=True)
 
     # 3. PROBLEM FRAMING
     slide = add_diagram_slide(prs, "Problem Framing & Stakeholders")
     add_branding(slide)
-    add_text_to_slide(slide, "CORE CHALLENGE", Inches(1), Inches(1.5), Inches(8), Inches(0.5), size=16)
-    add_text_to_slide(slide, data.get('s3_coreProblem', 'N/A'), Inches(1), Inches(2.2), Inches(8), Inches(1.5), size=14)
-    add_text_to_slide(slide, f"Affected: {data.get('s3_affected', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(0.5), size=14)
-    add_text_to_slide(slide, f"Significance: {data.get('s3_whyItMatters', 'N/A')}", Inches(1), Inches(5), Inches(8), Inches(0.5), size=14)
+    add_text_to_slide(slide, "CORE CHALLENGE", Inches(1), Inches(1.5), Inches(8), Inches(0.5), size=16, bold=True)
+    add_text_to_slide(slide, data.get('s3_coreProblem', 'N/A'), Inches(1), Inches(2.0), Inches(8), Inches(1.5), size=14, boxed=True)
+    add_text_to_slide(slide, f"AFFECTED: {data.get('s3_affected', 'N/A')}", Inches(1), Inches(3.6), Inches(8), Inches(0.8), size=14, boxed=True)
+    add_text_to_slide(slide, f"SIGNIFICANCE: {data.get('s3_whyItMatters', 'N/A')}", Inches(1), Inches(4.5), Inches(8), Inches(1.2), size=14, boxed=True)
 
     # 4. IMPACT MAPPING
     slide = add_diagram_slide(prs, "Impact Mapping: Pain Points (Expanded)")
@@ -86,8 +86,8 @@ def create_expert_deck(team_name, college, data):
     # 5. STAKEHOLDER SEGMENTS
     slide = add_diagram_slide(prs, "Stakeholder Segmentation")
     add_branding(slide)
-    add_text_to_slide(slide, f"Primary Users: {data.get('s5_primaryUsers', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(1.5), size=16)
-    add_text_to_slide(slide, f"Secondary Users: {data.get('s5_secondaryUsers', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(1.5), size=16)
+    add_text_to_slide(slide, f"PRIMARY USERS: {data.get('s5_primaryUsers', 'N/A')}", Inches(1), Inches(1.8), Inches(8), Inches(1.5), size=16, boxed=True)
+    add_text_to_slide(slide, f"SECONDARY USERS: {data.get('s5_secondaryUsers', 'N/A')}", Inches(1), Inches(3.6), Inches(8), Inches(1.5), size=16, boxed=True)
 
     # 6. PERSONA: Empathy Spectrum (High Fidelity Quadrants)
     slide = add_diagram_slide(prs, "Buyer Persona: Target Profile")
@@ -156,10 +156,10 @@ def create_expert_deck(team_name, college, data):
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(2.5), Inches(1.5), Inches(2.5), Inches(5.5)).line.color.rgb = RGBColor(13, 148, 136)
     
     add_text_to_slide(slide, "GAIN CREATORS", Inches(2.6), Inches(1.6), Inches(1.8), Inches(0.3), size=11, color=RGBColor(13, 148, 136), bold=True)
-    add_text_to_slide(slide, data.get('s7_gainCreators') or data.get('s6_gains', 'Proactive benefits...'), Inches(2.6), Inches(1.9), Inches(1.8), Inches(1.5), size=10)
+    add_text_to_slide(slide, data.get('s7_gainCreators') or data.get('s6_gains', 'Proactive benefits...'), Inches(2.6), Inches(2.0), Inches(1.8), Inches(1.4), size=10, boxed=True)
     
     add_text_to_slide(slide, "PAIN KILLERS", Inches(2.6), Inches(3.6), Inches(1.8), Inches(0.3), size=11, color=RGBColor(13, 148, 136), bold=True)
-    add_text_to_slide(slide, data.get('s7_painKillers') or data.get('s6_pains', 'Risk mitigation...'), Inches(2.6), Inches(3.9), Inches(1.8), Inches(1.5), size=10)
+    add_text_to_slide(slide, data.get('s7_painKillers') or data.get('s6_pains', 'Risk mitigation...'), Inches(2.6), Inches(4.0), Inches(1.8), Inches(1.4), size=10, boxed=True)
     
     add_text_to_slide(slide, "PRODUCT/\nSERVICE", Inches(0.6), Inches(2.5), Inches(1.8), Inches(2), size=12, bold=True, color=RGBColor(13, 148, 136))
     
@@ -181,8 +181,8 @@ def create_expert_deck(team_name, college, data):
     # 8. PROPOSED SOLUTION
     slide = add_diagram_slide(prs, "Proposed Solution & Sequential Logic")
     add_branding(slide)
-    add_text_to_slide(slide, data.get('s8_oneline', 'N/A'), Inches(1), Inches(1.2), Inches(8), Inches(0.8), size=24)
-    add_text_to_slide(slide, f"Mechanism: {data.get('s8_howItWorks', 'N/A')}", Inches(1), Inches(2.2), Inches(8), Inches(0.8), size=14)
+    add_text_to_slide(slide, data.get('s8_oneline', 'N/A'), Inches(0.8), Inches(1.4), Inches(8.4), Inches(0.8), size=24, boxed=True)
+    add_text_to_slide(slide, f"MECHANISM: {data.get('s8_howItWorks', 'N/A')}", Inches(0.8), Inches(2.3), Inches(8.4), Inches(0.8), size=14, boxed=True)
     # Draw flow
     raw_flow = data.get('s8_flowSteps', [])
     if not isinstance(raw_flow, list): raw_flow = []
@@ -254,8 +254,8 @@ def create_expert_deck(team_name, college, data):
     # 12. REVENUE MODEL
     slide = add_diagram_slide(prs, "Business & Revenue Model")
     add_branding(slide)
-    add_text_to_slide(slide, f"Revenue Model: {data.get('s12_revenueModel', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(1.5), size=18)
-    add_text_to_slide(slide, f"Pricing Logic: {data.get('s12_pricingLogic', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(1), size=16)
+    add_text_to_slide(slide, f"REVENUE MODEL: {data.get('s12_revenueModel', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(1.2), size=18, boxed=True)
+    add_text_to_slide(slide, f"PRICING LOGIC: {data.get('s12_pricingLogic', 'N/A')}", Inches(1), Inches(3.5), Inches(8), Inches(1.2), size=16, boxed=True)
 
     # 13. FINANCIAL ANALYSIS
     slide = add_diagram_slide(prs, "Financial Analysis & Costs")
@@ -306,16 +306,21 @@ def add_bullet_slide(prs, title_text, bullets):
     p_t = tf_t.paragraphs[0]
     p_t.font.size = Pt(28); p_t.font.bold = True; p_t.font.name = 'Times New Roman'; p_t.alignment = PP_ALIGN.CENTER
     
-    # Content - Bullet structure
-    content_box = slide.shapes.add_textbox(Inches(1.0), Inches(1.8), Inches(8.0), Inches(5.0))
+    # Content - Box containment
+    content_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.6), Inches(8.4), Inches(5.2))
+    content_box.fill.background()
+    content_box.line.color.rgb = RGBColor(13, 148, 136) # Institutional Teal
+    content_box.line.width = Pt(1.5)
+    
     tf = content_box.text_frame
     tf.word_wrap = True
+    tf.margin_left = Inches(0.2); tf.margin_top = Inches(0.2)
     for b in bullets:
         p = tf.add_paragraph()
         p.text = f"• {b}"
-        p.font.size = Pt(24)
+        p.font.size = Pt(22)
         p.font.name = 'Times New Roman'
-        p.space_after = Pt(15)
+        p.space_after = Pt(12)
 
 def add_diagram_slide(prs, title_text):
     slide = prs.slides.add_slide(prs.slide_layouts[6]) 
@@ -328,18 +333,24 @@ def add_diagram_slide(prs, title_text):
     tf.paragraphs[0].alignment = PP_ALIGN.CENTER
     return slide
 
-def add_text_to_slide(slide, text, left, top, width, height, size=18, color=None, bold=False, italic=False):
-    txBox = slide.shapes.add_textbox(left, top, width, height)
-    tf = txBox.text_frame
+def add_text_to_slide(slide, text, left, top, width, height, size=18, color=None, bold=False, italic=False, boxed=False):
+    # Determine shape type: Textbox or Rectangle for border
+    if boxed:
+        shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left, top, width, height)
+        shape.fill.background()
+        shape.line.color.rgb = RGBColor(15, 23, 42) # Navy border
+        shape.line.width = Pt(1)
+        tf = shape.text_frame
+        tf.margin_left = Inches(0.1); tf.margin_top = Inches(0.1)
+    else:
+        shape = slide.shapes.add_textbox(left, top, width, height)
+        tf = shape.text_frame
+        
     tf.word_wrap = True
     p = tf.paragraphs[0]
     p.text = text
-    p.font.size = Pt(size)
-    p.font.bold = bold
-    p.font.italic = italic
-    p.font.name = 'Times New Roman'
-    if color:
-        p.font.color.rgb = color
+    p.font.size = Pt(size); p.font.bold = bold; p.font.italic = italic; p.font.name = 'Times New Roman'
+    if color: p.font.color.rgb = color
 
 def draw_impact_graph_detailed(slide, pain_points):
     # Axes

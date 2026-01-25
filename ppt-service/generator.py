@@ -56,28 +56,38 @@ def create_pptx(team_name, college, slides_data):
         p.space_after = Pt(6)
 
     # 2. Add Content Slides
+    from pptx.enum.shapes import MSO_SHAPE
+    from pptx.dml.color import RGBColor
+    
     for key, data in slides_data.items():
         if key == 'title': continue
         
-        slide = prs.slides.add_slide(prs.slide_layouts[1])
+        slide = prs.slides.add_slide(prs.slide_layouts[6]) # Blank
         add_branding(slide)
         
-        # Set Header
-        title_shape = slide.shapes.title
-        title_shape.text = data['title']
-        for p in title_shape.text_frame.paragraphs:
-            p.font.name = 'Times New Roman'
-            p.alignment = PP_ALIGN.CENTER
+        # Title - Centered
+        title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.6), Inches(9), Inches(0.8))
+        tf_t = title_box.text_frame
+        tf_t.text = data['title']
+        p_t = tf_t.paragraphs[0]
+        p_t.font.size = Pt(28); p_t.font.bold = True; p_t.font.name = 'Times New Roman'; p_t.alignment = PP_ALIGN.CENTER
         
-        # Set Bullets
-        body_shape = slide.shapes.placeholders[1]
-        tf = body_shape.text_frame
+        # Content - Box containment
+        content_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.6), Inches(8.4), Inches(5.2))
+        content_box.fill.background()
+        content_box.line.color.rgb = RGBColor(13, 148, 136) # Institutional Teal
+        content_box.line.width = Pt(1.5)
+        
+        tf = content_box.text_frame
+        tf.word_wrap = True
+        tf.margin_left = Inches(0.2); tf.margin_top = Inches(0.2)
         
         for point in data['bullets']:
             p = tf.add_paragraph()
-            p.text = point
+            p.text = f"• {point}"
             p.font.name = 'Times New Roman'
-            p.level = 0
+            p.font.size = Pt(22)
+            p.space_after = Pt(12)
 
     # Save the file
     file_name = f"ppt_outputs/{team_name.lower().replace(' ', '_')}_pitch_artifact.pptx"
