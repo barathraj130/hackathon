@@ -58,8 +58,14 @@ router.post('/toggle-halt', async (req, res) => {
             data: { isPaused: newStatus }
         });
 
-        // Broadcast via Socket
+        // Broadcast via Socket AND update server state
         const io = req.app.get('socketio');
+        const timerState = req.app.get('timerState');
+        
+        if (timerState) {
+            timerState.setTimerPaused(newStatus);
+        }
+        
         if (io) {
             const duration = config.durationMinutes * 60;
             const formatDuration = (seconds) => {

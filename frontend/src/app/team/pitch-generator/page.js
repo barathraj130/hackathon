@@ -30,7 +30,6 @@ export default function PitchGenerator() {
       }
     };
     checkStatus();
-    checkStatus();
   }, [router]);
 
   // AUTO-SAVE MECHANISM

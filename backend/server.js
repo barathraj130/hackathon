@@ -24,6 +24,11 @@ app.use((req, res, next) => {
 let timeRemaining = 1440 * 60; // 24 Hours in seconds
 let timerPaused = true;
 
+// Export timer state management for admin routes
+const getTimerState = () => ({ timeRemaining, timerPaused });
+const setTimerPaused = (value) => { timerPaused = value; };
+const setTimeRemaining = (value) => { timeRemaining = value; };
+
 // Initialize Timer from Database on start
 async function initEngine() {
   try {
@@ -157,8 +162,9 @@ app.use('/v1/team', require('./routes/team'));
 app.use('/v1/team', require('./routes/submission-workflow')); // Prototype and certificate submission
 app.use('/v1/candidate', require('./routes/team')); // Alias for safety
 
-// Export io for use in routes if needed
+// Export io and timer state for use in routes
 app.set('socketio', io);
+app.set('timerState', { getTimerState, setTimerPaused, setTimeRemaining });
 
 // Start Server Immediately
 const PORT = process.env.PORT || 3000;

@@ -21,8 +21,6 @@ export default function AdminDashboard() {
     fetchTeams();
     fetchProblemStatements();
     fetchSubmissions();
-
-    fetchSubmissions();
     
     // Dynamic Socket URL
     const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
