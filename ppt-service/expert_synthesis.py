@@ -81,11 +81,12 @@ def create_expert_deck(team_name, college, data):
     persistence = data.get('s6_personality', {})
     if not isinstance(persistence, dict): persistence = {}
     
-    pers_labels = ["Introvert/Extrovert", "Sensing/Intuition", "Thinking/Feeling", "Judging/Perceiving"]
     for i, lab in enumerate(pers_labels):
         y = 5.4 + (i*0.35)
         slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.7), Inches(y), Inches(2.3), Inches(y)).line.color.rgb = RGBColor(255,255,255)
-        slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(1.5), Inches(y-0.05), Inches(0.1), Inches(0.1)).fill.solid().fore_color.rgb = RGBColor(255,255,255)
+        dot = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(1.5), Inches(y-0.05), Inches(0.1), Inches(0.1))
+        dot.fill.solid()
+        dot.fill.fore_color.rgb = RGBColor(255,255,255)
 
     # Top Content Boxes
     goal_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.2), Inches(1.0), Inches(4.5), Inches(1.2))
@@ -107,9 +108,12 @@ def create_expert_deck(team_name, college, data):
         y = 1.4 + (i*0.8)
         add_text_to_slide(slide, label, Inches(8.0), Inches(y), Inches(1.5), Inches(0.3), size=8)
         bar_bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(8.0), Inches(y+0.25), Inches(1.5), Inches(0.12))
-        bar_bg.fill.solid().fore_color.rgb = RGBColor(230,230,230)
+        bar_bg.fill.solid()
+        bar_bg.fill.fore_color.rgb = RGBColor(230,230,230)
+        
         bar_val = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(8.0), Inches(y+0.25), Inches(0.8), Inches(0.12))
-        bar_val.fill.solid().fore_color.rgb = RGBColor(245, 158, 11)
+        bar_val.fill.solid()
+        bar_val.fill.fore_color.rgb = RGBColor(245, 158, 11)
 
     # 7. VALUE PROPOSITION CANVAS (High Fidelity)
     slide = add_diagram_slide(prs, "Value Proposition Canvas")
