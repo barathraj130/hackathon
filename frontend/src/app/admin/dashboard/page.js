@@ -44,7 +44,7 @@ export default function AdminDashboard() {
 
   if (!mounted) return <div className="min-h-screen bg-bg-light" />;
 
-  const fetchStats = async () => {
+  async function fetchStats() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const res = await axios.get(`${apiUrl}/admin/dashboard`, {
@@ -52,9 +52,9 @@ export default function AdminDashboard() {
       });
       setStats(res.data);
     } catch (err) { console.error(err); }
-  };
+  }
 
-  const fetchTeams = async () => {
+  async function fetchTeams() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const res = await axios.get(`${apiUrl}/admin/candidates`, {
@@ -62,9 +62,9 @@ export default function AdminDashboard() {
       });
       setTeams(res.data.candidates || []);
     } catch (err) { console.error(err); }
-  };
+  }
 
-  const handleDeleteTeam = async (id) => {
+  async function handleDeleteTeam(id) {
     if (!confirm("Are you sure you want to revoke this team's credentials? All synthesis data will be purged.")) return;
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
@@ -74,9 +74,9 @@ export default function AdminDashboard() {
       fetchTeams();
       fetchStats();
     } catch (err) { alert("Failed to revoke credentials."); }
-  };
+  }
 
-  const handleCreateTeam = async (e) => {
+  async function handleCreateTeam(e) {
     e.preventDefault();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
@@ -91,9 +91,9 @@ export default function AdminDashboard() {
       fetchTeams();
       fetchStats();
     } catch (err) { alert("Error: Logic conflict or duplicate identity detected."); }
-  };
+  }
 
-  const fetchProblemStatements = async () => {
+  async function fetchProblemStatements() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const res = await axios.get(`${apiUrl}/admin/problem-statements`, {
@@ -101,9 +101,9 @@ export default function AdminDashboard() {
       });
       setProblemStatements(res.data || []);
     } catch (err) { console.error(err); }
-  };
+  }
 
-  const handleCreateStatement = async (e) => {
+  async function handleCreateStatement(e) {
     e.preventDefault();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
@@ -116,9 +116,9 @@ export default function AdminDashboard() {
       const msg = err.response?.data?.error || "Failed to deploy challenge.";
       alert(msg); 
     }
-  };
+  }
 
-  const fetchSubmissions = async () => {
+  async function fetchSubmissions() {
     setSubLoading(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
@@ -128,9 +128,9 @@ export default function AdminDashboard() {
       setSubmissions(res.data || []);
     } catch (err) { console.error(err); }
     finally { setSubLoading(false); }
-  };
+  }
 
-  const toggleRegenerate = async (teamId, currentValue) => {
+  async function toggleRegenerate(teamId, currentValue) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     if (!confirm(`${currentValue ? 'Lock' : 'Unlock'} regeneration for this team?`)) return;
     try {
@@ -140,35 +140,9 @@ export default function AdminDashboard() {
       );
       fetchSubmissions();
     } catch (err) { alert(err.response?.data?.error || 'Update failed'); }
-  };
+  }
 
-  const downloadPPT = (pptUrl) => {
-    window.open(pptUrl, '_blank');
-  };
-
-  const getPublicLink = (url) => {
-    if (!url) return '';
-    // If it's already a public railway link, don't mess with it
-    if (url.includes('.up.railway.app')) return url.replace('http://', 'https://');
-    
-    return url
-      .replace(/([a-zA-Z0-9-]+\.)+railway\.internal(:\d+)?/, (match) => {
-        if (match.includes('python') || match.includes('liberation')) 
-          return 'endearing-liberation-production.up.railway.app';
-        return 'hackathon-production-c6be.up.railway.app';
-      })
-      .replace('http://', 'https://');
-  };
-
-  const filteredSubmissions = submissions.filter(sub => {
-    if (subFilter === 'ALL') return true;
-    if (subFilter === 'SUBMITTED') return sub.status === 'SUBMITTED';
-    if (subFilter === 'LOCKED') return sub.status === 'LOCKED';
-    if (subFilter === 'PENDING') return !sub.pptUrl;
-    return true;
-  });
-
-  const handleForceRegenerate = async (teamId) => {
+  async function handleForceRegenerate(teamId) {
     if (!confirm("🚨 FORCE SYSTEM RECONSTRUCTION?\nThis will bypass the lock and re-execute the synthesis engine for this team. Use only if artifact is missing from node.")) return;
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
@@ -181,17 +155,32 @@ export default function AdminDashboard() {
     } catch (err) {
       alert(err.response?.data?.error || "Reconstruction Failed.");
     }
-  };
+  }
 
-  const handleToggleHalt = async () => {
+  async function handleToggleHalt() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       await axios.post(`${apiUrl}/admin/toggle-halt`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      // Allow socket to update the UI state naturally
     } catch (err) { alert("Failed to toggle system status."); }
-  };
+  }
+
+  function downloadPPT(pptUrl) {
+    window.open(pptUrl, '_blank');
+  }
+
+  function getPublicLink(url) {
+    if (!url) return '';
+    if (url.includes('.up.railway.app')) return url.replace('http://', 'https://');
+    return url
+      .replace(/([a-zA-Z0-9-]+\.)+railway\.internal(:\d+)?/, (match) => {
+        if (match.includes('python') || match.includes('liberation')) 
+          return 'endearing-liberation-production.up.railway.app';
+        return 'hackathon-production-c6be.up.railway.app';
+      })
+      .replace('http://', 'https://');
+  }
 
   return (
     <div className="flex min-h-screen bg-bg-light font-sans text-slate-800">

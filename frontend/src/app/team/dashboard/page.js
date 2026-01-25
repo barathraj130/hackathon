@@ -35,15 +35,20 @@ export default function TeamDashboard() {
     ]
   });
 
-  const lastSavedData = useRef(null);
-  const socketRef = useRef(null);
+  const formDataRef = useRef(formData);
+  const isPausedRef = useRef(isPaused);
+
+  // Sync refs with state
+  useEffect(() => {
+    formDataRef.current = formData;
+    isPausedRef.current = isPaused;
+  }, [formData, isPaused]);
 
   useEffect(() => {
     fetchInitialData();
 
     let socket;
-    let autoSaveInterval;
-
+    
     // Dynamic import to ensure client-side only
     import('socket.io-client').then((module) => {
       const io = module.default || module.io;
@@ -58,25 +63,20 @@ export default function TeamDashboard() {
         setIsPaused(data.timerPaused);
         setFormattedTime(data.formattedTime);
       });
-
-      socket.on('test_ended', () => {
-        setIsPaused(true);
-        // Using form data from state might be stale in this closure, 
-        // but we'll use a better approach in the actual save function
-      });
     });
 
-    // Auto-save every 30 seconds - use a fresh reference to isPaused by checking config if needed
-    // or just rely on the interval and handle the check inside autoSaveSubmission
-    autoSaveInterval = setInterval(() => {
-      autoSaveSubmission();
+    // Auto-save interval - Accessing latest state via Refs to avoid stale closures
+    const autoSaveInterval = setInterval(() => {
+      if (!isPausedRef.current) {
+        autoSaveSubmission();
+      }
     }, 30000);
 
     return () => {
       if (socket) socket.disconnect();
-      if (autoSaveInterval) clearInterval(autoSaveInterval);
+      clearInterval(autoSaveInterval);
     };
-  }, []);
+  }, []); 
 
   useEffect(() => {
     setMounted(true);
@@ -84,7 +84,7 @@ export default function TeamDashboard() {
 
   if (!mounted) return <div className="min-h-screen bg-bg-light animate-pulse" />;
 
-  const fetchInitialData = async () => {
+  async function fetchInitialData() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     console.log("🔄 Synchronizing system states...");
     try {
@@ -94,14 +94,11 @@ export default function TeamDashboard() {
       
       const teamData = res.data;
       if (teamData?.submission) {
-        console.log("✅ Artifact Synced:", teamData.submission.pptUrl);
         setSubmission(teamData.submission);
         if (teamData.submission.content?.slides) {
           setFormData(teamData.submission.content);
           lastSavedData.current = JSON.stringify(teamData.submission.content);
         }
-      } else {
-        console.log("⚠️ No submission record found.");
       }
       
       if (teamData?.problemStatement) {
@@ -110,17 +107,19 @@ export default function TeamDashboard() {
     } catch (err) { 
       console.error("❌ Link synchronization failure:", err); 
     }
-  };
+  }
 
-  const autoSaveSubmission = async (isManual = false) => {
-    // Check pause state - we use the state value here which will be fresh when called
-    if (!isManual && isPaused) return;
-
+  async function autoSaveSubmission(isManual = false) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    
+    // Always use REF data for interval-based saves to ensure we have the absolute latest
+    const currentData = formDataRef.current;
+    if (!isManual && isPausedRef.current) return;
+
     setSaveStatus('SAVING');
     
     // Check if data has actually changed
-    const currentDataStr = JSON.stringify(formData);
+    const currentDataStr = JSON.stringify(currentData);
     if (!isManual && currentDataStr === lastSavedData.current) {
       setTimeout(() => {
         setSaveStatus('SAVED');
@@ -130,17 +129,17 @@ export default function TeamDashboard() {
     }
 
     try {
-      await axios.post(`${apiUrl}/team/submission`, { content: formData }, {
+      await axios.post(`${apiUrl}/team/submission`, { content: currentData }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setSaveStatus('SAVED');
-      lastSavedData.current = JSON.stringify(formData);
+      lastSavedData.current = currentDataStr;
       setTimeout(() => setSaveStatus('IDLE'), 3000);
     } catch (err) {
       setSaveStatus('ERROR');
       setTimeout(() => setSaveStatus('IDLE'), 5000);
     }
-  };
+  }
 
   const handleGenerateStandardPPT = async () => {
     setIsGenerating(true);
