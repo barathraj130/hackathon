@@ -8,51 +8,9 @@ export default function PitchGenerator() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const router = useRouter();
-  
-  useEffect(() => {
-    setMounted(true);
-    checkStatus();
-  }, []);
 
-  async function checkStatus() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const res = await axios.get(`${apiUrl}/team/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
-         router.push('/team/dashboard');
-      } else if (res.data.submission?.content) {
-         setData(prev => ({ ...prev, ...res.data.submission.content }));
-      }
-    } catch (err) {
-      console.error("Status check failed", err);
-    }
-  }
-
-  // AUTO-SAVE MECHANISM
-  useEffect(() => {
-    if (!mounted) return;
-    const saveTimer = setTimeout(() => {
-      if (data.projectName || data.teamName) { 
-        const token = localStorage.getItem('token');
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
-        axios.post(`${apiUrl}/team/submission`, { content: data }, {
-          headers: { Authorization: `Bearer ${token}` }
-        }).catch(err => console.error("Auto-save failed", err));
-      }
-    }, 5000); 
-
-    return () => clearTimeout(saveTimer);
-  }, [data, mounted]);
-
-  if (!mounted) return <div className="min-h-screen bg-bg-light animate-pulse" />;
-  
   const [data, setData] = useState({
     // S1: Identity
     projectName: '', teamName: '', institutionName: '', leaderName: '', memberNames: '',
@@ -98,8 +56,49 @@ export default function PitchGenerator() {
     // S15: Closure
     slide_assets: {}
   });
+  
+  useEffect(() => {
+    setMounted(true);
+    checkStatus();
+  }, []);
 
-  const [uploading, setUploading] = useState(false);
+  async function checkStatus() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const res = await axios.get(`${apiUrl}/team/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
+         router.push('/team/dashboard');
+      } else if (res.data.submission?.content) {
+         setData(prev => ({ ...prev, ...res.data.submission.content }));
+      }
+    } catch (err) {
+      console.error("Status check failed", err);
+    }
+  }
+
+  // AUTO-SAVE MECHANISM
+  useEffect(() => {
+    if (!mounted) return;
+    const saveTimer = setTimeout(() => {
+      if (data.projectName || data.teamName) { 
+        const token = localStorage.getItem('token');
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+        axios.post(`${apiUrl}/team/submission`, { content: data }, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(err => console.error("Auto-save failed", err));
+      }
+    }, 5000); 
+
+    return () => clearTimeout(saveTimer);
+  }, [data, mounted]);
+
+  if (!mounted) return <div className="min-h-screen bg-bg-light animate-pulse" />;
 
   async function handleFileUpload(e, slideId) {
     const file = e.target.files[0];
@@ -338,8 +337,8 @@ export default function PitchGenerator() {
 
                 {step === 4 && (
                    <div className="space-y-4 animate-fade-in font-roboto h-[500px] overflow-y-auto pr-4 custom-scrollbar">
-                      <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Users & Problems (list up to 10)</p>
-                       {data.s4_painPoints.map((pp, idx) => (
+                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Users & Problems (list up to 10)</p>
+                       {Array.isArray(data.s4_painPoints) && data.s4_painPoints.map((pp, idx) => (
                         <div key={idx} className="glass-pane p-4 rounded-xl flex flex-col md:flex-row gap-4 md:items-end border-slate-100/50">
                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">{idx+1}</div>
                            <div className="flex-grow">
@@ -351,7 +350,7 @@ export default function PitchGenerator() {
                            </div>
                            <div className="flex gap-2">
                              <div className="w-full">
-                                <select className="input-field !bg-white !py-2 !text-[10px]" value={pp.impact} onChange={e => {
+                                <select className="input-field !bg-white !py-2 !text-[10px]" value={pp.impact || 'High'} onChange={e => {
                                    const updated = [...data.s4_painPoints];
                                    updated[idx] = { ...updated[idx], impact: e.target.value };
                                    setData({...data, s4_painPoints: updated});
@@ -360,7 +359,7 @@ export default function PitchGenerator() {
                                 </select>
                              </div>
                              <div className="w-full">
-                                <select className="input-field !bg-white !py-2 !text-[10px]" value={pp.freq} onChange={e => {
+                                <select className="input-field !bg-white !py-2 !text-[10px]" value={pp.freq || 'Frequent'} onChange={e => {
                                    const updated = [...data.s4_painPoints];
                                    updated[idx] = { ...updated[idx], freq: e.target.value };
                                    setData({...data, s4_painPoints: updated});
@@ -534,7 +533,7 @@ export default function PitchGenerator() {
                       <div className="border-t border-slate-100 pt-6">
                         <label className="label-caps mb-4">Linear Logic Flow (Max 10 Steps)</label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 h-[250px] overflow-y-auto pr-4 custom-scrollbar">
-                           {data.s8_flowSteps.map((stepVal, idx) => (
+                           {Array.isArray(data.s8_flowSteps) && data.s8_flowSteps.map((stepVal, idx) => (
                              <div key={idx} className="flex items-center gap-3">
                                <span className="text-[10px] font-black text-slate-300 w-4">{idx+1}</span>
                                <input 
@@ -616,7 +615,7 @@ export default function PitchGenerator() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 h-[350px] md:h-auto overflow-y-auto md:overflow-visible pr-2">
                        <div className="space-y-2">
                           <label className="label-caps text-emerald-500 !text-[8px]">🎈 Lifts (5)</label>
-                          {data.s10_lifts.map((val, i) => (
+                          {Array.isArray(data.s10_lifts) && data.s10_lifts.map((val, i) => (
                              <input key={i} className="input-field !py-2 !text-[9px]" value={val} onChange={e => {
                                 let updated = [...data.s10_lifts]; updated[i] = e.target.value; setData({...data, s10_lifts: updated});
                              }} />
@@ -624,7 +623,7 @@ export default function PitchGenerator() {
                        </div>
                        <div className="space-y-2">
                           <label className="label-caps text-rose-500 !text-[8px]">⚓ Pulls (5)</label>
-                          {data.s10_pulls.map((val, i) => (
+                          {Array.isArray(data.s10_pulls) && data.s10_pulls.map((val, i) => (
                              <input key={i} className="input-field !py-2 !text-[9px]" value={val} onChange={e => {
                                 let updated = [...data.s10_pulls]; updated[i] = e.target.value; setData({...data, s10_pulls: updated});
                              }} />
@@ -632,7 +631,7 @@ export default function PitchGenerator() {
                        </div>
                        <div className="space-y-2">
                           <label className="label-caps text-teal !text-[8px]">⚡ Fuels (5)</label>
-                          {data.s10_fuels.map((val, i) => (
+                          {Array.isArray(data.s10_fuels) && data.s10_fuels.map((val, i) => (
                              <input key={i} className="input-field !py-2 !text-[9px]" value={val} onChange={e => {
                                 let updated = [...data.s10_fuels]; updated[i] = e.target.value; setData({...data, s10_fuels: updated});
                              }} />
@@ -640,7 +639,7 @@ export default function PitchGenerator() {
                        </div>
                        <div className="space-y-2">
                           <label className="label-caps text-navy !text-[8px]">🏁 Outcomes (5)</label>
-                          {data.s10_outcomes.map((val, i) => (
+                          {Array.isArray(data.s10_outcomes) && data.s10_outcomes.map((val, i) => (
                              <input key={i} className="input-field !py-2 !text-[9px]" value={val} onChange={e => {
                                 let updated = [...data.s10_outcomes]; updated[i] = e.target.value; setData({...data, s10_outcomes: updated});
                              }} />
@@ -654,7 +653,7 @@ export default function PitchGenerator() {
                    <div className="space-y-6 animate-fade-in font-roboto">
                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Market Positioning</p>
                       <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-4 text-[9px] font-black text-slate-400 tracking-widest uppercase italic">The engine will build a comparison matrix based on this analysis.</div>
-                       {data.s11_competitors.map((c, idx) => (
+                       {Array.isArray(data.s11_competitors) && data.s11_competitors.map((c, idx) => (
                         <div key={idx} className="glass-pane p-5 rounded-2xl grid grid-cols-1 md:grid-cols-3 gap-6">
                            <div>
                               <label className="label-caps !text-[8px]">Competitor</label>

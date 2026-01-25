@@ -305,7 +305,7 @@ export default function AdminDashboard() {
 
             <div className="dashboard-card !p-10 group relative overflow-hidden">
                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] block mb-2">Challenges Defined</span>
-               <div className="text-7xl font-black text-slate-300 tabular-nums leading-none tracking-tighter mt-4">{problemStatements.length}</div>
+               <div className="text-7xl font-black text-slate-300 tabular-nums leading-none tracking-tighter mt-4">{Array.isArray(problemStatements) ? problemStatements.length : 0}</div>
                <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-between">
                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Master Registry</span>
                   <div className="w-2 h-2 bg-slate-200 rounded-full"></div>
@@ -341,7 +341,7 @@ export default function AdminDashboard() {
                        onChange={e => setNewTeam({...newTeam, problemStatementId: e.target.value})}
                     >
                        <option value="">-- UNMATCHED --</option>
-                       {problemStatements.map(ps => (
+                       {Array.isArray(problemStatements) && problemStatements.map(ps => (
                          <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo}>
                            Q.{ps.questionNo}: {ps.title} {ps.allottedTo ? '(Already Allotted)' : ''}
                          </option>
@@ -373,7 +373,7 @@ export default function AdminDashboard() {
             <section className="dashboard-card !p-10">
               <div className="flex justify-between items-end mb-8">
                  <h2 className="text-xl font-black text-navy uppercase tracking-widest">Active Credential directory</h2>
-                 <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">{teams.length} Enrolled Entities</span>
+                 <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">{Array.isArray(teams) ? teams.length : 0} Enrolled Entities</span>
               </div>
 
               <div className="overflow-hidden">
@@ -387,7 +387,7 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
-                    {teams.map(t => (
+                    {Array.isArray(teams) && teams.map(t => (
                       <tr key={t.id} className="hover:bg-slate-50/50 transition-colors group">
                         <td className="py-8 font-black text-navy uppercase tracking-tight text-sm">{t.teamName}</td>
                         <td className="py-8 text-xs font-bold text-slate-400 tabular-nums italic group-hover:text-navy group-hover:not-italic transition-all">••••••••••••</td>
@@ -447,11 +447,11 @@ export default function AdminDashboard() {
                          </tr>
                       </thead>
                       <tbody>
-                         {filteredSubmissions.map(sub => (
+                         {Array.isArray(filteredSubmissions) && filteredSubmissions.map(sub => (
                            <tr key={sub.id} className="bg-slate-50/30 hover:bg-white hover:shadow-xl hover:shadow-navy/5 transition-all group rounded-3xl overflow-hidden">
                               <td className="py-6 px-6 first:rounded-l-3xl border-y border-transparent group-hover:border-slate-100">
-                                 <p className="font-black text-navy uppercase text-sm tracking-tight">{sub.team.teamName}</p>
-                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{sub.team.collegeName}</p>
+                                 <p className="font-black text-navy uppercase text-sm tracking-tight">{sub.team?.teamName}</p>
+                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{sub.team?.collegeName}</p>
                               </td>
                               <td className="py-6 px-6 border-y border-transparent group-hover:border-slate-100">
                                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${sub.status === 'LOCKED' ? 'bg-navy text-white' : sub.status === 'SUBMITTED' ? 'bg-emerald-100 text-emerald-600' : 'bg-royal/10 text-royal'}`}>
@@ -483,7 +483,7 @@ export default function AdminDashboard() {
                                           onClick={() => handleForceRegenerate(sub.teamId)}
                                           title="Force Reconstruction"
                                           className="p-2 border border-slate-100 rounded-lg hover:bg-navy hover:text-white transition-all text-xs"
-                                       >
+                                        >
                                           🔄
                                        </button>
                                     )}
@@ -551,11 +551,11 @@ export default function AdminDashboard() {
             <section className="dashboard-card !p-10">
                <div className="flex justify-between items-end mb-8">
                   <h2 className="text-xl font-black text-navy uppercase tracking-widest">Master Registry</h2>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">{problemStatements.length} Active Challenges</span>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">{Array.isArray(problemStatements) ? problemStatements.length : 0} Active Challenges</span>
                </div>
 
                <div className="space-y-6">
-                  {problemStatements.map(ps => (
+                  {Array.isArray(problemStatements) && problemStatements.map(ps => (
                     <div key={ps.id} className="p-8 border border-slate-100 rounded-3xl hover:border-teal/30 transition-all group flex justify-between items-start">
                        <div className="flex-grow max-w-4xl">
                           <div className="flex items-center gap-3 mb-3">

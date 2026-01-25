@@ -170,7 +170,7 @@ export default function TeamDashboard() {
   const handleInputChange = (id, value) => {
     setFormData(prev => ({
       ...prev,
-      slides: prev.slides.map(s => s.id === id ? { ...s, content: value } : s)
+      slides: Array.isArray(prev.slides) ? prev.slides.map(s => s.id === id ? { ...s, content: value } : s) : []
     }));
   };
 
