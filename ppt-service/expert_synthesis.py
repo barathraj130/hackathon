@@ -117,9 +117,9 @@ def create_expert_deck(team_name, college, data):
     # 17. CLOSURE
     slide = prs.slides.add_slide(prs.slide_layouts[6]); set_slide_bg(slide)
     
-    # Institution Logo on bottom centered
+    # Institution Logo on TOP centered (mirrors cover)
     if os.path.exists("institution_logo.png"):
-        slide.shapes.add_picture("institution_logo.png", Inches(4.5), Inches(5.5), width=Inches(1.0))
+        slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
         
     tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
     p = tx.text_frame.paragraphs[0]; p.text = "THANK YOU."; p.font.size = Pt(64); p.font.bold = True; p.font.color.rgb = PRIMARY_COLOR; p.alignment = PP_ALIGN.CENTER
