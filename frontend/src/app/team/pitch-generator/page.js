@@ -7,45 +7,51 @@ import { useEffect, useState } from 'react';
 export default function PitchGenerator() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   
   useEffect(() => {
-    const checkStatus = async () => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
-      try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get(`${apiUrl}/team/profile`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
-        // If they already have a PPT and it's locked, don't let them stay here
-        if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
-           router.push('/team/dashboard');
-        } else if (res.data.submission?.content) {
-           // LOAD PREVIOUS DATA
-           setData(prev => ({ ...prev, ...res.data.submission.content }));
-        }
-      } catch (err) {
-        console.error("Status check failed", err);
-      }
-    };
+    setMounted(true);
     checkStatus();
-  }, [router]);
+  }, []);
+
+  async function checkStatus() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const res = await axios.get(`${apiUrl}/team/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
+         router.push('/team/dashboard');
+      } else if (res.data.submission?.content) {
+         setData(prev => ({ ...prev, ...res.data.submission.content }));
+      }
+    } catch (err) {
+      console.error("Status check failed", err);
+    }
+  }
 
   // AUTO-SAVE MECHANISM
   useEffect(() => {
+    if (!mounted) return;
     const saveTimer = setTimeout(() => {
-      if (data.teamName) { // Only save if minimal data exists
+      if (data.projectName || data.teamName) { 
         const token = localStorage.getItem('token');
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
         axios.post(`${apiUrl}/team/submission`, { content: data }, {
           headers: { Authorization: `Bearer ${token}` }
-        }).catch(err => console.error("Auto-save failed implicitly", err));
+        }).catch(err => console.error("Auto-save failed", err));
       }
-    }, 2000); // 2 second debounce
+    }, 5000); 
 
     return () => clearTimeout(saveTimer);
-  }, [data]);
+  }, [data, mounted]);
+
+  if (!mounted) return <div className="min-h-screen bg-bg-light animate-pulse" />;
   
   const [data, setData] = useState({
     // S1: Identity
@@ -95,7 +101,7 @@ export default function PitchGenerator() {
 
   const [uploading, setUploading] = useState(false);
 
-  const handleFileUpload = async (e, slideId) => {
+  async function handleFileUpload(e, slideId) {
     const file = e.target.files[0];
     if (!file) return;
     setUploading(true);
@@ -116,14 +122,14 @@ export default function PitchGenerator() {
     } finally {
       setUploading(false);
     }
-  };
+  }
 
-  const handleInputChange = (e) => {
+  function handleInputChange(e) {
     const { name, value } = e.target;
     setData(prev => ({ ...prev, [name]: value }));
-  };
+  }
 
-  const handleSubmit = async () => {
+  async function handleSubmit() {
     setLoading(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
@@ -131,8 +137,7 @@ export default function PitchGenerator() {
       const res = await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log("🌟 Expert Synthesis Success:", res.data);
-      alert(res.data.message || "Venture-Journey Synthesis Complete. Final Artifact generated in repository.");
+      alert(res.data.message || "Expert Synthesis Success.");
       router.push('/team/dashboard');
     } catch (err) {
       const msg = err.response?.data?.error || "Synthesis failed.";
@@ -140,17 +145,17 @@ export default function PitchGenerator() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const nextStep = () => setStep(prev => prev + 1);
-  const prevStep = () => setStep(prev => prev - 1);
+  function nextStep() { setStep(prev => prev + 1); }
+  function prevStep() { setStep(prev => prev - 1); }
 
-  const updateAsset = (slideId, val) => {
+  function updateAsset(slideId, val) {
     setData(prev => ({
       ...prev,
       slide_assets: { ...prev.slide_assets, [slideId]: val }
     }));
-  };
+  }
 
   return (
     <div className="min-h-screen bg-bg-light p-10 font-sans flex items-center justify-center relative overflow-hidden">

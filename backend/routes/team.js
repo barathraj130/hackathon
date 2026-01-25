@@ -12,13 +12,14 @@ const fs = require('fs');
  */
 const mapInternalToPublic = (url) => {
     if (!url) return url;
-    // REGEX OVERRIDE: Neutralize all internal railway DNS variants
+    // REGEX OVERRIDE: Neutralize all internal DNS variants (Docker, Railway, etc.)
     return url
         .replace(/([a-zA-Z0-9-]+\.)+railway\.internal(:\d+)?/, (match) => {
-            if (match.includes('python') || match.includes('liberation')) 
+            if (match.includes('python') || match.includes('liberation') || match.includes('ppt')) 
                 return 'endearing-liberation-production.up.railway.app';
             return 'hackathon-production-c6be.up.railway.app';
         })
+        .replace(/ppt-service:8000/, 'endearing-liberation-production.up.railway.app')
         .replace('http://', 'https://'); 
 };
 
@@ -141,6 +142,8 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
     const teamId = req.user.id;
     const tryUrls = [
         process.env.PYTHON_SERVICE_URL,
+        'http://ppt-service:8000',
+        'http://ppt-service.railway.internal:8000',
         'http://endearing-liberation.railway.internal:8000',
         'https://endearing-liberation-production.up.railway.app'
     ].filter(Boolean);
@@ -274,6 +277,8 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
 
         const tryUrls = [
             process.env.PYTHON_SERVICE_URL,
+            'http://ppt-service:8000',
+            'http://ppt-service.railway.internal:8000',
             'http://endearing-liberation.railway.internal:8000',
             'https://endearing-liberation-production.up.railway.app'
         ].filter(Boolean);
