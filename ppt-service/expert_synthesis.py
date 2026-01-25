@@ -17,7 +17,6 @@ def create_expert_deck(team_name, college, data):
         p.font.size = Pt(14)
         p.font.bold = True
         p.font.name = 'Times New Roman'
-        p.font.color.rgb = RGBColor(255, 255, 255) # White
         
         # 2. Top Right - Logo
         if os.path.exists("institution_logo.png"):
@@ -31,7 +30,6 @@ def create_expert_deck(team_name, college, data):
 
     # 1. IDENTITY & CONTEXT
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_dark_bg(slide)
     add_branding(slide)
     
     # PROJECT TITLE - CENTERED
@@ -40,7 +38,6 @@ def create_expert_deck(team_name, college, data):
     tf.text = data.get('projectName', 'VENTURE TITLE').upper()
     p = tf.paragraphs[0]
     p.font.size = Pt(54); p.font.bold = True; p.font.name = 'Times New Roman'
-    p.font.color.rgb = RGBColor(255, 255, 255)
     p.alignment = PP_ALIGN.CENTER
     
     # TEAM DETAILS - BOTTOM RIGHT
@@ -332,40 +329,18 @@ def add_bullet_slide(prs, title_text, bullets):
 
 def add_diagram_slide(prs, title_text):
     slide = prs.slides.add_slide(prs.slide_layouts[6]) 
-    # Background
-    background = slide.background
-    fill = background.fill
-    fill.solid()
-    fill.fore_color.rgb = RGBColor(15, 23, 42)
-    
-    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.6), Inches(9), Inches(0.8))
-    tf = title_box.text_frame
-    tf.text = title_text
     tf.paragraphs[0].font.size = Pt(28)
     tf.paragraphs[0].font.bold = True
     tf.paragraphs[0].font.name = 'Times New Roman'
-    tf.paragraphs[0].font.color.rgb = RGBColor(255, 255, 255)
     tf.paragraphs[0].alignment = PP_ALIGN.CENTER
     return slide
 
 def add_text_to_slide(slide, text, left, top, width, height, size=18, color=None, bold=False, italic=False, boxed=False):
     # Determine shape type: Textbox or Rectangle for border
-    if boxed:
-        shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left, top, width, height)
-        shape.fill.background()
-        shape.line.color.rgb = RGBColor(13, 148, 136) # Teal border
-        shape.line.width = Pt(1.5)
-        tf = shape.text_frame
-        tf.margin_left = Inches(0.1); tf.margin_top = Inches(0.1)
-    else:
-        shape = slide.shapes.add_textbox(left, top, width, height)
-        tf = shape.text_frame
-        
-    tf.word_wrap = True
     p = tf.paragraphs[0]
     p.text = text
     p.font.size = Pt(size); p.font.bold = bold; p.font.italic = italic; p.font.name = 'Times New Roman'
-    p.font.color.rgb = color if color else RGBColor(255, 255, 255) # Default White
+    if color: p.font.color.rgb = color
 
 def draw_impact_graph_detailed(slide, pain_points):
     # Axes
@@ -385,9 +360,9 @@ def draw_impact_graph_detailed(slide, pain_points):
         dot.fill.solid()
         dot.fill.fore_color.rgb = colors[i % 3]
         dot.fill.fore_color.rgb = colors[i % 3]
-        add_text_to_slide(slide, f"{i+1}", Inches(1+x_val), Inches(y_val), Inches(0.4), Inches(0.4), size=8, color=RGBColor(255, 255, 255))
+        add_text_to_slide(slide, f"{i+1}", Inches(1+x_val), Inches(y_val), Inches(0.4), Inches(0.4), size=8)
         # Add legend or small text
-        add_text_to_slide(slide, f"{i+1}. {pp.get('point')[:20]}...", Inches(1.3+x_val), Inches(y_val), Inches(2), Inches(0.5), size=7, color=RGBColor(200, 200, 200))
+        add_text_to_slide(slide, f"{i+1}. {pp.get('point')[:20]}...", Inches(1.3+x_val), Inches(y_val), Inches(2), Inches(0.5), size=7)
 
 def draw_hot_air_balloon_detailed(slide, lifts, pulls, fuels, outcomes):
     # Centered alignment logic
@@ -416,7 +391,7 @@ def draw_hot_air_balloon_detailed(slide, lifts, pulls, fuels, outcomes):
     add_text_to_slide(slide, f"FUEL STRATEGY:\n{fuels}", Inches(0.4), Inches(2.4), Inches(3.0), Inches(2.0), size=8, color=RGBColor(255,255,255))
 
     # Outcomes (Right)
-    add_text_to_slide(slide, f"ALTITUDE / OUTCOMES:\n{outcomes}", Inches(7.0), Inches(2.5), Inches(2.5), Inches(2.5), size=10, color=RGBColor(255, 255, 255), bold=True)
+    add_text_to_slide(slide, f"ALTITUDE / OUTCOMES:\n{outcomes}", Inches(7.0), Inches(2.5), Inches(2.5), Inches(2.5), size=10, color=RGBColor(15, 23, 42), bold=True)
     
     # Connectors (Ropes)
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(4.0), Inches(3.8), Inches(4.35), Inches(5.1)).line.color.rgb = RGBColor(71, 85, 105)
@@ -453,7 +428,7 @@ def add_competitor_table(slide, competitors):
         table.cell(i, 0).text = feat
         # Style feature column
         table.cell(i, 0).fill.solid()
-        table.cell(i, 0).fill.fore_color.rgb = RGBColor(71, 85, 105) # Slate for dark mode
+        table.cell(i, 0).fill.fore_color.rgb = RGBColor(254, 243, 199) # Light orange
         
     # Fill competitors
     for i, c in enumerate(competitors[:2]):
@@ -473,7 +448,6 @@ def add_competitor_table(slide, competitors):
             for p in cell.text_frame.paragraphs:
                 p.font.size = Pt(9)
                 p.font.name = 'Times New Roman'
-                p.font.color.rgb = RGBColor(255, 255, 255)
 
 def add_cost_breakdown_table(slide, dev, ops, tools):
     # Centered Table alignment
@@ -484,16 +458,13 @@ def add_cost_breakdown_table(slide, dev, ops, tools):
         # Label cell
         cell_l = table.cell(i, 0)
         cell_l.text = l
-        for p in cell_l.text_frame.paragraphs: 
-            p.font.name = 'Times New Roman'
-            p.font.color.rgb = RGBColor(255, 255, 255)
+        cell_l.text = l
+        for p in cell_l.text_frame.paragraphs: p.font.name = 'Times New Roman'
         
         # Value cell
         cell_v = table.cell(i, 1)
         cell_v.text = v
-        for p in cell_v.text_frame.paragraphs: 
-            p.font.name = 'Times New Roman'
-            p.font.color.rgb = RGBColor(255, 255, 255)
+        for p in cell_v.text_frame.paragraphs: p.font.name = 'Times New Roman'
 
 def draw_flow_diagram(slide, flow):
     components = flow.split(' -> ')[:10]
@@ -503,6 +474,6 @@ def draw_flow_diagram(slide, flow):
         box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5 + col*1.9), Inches(3.5 + row*1.5), Inches(1.7), Inches(0.8))
         box.fill.solid()
         box.fill.fore_color.rgb = RGBColor(0, 116, 217)
-        add_text_to_slide(slide, comp.strip(), Inches(0.5 + col*1.9), Inches(3.6 + row*1.5), Inches(1.7), Inches(0.6), size=9, color=RGBColor(255, 255, 255))
+        add_text_to_slide(slide, comp.strip(), Inches(0.5 + col*1.9), Inches(3.6 + row*1.5), Inches(1.7), Inches(0.6), size=9)
         if i < len(components)-1 and (i+1)%5 != 0:
             slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(2.2 + col*1.9), Inches(3.9 + row*1.5), Inches(2.4 + col*1.9), Inches(3.9 + row*1.5))
