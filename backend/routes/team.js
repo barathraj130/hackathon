@@ -11,13 +11,16 @@ const fs = require('fs');
  * TECHNICAL OVERRIDE: Institutional Host Mapping
  * Converts restricted internal DNS routes to public production repositories.
  */
-const mapInternalToPublic = (internalUrl) => {
-    if (!internalUrl) return internalUrl;
-    return internalUrl
-        .replace('python-service.railway.internal:8000', 'endearing-liberation-production.up.railway.app')
-        .replace('endearing-liberation.railway.internal:8000', 'endearing-liberation-production.up.railway.app')
-        .replace('ppt-service.railway.internal:8000', 'hackathon-production-c6be.up.railway.app')
-        .replace('http://', 'https://'); // Enforce high-security SSL
+const mapInternalToPublic = (url) => {
+    if (!url) return url;
+    // REGEX OVERRIDE: Neutralize all internal railway DNS variants
+    return url
+        .replace(/([a-zA-Z0-9-]+\.)+railway\.internal(:\d+)?/, (match) => {
+            if (match.includes('python') || match.includes('liberation')) 
+                return 'endearing-liberation-production.up.railway.app';
+            return 'hackathon-production-c6be.up.railway.app';
+        })
+        .replace('http://', 'https://'); 
 };
 
 // Multer Setup for Assets

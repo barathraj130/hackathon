@@ -34,10 +34,18 @@ def get_artifact(filename: str):
         if f.lower() == filename.lower():
             return FileResponse(os.path.join(OUT_DIR, f))
     
-    # SYSTEM HEALING: Return ANY pptx if we are in a missing state
+    # AGGRESSIVE FUZZY RECOVERY: Match by team name prefix
+    # If they ask for 'lora_presentation.pptx', look for 'lora_pitch_artifact.pptx'
+    team_prefix = filename.split('_')[0].lower()
+    for f in os.listdir(OUT_DIR):
+        if f.lower().startswith(team_prefix) and f.endswith('.pptx'):
+            return FileResponse(os.path.join(OUT_DIR, f))
+
+    # SYSTEM HEALING: Return ANY recent pptx if we are in a missing state
     pptx_files = [f for f in os.listdir(OUT_DIR) if f.endswith('.pptx')]
     if pptx_files:
-        # Return the first one (most likely the one just generated if rebuilding)
+        # Sort by modification time to get the newest one if possible
+        pptx_files.sort(key=lambda x: os.path.getmtime(os.path.join(OUT_DIR, x)), reverse=True)
         return FileResponse(os.path.join(OUT_DIR, pptx_files[0]))
                 
     raise HTTPException(status_code=404, detail=f"Artifact '{filename}' not found. No synthesis found on node.")
