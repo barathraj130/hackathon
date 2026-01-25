@@ -250,49 +250,48 @@ router.post('/force-regenerate', async (req, res) => {
         }
 
         const tryUrls = [
-            'https://endearing-liberation-production.up.railway.app',
-            'https://hackathon-production-c6be.up.railway.app'
+            'https://endearing-liberation-production.up.railway.app'
         ];
 
-        let response;
-        let successfulHost;
+        let response = null;
+        let successfulHost = null;
         let finalError = "Cluster synthesis nodes unreachable.";
 
-        // UNIFIED RECONSTRUCTION LOGIC: Use the new single endpoint
+        // UNIFIED RECONSTRUCTION LOGIC
         const content = team.submission.content;
-        const endpoints = ['/generate-artifact', '/api/generate-artifact']; 
+        const endpoints = ['/generate-artifact', '/generate', '/api/generate-artifact']; 
         
-        console.log(`[FORCE RECON] Reassembling pitch deck for: ${team.teamName}`);
+        console.log(`[FORCE RECON] Commencing rebuild for team: ${team.teamName}`);
 
-        for (const url of tryUrls) {
+        // Serial Robust Probing
+        probeLoop: for (const url of tryUrls) {
+            const cleanUrl = url.replace(/\/$/, "");
             for (const endpoint of endpoints) {
                 try {
-                    const cleanUrl = url.replace(/\/$/, "");
-                    console.log(`[FORCE] Probing Node: ${cleanUrl}${endpoint}`);
-                    
-                    const payload = { 
+                    console.log(`[FORCE] Probing: ${cleanUrl}${endpoint}`);
+                    const res = await axios.post(`${cleanUrl}${endpoint}`, { 
                         team_name: team.teamName, 
                         college_name: team.collegeName, 
                         content: content 
-                    };
-                    
-                    response = await axios.post(`${cleanUrl}${endpoint}`, payload, { timeout: 45000 });
-                    if (response.data.success) {
+                    }, { timeout: 60000 });
+
+                    if (res.data && res.data.success) {
+                        response = res;
                         successfulHost = cleanUrl;
-                        console.log(`✅ [FORCE] Reconstruction success on node: ${cleanUrl}`);
-                        gotoOuter; // Break both loops
+                        console.log(`✅ [FORCE] Success on Node: ${cleanUrl}${endpoint}`);
+                        break probeLoop;
                     }
                 } catch (e) {
                     const status = e.response ? `[Status ${e.response.status}]` : '[Network Error]';
-                    console.warn(`[FORCE] Node ${url}${endpoint} failed: ${status} ${e.message}`);
-                    finalError = `${status} ${e.message} at ${url}${endpoint}`;
+                    const detail = e.response?.data?.detail || e.message;
+                    console.warn(`[FORCE] Node Fail: ${cleanUrl}${endpoint} -> ${status} ${detail}`);
+                    finalError = `${status} ${detail} at ${cleanUrl}${endpoint}`;
                 }
             }
         }
-        gotoOuter: ; // Label for break
 
         if (!response || !response.data.success) {
-            throw new Error(`Cloud Synthesis Cluster Unreachable. Technical reason: ${finalError}`);
+            throw new Error(`Cloud Synthesis Cluster Unreachable. Reason: ${finalError}`);
         }
 
         // Construct absolute verified URL from filename

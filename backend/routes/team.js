@@ -141,8 +141,7 @@ router.post('/submission', checkOperationalStatus, async (req, res) => {
 router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
     const teamId = req.user.id;
     const tryUrls = [
-        'https://endearing-liberation-production.up.railway.app',
-        'https://hackathon-production-c6be.up.railway.app'
+        'https://endearing-liberation-production.up.railway.app'
     ];
 
     try {
@@ -235,10 +234,10 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         });
 
     } catch (err) {
-        const tried = tryUrls.join(', ');
+        console.error("❌ Synthesis Context Failure:", err.message);
         const details = err.response ? `[Status ${err.response.status}] ${JSON.stringify(err.response.data)}` : err.message;
         res.status(500).json({ 
-            error: err.message.startsWith('Synthesis Logic Error') ? err.message : `Synthesis Engine unreachable. Probed: ${tried}. Final Error: ${details}` 
+            error: `Synthesis Engine Problem. Detail: ${details}` 
         });
     }
 });
@@ -260,8 +259,7 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
     }
 
     const tryUrls = [
-        'https://endearing-liberation-production.up.railway.app',
-        'https://hackathon-production-c6be.up.railway.app'
+        'https://endearing-liberation-production.up.railway.app'
     ];
 
     let response;
@@ -358,11 +356,10 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         });
 
     } catch (err) {
-        const tried = tryUrls.join(', ');
+        console.error("❌ Expert Synthesis Failure:", err.message);
         const details = err.response ? `[Status ${err.response.status}] ${JSON.stringify(err.response.data)}` : err.message;
-        console.error("Expert Synthesis Error:", err.message);
         res.status(500).json({ 
-            error: err.message.startsWith('Synthesis Logic Error') ? err.message : `Expert Synthesis Engine unreachable. Probed: ${tried}. Final Error: ${details}` 
+            error: `Expert Synthesis Engine Problem. Detail: ${details}` 
         });
     }
 });
