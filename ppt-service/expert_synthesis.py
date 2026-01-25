@@ -17,6 +17,7 @@ def create_expert_deck(team_name, college, data):
         p.font.size = Pt(14)
         p.font.bold = True
         p.font.name = 'Times New Roman'
+        p.font.color.rgb = RGBColor(0, 0, 0)
         
         # 2. Top Right - Logo
         if os.path.exists("institution_logo.png"):
@@ -38,6 +39,7 @@ def create_expert_deck(team_name, college, data):
     tf.text = data.get('projectName', 'VENTURE TITLE').upper()
     p = tf.paragraphs[0]
     p.font.size = Pt(54); p.font.bold = True; p.font.name = 'Times New Roman'
+    p.font.color.rgb = RGBColor(0, 0, 0)
     p.alignment = PP_ALIGN.CENTER
     
     # TEAM DETAILS - BOTTOM RIGHT
@@ -300,6 +302,7 @@ def add_bullet_slide(prs, title_text, bullets):
         box = slide.shapes.add_textbox(Inches(0.2), Inches(0.2), Inches(2), Inches(0.4))
         p = box.text_frame.paragraphs[0]
         p.text = "HACK@JIT 1.0"; p.font.size = Pt(14); p.font.bold = True; p.font.name = 'Times New Roman'
+        p.font.color.rgb = RGBColor(0, 0, 0)
         if os.path.exists("institution_logo.png"): slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
     
     hack_branding(slide)
@@ -310,6 +313,7 @@ def add_bullet_slide(prs, title_text, bullets):
     tf_t.text = title_text
     p_t = tf_t.paragraphs[0]
     p_t.font.size = Pt(28); p_t.font.bold = True; p_t.font.name = 'Times New Roman'; p_t.alignment = PP_ALIGN.CENTER
+    p_t.font.color.rgb = RGBColor(0, 0, 0)
     
     # Content - Box containment
     content_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.6), Inches(8.4), Inches(5.2))
@@ -336,6 +340,7 @@ def add_diagram_slide(prs, title_text):
     tf.paragraphs[0].font.size = Pt(28)
     tf.paragraphs[0].font.bold = True
     tf.paragraphs[0].font.name = 'Times New Roman'
+    tf.paragraphs[0].font.color.rgb = RGBColor(0, 0, 0)
     tf.paragraphs[0].alignment = PP_ALIGN.CENTER
     return slide
 
