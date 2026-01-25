@@ -162,32 +162,40 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
             });
         }
 
-        let response;
-        let lastErr;
+        const endpoints = ['/generate-artifact', '/generate', '/api/generate-artifact']; 
         let successfulHost;
+        let finalError = "No synthesis nodes responded.";
+        let response = null; // Initialize response
 
-        for (const url of tryUrls) {
-            try {
-                console.log(`[SYNTHESIS] Attempting uplink: ${url}/generate`);
-                response = await axios.post(`${url}/generate`, {
-                    team_name: team.teamName,
-                    college_name: team.collegeName,
-                    content: team.submission.content
-                }, { timeout: 15000 });
-
-                if (response.data.success) {
-                    successfulHost = url;
-                    break;
+        outerLoop: for (const url of tryUrls) {
+            for (const endpoint of endpoints) {
+                try {
+                    const cleanUrl = url.replace(/\/$/, "");
+                    console.log(`[SYNTHESIS] Probing: ${cleanUrl}${endpoint}`);
+                    
+                    response = await axios.post(`${cleanUrl}${endpoint}`, {
+                        team_name: team.teamName,
+                        college_name: team.collegeName,
+                        content: team.submission.content
+                    }, { timeout: 45000 });
+    
+                    if (response.data.success) {
+                        successfulHost = cleanUrl;
+                        break outerLoop; // Exit both loops on success
+                    } else {
+                        // If the endpoint was reached but returned success: false
+                        finalError = `Synthesis Logic Error: ${response.data.error} at ${cleanUrl}${endpoint}`;
+                        // Continue to try other endpoints/urls if logic error, don't break outerLoop
+                    }
+                } catch (e) {
+                    const status = e.response ? `[Status ${e.response.status}]` : '[Network]';
+                    console.log(`[SYNTHESIS] Node ${cleanUrl}${endpoint} failed: ${e.message}`);
+                    finalError = `${status} ${e.message} at ${cleanUrl}${endpoint}`;
                 }
-                else throw new Error(`Synthesis Logic Error: ${response.data.error}`);
-            } catch (e) {
-                lastErr = e;
-                console.log(`[SYNTHESIS] Uplink failed at ${url}: ${e.message}`);
-                if (e.message.startsWith('Synthesis Logic Error')) break;
             }
         }
 
-        if (!response || !response.data.success) throw lastErr || new Error("All uplinks exhausted.");
+        if (!response || !response.data.success) throw new Error(`Synthesis Engine unreachable. Technical detail: ${finalError}`);
 
         console.log("📝 [SYNTHESIS SUCCESS] Response Data:", response.data);
         const rawPath = response.data.file_url;
@@ -272,33 +280,38 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             });
         }
 
+        const endpoints = ['/generate-artifact', '/generate-expert-pitch', '/api/generate-artifact']; 
         let successfulHost;
-        for (const url of tryUrls) {
-            try {
-                console.log(`[EXPERT SYNTHESIS] Attempting uplink: ${url}/generate-expert-pitch`);
-                response = await axios.post(`${url}/generate-expert-pitch`, {
-                    team_name: team.teamName,
-                    college_name: team.collegeName,
-                    project_data: projectData
-                }, { timeout: 15000 });
-                
-                if (response.data.success) {
-                    successfulHost = url;
-                    break;
+        let finalError = "No expert synthesis nodes responded.";
+        let response = null;
+
+        outerLoop: for (const url of tryUrls) {
+            for (const endpoint of endpoints) {
+                try {
+                    const cleanUrl = url.replace(/\/$/, "");
+                    console.log(`[EXPERT SYNTHESIS] Probing: ${cleanUrl}${endpoint}`);
+                    
+                    response = await axios.post(`${cleanUrl}${endpoint}`, {
+                        team_name: team.teamName,
+                        college_name: team.collegeName,
+                        project_data: projectData
+                    }, { timeout: 45000 });
+                    
+                    if (response.data.success) {
+                        successfulHost = cleanUrl;
+                        break outerLoop;
+                    } else {
+                        finalError = `Synthesis Logic Error: ${response.data.error} at ${cleanUrl}${endpoint}`;
+                    }
+                } catch (e) {
+                    const status = e.response ? `[Status ${e.response.status}]` : '[Network]';
+                    console.log(`[EXPERT SYNTHESIS] Node ${cleanUrl}${endpoint} failed: ${e.message}`);
+                    finalError = `${status} ${e.message} at ${cleanUrl}${endpoint}`;
                 }
-                else {
-                   // Engine reached but logic failed
-                   throw new Error(`Synthesis Logic Error: ${response.data.error}`);
-                }
-            } catch (e) {
-                lastErr = e;
-                console.log(`[EXPERT SYNTHESIS] Uplink failed at ${url}: ${e.message}`);
-                // If it was a logic error (we threw it above), don't try other URLs
-                if (e.message.startsWith('Synthesis Logic Error')) break;
             }
         }
-
-        if (!response || !response.data.success) throw lastErr || new Error("All expert uplinks exhausted.");
+        
+        if (!response || !response.data.success) throw new Error(`Expert Synthesis Cluster Unreachable. Technical detail: ${finalError}`);
 
         console.log("🌟 [EXPERT SUCCESS] Response Data:", response.data);
         const rawFileName = response.data.file_url;
