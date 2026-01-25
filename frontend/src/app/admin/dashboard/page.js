@@ -182,6 +182,25 @@ export default function AdminDashboard() {
       .replace('http://', 'https://');
   }
 
+  async function handleDeleteStatement(id) {
+    if (!confirm("🚨 PURGE CHALLENGE?\nThis will remove the problem statement from the master registry. Teams allotted to this challenge may lose synchronization.")) return;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      await axios.delete(`${apiUrl}/admin/problem-statements/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      fetchProblemStatements();
+    } catch (err) { alert("Failed to purge challenge."); }
+  }
+
+  const filteredSubmissions = submissions.filter(sub => {
+    if (subFilter === 'ALL') return true;
+    if (subFilter === 'SUBMITTED') return sub.status === 'SUBMITTED';
+    if (subFilter === 'LOCKED') return sub.status === 'LOCKED';
+    if (subFilter === 'PENDING') return !sub.pptUrl;
+    return true;
+  });
+
   return (
     <div className="flex min-h-screen bg-bg-light font-sans text-slate-800">
       

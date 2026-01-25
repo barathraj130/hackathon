@@ -37,6 +37,8 @@ export default function TeamDashboard() {
 
   const formDataRef = useRef(formData);
   const isPausedRef = useRef(isPaused);
+  const lastSavedData = useRef(null);
+  const socketRef = useRef(null);
 
   // Sync refs with state
   useEffect(() => {
