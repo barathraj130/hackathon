@@ -181,6 +181,24 @@ export default function TeamDashboard() {
     window.location.href = '/';
   };
 
+  if (isPaused) {
+    return (
+      <div className="min-h-screen bg-navy flex items-center justify-center p-10 text-center font-roboto">
+        <div className="max-w-xl animate-fade-in">
+           <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center text-5xl mb-8 mx-auto animate-pulse">🛰️</div>
+           <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-4">Temporal Sync Halted</h2>
+           <p className="text-teal font-bold text-xs uppercase tracking-[0.4em] mb-8">System locked by authority</p>
+           <div className="p-10 glass-pane rounded-[3rem] border-white/10 bg-white/5 text-slate-300">
+             <p className="text-lg leading-relaxed italic">
+               "The synthesis engine has been temporarily suspended for administrative recalibration. All progress is locally cached. Please wait until the master temporal clock resumes."
+             </p>
+           </div>
+           <button onClick={handleLogout} className="mt-12 text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors underline">Terminate Session</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-bg-light font-sans text-slate-800">
       {/* Premium Header */}

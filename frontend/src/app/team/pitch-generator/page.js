@@ -9,6 +9,7 @@ export default function PitchGenerator() {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const router = useRouter();
 
   const [data, setData] = useState({
@@ -77,6 +78,11 @@ export default function PitchGenerator() {
       } else if (res.data.submission?.content) {
          setData(prev => ({ ...prev, ...res.data.submission.content }));
       }
+      
+      // Check for global pause from an implicit config endpoint or socket
+      const statsRes = await axios.get(`${apiUrl.replace('/v1', '')}/health`);
+      if (statsRes.data?.timerPaused) setIsPaused(true);
+
     } catch (err) {
       console.error("Status check failed", err);
     }
@@ -98,7 +104,37 @@ export default function PitchGenerator() {
     return () => clearTimeout(saveTimer);
   }, [data, mounted]);
 
+  // SOCKET FOR REAL-TIME PAUSE
+  useEffect(() => {
+    if (!mounted) return;
+    import('socket.io-client').then((module) => {
+      const socketIO = module.default || module.io;
+      if (!socketIO) return;
+      const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
+      const socket = socketIO(socketUrl);
+      socket.on('timerUpdate', (data) => setIsPaused(data.timerPaused));
+      return () => socket.disconnect();
+    });
+  }, [mounted]);
+
   if (!mounted) return <div className="min-h-screen bg-bg-light animate-pulse" />;
+
+  if (isPaused) {
+    return (
+      <div className="min-h-screen bg-navy flex items-center justify-center p-10 text-center font-roboto">
+        <div className="max-w-xl animate-fade-in">
+           <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center text-5xl mb-8 mx-auto animate-pulse">🛰️</div>
+           <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-4">Temporal Sync Halted</h2>
+           <p className="text-teal font-bold text-xs uppercase tracking-[0.4em] mb-8">System locked by authority</p>
+           <div className="p-10 glass-pane rounded-[3rem] border-white/10 bg-white/5 text-slate-300">
+             <p className="text-lg leading-relaxed italic">
+               "The synthesis engine has been temporarily suspended for administrative recalibration. All progress is locally cached. Please wait until the master temporal clock resumes."
+             </p>
+           </div>
+        </div>
+      </div>
+    );
+  }
 
   async function handleFileUpload(e, slideId) {
     const file = e.target.files[0];
@@ -755,14 +791,14 @@ export default function PitchGenerator() {
 
                 {/* Per-Slide Assets Section */}
                 {step < 15 && (
-                  <div className="mt-12 pt-8 border-t border-slate-50">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 flex items-center gap-2 mb-4">
-                      <span className="w-4 h-[1px] bg-current"></span> Assets & Reference Protocol
+                  <div className="mt-12 pt-8 border-t border-slate-200">
+                    <p className="text-[12px] font-black uppercase tracking-[0.2em] text-navy flex items-center gap-3 mb-8">
+                      <span className="w-8 h-1 bg-teal rounded-full"></span> Assets & Reference Protocol
                     </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                        <div className="relative group">
-                          <label className="absolute -top-6 left-0 text-[7px] font-black text-teal uppercase">Native Upload</label>
-                          <div className="input-field !p-0 !bg-slate-50 flex items-center overflow-hidden h-[75px]">
+                          <label className="absolute -top-7 left-0 text-[10px] font-black text-navy uppercase tracking-widest">Native Upload</label>
+                          <div className="input-field !p-0 !bg-slate-50 flex items-center overflow-hidden h-[75px] border-2 border-slate-200 focus-within:border-teal transition-all">
                              <input 
                                 type="file" 
                                 id={`upload-${step}`} 
@@ -776,35 +812,38 @@ export default function PitchGenerator() {
                              <div className="px-4 flex-grow flex items-center justify-between overflow-hidden">
                                 {data.slide_assets[`s${step}_img`] ? (
                                    <>
-                                      <img src={data.slide_assets[`s${step}_img`]} alt="Preview" className="h-12 w-12 object-cover rounded-lg border border-slate-200" />
-                                      <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter">Secured ✓</span>
+                                      <img src={data.slide_assets[`s${step}_img`]} alt="Preview" className="h-12 w-12 object-cover rounded-lg border-2 border-teal/20" />
+                                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter">Verified ✓</span>
                                    </>
                                 ) : (
-                                   <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">No Binary</span>
+                                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Inert / No Binary</span>
                                 )}
                              </div>
                           </div>
                        </div>
                        <div className="relative group">
+                          <label className="absolute -top-7 left-0 text-[10px] font-black text-navy uppercase tracking-widest">Evidence Link</label>
                           <input 
-                            className="w-full bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-4 text-[9px] outline-none focus:border-teal/50 transition-all font-bold" 
-                            placeholder="Image / Screenshot Link" 
+                            className="w-full bg-white border-2 border-slate-200 rounded-xl px-4 py-4 text-[11px] outline-none focus:border-teal transition-all font-bold text-navy placeholder:text-slate-400" 
+                            placeholder="Image / Screenshot URL" 
                             disabled={uploading}
                             value={data.slide_assets[`s${step}_img`] || ''}
                             onChange={e => updateAsset(`s${step}_img`, e.target.value)}
                           />
                        </div>
                        <div className="relative group">
+                          <label className="absolute -top-7 left-0 text-[10px] font-black text-navy uppercase tracking-widest">Resource Provider</label>
                           <input 
-                            className="w-full bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-4 text-[9px] outline-none focus:border-teal/50 transition-all font-bold" 
+                            className="w-full bg-white border-2 border-slate-200 rounded-xl px-4 py-4 text-[11px] outline-none focus:border-teal transition-all font-bold text-navy placeholder:text-slate-400" 
                             placeholder="External Resource URL" 
                             value={data.slide_assets[`s${step}_link`] || ''}
                             onChange={e => updateAsset(`s${step}_link`, e.target.value)}
                           />
                        </div>
                        <div className="relative group">
+                          <label className="absolute -top-7 left-0 text-[10px] font-black text-navy uppercase tracking-widest">Verification Node</label>
                           <input 
-                            className="w-full bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-4 text-[9px] outline-none focus:border-teal/50 transition-all font-bold" 
+                            className="w-full bg-white border-2 border-slate-200 rounded-xl px-4 py-4 text-[11px] outline-none focus:border-teal transition-all font-bold text-navy placeholder:text-slate-400" 
                             placeholder="Reference Note / ID" 
                             value={data.slide_assets[`s${step}_note`] || ''}
                             onChange={e => updateAsset(`s${step}_note`, e.target.value)}
