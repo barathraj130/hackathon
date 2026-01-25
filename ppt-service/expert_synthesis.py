@@ -242,7 +242,6 @@ def create_expert_deck(team_name, college, data):
     
     # Large centered Thank You
     add_text_to_slide(slide, "THANK YOU.", Inches(1), Inches(2.5), Inches(8), Inches(1.5), size=60, bold=True, color=blue_inst)
-    add_text_to_slide(slide, "Venture Synthesis Complete • High-Fidelity Infrastructure Online", Inches(1), Inches(4.2), Inches(8), Inches(1), size=18)
 
     # Save
     if not os.path.exists('ppt_outputs'):
