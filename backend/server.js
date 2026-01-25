@@ -35,8 +35,9 @@ async function initEngine() {
     const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
     if (config) {
       timeRemaining = config.durationMinutes * 60;
-      timerPaused = config.isPaused;
-      console.log('✅ System configuration loaded from database.');
+      // Institutional Protocol: ALWAYS start paused on server boot to allow manual admin oversight
+      timerPaused = true; 
+      console.log('✅ System configuration loaded (Timer initialized to PAUSED).');
     } else {
       console.log('🚀 No system configuration found. Initializing Admin account...');
       const bcrypt = require('bcryptjs');
