@@ -15,7 +15,8 @@ def create_expert_deck(team_name, college, data):
         p.text = "HACK@JIT 1.0"
         p.font.size = Pt(14)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(15, 23, 42) # Institutional Navy
+        p.font.name = 'Times New Roman'
+        p.font.color.rgb = RGBColor(15, 23, 42)
         
         # 2. Top Right - Logo
         if os.path.exists("institution_logo.png"):
@@ -24,15 +25,22 @@ def create_expert_deck(team_name, college, data):
     # 1. IDENTITY & CONTEXT
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_branding(slide)
-    tx = slide.shapes.add_textbox(Inches(1), Inches(3), Inches(8), Inches(2))
+    tx = slide.shapes.add_textbox(Inches(1), Inches(3), Inches(8), Inches(3))
     tf = tx.text_frame
-    tf.text = data.get('projectName', 'VENTURE TITLE')
+    tf.text = data.get('projectName', 'VENTURE TITLE').upper()
     tf.paragraphs[0].font.size = Pt(44)
     tf.paragraphs[0].font.bold = True
+    tf.paragraphs[0].font.name = 'Times New Roman'
     
     p = tf.add_paragraph()
-    p.text = f"{college} • Team {team_name}"
+    p.text = college
     p.font.size = Pt(24)
+    p.font.name = 'Times New Roman'
+    
+    p2 = tf.add_paragraph()
+    p2.text = f"Team {team_name}"
+    p2.font.size = Pt(24)
+    p2.font.name = 'Times New Roman'
 
     # 2. VENTURE BACKGROUND
     slide = add_diagram_slide(prs, "Venture Background: Context Mapping")
@@ -272,6 +280,9 @@ def add_bullet_slide(prs, title_text, bullets):
     
     hack_branding(slide)
     slide.shapes.title.text = title_text
+    # Standardize title font
+    for p in slide.shapes.title.text_frame.paragraphs:
+        p.font.name = 'Times New Roman'
     tf = slide.placeholders[1].text_frame
     for b in bullets:
         p = tf.add_paragraph()
@@ -280,11 +291,12 @@ def add_bullet_slide(prs, title_text, bullets):
 
 def add_diagram_slide(prs, title_text):
     slide = prs.slides.add_slide(prs.slide_layouts[6]) 
-    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.2), Inches(9), Inches(0.8))
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.6), Inches(9), Inches(0.8))
     tf = title_box.text_frame
     tf.text = title_text
     tf.paragraphs[0].font.size = Pt(28)
     tf.paragraphs[0].font.bold = True
+    tf.paragraphs[0].font.name = 'Times New Roman'
     return slide
 
 def add_text_to_slide(slide, text, left, top, width, height, size=18, color=None, bold=False, italic=False):
@@ -296,6 +308,7 @@ def add_text_to_slide(slide, text, left, top, width, height, size=18, color=None
     p.font.size = Pt(size)
     p.font.bold = bold
     p.font.italic = italic
+    p.font.name = 'Times New Roman'
     if color:
         p.font.color.rgb = color
 

@@ -41,13 +41,14 @@ def create_pptx(team_name, college, slides_data):
         ("Name of the Institution", college),
         ("Faculty Name", slides_data.get('facultyName', 'P. Eswari')),
         ("Idea Description", slides_data.get('title', {}).get('bullets', ['Weather Adaptive System'])[0]),
-        ("Student Names", f"• {team_name}\n• Collaborators")
+        ("Team Name", team_name)
     ]
 
     for label, value in details:
         p = tf_details.add_paragraph()
         p.text = f"{label} : {value}"
         p.font.size = Pt(24)
+        p.font.name = 'Times New Roman'
         p.space_after = Pt(12)
 
     # 2. Add Content Slides
