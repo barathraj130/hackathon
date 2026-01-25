@@ -160,13 +160,13 @@ def create_expert_deck(team_name, college, data):
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.5), Inches(3.5), Inches(4.5), Inches(3.5)).line.color.rgb = RGBColor(13, 148, 136)
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(2.5), Inches(1.5), Inches(2.5), Inches(5.5)).line.color.rgb = RGBColor(13, 148, 136)
     
-    add_text_to_slide(slide, "GAIN CREATORS", Inches(2.6), Inches(1.6), Inches(1.8), Inches(0.3), size=11, color=RGBColor(13, 148, 136), bold=True)
+    add_text_to_slide(slide, "GAIN CREATORS", Inches(2.6), Inches(1.6), Inches(1.8), Inches(0.3), size=11, color=RGBColor(0, 0, 0), bold=True)
     add_text_to_slide(slide, data.get('s7_gainCreators') or data.get('s6_gains', 'Proactive benefits...'), Inches(2.6), Inches(2.0), Inches(1.8), Inches(1.4), size=10, boxed=True)
     
-    add_text_to_slide(slide, "PAIN KILLERS", Inches(2.6), Inches(3.6), Inches(1.8), Inches(0.3), size=11, color=RGBColor(13, 148, 136), bold=True)
+    add_text_to_slide(slide, "PAIN KILLERS", Inches(2.6), Inches(3.6), Inches(1.8), Inches(0.3), size=11, color=RGBColor(0, 0, 0), bold=True)
     add_text_to_slide(slide, data.get('s7_painKillers') or data.get('s6_pains', 'Risk mitigation...'), Inches(2.6), Inches(4.0), Inches(1.8), Inches(1.4), size=10, boxed=True)
     
-    add_text_to_slide(slide, "PRODUCT/\nSERVICE", Inches(0.6), Inches(2.5), Inches(1.8), Inches(2), size=12, bold=True, color=RGBColor(13, 148, 136))
+    add_text_to_slide(slide, "PRODUCT/\nSERVICE", Inches(0.6), Inches(2.5), Inches(1.8), Inches(2), size=12, bold=True, color=RGBColor(0, 0, 0))
     
     # Right Circle - Customer Profile
     c_prof = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(5.5), Inches(1.5), Inches(4.0), Inches(4.0))
@@ -178,9 +178,9 @@ def create_expert_deck(team_name, college, data):
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(5.5), Inches(3.5), Inches(9.5), Inches(3.5)).line.color.rgb = RGBColor(245, 158, 11)
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(7.5), Inches(1.5), Inches(7.5), Inches(5.5)).line.color.rgb = RGBColor(245, 158, 11)
     
-    add_text_to_slide(slide, "GAINS", Inches(5.8), Inches(1.6), Inches(1.5), Inches(0.3), size=11, color=RGBColor(245, 158, 11), bold=True)
-    add_text_to_slide(slide, "PAINS", Inches(5.8), Inches(3.6), Inches(1.5), Inches(0.3), size=11, color=RGBColor(245, 158, 11), bold=True)
-    add_text_to_slide(slide, "CUSTOMER JOBS", Inches(7.7), Inches(2.5), Inches(1.6), Inches(0.5), size=11, color=RGBColor(245, 158, 11), bold=True)
+    add_text_to_slide(slide, "GAINS", Inches(5.8), Inches(1.6), Inches(1.5), Inches(0.3), size=11, color=RGBColor(0, 0, 0), bold=True)
+    add_text_to_slide(slide, "PAINS", Inches(5.8), Inches(3.6), Inches(1.5), Inches(0.3), size=11, color=RGBColor(0, 0, 0), bold=True)
+    add_text_to_slide(slide, "CUSTOMER JOBS", Inches(7.7), Inches(2.5), Inches(1.6), Inches(0.5), size=11, color=RGBColor(0, 0, 0), bold=True)
     add_text_to_slide(slide, "FIT", Inches(4.7), Inches(3.3), Inches(0.6), Inches(0.4), size=14, bold=True, color=RGBColor(0,0,0))
 
     # 8. PROPOSED SOLUTION
@@ -214,27 +214,27 @@ def create_expert_deck(team_name, college, data):
         box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x), Inches(1.2), Inches(width_col-0.1), Inches(h))
         box.line.color.rgb = RGBColor(15, 23, 42) # Navy
         box.fill.background()
-        add_text_to_slide(slide, label, Inches(x+0.1), Inches(1.25), Inches(width_col-0.2), Inches(0.3), size=9, bold=True, color=RGBColor(15, 23, 42))
+        add_text_to_slide(slide, label, Inches(x+0.1), Inches(1.25), Inches(width_col-0.2), Inches(0.3), size=9, bold=True, color=RGBColor(0, 0, 0))
         add_text_to_slide(slide, data.get(key, 'N/A'), Inches(x+0.1), Inches(1.6), Inches(width_col-0.2), Inches(h-0.5), size=8)
 
     # Sub-boxes (Metrics & Channels)
-    add_text_to_slide(slide, "METRICS", Inches(0.5+width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(15, 23, 42))
+    add_text_to_slide(slide, "METRICS", Inches(0.5+width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(0, 0, 0))
     add_text_to_slide(slide, data.get('s9_leanMetrics', 'N/A'), Inches(0.5+width_col), Inches(3.6), Inches(width_col-0.1), Inches(1.5), size=7)
     
-    add_text_to_slide(slide, "CHANNELS", Inches(0.5+3*width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(15, 23, 42))
+    add_text_to_slide(slide, "CHANNELS", Inches(0.5+3*width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(0, 0, 0))
     add_text_to_slide(slide, data.get('s9_leanChannels', 'N/A'), Inches(0.5+3*width_col), Inches(3.6), Inches(width_col-0.1), Inches(1.5), size=7)
 
     # Bottom Row (Aligned flush with columns above)
     cost_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(5.3), Inches(3.5), Inches(1.5))
     cost_box.line.color.rgb = RGBColor(244, 63, 94) # Rose
     cost_box.fill.background()
-    add_text_to_slide(slide, "COST STRUCTURE", Inches(0.6), Inches(5.35), Inches(3.3), Inches(0.3), size=9, bold=True, color=RGBColor(244, 63, 94))
+    add_text_to_slide(slide, "COST STRUCTURE", Inches(0.6), Inches(5.35), Inches(3.3), Inches(0.3), size=9, bold=True, color=RGBColor(0, 0, 0))
     add_text_to_slide(slide, data.get('s9_leanCosts', 'N/A'), Inches(0.6), Inches(5.7), Inches(3.3), Inches(1.0), size=8)
     
     rev_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(6.0), Inches(5.3), Inches(3.5), Inches(1.5))
     rev_box.line.color.rgb = RGBColor(16, 185, 129) # Emerald
     rev_box.fill.background()
-    add_text_to_slide(slide, "REVENUE STREAMS", Inches(6.1), Inches(5.35), Inches(3.3), Inches(0.3), size=9, bold=True, color=RGBColor(16, 185, 129))
+    add_text_to_slide(slide, "REVENUE STREAMS", Inches(6.1), Inches(5.35), Inches(3.3), Inches(0.3), size=9, bold=True, color=RGBColor(0, 0, 0))
     add_text_to_slide(slide, data.get('s9_leanRevenue', 'N/A'), Inches(6.1), Inches(5.7), Inches(3.3), Inches(1.0), size=8)
 
     # 10. VALUE BALLOON
