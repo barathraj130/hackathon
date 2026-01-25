@@ -220,11 +220,20 @@ def create_expert_deck(team_name, college, data):
         add_text_to_slide(slide, data.get(key, 'N/A'), Inches(x+0.1), Inches(1.6), Inches(width_col-0.2), Inches(h-0.5), size=9)
 
     # Sub-boxes (Metrics & Channels)
-    add_text_to_slide(slide, "METRICS", Inches(0.5+width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(0, 0, 0))
-    add_text_to_slide(slide, data.get('s9_leanMetrics', 'N/A'), Inches(0.5+width_col), Inches(3.6), Inches(width_col-0.1), Inches(1.5), size=7)
+    # Sub-boxes (Metrics & Channels)
+    # Metrics Box
+    m_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5+width_col), Inches(3.2), Inches(width_col-0.1), Inches(2.0))
+    m_box.line.color.rgb = RGBColor(15, 23, 42)
+    m_box.fill.background()
+    add_text_to_slide(slide, "METRICS", Inches(0.5+width_col+0.1), Inches(3.25), Inches(width_col-0.2), Inches(0.2), size=9, bold=True, color=RGBColor(0, 0, 0))
+    add_text_to_slide(slide, data.get('s9_leanMetrics', 'N/A'), Inches(0.5+width_col+0.1), Inches(3.5), Inches(width_col-0.2), Inches(1.5), size=8)
     
-    add_text_to_slide(slide, "CHANNELS", Inches(0.5+3*width_col), Inches(3.3), Inches(width_col-0.1), Inches(0.2), size=8, bold=True, color=RGBColor(0, 0, 0))
-    add_text_to_slide(slide, data.get('s9_leanChannels', 'N/A'), Inches(0.5+3*width_col), Inches(3.6), Inches(width_col-0.1), Inches(1.5), size=7)
+    # Channels Box
+    c_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5+3*width_col), Inches(3.2), Inches(width_col-0.1), Inches(2.0))
+    c_box.line.color.rgb = RGBColor(15, 23, 42)
+    c_box.fill.background()
+    add_text_to_slide(slide, "CHANNELS", Inches(0.5+3*width_col+0.1), Inches(3.25), Inches(width_col-0.2), Inches(0.2), size=9, bold=True, color=RGBColor(0, 0, 0))
+    add_text_to_slide(slide, data.get('s9_leanChannels', 'N/A'), Inches(0.5+3*width_col+0.1), Inches(3.5), Inches(width_col-0.2), Inches(1.5), size=8)
 
     # Bottom Row (Aligned flush with columns above)
     cost_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(5.3), Inches(3.5), Inches(1.5))
@@ -473,10 +482,14 @@ def add_competitor_table(slide, competitors):
     # Basic data filling (Fuzzy match attributes)
     features = ["Core Product", "Pricing Strategy", "Branding Channels", "UVP / Edge"]
     for i, feat in enumerate(features):
-        table.cell(i, 0).text = feat
+        cell = table.cell(i, 0)
+        cell.text = feat
         # Style feature column
-        table.cell(i, 0).fill.solid()
-        table.cell(i, 0).fill.fore_color.rgb = RGBColor(254, 243, 199) # Light orange
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = RGBColor(254, 243, 199) # Light orange
+        p = cell.text_frame.paragraphs[0]
+        p.font.color.rgb = RGBColor(0, 0, 0) # Explicit Black
+        p.font.size = Pt(10)
         
     # Fill competitors
     for i, c in enumerate(competitors[:2]):
