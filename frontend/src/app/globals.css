@@ -2,71 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --navy: #0F172A;
-  --royal: #2563EB;
-  --teal: #0D9488;
-  --bg-light: #F8FAFC;
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.2);
+@layer base {
+  :root {
+    --navy: #0F172A;
+    --royal: #2563EB;
+    --teal: #0D9488;
+    --bg-light: #F8FAFC;
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.2);
+  }
+
+  body {
+    background-color: var(--bg-light);
+    color: #1E293B;
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
-body {
-  background-color: var(--bg-light);
-  color: #1E293B;
-  -webkit-font-smoothing: antialiased;
+@layer components {
+  /* Premium Glassmorphism */
+  .glass-pane {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  .dashboard-card {
+    @apply glass-pane rounded-2xl p-8 transition-all duration-300;
+  }
+
+  .dashboard-card:hover {
+    @apply -translate-y-1 shadow-xl border-white/80;
+  }
+
+  /* Premium Buttons */
+  .btn-primary {
+    @apply bg-navy text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
+    transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] 
+    shadow-lg shadow-navy/10 hover:shadow-navy/20 flex items-center justify-center gap-2;
+  }
+
+  .btn-teal {
+    @apply bg-teal text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
+    transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] 
+    shadow-lg shadow-teal/10 hover:shadow-teal/20 flex items-center justify-center gap-2;
+  }
+
+  .btn-ghost {
+    @apply px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
+    transition-all duration-300 border border-gray-200 text-gray-400 hover:text-navy hover:border-navy hover:bg-white;
+  }
+
+  /* Structured Inputs */
+  .input-field {
+    @apply w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800
+    transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-teal/20 focus:border-teal outline-none;
+  }
+
+  .input-field::placeholder {
+    @apply text-slate-400 font-medium;
+  }
+
+  .label-caps {
+    @apply text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2 block;
+  }
 }
 
-/* Premium Glassmorphism */
-.glass-pane {
-  background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-}
-
-.dashboard-card {
-  @apply glass-pane rounded-2xl p-8 transition-all duration-300;
-}
-
-.dashboard-card:hover {
-  @apply -translate-y-1 shadow-xl border-white/80;
-}
-
-/* Premium Buttons */
-.btn-primary {
-  @apply bg-navy text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
-  transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] 
-  shadow-lg shadow-navy/10 hover:shadow-navy/20 flex items-center justify-center gap-2;
-}
-
-.btn-teal {
-  @apply bg-teal text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
-  transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] 
-  shadow-lg shadow-teal/10 hover:shadow-teal/20 flex items-center justify-center gap-2;
-}
-
-.btn-ghost {
-  @apply px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] 
-  transition-all duration-300 border border-gray-200 text-gray-400 hover:text-navy hover:border-navy hover:bg-white;
-}
-
-/* Structured Inputs */
-.input-field {
-  @apply w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800
-  transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-teal/20 focus:border-teal outline-none;
-}
-
-.input-field::placeholder {
-  @apply text-slate-400 font-medium;
-}
-
-.label-caps {
-  @apply text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2 block;
-}
-
-/* Animations */
+/* Animations & Utilities */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -74,6 +78,21 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #E2E8F0;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #CBD5E1;
 }
 
 /* Hide scrollbar */

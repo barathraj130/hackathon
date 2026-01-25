@@ -15,7 +15,8 @@ export default {
         'text-main': '#1E293B'
       },
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
+        sans: ['var(--font-outfit)', 'sans-serif'],
+        roboto: ['var(--font-roboto)', 'sans-serif'],
       },
     },
   },
