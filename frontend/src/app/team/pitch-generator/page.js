@@ -49,19 +49,21 @@ export default function PitchGenerator() {
       { name: '', strength: '', weakness: '' }
     ],
     s11_ourVenture: { name: 'Our Venture', strength: '', weakness: '' },
-    // S12: Revenue Model
-    s12_primaryStream: '', s12_secondaryStream: '', s12_pricingStrategy: '', s12_revenueLogic: '',
-    // S13: Financial Allocation (Decentralized Sovereignty)
-    s13_allocations: [
+    // S12: Market Sizing (TAM SAM SOM)
+    s12_tam: '', s12_sam: '', s12_som: '', s12_marketLogic: '',
+    // S13: Revenue Model
+    s13_primaryStream: '', s13_secondaryStream: '', s13_pricingStrategy: '', s13_revenueLogic: '',
+    // S14: Financial Allocation (Decentralized Sovereignty)
+    s14_allocations: [
       { category: '', amount: '' },
       { category: '', amount: '' },
       { category: '', amount: '' },
       { category: '', amount: '' },
       { category: '', amount: '' }
     ],
-    // S14: Impact Vision
-    s14_socialEconomic: '', s14_metrics: '', s14_vision: '',
-    // S15: Closure
+    // S15: Impact Vision
+    s15_socialEconomic: '', s15_metrics: '', s15_vision: '',
+    // S16: Closure
     slide_assets: {}
   });
   
@@ -180,7 +182,7 @@ export default function PitchGenerator() {
     }
   }
 
-  function nextStep() { setStep(prev => Math.min(prev + 1, 15)); window.scrollTo(0,0); }
+  function nextStep() { setStep(prev => Math.min(prev + 1, 16)); window.scrollTo(0,0); }
   function prevStep() { setStep(prev => Math.max(prev - 1, 1)); window.scrollTo(0,0); }
 
   function updateAsset(slideId, val) {
@@ -203,7 +205,7 @@ export default function PitchGenerator() {
         <div className="flex items-center gap-4">
           <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-right">
              <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 block">Mission Progress</span>
-             <div className="text-xs font-black text-[#020617] mt-0.5">SLIDE {step} / 15</div>
+             <div className="text-xs font-black text-[#020617] mt-0.5">SLIDE {step} / 16</div>
           </div>
           <div className="w-8 h-8 relative hidden sm:block">
              <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
@@ -221,7 +223,7 @@ export default function PitchGenerator() {
                    {[
                      'Identity', 'Strategic Context', 'Problem Statement', 'Impact Matrix', 'Stakeholders',
                      'Persona Node', 'Gap Analysis', 'Solution Flow', 'Lean Logic', 'Value Metrics',
-                     'Market Positioning', 'Revenue Model', 'Financial Allocation', 'Impact Vision', 'Repository'
+                     'Market Positioning', 'Market Sizing', 'Revenue Model', 'Financial Allocation', 'Impact Vision', 'Repository'
                    ].map((label, i) => (
                      <button 
                         key={i} 
@@ -417,15 +419,26 @@ export default function PitchGenerator() {
                   )}
 
                   {step === 12 && (
-                    <div className="space-y-8 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">12</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Revenue Model</h2></div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">12</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Market Sizing (TAM SAM SOM)</h2></div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-teal-600">TAM (Total Market)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: $500B" value={data.s12_tam} onChange={e => setData({...data, s12_tam: e.target.value})} /><p className="text-[8px] text-slate-400 mt-2 uppercase font-bold tracking-widest">Total demand for product</p></div>
+                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-orange-500">SAM (Serviceable)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: $10B" value={data.s12_sam} onChange={e => setData({...data, s12_sam: e.target.value})} /><p className="text-[8px] text-slate-400 mt-2 uppercase font-bold tracking-widest">Target segment share</p></div>
+                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-navy">SOM (Obtainable)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: $200M" value={data.s12_som} onChange={e => setData({...data, s12_som: e.target.value})} /><p className="text-[8px] text-slate-400 mt-2 uppercase font-bold tracking-widest">Realistic first 3-5 years</p></div>
+                        </div>
+                        <div className="mt-8"><label className="label-caps">Market logic & Evidence</label><textarea className="input-field min-h-[120px]" placeholder="Explain your calculations and data sources..." value={data.s12_marketLogic} onChange={e => setData({...data, s12_marketLogic: e.target.value})} /></div>
+                    </div>
+                  )}
+
+                  {step === 13 && (
+                    <div className="space-y-8 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">13</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Revenue Model</h2></div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                            <div className="space-y-6">
-                              <div><label className="label-caps">Primary Revenue Stream</label><input className="input-field font-black uppercase text-teal-600" placeholder="Ex: SaaS Subscription" value={data.s12_primaryStream} onChange={e => setData({...data, s12_primaryStream: e.target.value})} /></div>
-                              <div><label className="label-caps">Secondary Revenue Stream</label><input className="input-field font-black uppercase" placeholder="Ex: Marketplace Commission" value={data.s12_secondaryStream} onChange={e => setData({...data, s12_secondaryStream: e.target.value})} /></div>
+                              <div><label className="label-caps">Primary Revenue Stream</label><input className="input-field font-black uppercase text-teal-600" placeholder="Ex: SaaS Subscription" value={data.s13_primaryStream} onChange={e => setData({...data, s13_primaryStream: e.target.value})} /></div>
+                              <div><label className="label-caps">Secondary Revenue Stream</label><input className="input-field font-black uppercase" placeholder="Ex: Marketplace Commission" value={data.s13_secondaryStream} onChange={e => setData({...data, s13_secondaryStream: e.target.value})} /></div>
                            </div>
                            <div className="space-y-6">
-                              <div><label className="label-caps">Pricing Strategy</label><input className="input-field font-black" placeholder="Ex: $29/mo Tiered Pricing" value={data.s12_pricingStrategy} onChange={e => setData({...data, s12_pricingStrategy: e.target.value})} /></div>
-                              <div><label className="label-caps">Economic Logic (Scaling)</label><textarea className="input-field min-h-[80px] text-xs font-bold" placeholder="How do unit economics work at scale?" value={data.s12_revenueLogic} onChange={e => setData({...data, s12_revenueLogic: e.target.value})} /></div>
+                              <div><label className="label-caps">Pricing Strategy</label><input className="input-field font-black" placeholder="Ex: $29/mo Tiered Pricing" value={data.s13_pricingStrategy} onChange={e => setData({...data, s13_pricingStrategy: e.target.value})} /></div>
+                              <div><label className="label-caps">Economic Logic (Scaling)</label><textarea className="input-field min-h-[80px] text-xs font-bold" placeholder="How do unit economics work at scale?" value={data.s13_revenueLogic} onChange={e => setData({...data, s13_revenueLogic: e.target.value})} /></div>
                            </div>
                         </div>
                         <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 italic">
@@ -435,8 +448,8 @@ export default function PitchGenerator() {
                     </div>
                   )}
 
-                  {step === 13 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">13</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Financial Allocation</h2></div>
+                  {step === 14 && (
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">14</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Financial Allocation</h2></div>
                         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                            <table className="w-full text-left">
                               <thead>
@@ -446,10 +459,10 @@ export default function PitchGenerator() {
                                  </tr>
                               </thead>
                               <tbody className="divide-y divide-slate-100">
-                                 {data.s13_allocations.map((alloc, i) => (
+                                 {data.s14_allocations.map((alloc, i) => (
                                     <tr key={i}>
-                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-black uppercase text-xs text-[#020617] outline-none" placeholder={`Item ${i+1}`} value={alloc.category} onChange={e => { let u = [...data.s13_allocations]; u[i].category = e.target.value; setData({...data, s13_allocations: u}) }} /></td>
-                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-bold text-xs text-teal-600 outline-none text-right" placeholder="Ex: $500 / 20%" value={alloc.amount} onChange={e => { let u = [...data.s13_allocations]; u[i].amount = e.target.value; setData({...data, s13_allocations: u}) }} /></td>
+                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-black uppercase text-xs text-[#020617] outline-none" placeholder={`Item ${i+1}`} value={alloc.category} onChange={e => { let u = [...data.s14_allocations]; u[i].category = e.target.value; setData({...data, s14_allocations: u}) }} /></td>
+                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-bold text-xs text-teal-600 outline-none text-right" placeholder="Ex: $500 / 20%" value={alloc.amount} onChange={e => { let u = [...data.s14_allocations]; u[i].amount = e.target.value; setData({...data, s14_allocations: u}) }} /></td>
                                     </tr>
                                  ))}
                               </tbody>
@@ -459,19 +472,19 @@ export default function PitchGenerator() {
                     </div>
                   )}
 
-                  {step === 14 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">14</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Success Vision</h2></div>
-                        <div className="space-y-6"><div><label className="label-caps">Broad Impact</label><textarea className="input-field min-h-[120px]" value={data.s14_socialEconomic} onChange={e => setData({...data, s14_socialEconomic: e.target.value})} /></div><div><label className="label-caps">Long-term Vision</label><input className="input-field" value={data.s14_vision} onChange={e => setData({...data, s14_vision: e.target.value})} /></div></div>
+                  {step === 15 && (
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">15</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Success Vision</h2></div>
+                        <div className="space-y-6"><div><label className="label-caps">Broad Impact</label><textarea className="input-field min-h-[120px]" value={data.s15_socialEconomic} onChange={e => setData({...data, s15_socialEconomic: e.target.value})} /></div><div><label className="label-caps">Long-term Vision</label><input className="input-field" value={data.s15_vision} onChange={e => setData({...data, s15_vision: e.target.value})} /></div></div>
                     </div>
                   )}
 
-                  {step === 15 && (
+                  {step === 16 && (
                     <div className="space-y-12 animate-fade-in flex flex-col items-center justify-center text-center py-10"><div className="text-5xl mb-6">🏛️</div><div className="space-y-4"><h2 className="text-3xl font-black text-navy uppercase tracking-tight">Synthesis Seal</h2><p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">All modules verified for generation.</p></div></div>
                   )}
                </div>
 
                <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col md:flex-row gap-4">
-                  {step < 15 && (
+                  {step < 16 && (
                     <div className="flex-1 space-y-2">
                        <label className="label-caps !mb-2 opacity-50">Reference Asset</label>
                        <div className="flex gap-2">
@@ -484,7 +497,7 @@ export default function PitchGenerator() {
 
                <div className="mt-8 flex items-center justify-between pt-6 border-t border-slate-100 relative z-10">
                   {step > 1 && <button onClick={prevStep} className="px-6 py-3 rounded-xl border border-slate-200 text-[10px] font-black uppercase text-slate-400 hover:text-navy transition-all">Back</button>}
-                  {step < 15 ? (
+                  {step < 16 ? (
                     <button onClick={nextStep} className="ml-auto bg-[#020617] text-white px-8 py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-500 transition-all shadow-xl active:scale-95">Proceed Journey →</button>
                   ) : (
                     <button onClick={handleSubmit} disabled={loading} className="ml-auto bg-teal-500 text-white px-10 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-[#020617] transition-all shadow-xl active:scale-95">
