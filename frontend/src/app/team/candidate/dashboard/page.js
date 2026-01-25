@@ -201,19 +201,19 @@ export default function CandidateDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
       <header className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
-        <div className="container-custom py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold gradient-text">Candidate Dashboard</h1>
-              <p className="text-sm text-gray-600">Welcome, {profile?.name}</p>
+        <div className="container px-4 py-4 mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-center md:text-left w-full md:w-auto">
+              <h1 className="text-xl md:text-2xl font-bold gradient-text">Candidate Dashboard</h1>
+              <p className="text-xs md:text-sm text-gray-600">Welcome, {profile?.name}</p>
             </div>
 
             {/* Timer */}
             {testStatus?.is_active && (
-              <div className="glass-card px-6 py-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-gray-600">Time Remaining:</span>
-                  <span className={`text-2xl font-bold ${timeRemaining < 300 ? 'text-red-600' : 'text-blue-600'}`}>
+              <div className="glass-card px-4 md:px-6 py-2 md:py-3 w-full md:w-auto">
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-xs font-semibold text-gray-600">Time Remaining:</span>
+                  <span className={`text-lg md:text-2xl font-bold ${timeRemaining < 300 ? 'text-red-600' : 'text-blue-600'}`}>
                     {formatTime(timeRemaining)}
                   </span>
                   {testStatus?.is_paused && (
@@ -223,13 +223,13 @@ export default function CandidateDashboard() {
               </div>
             )}
 
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
               {lastSaved && (
-                <div className="text-sm text-gray-600">
+                <div className="text-[10px] md:text-sm text-gray-600">
                   Last saved: {new Date(lastSaved).toLocaleTimeString()}
                 </div>
               )}
-              <button onClick={handleLogout} className="btn-danger">
+              <button onClick={handleLogout} className="btn-danger !px-4 !py-1.5 text-xs md:text-sm">
                 Logout
               </button>
             </div>
@@ -238,24 +238,24 @@ export default function CandidateDashboard() {
       </header>
 
       {/* Content */}
-      <div className="container-custom py-8">
+      <div className="container px-4 py-6 md:py-8 mx-auto">
         {!testStatus?.is_active ? (
-          <div className="glass-card p-12 text-center">
-            <div className="text-6xl mb-4">⏳</div>
-            <h2 className="text-3xl font-bold mb-4">Test Not Active</h2>
-            <p className="text-gray-600 mb-6">
+          <div className="glass-card p-6 md:p-12 text-center">
+            <div className="text-4xl md:text-6xl mb-4">⏳</div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Test Not Active</h2>
+            <p className="text-sm md:text-gray-600 mb-6">
               The test hasn't started yet. Please wait for the admin to start the test.
             </p>
-            <div className="text-sm text-gray-500">
+            <div className="text-xs text-gray-500">
               {testStatus?.start_time && (
                 <p>Scheduled start: {new Date(testStatus.start_time).toLocaleString()}</p>
               )}
             </div>
           </div>
         ) : (
-          <div className="glass-card p-8">
-            <h2 className="text-3xl font-bold gradient-text mb-2">Create Your Presentation</h2>
-            <p className="text-gray-600 mb-8">Fill in the details below. Your progress is auto-saved every 30 seconds.</p>
+          <div className="glass-card p-4 md:p-8">
+            <h2 className="text-2xl md:text-3xl font-bold gradient-text mb-2">Create Your Presentation</h2>
+            <p className="text-xs md:text-base text-gray-600 mb-6 md:mb-8">Fill in the details below. Your progress is auto-saved every 30 seconds.</p>
 
             <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
               {/* 1. Title Slide Inputs */}
@@ -373,7 +373,7 @@ export default function CandidateDashboard() {
               <div>
                 <h3 className="text-xl font-semibold mb-2 text-blue-600">Slide 6: Technology Stack</h3>
                 <label className="block text-sm text-gray-500 mb-4">List the technologies used.</label>
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     type="text"
                     placeholder="Frontend (React, etc.)"
@@ -452,14 +452,14 @@ export default function CandidateDashboard() {
                 <h3 className="text-xl font-semibold mb-2 text-blue-600">Expert Synthesis: Target Persona</h3>
                 <label className="block text-sm text-gray-500 mb-4">Provide details for the high-fidelity user persona slide.</label>
                 
-                <div className="grid md:grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                   <input type="text" placeholder="Persona Name (Ex: Farmer Raja)" value={formData.s6_customerName || ''} onChange={e => setFormData({...formData, s6_customerName: e.target.value})} className="input-field" />
                   <input type="text" placeholder="Age" value={formData.s6_customerAge || ''} onChange={e => setFormData({...formData, s6_customerAge: e.target.value})} className="input-field" />
                   <input type="text" placeholder="Gender" value={formData.s6_customerGender || ''} onChange={e => setFormData({...formData, s6_customerGender: e.target.value})} className="input-field" />
                   <input type="text" placeholder="Location" value={formData.s6_customerLocation || ''} onChange={e => setFormData({...formData, s6_customerLocation: e.target.value})} className="input-field" />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <textarea placeholder="Challenges / Daily Pains" value={formData.s6_pains || ''} onChange={e => setFormData({...formData, s6_pains: e.target.value})} className="input-field h-24" />
                   <textarea placeholder="Professional Goals" value={formData.s6_goals || ''} onChange={e => setFormData({...formData, s6_goals: e.target.value})} className="input-field h-24" />
                 </div>

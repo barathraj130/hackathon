@@ -154,19 +154,27 @@ export default function TeamDashboard() {
   return (
     <div className="min-h-screen bg-bg-light font-sans text-slate-800">
       {/* Premium Header */}
-      <nav className="sticky top-0 z-50 glass-pane border-b border-gray-100 flex justify-between items-center px-10 py-5">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center text-white font-black shadow-xl shadow-navy/20">H</div>
-          <div className="hidden sm:block">
-            <h1 className="text-sm font-black uppercase tracking-widest text-navy leading-none">hack@jit</h1>
-            <p className="text-[9px] font-bold text-teal uppercase tracking-[0.2em] mt-1">Institutional Access: JIT</p>
+      <nav className="sticky top-0 z-50 glass-pane border-b border-gray-100 flex flex-col md:flex-row justify-between items-center px-6 md:px-10 py-4 md:py-5 gap-4">
+        <div className="flex items-center justify-between w-full md:w-auto">
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-navy rounded-lg md:rounded-xl flex items-center justify-center text-white font-black shadow-xl shadow-navy/20 text-xs md:text-sm">H</div>
+            <div className="hidden xs:block">
+              <h1 className="text-xs md:text-sm font-black uppercase tracking-widest text-navy leading-none">hack@jit</h1>
+              <p className="text-[7px] md:text-[9px] font-bold text-teal uppercase tracking-[0.2em] mt-1">Institutional Access: JIT</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 md:hidden">
+             <div className="w-8 h-8 relative">
+               <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
+             </div>
+             <button onClick={handleLogout} className="text-[10px] font-black uppercase text-rose-500">Exit</button>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 md:gap-8">
-          <div className="text-right hidden xs:block">
-            <p className="text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">Temporal sync</p>
-            <p className={`text-xl md:text-2xl font-mono font-black tabular-nums transition-colors ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-navy'}`}>
+        <div className="flex items-center justify-center md:justify-end gap-4 md:gap-8 w-full md:w-auto">
+          <div className="text-center md:text-right">
+            <p className="text-[8px] md:text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">Temporal sync</p>
+            <p className={`text-lg md:text-2xl font-mono font-black tabular-nums transition-colors ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-navy'}`}>
               {formattedTime}
             </p>
           </div>
@@ -180,7 +188,7 @@ export default function TeamDashboard() {
             {saveStatus === 'IDLE' && <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Sync Idle</span>}
           </div>
 
-          <div className="w-10 h-10 md:w-12 md:h-12 relative">
+          <div className="w-10 h-10 md:w-12 md:h-12 relative hidden md:block">
             <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
 
@@ -190,52 +198,52 @@ export default function TeamDashboard() {
               localStorage.removeItem('role');
               window.location.href = '/';
             }}
-            className="btn-ghost !px-4 !py-2 md:!px-6 md:!py-2.5 rounded-lg border-slate-200 text-[9px] md:text-[10px]"
+            className="btn-ghost !px-4 !py-2 md:!px-6 md:!py-2.5 rounded-lg border-slate-200 text-[9px] md:text-[10px] hidden md:block"
           >
             Logout
           </button>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-8 md:py-12 px-6 md:px-10 gap-10 grid grid-cols-1 lg:grid-cols-12 items-start">
+      <main className="max-w-7xl mx-auto py-6 md:py-12 px-4 md:px-10 gap-10 grid grid-cols-1 lg:grid-cols-12 items-start">
         
         {/* Left Column: Input Form */}
         <div className="lg:col-span-8 space-y-8 animate-fade-in">
           {problemStatement && (
-            <div className="bg-indigo-600 text-white p-10 rounded-[2.5rem] shadow-2xl shadow-indigo-600/20 relative overflow-hidden group">
+            <div className="bg-indigo-600 text-white p-6 md:p-10 rounded-3xl md:rounded-[2.5rem] shadow-2xl shadow-indigo-600/20 relative overflow-hidden group">
                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
                <div className="relative z-10">
-                 <div className="flex justify-between items-start mb-6">
+                 <div className="flex flex-col md:flex-row justify-between items-start mb-4 md:mb-6 gap-4">
                     <div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-200">Admin Allotted Challenge</span>
-                      <h3 className="text-3xl font-black uppercase tracking-tighter mt-2">{problemStatement.title}</h3>
+                      <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-indigo-200">Admin Allotted Challenge</span>
+                      <h3 className="text-xl md:text-3xl font-black uppercase tracking-tighter mt-2">{problemStatement.title}</h3>
                     </div>
-                    <div className="text-right">
-                       <span className="text-sm font-black bg-white/20 px-4 py-2 rounded-full tabular-nums">Q.{problemStatement.questionNo}</span>
-                       <p className="text-[9px] font-bold text-indigo-200 uppercase tracking-widest mt-2">{problemStatement.subDivisions || 'Main division'}</p>
+                    <div className="text-left md:text-right flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-0">
+                       <span className="text-xs md:text-sm font-black bg-white/20 px-3 md:px-4 py-1 md:py-2 rounded-full tabular-nums">Q.{problemStatement.questionNo}</span>
+                       <p className="text-[7px] md:text-[9px] font-bold text-indigo-200 uppercase tracking-widest md:mt-2">{problemStatement.subDivisions || 'Main division'}</p>
                     </div>
                  </div>
-                 <p className="text-lg font-medium text-indigo-50 leading-relaxed max-w-3xl">
+                 <p className="text-sm md:text-lg font-medium text-indigo-50 leading-relaxed max-w-3xl">
                    {problemStatement.description}
                  </p>
                </div>
             </div>
           )}
 
-          <div className="glass-pane p-12 rounded-[2.5rem] bg-white border-0 shadow-2xl shadow-navy/5">
-            <div className="max-w-2xl">
-              <span className="text-[10px] font-black text-teal uppercase tracking-[0.4em] mb-4 block">Operation Protocol</span>
-              <h2 className="text-4xl font-black text-navy tracking-tighter uppercase leading-tight mb-6">Create Your Professional <br/>Venture Artifacts</h2>
-              <p className="text-slate-500 font-medium text-base leading-relaxed mb-10">
+          <div className="glass-pane p-6 md:p-12 rounded-3xl md:rounded-[2.5rem] bg-white border-0 shadow-2xl shadow-navy/5">
+            <div className="max-w-2xl text-center md:text-left">
+              <span className="text-[8px] md:text-[10px] font-black text-teal uppercase tracking-[0.4em] mb-4 block">Operation Protocol</span>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-navy tracking-tighter uppercase leading-tight mb-4 md:mb-6">Create Your Professional <br className="hidden md:block"/>Venture Artifacts</h2>
+              <p className="text-slate-500 font-medium text-sm md:text-base leading-relaxed mb-6 md:mb-10 px-4 md:px-0">
                 The institutional standard requires a strict, guided synthesis process. Use the **Expert Venture Journey** engine to build your 15-slide pitch deck following a strict slide-by-slide design thinking workflow.
               </p>
               
               <Link 
                 href="/team/pitch-generator" 
-                className="inline-flex items-center gap-6 bg-navy text-white px-10 py-6 rounded-2xl font-black uppercase text-[11px] tracking-[0.4em] hover:shadow-2xl shadow-navy/30 transition-all hover:-translate-y-1 active:scale-95 group"
+                className="inline-flex items-center gap-4 md:gap-6 bg-navy text-white px-6 md:px-10 py-4 md:py-6 rounded-xl md:rounded-2xl font-black uppercase text-[9px] md:text-[11px] tracking-[0.3em] md:tracking-[0.4em] hover:shadow-2xl shadow-navy/30 transition-all hover:-translate-y-1 active:scale-95 group w-full md:w-auto overflow-hidden text-center"
               >
-                <span>Initialize Venture Journey</span>
-                <span className="w-8 h-px bg-teal group-hover:w-12 transition-all"></span>
+                <span className="flex-1 md:flex-none">Initialize Venture Journey</span>
+                <span className="hidden md:block w-8 h-px bg-teal group-hover:w-12 transition-all"></span>
               </Link>
             </div>
           </div>
