@@ -51,12 +51,13 @@ export default function PitchGenerator() {
     s11_ourVenture: { name: 'Our Venture', strength: '', weakness: '' },
     // S12: Revenue Model
     s12_primaryStream: '', s12_secondaryStream: '', s12_pricingStrategy: '', s12_revenueLogic: '',
-    // S13: Financial Allocation
+    // S13: Financial Allocation (Decentralized Sovereignty)
     s13_allocations: [
-      { category: 'Research & Development', amount: '' },
-      { category: 'Cloud Infrastructure', amount: '' },
-      { category: 'Operations & Scaling', amount: '' },
-      { category: 'Digital Asset Acquisition', amount: '' }
+      { category: '', amount: '' },
+      { category: '', amount: '' },
+      { category: '', amount: '' },
+      { category: '', amount: '' },
+      { category: '', amount: '' }
     ],
     // S14: Impact Vision
     s14_socialEconomic: '', s14_metrics: '', s14_vision: '',
@@ -312,7 +313,7 @@ export default function PitchGenerator() {
                     <div className="space-y-6 animate-fade-in max-h-[550px] overflow-y-auto pr-2">
                        <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">06</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Persona Node</h2></div>
                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                         <div><label className="label-caps">Alias</label><input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} /></div>
+                         <div><label className="label-caps">Name</label><input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} /></div>
                          <div><label className="label-caps">Age</label><input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} /></div>
                          <div><label className="label-caps">Gender</label><input className="input-field !py-2 !text-xs" value={data.s6_customerGender} onChange={e => setData({...data, s6_customerGender: e.target.value})} /></div>
                          <div><label className="label-caps">Locality</label><input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} /></div>
@@ -405,11 +406,11 @@ export default function PitchGenerator() {
                                  <div><label className="label-caps !text-[8px]">Weaknesses</label><input className="input-field !bg-white" value={c.weakness} onChange={e => { let u = [...data.s11_competitors]; u[i].weakness = e.target.value; setData({...data, s11_competitors: u})}} /></div>
                               </div>
                            ))}
-                           <div className="bg-[#020617] p-8 rounded-3xl grid grid-cols-3 gap-6 shadow-2xl relative overflow-hidden group">
+                           <div className="bg-slate-900 p-8 rounded-3xl grid grid-cols-3 gap-6 shadow-2xl relative overflow-hidden group border border-slate-800">
                               <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform"></div>
-                              <div><label className="label-caps !text-[8px] text-teal-400">OUR VENTURE</label><input className="input-field !bg-white/5 !border-white/10 !text-white" value={data.s11_ourVenture.name} readOnly /></div>
-                              <div><label className="label-caps !text-[8px] text-teal-400">UNFAIR ADVANTAGE (CORE STRENGTH)</label><input className="input-field !bg-white/5 !border-white/10 !text-white" value={data.s11_ourVenture.strength} onChange={e => setData({...data, s11_ourVenture: {...data.s11_ourVenture, strength: e.target.value}})} /></div>
-                              <div><label className="label-caps !text-[8px] text-teal-400">GAP BEING BRIDGED</label><input className="input-field !bg-white/5 !border-white/10 !text-white" value={data.s11_ourVenture.weakness} onChange={e => setData({...data, s11_ourVenture: {...data.s11_ourVenture, weakness: e.target.value}})} /></div>
+                              <div><label className="label-caps !text-[8px] text-teal-400 font-black">OUR VENTURE</label><input className="input-field !bg-white/5 !border-teal-500/20 !text-white font-black" value={data.s11_ourVenture.name} readOnly /></div>
+                              <div><label className="label-caps !text-[8px] text-teal-400 font-black">UNFAIR ADVANTAGE</label><input className="input-field !bg-white/5 !border-white/10 !text-white italic" value={data.s11_ourVenture.strength} onChange={e => setData({...data, s11_ourVenture: {...data.s11_ourVenture, strength: e.target.value}})} placeholder="What makes you elite?" /></div>
+                              <div><label className="label-caps !text-[8px] text-teal-400 font-black">GAP BEING BRIDGED</label><input className="input-field !bg-white/5 !border-white/10 !text-white italic" value={data.s11_ourVenture.weakness} onChange={e => setData({...data, s11_ourVenture: {...data.s11_ourVenture, weakness: e.target.value}})} placeholder="What space do you fill?" /></div>
                            </div>
                         </div>
                      </div>
@@ -440,21 +441,21 @@ export default function PitchGenerator() {
                            <table className="w-full text-left">
                               <thead>
                                  <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-400">
-                                    <th className="px-6 py-4">Allocation Category</th>
+                                    <th className="px-6 py-4">Allocation Item</th>
                                     <th className="px-6 py-4 text-right">Value Descriptor / Pricing</th>
                                  </tr>
                               </thead>
                               <tbody className="divide-y divide-slate-100">
                                  {data.s13_allocations.map((alloc, i) => (
                                     <tr key={i}>
-                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-black uppercase text-xs text-[#020617] outline-none" value={alloc.category} onChange={e => { let u = [...data.s13_allocations]; u[i].category = e.target.value; setData({...data, s13_allocations: u}) }} /></td>
-                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-bold text-xs text-teal-600 outline-none text-right" placeholder="TBD" value={alloc.amount} onChange={e => { let u = [...data.s13_allocations]; u[i].amount = e.target.value; setData({...data, s13_allocations: u}) }} /></td>
+                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-black uppercase text-xs text-[#020617] outline-none" placeholder={`Item ${i+1}`} value={alloc.category} onChange={e => { let u = [...data.s13_allocations]; u[i].category = e.target.value; setData({...data, s13_allocations: u}) }} /></td>
+                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-bold text-xs text-teal-600 outline-none text-right" placeholder="Ex: $500 / 20%" value={alloc.amount} onChange={e => { let u = [...data.s13_allocations]; u[i].amount = e.target.value; setData({...data, s13_allocations: u}) }} /></td>
                                     </tr>
                                  ))}
                               </tbody>
                            </table>
                         </div>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center mt-4">Decide categories in the left column // Define pricing in the right column</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center mt-4 italic opacity-70">Design categories in the left column // Assign valuations in the right column</p>
                     </div>
                   )}
 
