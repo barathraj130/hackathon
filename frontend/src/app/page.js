@@ -46,13 +46,13 @@ export default function HomePage() {
             </div>
             
             <h1 className="text-5xl md:text-7xl font-black text-navy leading-[0.95] tracking-tighter mb-8">
-              Intelligence <br className="hidden md:block"/> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-royal to-teal">Driven Synthesis</span>
+              Engineering <br className="hidden md:block"/> 
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-royal to-teal">the Future</span>
             </h1>
             
             <p className="text-base md:text-lg text-slate-500 max-w-lg mx-auto lg:mx-0 leading-relaxed mb-12">
-              Transform architectural logic and technical identifiers into professional-grade artifacts. 
-              The official JIT high-fidelity innovation engine for rapid deployment cycles.
+              From concept to deployment — faster, smarter, stronger. 
+              JIT’s official innovation engine enabling teams to build, validate, and launch production-ready solutions.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">

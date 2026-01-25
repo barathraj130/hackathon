@@ -214,7 +214,7 @@ export default function AdminDashboard() {
           ))}
         </nav>
 
-        <div className="p-6">
+        <div className="p-6 space-y-4">
           <div className="p-6 bg-white/5 rounded-2xl border border-white/5 text-center relative overflow-hidden group">
             <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <p className="text-[10px] text-slate-500 uppercase font-black tracking-[0.3em] mb-4 opacity-50 relative z-10">MASTER TEMPORAL CLOCK</p>
@@ -222,6 +222,14 @@ export default function AdminDashboard() {
               {timer.formattedTime}
             </p>
           </div>
+          
+          <button 
+            onClick={() => { localStorage.clear(); window.location.href='/'; }}
+            className="w-full py-4 rounded-xl border border-white/10 text-slate-500 font-black text-[10px] uppercase tracking-[0.3em] hover:text-white hover:bg-white/5 transition-all flex items-center justify-center gap-3"
+          >
+            <span>Terminate Session</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-rose-500/50"></div>
+          </button>
         </div>
       </aside>
 

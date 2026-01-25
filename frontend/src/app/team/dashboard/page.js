@@ -294,9 +294,9 @@ export default function TeamDashboard() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
             <div className="max-w-2xl text-center md:text-left relative z-10">
               <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-4 block">Operation Protocol</span>
-              <h2 className="text-2xl md:text-4xl font-black text-[#020617] tracking-tighter uppercase leading-none mb-6 italic">Intelligence Driven Synthesis</h2>
+              <h2 className="text-2xl md:text-4xl font-black text-[#020617] tracking-tighter uppercase leading-none mb-6 italic">Engineering the Future</h2>
               <p className="text-slate-500 font-bold text-sm md:text-base leading-relaxed mb-8 opacity-80 uppercase tracking-tight">
-                Transform architectural logic and technical identifiers into professional-grade artifacts. The official JIT high-fidelity innovation engine for rapid deployment cycles.
+                From concept to deployment — faster, smarter, stronger. JIT’s official innovation engine enabling teams to build, validate, and launch production-ready solutions.
               </p>
               
               <Link 
