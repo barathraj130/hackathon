@@ -75,15 +75,9 @@ router.post('/submission', (req, res) => {
       global.db.submissions.push(submission);
     }
 
-    // Update content
-    submission.content = {
-      title,
-      abstract,
-      problemStatement,
-      solution,
-      technologies,
-      teamDetails
-    };
+    // Update content - Permissive for all high-fidelity fields
+    submission.content = { ...req.body };
+    delete submission.content.isDraft; // Don't save draft flag in content
     submission.updatedAt = new Date().toISOString();
     submission.isDraft = isDraft !== false;
 

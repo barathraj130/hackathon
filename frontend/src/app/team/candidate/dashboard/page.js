@@ -423,7 +423,24 @@ export default function CandidateDashboard() {
                 />
               </div>
 
-              {/* Action Buttons */}
+              {/* 8. Expert Persona Synthesis (New Section) */}
+              <div className="border-t pt-8">
+                <h3 className="text-xl font-semibold mb-2 text-blue-600">Expert Synthesis: Target Persona</h3>
+                <label className="block text-sm text-gray-500 mb-4">Provide details for the high-fidelity user persona slide.</label>
+                
+                <div className="grid md:grid-cols-4 gap-4 mb-4">
+                  <input type="text" placeholder="Persona Name (Ex: Farmer Raja)" value={formData.s6_customerName || ''} onChange={e => setFormData({...formData, s6_customerName: e.target.value})} className="input-field" />
+                  <input type="text" placeholder="Age" value={formData.s6_customerAge || ''} onChange={e => setFormData({...formData, s6_customerAge: e.target.value})} className="input-field" />
+                  <input type="text" placeholder="Gender" value={formData.s6_customerGender || ''} onChange={e => setFormData({...formData, s6_customerGender: e.target.value})} className="input-field" />
+                  <input type="text" placeholder="Location" value={formData.s6_customerLocation || ''} onChange={e => setFormData({...formData, s6_customerLocation: e.target.value})} className="input-field" />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <textarea placeholder="Challenges / Daily Pains" value={formData.s6_pains || ''} onChange={e => setFormData({...formData, s6_pains: e.target.value})} className="input-field h-24" />
+                  <textarea placeholder="Professional Goals" value={formData.s6_goals || ''} onChange={e => setFormData({...formData, s6_goals: e.target.value})} className="input-field h-24" />
+                </div>
+                <textarea placeholder="How You Can Help (Impact)" value={formData.s6_howWeHelp || ''} onChange={e => setFormData({...formData, s6_howWeHelp: e.target.value})} className="input-field h-20 mt-4" />
+              </div>
               <div className="flex gap-4 pt-6 border-t font-medium">
                 <button
                   type="button"

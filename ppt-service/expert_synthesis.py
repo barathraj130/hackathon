@@ -53,68 +53,57 @@ def create_expert_deck(team_name, college, data):
     add_text_to_slide(slide, f"Primary Users: {data.get('s5_primaryUsers', 'N/A')}", Inches(1), Inches(2), Inches(8), Inches(1.5), size=16)
     add_text_to_slide(slide, f"Secondary Users: {data.get('s5_secondaryUsers', 'N/A')}", Inches(1), Inches(4), Inches(8), Inches(1.5), size=16)
 
-    # 6. PERSONA & JTBD (High Fidelity)
-    slide = add_diagram_slide(prs, "Customer Persona: Empathy Spectrum")
+    # 6. PERSONA: Empathy Spectrum (High Fidelity Quadrants)
+    slide = add_diagram_slide(prs, "Buyer Persona: Target Profile")
     add_corner_logo(slide)
     
-    # Left Sidebar - Demographics
-    sidebar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(1.0), Inches(2.5), Inches(6.0))
-    sidebar.fill.solid()
-    sidebar.fill.fore_color.rgb = RGBColor(245, 158, 11) # Orange
-    sidebar.line.color.rgb = RGBColor(245, 158, 11)
-    
-    # Placeholder for Photo
-    photo_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.7), Inches(1.2), Inches(2.1), Inches(1.8))
-    photo_box.fill.solid()
-    photo_box.fill.fore_color.rgb = RGBColor(255, 255, 255)
-    
-    # Name & Ethos
-    add_text_to_slide(slide, data.get('s6_customerName', 'PERSONA'), Inches(0.5), Inches(3.1), Inches(2.5), Inches(0.5), size=14, bold=True, color=RGBColor(255,255,255))
-    add_text_to_slide(slide, data.get('s6_customerEthos', 'Contextual Identity'), Inches(0.5), Inches(3.4), Inches(2.5), Inches(0.4), size=10, italic=True, color=RGBColor(255,255,255))
-    
-    # Demographics
-    demo_text = f"Age: {data.get('s6_customerAge', 'N/A')}\nJob: {data.get('s6_customerJob', 'N/A')}\nLoc: {data.get('s6_customerLocation', 'N/A')}"
-    add_text_to_slide(slide, demo_text, Inches(0.6), Inches(3.9), Inches(2.3), Inches(1), size=11, color=RGBColor(255,255,255))
-    
-    # Personality Sliders
-    add_text_to_slide(slide, "Personality", Inches(0.6), Inches(5.1), Inches(2.3), Inches(0.3), size=10, bold=True, color=RGBColor(255,255,255))
-    persistence = data.get('s6_personality', {})
-    if not isinstance(persistence, dict): persistence = {}
-    
-    pers_labels = ["Introvert/Extrovert", "Sensing/Intuition", "Thinking/Feeling", "Judging/Perceiving"]
-    for i, lab in enumerate(pers_labels):
-        y = 5.4 + (i*0.35)
-        slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.7), Inches(y), Inches(2.3), Inches(y)).line.color.rgb = RGBColor(255,255,255)
-        dot = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(1.5), Inches(y-0.05), Inches(0.1), Inches(0.1))
-        dot.fill.solid()
-        dot.fill.fore_color.rgb = RGBColor(255,255,255)
+    # 4 Quadrants Coordinates
+    # Top-Left: Personal Info
+    # Top-Right: Challenges
+    # Bottom-Left: Professional Goals
+    # Bottom-Right: How You Can Help
 
-    # Top Content Boxes
-    goal_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.2), Inches(1.0), Inches(4.5), Inches(1.2))
-    goal_box.fill.solid()
-    goal_box.fill.fore_color.rgb = RGBColor(245, 158, 11)
-    add_text_to_slide(slide, f"Core Goals:\n{data.get('s6_goals', 'N/A')}", Inches(3.3), Inches(1.1), Inches(4.3), Inches(1.0), size=11, color=RGBColor(255,255,255), bold=True)
-    
-    frust_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.2), Inches(2.4), Inches(4.5), Inches(1.2))
-    frust_box.fill.solid()
-    frust_box.fill.fore_color.rgb = RGBColor(253, 186, 116)
-    add_text_to_slide(slide, f"Frustrations:\n{data.get('s6_pains', 'N/A')}", Inches(3.3), Inches(2.5), Inches(4.3), Inches(1.0), size=11, color=RGBColor(255,255,255), bold=True)
-    
-    # Bio
-    add_text_to_slide(slide, f"Bio:\n{data.get('s6_bio', 'N/A')}", Inches(3.2), Inches(3.8), Inches(4.5), Inches(3.0), size=11)
+    # Styling helper for persona boxes
+    def draw_persona_box(slide, title, x, y, w, h, color):
+        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x), Inches(y), Inches(w), Inches(h))
+        box.line.color.rgb = color
+        box.line.width = Pt(2)
+        box.fill.background()
+        add_text_to_slide(slide, title, Inches(x+0.1), Inches(y+0.05), Inches(w-0.2), Inches(0.4), size=12, bold=True, color=color)
+        return box
 
-    # Motivations (Right)
-    add_text_to_slide(slide, "Motivations", Inches(8.0), Inches(1.0), Inches(1.5), Inches(0.4), size=12, bold=True, color=RGBColor(245, 158, 11))
-    for i, label in enumerate(["Growth", "Fear", "Security", "Recognition", "Funding"]):
-        y = 1.4 + (i*0.8)
-        add_text_to_slide(slide, label, Inches(8.0), Inches(y), Inches(1.5), Inches(0.3), size=8)
-        bar_bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(8.0), Inches(y+0.25), Inches(1.5), Inches(0.12))
-        bar_bg.fill.solid()
-        bar_bg.fill.fore_color.rgb = RGBColor(230,230,230)
-        
-        bar_val = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(8.0), Inches(y+0.25), Inches(0.8), Inches(0.12))
-        bar_val.fill.solid()
-        bar_val.fill.fore_color.rgb = RGBColor(245, 158, 11)
+    blue_inst = RGBColor(13, 148, 136) # Institutional Teal-Blue
+    
+    # 1. PERSONAL INFO
+    draw_persona_box(slide, "PERSONAL INFO", 0.5, 1.2, 3.5, 2.5, blue_inst)
+    personal_text = (
+        f"• Age: {data.get('s6_customerAge', 'N/A')}\n"
+        f"• Gender: {data.get('s6_customerGender', 'N/A')}\n"
+        f"• Hobbies: {data.get('s6_customerHobbies', 'N/A')}\n"
+        f"• Location: {data.get('s6_customerLocation', 'N/A')}\n"
+        f"• Interests: {data.get('s6_customerInterests', 'N/A')}\n"
+        f"• Income: {data.get('s6_customerIncome', 'N/A')}"
+    )
+    add_text_to_slide(slide, personal_text, Inches(0.6), Inches(1.7), Inches(3.3), Inches(1.8), size=10)
+
+    # 2. CHALLENGES
+    draw_persona_box(slide, "CHALLENGES", 6.0, 1.2, 3.5, 2.5, blue_inst)
+    add_text_to_slide(slide, data.get('s6_pains', 'N/A'), Inches(6.1), Inches(1.7), Inches(3.3), Inches(1.8), size=10)
+
+    # 3. PROFESSIONAL GOALS
+    draw_persona_box(slide, "PROFESSIONAL GOALS", 0.5, 4.3, 3.5, 2.5, blue_inst)
+    add_text_to_slide(slide, data.get('s6_goals', 'N/A'), Inches(0.6), Inches(4.8), Inches(3.3), Inches(1.8), size=10)
+
+    # 4. HOW YOU CAN HELP
+    draw_persona_box(slide, "HOW YOU CAN HELP", 6.0, 4.3, 3.5, 2.5, blue_inst)
+    add_text_to_slide(slide, data.get('s6_howWeHelp', 'N/A'), Inches(6.1), Inches(4.8), Inches(3.3), Inches(1.8), size=10)
+
+    # CENTRAL AVATAR / IDENTIFIER
+    avatar = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(4.2), Inches(3.0), Inches(1.6), Inches(1.6))
+    avatar.fill.solid()
+    avatar.fill.fore_color.rgb = blue_inst
+    avatar.line.color.rgb = RGBColor(255,255,255)
+    add_text_to_slide(slide, data.get('s6_customerName', 'PERSONA').upper(), Inches(4.0), Inches(4.7), Inches(2.0), Inches(0.5), size=14, bold=True, color=blue_inst)
 
     # 7. VALUE PROPOSITION CANVAS (High Fidelity)
     slide = add_diagram_slide(prs, "Value Proposition Canvas")
@@ -247,11 +236,13 @@ def create_expert_deck(team_name, college, data):
         f"Future Vision: {data.get('s14_vision', 'N/A')}"
     ])
 
-    # 15. SYNTHESIS CLOSURE
+    # 15. SYNTHESIS CLOSURE (Thank You)
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_corner_logo(slide)
-    add_text_to_slide(slide, "VENTURE SYNTHESIS COMPLETE.", Inches(1), Inches(2.5), Inches(8), Inches(1), size=36)
-    add_text_to_slide(slide, "A professional investor-grade artifact generated by the Institutional Standard Engine.", Inches(1), Inches(4), Inches(8), Inches(1), size=18)
+    
+    # Large centered Thank You
+    add_text_to_slide(slide, "THANK YOU.", Inches(1), Inches(2.5), Inches(8), Inches(1.5), size=60, bold=True, color=blue_inst)
+    add_text_to_slide(slide, "Venture Synthesis Complete • High-Fidelity Infrastructure Online", Inches(1), Inches(4.2), Inches(8), Inches(1), size=18)
 
     # Save
     if not os.path.exists('ppt_outputs'):

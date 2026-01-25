@@ -42,7 +42,8 @@ export default function PitchGenerator() {
     s5_primaryUsers: '', s5_secondaryUsers: '',
     // S6: Persona & JTBD (Atomic Fields)
     s6_customerName: '', s6_customerJob: '', s6_customerAge: '', s6_customerLocation: '', s6_customerEthos: '',
-    s6_pains: '', s6_gains: '', s6_bio: '', s6_goals: '', 
+    s6_customerGender: '', s6_customerHobbies: '', s6_customerInterests: '', s6_customerIncome: '',
+    s6_pains: '', s6_gains: '', s6_bio: '', s6_goals: '', s6_howWeHelp: '',
     s6_personality: { introvert: 50, thinking: 50, sensing: 50, judging: 50 },
     s6_motivations: { growth: 50, fear: 50, security: 50, recognition: 50, funding: 50 },
     // S7: Value Proposition & Gap Analysis
@@ -352,51 +353,75 @@ export default function PitchGenerator() {
                    </div>
                 )}
 
-                 {step === 6 && (
-                    <div className="space-y-6 animate-fade-in font-roboto h-[500px] overflow-y-auto pr-4 custom-scrollbar">
-                       <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Empathy Mapping (High Fidelity Persona)</p>
-                       
-                       <div className="grid grid-cols-3 gap-4">
-                         <div>
-                           <label className="label-caps">Name / Persona</label>
-                           <input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} placeholder="Ex: Rahul" />
-                         </div>
-                         <div>
-                           <label className="label-caps">Age</label>
-                           <input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} placeholder="Ex: 34" />
-                         </div>
-                         <div>
-                           <label className="label-caps">Location</label>
-                           <input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} placeholder="Ex: Rural Karnataka" />
-                         </div>
-                       </div>
+                  {step === 6 && (
+                     <div className="space-y-6 animate-fade-in font-roboto h-[500px] overflow-y-auto pr-4 custom-scrollbar">
+                        <p className="text-[10px] font-black text-teal uppercase tracking-[0.2em] mb-2 bg-teal/5 inline-block px-3 py-1 rounded">Activity: Empathy Mapping (High Fidelity Persona)</p>
+                        
+                        <div className="grid grid-cols-4 gap-4">
+                          <div className="col-span-1">
+                            <label className="label-caps">Name / Persona</label>
+                            <input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} placeholder="Ex: Rahul" />
+                          </div>
+                          <div className="col-span-1">
+                            <label className="label-caps">Age</label>
+                            <input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} placeholder="Ex: 34" />
+                          </div>
+                          <div className="col-span-1">
+                            <label className="label-caps">Gender</label>
+                            <input className="input-field !py-2 !text-xs" value={data.s6_customerGender} onChange={e => setData({...data, s6_customerGender: e.target.value})} placeholder="Ex: Male" />
+                          </div>
+                          <div className="col-span-1">
+                            <label className="label-caps">Location</label>
+                            <input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} placeholder="Ex: Rural Karnataka" />
+                          </div>
+                        </div>
 
-                       <div className="grid grid-cols-2 gap-4">
-                         <div>
-                           <label className="label-caps">Professional Role</label>
-                           <input className="input-field !py-2 !text-xs" value={data.s6_customerJob} onChange={e => setData({...data, s6_customerJob: e.target.value})} placeholder="Ex: Lead Supervisor" />
-                         </div>
-                         <div>
-                           <label className="label-caps">Institutional Ethos / Motto</label>
-                           <input className="input-field !py-2 !text-xs" value={data.s6_customerEthos} onChange={e => setData({...data, s6_customerEthos: e.target.value})} placeholder="Ex: Efficiency at scale" />
-                         </div>
-                       </div>
+                        <div className="grid grid-cols-3 gap-4 border-t border-slate-50 pt-4">
+                          <div>
+                            <label className="label-caps">Hobbies</label>
+                            <input className="input-field !py-2 !text-xs" value={data.s6_customerHobbies} onChange={e => setData({...data, s6_customerHobbies: e.target.value})} placeholder="Ex: Reading, Farming" />
+                          </div>
+                          <div>
+                            <label className="label-caps">Interests</label>
+                            <input className="input-field !py-2 !text-xs" value={data.s6_customerInterests} onChange={e => setData({...data, s6_customerInterests: e.target.value})} placeholder="Ex: New Tech, Yield improvement" />
+                          </div>
+                          <div>
+                            <label className="label-caps">Monthly Income</label>
+                            <input className="input-field !py-2 !text-xs" value={data.s6_customerIncome} onChange={e => setData({...data, s6_customerIncome: e.target.value})} placeholder="Ex: ₹45,000" />
+                          </div>
+                        </div>
 
-                       <div className="grid grid-cols-2 gap-4">
-                         <div>
-                           <label className="label-caps text-rose-500">Pains (Frustrations)</label>
-                           <textarea className="input-field !py-2 !text-xs min-h-[80px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} placeholder="Specific daily frustrations..." />
-                         </div>
-                         <div>
-                           <label className="label-caps text-emerald-500">Core Goals</label>
-                           <textarea className="input-field !py-2 !text-xs min-h-[80px]" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} placeholder="What are they trying to achieve?" />
-                         </div>
-                       </div>
+                        <div className="grid grid-cols-2 gap-4 border-t border-slate-50 pt-4">
+                          <div>
+                            <label className="label-caps">Professional Role</label>
+                            <input className="input-field !py-2 !text-xs" value={data.s6_customerJob} onChange={e => setData({...data, s6_customerJob: e.target.value})} placeholder="Ex: Lead Supervisor" />
+                          </div>
+                          <div>
+                            <label className="label-caps">Institutional Ethos / Motto</label>
+                            <input className="input-field !py-2 !text-xs" value={data.s6_customerEthos} onChange={e => setData({...data, s6_customerEthos: e.target.value})} placeholder="Ex: Efficiency at scale" />
+                          </div>
+                        </div>
 
-                       <div>
-                         <label className="label-caps">Narrative Bio</label>
-                         <textarea className="input-field !py-2 !text-xs min-h-[80px]" value={data.s6_bio} onChange={e => setData({...data, s6_bio: e.target.value})} placeholder="Brief background story of the persona..." />
-                       </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="lean-box bg-rose-50/30 p-4 rounded-2xl border border-rose-100">
+                             <label className="label-caps text-rose-500">Challenges / Pains</label>
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 !py-2 !text-xs min-h-[100px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} placeholder="What problems are they trying to solve? (Ex: High water waste)" />
+                          </div>
+                          <div className="lean-box bg-emerald-50/30 p-4 rounded-2xl border border-emerald-100">
+                             <label className="label-caps text-emerald-500">Professional Goals</label>
+                             <textarea className="input-field !bg-transparent !border-0 !p-0 !py-2 !text-xs min-h-[100px]" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} placeholder="What are their career goals? (Ex: Zero waste ops)" />
+                          </div>
+                        </div>
+
+                        <div className="lean-box bg-teal/5 p-4 rounded-2xl border border-teal/10">
+                           <label className="label-caps text-teal">How You Can Help</label>
+                           <textarea className="input-field !bg-transparent !border-0 !p-0 !py-2 !text-xs min-h-[60px]" value={data.s6_howWeHelp} onChange={e => setData({...data, s6_howWeHelp: e.target.value})} placeholder="How does your product meet their specific needs?" />
+                        </div>
+
+                        <div>
+                          <label className="label-caps">Narrative Bio</label>
+                          <textarea className="input-field !py-2 !text-xs min-h-[80px]" value={data.s6_bio} onChange={e => setData({...data, s6_bio: e.target.value})} placeholder="Brief background story of the persona..." />
+                        </div>
 
                        <div className="grid grid-cols-2 gap-8 pt-4 border-t border-slate-100">
                           <div className="space-y-4">
