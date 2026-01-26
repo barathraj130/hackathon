@@ -10,7 +10,6 @@ export default function TeamDashboard() {
   const [timeLeft, setTimeLeft] = useState(86400);
   const [isPaused, setIsPaused] = useState(false);
   const [formattedTime, setFormattedTime] = useState('24:00:00');
-  const [saveStatus, setSaveStatus] = useState('IDLE'); 
   const [isGenerating, setIsGenerating] = useState(false);
   const [submission, setSubmission] = useState(null);
   const [teamData, setTeamData] = useState(null);
@@ -18,35 +17,13 @@ export default function TeamDashboard() {
   const [showWorkflowModal, setShowWorkflowModal] = useState(false);
   const [showCertModal, setShowCertModal] = useState(false);
   const [mounted, setMounted] = useState(false);
-  
-  const [formData, setFormData] = useState({
-    slides: [
-      { id: 'S1', title: 'Organizational Identity', content: '', label: 'Slide 01' },
-      { id: 'S2', title: 'Problem Statement (Candidate View)', content: '', label: 'Slide 02' },
-      { id: 'S3', title: 'Proposed Solution', content: '', label: 'Slide 03' },
-      { id: 'S4', title: 'Target Stakeholders', content: '', label: 'Slide 04' },
-      { id: 'S5', title: 'Existing Limitations', content: '', label: 'Slide 05' },
-      { id: 'S6', title: 'Key Functional Features', content: '', label: 'Slide 06' },
-      { id: 'S7', title: 'Industry / Market Segment', content: '', label: 'Slide 07' },
-      { id: 'S8', title: 'Competitive Landscape', content: '', label: 'Slide 08' },
-      { id: 'S9', title: 'Economic Model (Total Cost)', content: '', label: 'Slide 09' },
-      { id: 'S10', title: 'Projected Impact', content: '', label: 'Slide 10' },
-      { id: 'S11', title: 'Technology Stack', content: '', label: 'Slide 11' },
-      { id: 'S12', title: 'System Architecture', content: '', label: 'Slide 12' },
-      { id: 'S13', title: 'Validation & Evidence', content: '', label: 'Slide 13' },
-      { id: 'S14', title: 'Conclusion & Outlook', content: '', label: 'Slide 14' }
-    ]
-  });
 
-  const formDataRef = useRef(formData);
   const isPausedRef = useRef(isPaused);
-  const lastSavedData = useRef(null);
   const socketRef = useRef(null);
 
   useEffect(() => {
-    formDataRef.current = formData;
     isPausedRef.current = isPaused;
-  }, [formData, isPaused]);
+  }, [isPaused]);
 
   useEffect(() => {
     fetchInitialData();
@@ -62,8 +39,7 @@ export default function TeamDashboard() {
         setFormattedTime(data.formattedTime);
       });
     });
-    const autoSaveInterval = setInterval(() => { if (!isPausedRef.current) autoSaveSubmission(); }, 30000);
-    return () => { if (socketRef.current) socketRef.current.disconnect(); clearInterval(autoSaveInterval); };
+    return () => { if (socketRef.current) socketRef.current.disconnect(); };
   }, []); 
 
   useEffect(() => { setMounted(true); }, []);
@@ -77,10 +53,6 @@ export default function TeamDashboard() {
       setTeamData(res.data);
       if (res.data?.submission) {
         setSubmission(res.data.submission);
-        if (res.data.submission.content?.slides) {
-          setFormData(res.data.submission.content);
-          lastSavedData.current = JSON.stringify(res.data.submission.content);
-        }
       }
       if (res.data?.problemStatement) setProblemStatement(res.data.problemStatement);
       
@@ -88,26 +60,6 @@ export default function TeamDashboard() {
          setShowCertModal(true);
       }
     } catch (err) { console.error(err); }
-  }
-
-  async function autoSaveSubmission(isManual = false) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
-    const currentData = formDataRef.current;
-    if (!isManual && isPausedRef.current) return;
-    setSaveStatus('SAVING');
-    const currentDataStr = JSON.stringify(currentData);
-    if (!isManual && currentDataStr === lastSavedData.current) {
-      setTimeout(() => { setSaveStatus('SAVED'); setTimeout(() => setSaveStatus('IDLE'), 3000); }, 500);
-      return;
-    }
-    try {
-      await axios.post(`${apiUrl}/team/submission`, { content: currentData }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      setSaveStatus('SAVED');
-      lastSavedData.current = currentDataStr;
-      setTimeout(() => setSaveStatus('IDLE'), 3000);
-    } catch (err) { setSaveStatus('ERROR'); setTimeout(() => setSaveStatus('IDLE'), 5000); }
   }
 
   const handleGenerateStandardPPT = async () => {
