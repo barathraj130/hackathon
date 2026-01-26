@@ -236,7 +236,7 @@ export default function AdminDashboard() {
                               ))}
                               <div className="flex gap-1 ml-auto">
                                 <button onClick={() => { setSelectedTeam(s); setShowCertModal(true); }} className="text-[7px] font-black text-indigo-500 uppercase border border-indigo-100 px-2 py-1 rounded hover:bg-indigo-600 hover:text-white transition-all">MANUAL EDIT ✍️</button>
-                                <button onClick={() => handleUnlockTeam(s.teamId)} className="text-[7px] font-black text-amber-500 uppercase border border-amber-100 px-2 py-1 rounded hover:bg-amber-500 hover:text-white transition-all">UNLOCK 🔓</button>
+                                <button onClick={() => handleUnlockTeam(s.teamId)} className="text-[9px] font-black text-amber-500 uppercase border-2 border-amber-200 px-4 py-2 rounded-lg hover:bg-amber-500 hover:text-white transition-all shadow-md active:scale-95 mx-2">UNLOCK MISSION 🔓</button>
                                 <button onClick={() => handleGenerateCerts(s.teamId)} className="text-[7px] font-black text-rose-500 uppercase border border-rose-100 px-2 py-1 rounded hover:bg-rose-500 hover:text-white transition-all">GENERATE ALL 🎓</button>
                               </div>
                            </div>
