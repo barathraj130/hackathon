@@ -11,7 +11,6 @@ export default function AdminDashboard() {
   const [problemStatements, setProblemStatements] = useState([]);
   const [newStatement, setNewStatement] = useState({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' });
   const [submissions, setSubmissions] = useState([]);
-  const [subFilter, setSubFilter] = useState('ALL');
   const [mounted, setMounted] = useState(false);
   const socketRef = useRef();
 
@@ -88,16 +87,41 @@ export default function AdminDashboard() {
     try { await axios.delete(`${getApiUrl()}/admin/teams/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchTeams(); fetchStats(); } catch(e) {}
   }
 
+  async function handleCreateStatement(e) {
+    e.preventDefault();
+    try {
+      await axios.post(`${getApiUrl()}/admin/problem-statements`, newStatement, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      setNewStatement({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' });
+      fetchProblemStatements();
+    } catch (err) { alert("Deployment failed."); }
+  }
+
+  async function handleDeleteStatement(id) {
+    if (!confirm("🚨 PURGE CHALLENGE?")) return;
+    try {
+      await axios.delete(`${getApiUrl()}/admin/problem-statements/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      fetchProblemStatements();
+    } catch (err) { alert("Purge failed."); }
+  }
+
   if (!mounted) return <div className="min-h-screen bg-[#f1f5f9]" />;
+
+  const navigation = [
+    { id: 'overview', label: 'OVERVIEW' },
+    { id: 'submissions', label: 'SUBMISSIONS' },
+    { id: 'problems', label: 'PROBLEMS' },
+    { id: 'teams', label: 'TEAMS' },
+    { id: 'configuration', label: 'CONFIGURATION' }
+  ];
 
   return (
     <div className="flex min-h-screen bg-[#f1f5f9] font-sans text-slate-800 uppercase tracking-tight overflow-hidden">
       <aside className="w-80 bg-[#020617] text-white flex flex-col h-screen sticky top-0 p-8 space-y-10 border-r border-white/5 shadow-2xl">
         <div className="flex items-center gap-4"><div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center font-black text-xl border border-white/10">H</div><div><p className="font-black text-2xl tracking-tighter">HACK@JIT</p><p className="text-[10px] text-slate-500 font-bold tracking-[0.3em]">AUTHORITY</p></div></div>
         <nav className="flex-1 space-y-2">
-           {['OVERVIEW', 'SUBMISSIONS', 'TEAMS', 'CONFIGURATION'].map(tab => (
-             <button key={tab} onClick={() => setActiveTab(tab.toLowerCase())} className={`w-full text-left px-6 py-4 rounded-2xl text-[11px] font-black tracking-widest transition-all flex items-center justify-between group ${activeTab === tab.toLowerCase() ? 'bg-white/10 text-white shadow-xl border border-white/5' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}>
-               {tab} <div className={`w-1.5 h-1.5 rounded-full ${activeTab === tab.toLowerCase() ? 'bg-emerald-500 scale-100 shadow-[0_0_10px_#10b981]' : 'scale-0 group-hover:scale-100 group-hover:bg-white/20'}`}></div>
+           {navigation.map(tab => (
+             <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`w-full text-left px-6 py-4 rounded-2xl text-[11px] font-black tracking-widest transition-all flex items-center justify-between group ${activeTab === tab.id ? 'bg-white/10 text-white shadow-xl border border-white/5' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}>
+               {tab.label} <div className={`w-1.5 h-1.5 rounded-full ${activeTab === tab.id ? 'bg-emerald-500 scale-100 shadow-[0_0_10px_#10b981]' : 'scale-0 group-hover:scale-100 group-hover:bg-white/20'}`}></div>
              </button>
            ))}
         </nav>
@@ -170,18 +194,64 @@ export default function AdminDashboard() {
            </div>
         )}
 
+        {activeTab === 'problems' && (
+           <div className="grid grid-cols-12 gap-10 animate-fade-in">
+              <div className="col-span-4 bg-white p-10 rounded-[3rem] border border-slate-200 shadow-xl h-fit sticky top-12 space-y-8">
+                 <div className="space-y-2"><h2 className="text-[11px] font-black tracking-[0.3em] text-slate-400 uppercase">Initialize Challenge</h2><p className="text-xs font-medium text-slate-500 normal-case italic">Deploy a new problem statement to the master registry.</p></div>
+                 <form onSubmit={handleCreateStatement} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                       <input className="input-field-sleek" placeholder="Q. ID (Ex: 101)" value={newStatement.questionNo} onChange={e => setNewStatement({...newStatement, questionNo: e.target.value})} required />
+                       <input className="input-field-sleek" placeholder="Div (Ex: IV.A)" value={newStatement.subDivisions} onChange={e => setNewStatement({...newStatement, subDivisions: e.target.value})} />
+                    </div>
+                    <input className="input-field-sleek" placeholder="Operational Title" value={newStatement.title} onChange={e => setNewStatement({...newStatement, title: e.target.value})} required />
+                    <textarea className="input-field-sleek min-h-[160px] py-4" placeholder="Technical Abstract & Requirements" value={newStatement.description} onChange={e => setNewStatement({...newStatement, description: e.target.value})} required />
+                    <button className="w-full py-5 bg-[#020617] text-white font-black text-[11px] tracking-widest rounded-2xl hover:bg-teal-500 transition-all uppercase">Deploy Statement</button>
+                 </form>
+              </div>
+              <div className="col-span-8 bg-white rounded-[3rem] border border-slate-200 shadow-xl overflow-hidden h-fit">
+                 <div className="px-10 py-8 border-b border-slate-50 flex justify-between items-center"><h2 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Master Registry</h2><span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-4 py-1.5 rounded-full">{problemStatements.length} ACTIVE MODULES</span></div>
+                 <div className="divide-y divide-slate-50 max-h-[700px] overflow-y-auto">
+                    {problemStatements.map(ps => (
+                      <div key={ps.id} className="p-8 hover:bg-slate-50 transition-all group flex justify-between items-center">
+                         <div className="flex items-center gap-8 flex-1">
+                            <div className="w-16 h-16 bg-[#020617] text-white rounded-2xl flex items-center justify-center font-black text-lg shadow-xl">Q.{ps.questionNo}</div>
+                            <div className="space-y-1 truncate max-w-xl">
+                               <h4 className="text-lg font-black text-navy uppercase tracking-tight truncate">{ps.title}</h4>
+                               <div className="flex gap-4 items-center">
+                                  <span className="text-[10px] font-black text-slate-400 uppercase">{ps.subDivisions || 'Core'} Module</span>
+                                  <div className="w-1 h-1 bg-slate-200 rounded-full"></div>
+                                  <span className={`text-[10px] font-black uppercase ${ps.allottedTo ? 'text-teal-600' : 'text-amber-500'}`}>{ps.allottedTo ? `Allotted: ${ps.allottedTo}` : 'Status: Unallotted'}</span>
+                               </div>
+                            </div>
+                         </div>
+                         <button onClick={() => handleDeleteStatement(ps.id)} className="p-4 bg-rose-50 text-rose-500 rounded-2xl border border-rose-100 opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500 hover:text-white"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                      </div>
+                    ))}
+                    {problemStatements.length === 0 && <div className="p-40 text-center opacity-10 font-black text-2xl uppercase tracking-[0.5em]">Registry Empty</div>}
+                 </div>
+              </div>
+           </div>
+        )}
+
         {activeTab === 'teams' && (
            <div className="grid grid-cols-12 gap-10 animate-fade-in">
               <div className="col-span-4 bg-white p-10 rounded-[3rem] border border-slate-200 shadow-xl h-fit sticky top-12 space-y-10">
-                 <div className="space-y-2"><h2 className="text-[11px] font-black tracking-[0.3em] text-slate-400 uppercase shadow-xs">Enrollment Node</h2><p className="text-xs font-medium text-slate-500 normal-case italic">Authenticate a new mission entity for institutional access.</p></div>
+                 <div className="space-y-2"><h2 className="text-[11px] font-black tracking-[0.3em] text-slate-400 uppercase">Enrollment Node</h2><p className="text-xs font-medium text-slate-500 normal-case italic">Authenticate a new mission entity for institutional access.</p></div>
                  <form onSubmit={handleCreateTeam} className="space-y-6">
-                    <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 tracking-widest pl-2">IDENTIFIER NAME</label><input className="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 text-sm font-black outline-none focus:border-teal-500 transition-all" placeholder="Ex: CYBER_CORE" value={newTeam.teamName} onChange={e => setNewTeam({...newTeam, teamName: e.target.value})} /></div>
-                    <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 tracking-widest pl-2">AUTH KEY (INSTITUTION)</label><input className="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 text-sm font-black outline-none focus:border-teal-500 transition-all" placeholder="Ex: JIT_INFRA_2026" value={newTeam.collegeName} onChange={e => setNewTeam({...newTeam, collegeName: e.target.value})} /></div>
+                    <input className="input-field-sleek" placeholder="Entity Identifier (Team Name)" value={newTeam.teamName} onChange={e => setNewTeam({...newTeam, teamName: e.target.value})} />
+                    <input className="input-field-sleek" placeholder="Auth Key (Institutional Password)" value={newTeam.collegeName} onChange={e => setNewTeam({...newTeam, collegeName: e.target.value})} />
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-400 pl-2 tracking-widest">Challenge Assignment</label>
+                       <select className="input-field-sleek font-black cursor-pointer" value={newTeam.problemStatementId} onChange={e => setNewTeam({...newTeam, problemStatementId: e.target.value})}>
+                          <option value="">-- No Assignment --</option>
+                          {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo}>{ps.questionNo}: {ps.title}</option>)}
+                       </select>
+                    </div>
                     <button className="w-full py-5 bg-[#020617] text-white font-black text-[11px] tracking-widest rounded-2xl hover:bg-teal-500 transition-all shadow-2xl active:scale-95 uppercase">Instantiate Authorization</button>
                  </form>
               </div>
               <div className="col-span-8 bg-white rounded-[3rem] border border-slate-200 shadow-xl overflow-hidden h-fit">
-                 <div className="px-10 py-8 border-b border-slate-50 flex justify-between items-center"><h2 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Active Entities</h2><span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-4 py-1.5 rounded-full">{teams.length} NODE(S) DETECTED</span></div>
+                 <div className="px-10 py-8 border-b border-slate-50 flex justify-between items-center"><h2 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Enrollment Registry</h2><span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-4 py-1.5 rounded-full">{teams.length} NODE(S) DETECTED</span></div>
                  <div className="overflow-x-auto"><table className="w-full text-left"><thead className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100"><tr><th className="px-10 py-6">IDENTIFIER</th><th className="px-10 py-6">AUTH KEY</th><th className="px-10 py-6 text-right">SYSTEM ACTION</th></tr></thead><tbody className="divide-y divide-slate-50">{teams.map(t => (<tr key={t.id} className="text-sm font-black text-[#020617] hover:bg-slate-50/50 transition-all"><td className="px-10 py-8 uppercase tracking-tight">{t.teamName}</td><td className="px-10 py-8 text-[11px] text-slate-400 font-bold tracking-widest uppercase">{t.collegeName}</td><td className="px-10 py-8 text-right"><button onClick={() => handleDeleteTeam(t.id)} className="text-rose-500 text-[10px] font-black tracking-widest hover:bg-rose-50 px-5 py-2.5 rounded-xl border border-rose-100 transition-all uppercase">Purge Node</button></td></tr>))}</tbody></table></div>
               </div>
            </div>
@@ -211,6 +281,29 @@ export default function AdminDashboard() {
            </div>
         )}
       </main>
+
+      <style jsx global>{`
+        .input-field-sleek {
+          width: 100%;
+          background: #f8fafc;
+          border: 2px solid #f1f5f9;
+          border-radius: 1rem;
+          padding: 1rem 1.5rem;
+          font-weight: 800;
+          font-size: 0.875rem;
+          outline: none;
+          transition: all 0.2s ease;
+          text-transform: uppercase;
+        }
+        .input-field-sleek:focus {
+          border-color: #0d9488;
+          background: white;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+      `}</style>
     </div>
   );
 }
