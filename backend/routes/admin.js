@@ -24,8 +24,16 @@ router.post('/toggle-halt', async (req, res) => {
         let config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
         const newStatus = !config.isPaused;
         await prisma.hackathonConfig.update({ where: { id: 1 }, data: { isPaused: newStatus } });
+        
+        // Sync in-memory state
+        const timerState = req.app.get('timerState');
+        if (timerState) timerState.setTimerPaused(newStatus);
+
         const io = req.app.get('socketio');
-        if (io) io.emit('timerUpdate', { timerPaused: newStatus });
+        if (io) io.emit('timerUpdate', { 
+            timerPaused: newStatus,
+            timeRemaining: timerState ? timerState.getTimerState().timeRemaining : 0
+        });
         res.json({ success: true, isPaused: newStatus });
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });
@@ -169,6 +177,13 @@ router.post('/toggle-regenerate', async (req, res) => {
 router.post('/test-config', async (req, res) => {
     try {
         await prisma.hackathonConfig.upsert({ where: { id: 1 }, update: req.body, create: { id: 1, ...req.body } });
+        
+        // Institutional Sync: Update in-memory timer
+        if (req.body.durationMinutes) {
+            const timerState = req.app.get('timerState');
+            if (timerState) timerState.setTimeRemaining(req.body.durationMinutes * 60);
+        }
+
         res.json({ success: true });
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });

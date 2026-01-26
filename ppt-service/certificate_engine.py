@@ -41,7 +41,7 @@ def create_certificate(name, college, year, dept, role, event_name="HACK@JIT 1.0
     # "CERTIFICATE OF MERIT/PARTICIPATION"
     tx_cert = slide.shapes.add_textbox(0, Inches(2.6), prs.slide_width, Inches(0.8))
     tf_cert = tx_cert.text_frame; tf_cert.word_wrap = True
-    p_cert = tf_cert.paragraphs[0]; p_cert.alignment = PP_ALIGN.CENTER; p_cert.text = "CERTIFICATE OF RECOGNITION"
+    p_cert = tf_cert.paragraphs[0]; p_cert.alignment = PP_ALIGN.CENTER; p_cert.text = "CERTIFICATE OF PARTICIPATION"
     p_cert.font.size = Pt(36); p_cert.font.bold = True; p_cert.font.color.rgb = TEXT_MAIN; p_cert.font.name = 'Arial'
 
     # "This is to certify that"
