@@ -3,9 +3,8 @@ import requests
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
-from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
 from pptx.dml.color import RGBColor
-from pptx.enum.dml import MSO_LINE_DASH_STYLE as MSO_CONNECTOR
 import os
 
 # Institutional Color Palette
