@@ -215,7 +215,7 @@ export default function PitchGenerator() {
                   )}
 
                   {step === 6 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">06</span><h2 className="text-xl font-black text-[#020617] uppercase">Persona Node</h2></div><div className="grid grid-cols-4 gap-4"><div><label className="label-caps">Name</label><input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} /></div><div><label className="label-caps">Age</label><input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} /></div><div><label className="label-caps">Gender</label><input className="input-field !py-2 !text-xs" value={data.s6_customerGender} onChange={e => setData({...data, s6_customerGender: e.target.value})} /></div><div><label className="label-caps">Location</label><input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} /></div></div><div className="grid grid-cols-2 gap-4"><div className="p-4 bg-rose-50/50 rounded-xl border border-rose-100"><label className="label-caps text-rose-500">Core Pains</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} /></div><div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100"><label className="label-caps text-emerald-500">Success Goals</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px]" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} /></div></div></div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">06</span><h2 className="text-xl font-black text-[#020617] uppercase">Persona Node</h2></div><div className="grid grid-cols-4 gap-4"><div><label className="label-caps">Name</label><input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} /></div><div><label className="label-caps">Age</label><input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} /></div><div><label className="label-caps">Gender</label><input className="input-field !py-2 !text-xs" value={data.s6_customerGender} onChange={e => setData({...data, s6_customerGender: e.target.value})} /></div><div><label className="label-caps">Location</label><input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} /></div></div><div className="grid grid-cols-2 gap-4"><div className="p-4 bg-rose-50/50 rounded-xl border border-rose-100"><label className="label-caps text-rose-500 mb-2 block">Core Pains</label><textarea className="input-field w-full bg-white border-2 border-rose-200 rounded-lg p-3 min-h-[80px] focus:border-rose-400 text-xs" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} /></div><div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100"><label className="label-caps text-emerald-500 mb-2 block">Success Goals</label><textarea className="input-field w-full bg-white border-2 border-emerald-200 rounded-lg p-3 min-h-[80px] focus:border-emerald-400 text-xs" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 7 && (
@@ -296,7 +296,7 @@ export default function PitchGenerator() {
                   )}
 
                   {step === 17 && (
-                    <div className="space-y-12 animate-fade-in flex flex-col items-center justify-center text-center py-20"><div className="text-6xl mb-8 animate-bounce">🏛️</div><div className="space-y-4"><h2 className="text-4xl font-black text-navy uppercase tracking-tighter">Synthesis Authorization</h2><p className="text-slate-400 font-bold text-[11px] uppercase tracking-widest leading-loose max-w-lg">All mission coordinates verified. Artifact generation phase initialized.</p></div></div>
+                    <div className="space-y-12 animate-fade-in flex flex-col items-center justify-center text-center py-20"><div className="text-6xl mb-8 animate-bounce">🏛️</div><div className="space-y-4"><h2 className="text-4xl font-black text-navy uppercase tracking-tighter">Synthesis Authorization</h2><p className="text-slate-400 font-bold text-[11px] uppercase tracking-widest leading-loose max-w-lg">All mission coordinates verified. Choose your submission protocols below: Generate immediately or save state for later review.</p></div></div>
                   )}
              </div>
 
@@ -306,9 +306,12 @@ export default function PitchGenerator() {
                    {step < 17 ? (
                      <button onClick={nextStep} className="bg-navy text-white px-10 py-4 rounded-xl font-black uppercase text-[11px] tracking-widest hover:bg-teal-500 transition-all shadow-2xl active:scale-95">Proceed Journey</button>
                    ) : (
-                     <button onClick={handleSubmit} disabled={loading} className="bg-teal-500 text-navy px-12 py-5 rounded-2xl font-black uppercase text-[13px] tracking-widest hover:bg-navy hover:text-white transition-all shadow-2xl active:scale-95 border-b-4 border-teal-700">
-                        {loading ? 'SYNTHESIZING ARTIFACT...' : 'AUTHORIZE FINAL GENERATION'}
-                     </button>
+                     <div className="flex items-center gap-4">
+                        <button onClick={() => router.push('/team/dashboard')} className="px-8 py-5 rounded-2xl font-black uppercase text-[11px] tracking-widest text-slate-400 hover:bg-slate-100 hover:text-navy transition-all">SAVE & RETURN</button>
+                        <button onClick={handleSubmit} disabled={loading} className="bg-teal-500 text-navy px-12 py-5 rounded-2xl font-black uppercase text-[13px] tracking-widest hover:bg-navy hover:text-white transition-all shadow-2xl active:scale-95 border-b-4 border-teal-700">
+                            {loading ? 'SYNTHESIZING ARTIFACT...' : 'GENERATE & SUBMIT'}
+                        </button>
+                     </div>
                    )}
                 </div>
              </footer>

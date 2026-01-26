@@ -179,6 +179,11 @@ def add_text_box_centered(slide, text, x, y, w, h, sz, b, cl):
     p = tx.text_frame.paragraphs[0]; p.text = text; p.font.size = Pt(sz); p.font.bold = b; p.font.color.rgb = cl; p.alignment = PP_ALIGN.CENTER
 
 def add_footer(slide, text="HACK@JIT 1.0"):
+    f_box = slide.shapes.add_textbox(Inches(0.4), Inches(7.1), Inches(9.2), Inches(0.3))
+    p = f_box.text_frame.paragraphs[0]
+    p.text = text
+    p.font.size = Pt(8); p.font.name = 'Arial'; p.font.color.rgb = RGBColor(148, 163, 184)
+    p.alignment = PP_ALIGN.RIGHT
 
 def draw_gap(slide, data):
     pts = [((0.5, 1.8), "STATUS QUO", 's7_alternatives'), ((5.1, 1.8), "SYSTEMIC GAPS", 's7_limitations'), ((0.5, 4.4), "VALUE GAINS", 's7_gainCreators'), ((5.1, 4.4), "PAIN RELIEF", 's7_painKillers')]
