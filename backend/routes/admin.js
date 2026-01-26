@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const prisma = require('../utils/prisma');
-const { exec } = require('child_process');
 
 const mapInternalToPublic = (url) => {
     if (!url) return url;
@@ -19,13 +18,16 @@ const { verifyToken, isAdmin } = require('../middleware/auth');
 router.use(verifyToken);
 router.use(isAdmin);
 
+/**
+ * INSTITUTIONAL AUTHORITY: MISSION HALT/RESUME
+ */
 router.post('/toggle-halt', async (req, res) => {
     try {
         let config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
         const newStatus = !config.isPaused;
         await prisma.hackathonConfig.update({ where: { id: 1 }, data: { isPaused: newStatus } });
         
-        // Institutional Sync: Update in-memory timer
+        // Synchronize in-memory temporal governor
         const timerState = req.app.get('timerState');
         if (timerState) timerState.setTimerPaused(newStatus);
 
@@ -38,9 +40,15 @@ router.post('/toggle-halt', async (req, res) => {
             });
         }
         res.json({ success: true, isPaused: newStatus });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+    } catch (e) { 
+        console.error("HALT PROTOCOL ERROR:", e);
+        res.status(500).json({ error: "Operational transition failed." }); 
+    }
 });
 
+/**
+ * INSTITUTIONAL AUTHORITY: MISSION RE-CALIBRATION
+ */
 router.post('/test-config', async (req, res) => {
     try {
         await prisma.hackathonConfig.upsert({ where: { id: 1 }, update: req.body, create: { id: 1, ...req.body } });
@@ -49,19 +57,31 @@ router.post('/test-config', async (req, res) => {
             if (timerState) timerState.setTimeRemaining(req.body.durationMinutes * 60);
         }
         res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+    } catch (e) { res.status(500).json({ error: "Configuration sync failed." }); }
 });
 
+/**
+ * ARTIFACT RECONSTRUCTION PROTOCOL
+ */
 router.post('/force-regenerate', async (req, res) => {
     const { teamId } = req.body;
     try {
         const sub = await prisma.submission.findUnique({ where: { teamId }, include: { team: true } });
-        if (!sub) return res.status(404).json({ error: "Context not found." });
+        if (!sub) return res.status(404).json({ error: "Mission artifact not found. Please ensure engagement initiation." });
+
+        // Institutional Sync: Check if enough data exists for reconstruction
+        if (!sub.submissionData || sub.submissionData === "{}") {
+            return res.status(400).json({ error: "Insufficient payload for reconstruction." });
+        }
 
         const pyUrl = process.env.PYTHON_SERVICE_URL || 'https://endearing-liberation-production.up.railway.app';
         let payload;
-        try { payload = JSON.parse(sub.submissionData); } catch(e) { payload = sub.submissionData; }
+        try { 
+            payload = typeof sub.submissionData === 'string' ? JSON.parse(sub.submissionData) : sub.submissionData; 
+        } catch(e) { payload = sub.submissionData; }
 
+        console.log(`[ADMIN] Triggering Artifact Reconstruction for Team: ${sub.teamName}`);
+        
         const r = await axios.post(`${pyUrl}/generate-artifact`, {
             team_name: sub.team.teamName,
             college_name: sub.team.collegeName,
@@ -71,49 +91,94 @@ router.post('/force-regenerate', async (req, res) => {
         if (r.data.success) {
             const publicUrl = mapInternalToPublic(`${pyUrl}/outputs/${r.data.file_url}`);
             await prisma.submission.update({ where: { teamId }, data: { pptUrl: publicUrl, status: 'SUBMITTED' } });
-            return res.json({ success: true, message: "Artifact reconstructed." });
+            return res.json({ success: true, message: "Artifact reconstructed successfully ✓" });
         }
-        res.status(500).json({ error: "Reconstruction failed." });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+        res.status(500).json({ error: r.data.error || "Synthesis cluster error." });
+    } catch (e) { 
+        console.error("RECONSTRUCTION ERROR:", e.message);
+        res.status(500).json({ error: "Credential synthesis hub unreachable." }); 
+    }
 });
 
+/**
+ * AWARD SYNTHESIS HUB
+ */
 router.post('/generate-certificates', async (req, res) => {
     try {
         const { teamId } = req.body;
         const sub = await prisma.submission.findUnique({ where: { teamId }, include: { certificates: true } });
+        if (!sub) return res.status(404).json({ error: "No artifact found." });
+
         const tryUrls = [process.env.PYTHON_SERVICE_URL, 'https://endearing-liberation-production.up.railway.app'].filter(Boolean);
+        
         for (const p of sub.certificates) {
+            let synthesized = false;
             for (const url of tryUrls) {
                 try {
                     const r = await axios.post(`${url}/generate-certificate`, p);
                     if (r.data.success) {
                         const publicUrl = mapInternalToPublic(`${url}/${r.data.file_url}`);
-                        await prisma.participantCertificate.update({ where: { id: p.id }, data: { certificateUrl: publicUrl } });
+                        await prisma.participantCertificate.update({ 
+                            where: { id: p.id }, 
+                            data: { certificateUrl: publicUrl } 
+                        });
+                        synthesized = true;
                         break;
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.warn(`Node ${url} unreachable for award synthesis.`);
+                }
             }
+            if (!synthesized) console.error(`Award synthesis failed for participant: ${p.name}`);
         }
         res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+    } catch (e) { res.status(500).json({ error: "Synthesis cluster failure." }); }
 });
 
+/**
+ * MANUAL CREDENTIAL INTERVENTION
+ */
 router.post('/update-certificates', async (req, res) => {
     try {
         const { teamId, participants } = req.body;
         const sub = await prisma.submission.findUnique({ where: { teamId }, include: { certificates: true } });
-        if (!sub) return res.status(404).json({ error: "No submission" });
-        for (const p of participants) {
-            if (!p.name) continue;
-            const existing = sub.certificates.find(c => c.role === p.role);
-            if (existing) {
-                await prisma.participantCertificate.update({ where: { id: existing.id }, data: { name: p.name, college: p.college, year: p.year, dept: p.dept } });
-            } else {
-                await prisma.participantCertificate.create({ data: { ...p, submissionId: sub.id } });
+        if (!sub) {
+            // Institutional Protocol: Create submission if it doesn't exist for certificate pre-emption
+            const team = await prisma.team.findUnique({ where: { id: teamId } });
+            if (!team) return res.status(404).json({ error: "Entity not found." });
+            
+            const newSub = await prisma.submission.create({
+                data: {
+                    teamId,
+                    teamName: team.teamName,
+                    status: 'SUBMITTED', // Mark as submitted to allow admin work
+                    submissionData: "{}"
+                }
+            });
+            
+            for (const p of participants) {
+                if (!p.name) continue;
+                await prisma.participantCertificate.create({ data: { ...p, submissionId: newSub.id } });
+            }
+        } else {
+            for (const p of participants) {
+                if (!p.name) continue;
+                const existing = sub.certificates.find(c => c.role === p.role);
+                if (existing) {
+                    await prisma.participantCertificate.update({ 
+                        where: { id: existing.id }, 
+                        data: { name: p.name, college: p.college, year: p.year, dept: p.dept } 
+                    });
+                } else {
+                    await prisma.participantCertificate.create({ data: { ...p, submissionId: sub.id } });
+                }
             }
         }
         res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+    } catch (e) { 
+        console.error("CREDENTIAL UPDATE ERROR:", e);
+        res.status(500).json({ error: "Metadata synchronization failed." }); 
+    }
 });
 
 router.get('/dashboard', async (req, res) => {
@@ -125,12 +190,12 @@ router.get('/dashboard', async (req, res) => {
             total_candidates: totalTeams,
             statuses: {
                 in_progress: submissions.filter(s => s.status === 'IN_PROGRESS').length,
-                submitted: submissions.filter(s => s.status === 'SUBMITTED').length
+                submitted: submissions.filter(s => s.status === 'SUBMITTED' || s.status === 'LOCKED').length
             },
-            certificates: { collected: submissions.filter(s => s.certificates.length > 0).length },
+            certificates: { collected: submissions.filter(s => s.certificates.some(c => c.certificateUrl)).length },
             config
         });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+    } catch (e) { res.status(500).json({ error: "Dashboard sync failed." }); }
 });
 
 router.get('/candidates', async (req, res) => {
