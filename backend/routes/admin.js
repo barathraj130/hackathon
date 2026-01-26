@@ -83,7 +83,7 @@ router.post('/force-regenerate', async (req, res) => {
                     college_name: sub.team.collegeName,
                     content: payload,
                     project_data: payload 
-                }, { timeout: 45000 });
+                }, { timeout: 180000 });
 
                 if (r.data.success) {
                     const publicUrl = mapInternalToPublic(`${pyUrl.replace(/\/$/, "")}/outputs/${r.data.file_url}`);

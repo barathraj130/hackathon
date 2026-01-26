@@ -332,7 +332,7 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
                         team_name: team.teamName,
                         college_name: team.collegeName,
                         project_data: projectData
-                    }, { timeout: 60000 });
+                    }, { timeout: 180000 });
                     
                     if (res.data && res.data.success) {
                         response = res;
