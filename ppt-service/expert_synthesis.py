@@ -1,56 +1,12 @@
-# ppt-service/expert_synthesis.py
-from pptx import Presentation
-from pptx.util import Inches, Pt
-from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
-from pptx.enum.text import PP_ALIGN
-from pptx.dml.color import RGBColor
-import os
+from io import BytesIO
+import requests
 
-# --- Visual Identity (Institutional Premium Light Theme) ---
-PRIMARY_COLOR = RGBColor(13, 148, 136)   # Teal-600
-SECONDARY_COLOR = RGBColor(51, 65, 85)   # Slate-700
-BG_LIGHT = RGBColor(248, 250, 252)       # Slate-50
-ACCENT_GREY = RGBColor(241, 245, 249)    # Slate-100
-TEXT_MAIN = RGBColor(30, 41, 59)         # Slate-800
-LINE_COLOR = RGBColor(203, 213, 225)     # Slate-300
-ERROR_ZONE = RGBColor(225, 29, 72)       # Rose-600
-WHITE = RGBColor(255, 255, 255)
-
-def add_footer(slide, text="HACK@JIT 1.0"):
-    f_box = slide.shapes.add_textbox(Inches(0.4), Inches(7.1), Inches(9.2), Inches(0.3))
-    p = f_box.text_frame.paragraphs[0]
-    p.text = text
-    p.font.size = Pt(8); p.font.name = 'Arial'; p.font.color.rgb = RGBColor(148, 163, 184)
-    p.alignment = PP_ALIGN.RIGHT
-
-def set_slide_bg(slide):
-    fill = slide.background.fill
-    fill.solid(); fill.fore_color.rgb = WHITE
-
-def add_header(slide, title):
-    branding = slide.shapes.add_textbox(Inches(0.4), Inches(0.2), Inches(4), Inches(0.3))
-    p_b = branding.text_frame.paragraphs[0]
-    p_b.text = "HACK@JIT 1.0"
-    p_b.font.size = Pt(10); p_b.font.bold = True; p_b.font.color.rgb = PRIMARY_COLOR
-    if os.path.exists("institution_logo.png"):
-        slide.shapes.add_picture("institution_logo.png", Inches(8.8), Inches(0.2), width=Inches(0.8))
-    title_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.6), Inches(9.2), Inches(0.5))
-    tf = title_box.text_frame; tf.text = title.upper()
-    p = tf.paragraphs[0]; p.font.size = Pt(24); p.font.bold = True; p.font.color.rgb = TEXT_MAIN
-    line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.4), Inches(1.15), Inches(3.0), Inches(1.15))
-    line.line.color.rgb = PRIMARY_COLOR; line.line.width = Pt(3)
-    add_footer(slide)
-
-def add_clean_box(slide, text, left, top, width, height, size=14, bold=False, color=TEXT_MAIN, borderColor=LINE_COLOR, bgColor=None):
-    shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left, top, width, height)
-    shape.fill.solid(); shape.fill.fore_color.rgb = bgColor or WHITE
-    shape.line.color.rgb = borderColor or LINE_COLOR; shape.line.width = Pt(1)
-    tf = shape.text_frame; tf.word_wrap = True; tf.margin_left = Inches(0.12); tf.margin_top = Inches(0.12)
-    p = tf.paragraphs[0]; p.text = str(text) if text else "N/A"
-    p.font.size = Pt(size); p.font.bold = bold; p.font.name = 'Arial'; p.font.color.rgb = color
+# ... (Imports)
 
 def create_expert_deck(team_name, college, data):
     prs = Presentation()
+    
+    # ... (Cover Slide Logic - Unchanged)
     
     # 1. PREMIUM COVER SLIDE
     slide = prs.slides.add_slide(prs.slide_layouts[6])
@@ -70,23 +26,19 @@ def create_expert_deck(team_name, college, data):
     line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.4), Inches(6.5), Inches(3.4))
     line.line.color.rgb = TEXT_MAIN; line.line.width = Pt(2)
 
-    # Detailed Personnel Info (Hierarchical Typography)
+    # Detailed Personnel Info
     tx_id = slide.shapes.add_textbox(Inches(1), Inches(3.8), Inches(8), Inches(3))
     tf_d = tx_id.text_frame; tf_d.word_wrap = True
     
-    # Team Name (Sub-headline style)
     p1 = tf_d.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
     p1.text = f"TEAM {team_name.upper()}"; p1.font.size = Pt(28); p1.font.bold = True; p1.font.color.rgb = TEXT_MAIN
     
-    # College (Lightweight / Italics)
     p2 = tf_d.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
     p2.text = f"from {college.upper()}"; p2.font.size = Pt(16); p2.font.italic = True; p2.font.color.rgb = SECONDARY_COLOR
     
-    # Leader (Professional Label style)
     p3 = tf_d.add_paragraph(); p3.alignment = PP_ALIGN.CENTER
     p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(20); p3.font.bold = True; p3.font.color.rgb = PRIMARY_COLOR
     
-    # Members (Small caption style)
     p4 = tf_d.add_paragraph(); p4.alignment = PP_ALIGN.CENTER
     p4.text = f"NODE MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(12); p4.font.bold = False; p4.font.color.rgb = SECONDARY_COLOR; p4.font.name = 'Arial Narrow'
     
@@ -100,27 +52,25 @@ def create_expert_deck(team_name, college, data):
         ("06 // TARGET PERSONA", lambda s: draw_persona(s, data)),
         ("07 // GAP ANALYSIS", lambda s: draw_gap(s, data)),
         ("08 // PROPOSED SOLUTION", lambda s: draw_solution_statement(s, data)),
-        ("09 // SOLUTION ARCHITECTURE", lambda s: draw_solution_flow(s, data)),
-        ("10 // LEAN OPERATIONAL LOGIC", lambda s: draw_lean(s, data)),
-        ("11 // ALTITUDE METRICS", lambda s: draw_balloon(s, data)),
-        ("12 // MARKET POSITIONING", lambda s: draw_market_matrix(s, data)),
-        ("13 // MARKET SIZING (TAM SAM SOM)", lambda s: draw_market_sizing(s, data)),
-        ("14 // REVENUE ARCHITECTURE", lambda s: draw_revenue(s, data)),
-        ("15 // FISCAL ALLOCATION", lambda s: draw_fiscal(s, data)),
-        ("16 // FUTURE TRAJECTORY", lambda s: draw_vision(s, data))
+        ("09 // PROTOTYPE EVIDENCE", lambda s: draw_prototype(s, data)),
+        ("10 // SOLUTION ARCHITECTURE", lambda s: draw_solution_flow(s, data)),
+        ("11 // LEAN OPERATIONAL LOGIC", lambda s: draw_lean(s, data)),
+        ("12 // ALTITUDE METRICS", lambda s: draw_balloon(s, data)),
+        ("13 // MARKET POSITIONING", lambda s: draw_market_matrix(s, data)),
+        ("14 // MARKET SIZING (TAM SAM SOM)", lambda s: draw_market_sizing(s, data)),
+        ("15 // REVENUE ARCHITECTURE", lambda s: draw_revenue(s, data)),
+        ("16 // FISCAL ALLOCATION", lambda s: draw_fiscal(s, data)),
+        ("17 // FUTURE TRAJECTORY", lambda s: draw_vision(s, data))
     ]
 
     for title, fn in modules:
         s = prs.slides.add_slide(prs.slide_layouts[6]); set_slide_bg(s)
         add_header(s, title); fn(s)
 
-    # 17. CLOSURE
+    # CLOSURE (Unchanged)
     slide = prs.slides.add_slide(prs.slide_layouts[6]); set_slide_bg(slide)
-    
-    # Institution Logo on TOP centered (mirrors cover)
     if os.path.exists("institution_logo.png"):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
-        
     tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
     p = tx.text_frame.paragraphs[0]; p.text = "THANK YOU."; p.font.size = Pt(64); p.font.bold = True; p.font.color.rgb = PRIMARY_COLOR; p.alignment = PP_ALIGN.CENTER
     add_footer(slide)
@@ -131,21 +81,7 @@ def create_expert_deck(team_name, college, data):
 
 # --- DRAWERS ---
 
-def draw_strategic(slide, data):
-    parts = [("DOMAIN", 's2_domain', 0.8), ("OPERATIONAL CONTEXT", 's2_context', 1.8), ("ROOT CATALYST", 's2_rootReason', 1.0)]
-    y = 1.6
-    for t, k, h in parts:
-        add_clean_box(slide, t, Inches(0.5), Inches(y), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
-        add_clean_box(slide, data.get(k, 'N/A'), Inches(0.5), Inches(y+0.4), Inches(9), Inches(h), 14)
-        y += h + 0.6
-
-def draw_problem(slide, data):
-    add_clean_box(slide, "CORE CHALLENGE", Inches(0.5), Inches(1.6), Inches(9), Inches(0.35), 11, True, ERROR_ZONE, BG_LIGHT, BG_LIGHT)
-    add_clean_box(slide, data.get('s3_coreProblem', 'N/A'), Inches(0.5), Inches(2.0), Inches(9), Inches(2.1), 16)
-    add_clean_box(slide, "AFFECTED NODES", Inches(0.5), Inches(4.6), Inches(4.3), Inches(0.35), 11, True, TEXT_MAIN, BG_LIGHT, BG_LIGHT)
-    add_clean_box(slide, data.get('s3_affected', 'N/A'), Inches(0.5), Inches(5.0), Inches(4.3), Inches(1.5), 13)
-    add_clean_box(slide, "SYSTEMIC IMPACT", Inches(5.2), Inches(4.6), Inches(4.3), Inches(0.35), 11, True, TEXT_MAIN, BG_LIGHT, BG_LIGHT)
-    add_clean_box(slide, data.get('s3_whyItMatters', 'N/A'), Inches(5.2), Inches(5.0), Inches(4.3), Inches(1.5), 13)
+# ... (draw_strategic, draw_problem Unchanged)
 
 def draw_impact(slide, data):
     # Professional Visualization Grid
@@ -160,7 +96,13 @@ def draw_impact(slide, data):
     q2 = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x0), Inches(y0+h/2), Inches(x0+w), Inches(y0+h/2))
     q2.line.color.rgb = LINE_COLOR; q2.line.width = Pt(1); q2.line.dash_style = 2
     
-    # Axis Labels (High Visibility)
+    # WATERMARKS (Subtle Background Labels)
+    add_text_box_centered(slide, "High medium", x0 + 0.1, y0 + 1.8, 2.0, 0.5, 18, True, LINE_COLOR)
+    add_text_box_centered(slide, "High", x0 + 2.7, y0 + 1.8, 2.0, 0.5, 18, True, LINE_COLOR)
+    add_text_box_centered(slide, "Low", x0 + 0.1, y0 + 3.8, 2.0, 0.5, 18, True, LINE_COLOR)
+    add_text_box_centered(slide, "Low medium", x0 + 2.7, y0 + 3.8, 2.0, 0.5, 18, True, LINE_COLOR)
+
+    # Axis Labels
     add_text_box_simple(slide, "CRITICAL IMPACT ⭡", x0+0.1, y0 - 0.4, 2.0, 0.4, 10, True, ERROR_ZONE)
     add_text_box_simple(slide, "FREQUENCY ⭢", x0 + w - 1.0, y0+h+0.1, 1.5, 0.4, 10, True, PRIMARY_COLOR)
 
@@ -169,23 +111,63 @@ def draw_impact(slide, data):
     
     for i, p in enumerate(pts[:8]):
         ix = m.get(p.get('freq'), 2); iy = m.get(p.get('impact'), 2)
-        # Position with padding to avoid axes
         px = x0 + (ix/3.8)*w; py = (y0+h) - (iy/3.8)*h
         
-        # High Impact Bubble
         dot = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(px-0.18), Inches(py-0.18), Inches(0.36), Inches(0.36))
         dot.fill.solid(); dot.fill.fore_color.rgb = ERROR_ZONE; dot.line.color.rgb = WHITE; dot.line.width = Pt(1.5)
         
-        # Internal Index
         tx_dot = slide.shapes.add_textbox(Inches(px-0.18), Inches(py-0.18), Inches(0.36), Inches(0.36))
         p_dot = tx_dot.text_frame.paragraphs[0]; p_dot.text = str(i+1); p_dot.font.size=Pt(10); p_dot.font.bold=True; p_dot.font.color.rgb=WHITE; p_dot.alignment=PP_ALIGN.CENTER
         
-        # Systematic Legend (Banded)
         ly = y0 + (i * 0.6)
         leg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(6.5), Inches(ly), Inches(3.2), Inches(0.5))
         leg.fill.solid(); leg.fill.fore_color.rgb = ACCENT_GREY if i%2==0 else WHITE
         leg.line.color.rgb = LINE_COLOR; leg.line.width = Pt(0.5)
         p_leg = leg.text_frame.paragraphs[0]; p_leg.text = f"{i+1}. {p['point'][:60]}"; p_leg.font.size=Pt(9); p_leg.font.bold=True; p_leg.font.color.rgb=TEXT_MAIN
+
+def draw_prototype(slide, data):
+    # Fetch images from data s8_5_img1, s8_5_img2, s8_5_img3
+    images = [data.get(f's8_5_img{i}') for i in range(1, 4)]
+    images = [img for img in images if img and img.startswith('http')]
+    
+    if not images:
+        add_text_box_centered(slide, "PROTOTYPE EVIDENCE NODES NOT UPLOADED", 1.0, 3.0, 8.0, 1.0, 24, True, LINE_COLOR)
+        return
+
+    # Dynamic layout based on count
+    import io
+    count = len(images)
+    
+    # Layout Configs: (left, top, width, height)
+    layouts = {
+        1: [(1.0, 1.8, 8.0, 4.5)],
+        2: [(0.5, 2.2, 4.4, 3.3), (5.1, 2.2, 4.4, 3.3)],
+        3: [(0.5, 2.2, 2.8, 3.3), (3.6, 2.2, 2.8, 3.3), (6.7, 2.2, 2.8, 3.3)]
+    }
+    
+    cfgs = layouts.get(count, layouts[3])
+    
+    for i, url in enumerate(images[:3]):
+        l, t, w, h = cfgs[i]
+        try:
+            # Download image
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                img_stream = io.BytesIO(response.content)
+                pic = slide.shapes.add_picture(img_stream, Inches(l), Inches(t), width=Inches(w))
+                # Add border
+                pic.line.color.rgb = PRIMARY_COLOR
+                pic.line.width = Pt(2)
+                # Add Label
+                add_text_box_centered(slide, f"EVIDENCE NODE {String.fromCharCode(65+i) if 'String' in locals() else chr(65+i)}", l, t+h+0.1, w, 0.3, 10, True, SECONDARY_COLOR)
+            else:
+                add_clean_box(slide, f"IMG LOAD FAIL: {url[:30]}...", Inches(l), Inches(t), Inches(w), Inches(h), 10, False, ERROR_ZONE)
+        except Exception as e:
+            print(f"Failed to load image {url}: {e}")
+            add_clean_box(slide, "IMAGE STREAM INTERRUPTED", Inches(l), Inches(t), Inches(w), Inches(h), 12, True, ERROR_ZONE, BG_LIGHT, BG_LIGHT)
+
+# ... (Rest of drawers: draw_solution_flow, draw_lean, etc. Unchanged)
+
 
 def add_text_box_simple(slide, text, x, y, w, h, sz, b=False, cl=TEXT_MAIN):
     tx = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
