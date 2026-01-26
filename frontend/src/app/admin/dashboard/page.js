@@ -142,7 +142,11 @@ export default function AdminDashboard() {
         await axios.post(`${getApiUrl()}/admin/unlock-team`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
         alert("Mission Unlocked ✓");
         fetchSubmissions();
-      } catch (err) { alert("Unlock failed."); }
+      } catch (err) { 
+        console.error(err);
+        const msg = err.response?.data?.error || err.message || "Unlock failed";
+        alert(`Unlock Error: ${msg}\n(Status: ${err.response?.status})`); 
+      }
     }
 
   async function handleCreateStatement(e) {
