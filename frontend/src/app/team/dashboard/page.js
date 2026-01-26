@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 export default function TeamDashboard() {
+  console.log("Dashboard v3.1.0-FIXED");
   const [timeLeft, setTimeLeft] = useState(86400);
   const [isPaused, setIsPaused] = useState(false);
   const [formattedTime, setFormattedTime] = useState('24:00:00');
