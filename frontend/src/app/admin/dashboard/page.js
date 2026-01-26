@@ -134,7 +134,10 @@ export default function AdminDashboard() {
     <div className="flex min-h-screen bg-[#f1f5f9] font-sans text-slate-800 uppercase tracking-tight overflow-hidden">
       {/* SIDEBAR */}
       <aside className="w-64 bg-[#020617] text-white flex flex-col h-screen sticky top-0 p-5 space-y-8 border-r border-white/5 shadow-2xl">
-        <div className="flex items-center gap-3"><div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-black text-sm border border-white/10">H</div><div><p className="font-black text-lg tracking-tighter leading-none text-white italic">HACK@JIT</p><p className="text-[8px] text-slate-500 font-bold tracking-[0.2em] mt-1">ADMIN AUTHORITY</p></div></div>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-black text-sm border border-white/10">H</div>
+          <div><p className="font-black text-lg tracking-tighter leading-none text-white italic">HACK@JIT</p><p className="text-[8px] text-slate-500 font-bold tracking-[0.2em] mt-1">ADMIN AUTHORITY</p></div>
+        </div>
         <nav className="flex-1 space-y-1">
            {['OVERVIEW', 'SUBMISSIONS', 'PROBLEMS', 'TEAMS', 'CONFIGURATION'].map(tab => (
              <button key={tab} onClick={() => setActiveTab(tab.toLowerCase())} className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black tracking-widest transition-all flex items-center justify-between group ${activeTab === tab.toLowerCase() ? 'bg-white/10 text-white shadow-lg border border-white/5' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}>
@@ -142,7 +145,14 @@ export default function AdminDashboard() {
              </button>
            ))}
         </nav>
-        <div className="p-4 bg-white/5 rounded-2xl border border-white/5 text-center"><p className="text-[8px] text-slate-500 font-black mb-1 opacity-50">CLOCK</p><p className={`text-2xl font-mono font-black ${timer.timerPaused ? 'text-amber-400' : 'text-emerald-400'}`}>{timer.formattedTime}</p></div>
+        {/* TEMPORAL MONITOR - FIXED VISIBILITY */}
+        <div className="p-4 bg-white/10 rounded-2xl border border-white/10 text-center shadow-inner relative overflow-hidden group">
+            <div className={`absolute inset-0 opacity-10 blur-xl transition-all ${timer.timerPaused ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
+            <p className="text-[8px] text-slate-400 font-black mb-1 tracking-[0.3em] relative z-10">TEMPORAL MONITOR</p>
+            <p className={`text-2xl font-mono font-bold tracking-widest relative z-10 transition-colors drop-shadow-[0_0_8px_rgba(255,255,255,0.2)] ${timer.timerPaused ? 'text-amber-400' : 'text-emerald-400'}`}>
+              {timer.formattedTime || '24:00:00'}
+            </p>
+        </div>
       </aside>
 
       <main className="flex-1 p-8 overflow-y-auto space-y-10">
@@ -162,6 +172,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* SUBMISSIONS */}
         {activeTab === 'submissions' && (
            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden animate-fade-in">
               <div className="flex justify-between items-center p-6 border-b border-slate-50 bg-slate-50/50"><h2 className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Vault Registry</h2><div className="flex gap-1">{['ALL', 'PENDING', 'SUBMITTED'].map(f => (<button key={f} onClick={() => setSubFilter(f)} className={`px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest ${subFilter === f ? 'bg-[#020617] text-white shadow-md' : 'text-slate-400 hover:bg-slate-50'}`}>{f}</button>))}</div></div>
@@ -199,6 +210,7 @@ export default function AdminDashboard() {
            </div>
         )}
 
+        {/* PROBLEMS */}
         {activeTab === 'problems' && (
            <div className="grid grid-cols-12 gap-8 animate-fade-in">
               <div className="col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm h-fit space-y-6">
@@ -227,6 +239,7 @@ export default function AdminDashboard() {
            </div>
         )}
 
+        {/* TEAMS */}
         {activeTab === 'teams' && (
            <div className="grid grid-cols-12 gap-8 animate-fade-in">
               <div className="col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm h-fit space-y-6">
