@@ -230,11 +230,44 @@ export default function PitchGenerator() {
                     <div className="space-y-6 animate-fade-in">
                        <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">09</span><h2 className="text-xl font-black text-[#020617] uppercase">Prototype Evidence</h2></div>
                        <div className="space-y-6">
-                          <p className="text-[10px] text-slate-500 font-medium italic">Provide direct URLs to your prototype screenshots (Google Drive / Host Links)</p>
+                          <p className="text-[10px] text-slate-500 font-medium italic">Upload direct screenshots or evidence of your prototype. (Images supported)</p>
                           <div className="grid grid-cols-1 gap-4">
-                             <div><label className="label-caps">Evidence Node A</label><input className="input-field font-mono text-teal-600" placeholder="https://..." value={data.s8_5_img1 || ''} onChange={e => setData({...data, s8_5_img1: e.target.value})} /></div>
-                             <div><label className="label-caps">Evidence Node B</label><input className="input-field font-mono text-teal-600" placeholder="https://..." value={data.s8_5_img2 || ''} onChange={e => setData({...data, s8_5_img2: e.target.value})} /></div>
-                             <div><label className="label-caps">Evidence Node C</label><input className="input-field font-mono text-teal-600" placeholder="https://..." value={data.s8_5_img3 || ''} onChange={e => setData({...data, s8_5_img3: e.target.value})} /></div>
+                             {[1, 2, 3].map(n => (
+                               <div key={n} className="flex flex-col gap-2">
+                                  <label className="label-caps">Evidence Node {String.fromCharCode(64+n)}</label>
+                                  <div className="flex gap-3 items-center">
+                                     <input 
+                                        type="file" 
+                                        id={`proto-up-${n}`}
+                                        className="hidden" 
+                                        accept="image/*"
+                                        onChange={async (e) => {
+                                           const file = e.target.files[0];
+                                           if (!file) return;
+                                           setUploading(true);
+                                           const formData = new FormData();
+                                           formData.append('file', file);
+                                           try {
+                                             const token = localStorage.getItem('token');
+                                             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+                                             const res = await axios.post(`${apiUrl}/team/upload-asset`, formData, {
+                                               headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+                                             });
+                                             setData(prev => ({ ...prev, [`s8_5_img${n}`]: res.data.fileUrl }));
+                                           } catch (err) { alert("Upload failed."); } finally { setUploading(false); }
+                                        }} 
+                                     />
+                                     <label htmlFor={`proto-up-${n}`} className={`flex-1 px-4 py-3 rounded-xl border-2 border-dashed border-slate-200 cursor-pointer hover:bg-slate-50 transition-all flex items-center justify-center gap-2 ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                                        <span className="text-[10px] font-black text-slate-400 uppercase">{uploading ? 'Processing...' : data[`s8_5_img${n}`] ? 'REPLACE EVIDENCE' : 'UPLOAD IMAGE FILE'}</span>
+                                     </label>
+                                     {data[`s8_5_img${n}`] && (
+                                        <a href={data[`s8_5_img${n}`]} target="_blank" className="w-10 h-10 bg-teal-50 border border-teal-100 rounded-xl flex items-center justify-center text-teal-600 hover:bg-teal-100 transition-all" title="View Evidence">
+                                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                        </a>
+                                     )}
+                                  </div>
+                               </div>
+                             ))}
                           </div>
                        </div>
                     </div>
