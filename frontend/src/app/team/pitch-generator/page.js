@@ -147,6 +147,29 @@ export default function PitchGenerator() {
     } catch (err) { alert("Upload failed."); } finally { setUploading(false); }
   }
 
+  const [saving, setSaving] = useState(false);
+
+  // Auto-Save Mechanism
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (Object.keys(data).length > 0) handleSaveDraft(true);
+    }, 5000); // Auto-save every 5s
+    return () => clearTimeout(timer);
+  }, [data]);
+
+  async function handleSaveDraft(silent = false) {
+    if (!silent) setSaving(true);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${apiUrl}/team/save-draft`, data, { headers: { Authorization: `Bearer ${token}` } });
+      if (!silent) {
+          // alert("Progress Saved ✓"); 
+          router.push('/team/dashboard');
+      }
+    } catch (err) { console.error("Auto-save failed"); } finally { if (!silent) setSaving(false); }
+  }
+
   async function handleSubmit() {
     setLoading(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
@@ -307,7 +330,7 @@ export default function PitchGenerator() {
                      <button onClick={nextStep} className="bg-navy text-white px-10 py-4 rounded-xl font-black uppercase text-[11px] tracking-widest hover:bg-teal-500 transition-all shadow-2xl active:scale-95">Proceed Journey</button>
                    ) : (
                      <div className="flex items-center gap-4">
-                        <button onClick={() => router.push('/team/dashboard')} className="px-8 py-5 rounded-2xl font-black uppercase text-[11px] tracking-widest text-slate-400 hover:bg-slate-100 hover:text-navy transition-all">SAVE & RETURN</button>
+                        <button onClick={() => handleSaveDraft(false)} className="px-8 py-5 rounded-2xl font-black uppercase text-[11px] tracking-widest text-slate-400 hover:bg-slate-100 hover:text-navy transition-all">{saving ? 'SAVING...' : 'SAVE & RETURN'}</button>
                         <button onClick={handleSubmit} disabled={loading} className="bg-teal-500 text-navy px-12 py-5 rounded-2xl font-black uppercase text-[13px] tracking-widest hover:bg-navy hover:text-white transition-all shadow-2xl active:scale-95 border-b-4 border-teal-700">
                             {loading ? 'SYNTHESIZING ARTIFACT...' : 'GENERATE & SUBMIT'}
                         </button>

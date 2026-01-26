@@ -258,6 +258,32 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
 });
 
 /**
+ * @route   POST /v1/team/save-draft
+ * @desc    Saves current form state without generating artifact.
+ */
+router.post('/save-draft', async (req, res) => {
+    try {
+        const teamId = req.user.id;
+        const projectData = req.body;
+        
+        await prisma.submission.upsert({
+            where: { teamId },
+            update: { content: projectData },
+            create: { 
+                teamId, 
+                content: projectData,
+                status: 'IN_PROGRESS' 
+            }
+        });
+
+        res.json({ success: true, message: "Draft Secured" });
+    } catch (err) {
+        console.error("Draft Save Fail:", err);
+        res.status(500).json({ error: "Persistence Failure" });
+    }
+});
+
+/**
  * @route   POST /v1/team/generate-pitch-deck
  * @desc    Triggers the Expert Pitch Synthesis Engine with graphs and diagrams.
  */
