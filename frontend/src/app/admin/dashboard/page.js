@@ -198,7 +198,15 @@ export default function AdminDashboard() {
                     <tbody className="divide-y divide-slate-50">
                        {filteredSubmissions.map(s => (
                          <tr key={s.id} className="text-[11px] font-bold hover:bg-slate-50 transition-all divide-x divide-slate-50">
-                           <td className="px-5 py-3"><p className="font-black text-sm text-[#020617] tracking-tight">{s.team?.teamName}</p><p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{s.team?.collegeName}</p></td>
+                           <td className="px-5 py-3">
+                              <div className="flex items-center gap-3">
+                                 <div className="px-2 py-0.5 bg-teal-500 text-white rounded font-black text-[9px] min-w-[32px] text-center shadow-sm">{s.allottedQuestion}</div>
+                                 <div>
+                                   <p className="font-black text-sm text-[#020617] tracking-tight">{s.team?.teamName}</p>
+                                   <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{s.team?.collegeName}</p>
+                                 </div>
+                              </div>
+                           </td>
                            <td className="px-5 py-3"><span className={`px-2 py-0.5 rounded-full text-[8px] font-black border ${s.status === 'SUBMITTED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>{s.status}</span></td>
                            <td className="px-5 py-3">
                               <div className="flex gap-2">
@@ -285,7 +293,20 @@ export default function AdminDashboard() {
               </div>
               <div className="col-span-8 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-fit">
                  <div className="px-6 py-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50"><h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrollment Registry</h2><span className="text-[8px] font-bold text-teal-600 bg-teal-50 px-3 py-1 rounded-full">{teams.length} ACTIVE</span></div>
-                 <div className="overflow-x-auto"><table className="w-full text-left"><thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100"><tr><th className="px-6 py-4">IDENTIFIER</th><th className="px-6 py-4">AUTH KEY</th><th className="px-6 py-4 text-right">ACTION</th></tr></thead><tbody className="divide-y divide-slate-50">{teams.map(t => (<tr key={t.id} className="text-[11px] font-black text-[#020617] hover:bg-slate-50 transition-all"><td className="px-6 py-3 uppercase">{t.teamName}</td><td className="px-6 py-3 text-slate-400 uppercase">{t.collegeName}</td><td className="px-6 py-3 text-right"><button onClick={() => handleDeleteTeam(t.id)} className="text-rose-500 text-[8px] font-black border border-rose-100 px-3 py-1.5 rounded-lg hover:bg-rose-500 hover:text-white transition-all">PURGE</button></td></tr>))}</tbody></table></div>
+                 <div className="overflow-x-auto"><table className="w-full text-left"><thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100"><tr><th className="px-6 py-4">IDENTIFIER</th><th className="px-6 py-4">AUTH KEY</th><th className="px-6 py-4 text-right">ACTION</th></tr></thead><tbody className="divide-y divide-slate-50">
+                    {teams.map(t => (
+                        <tr key={t.id} className="text-[11px] font-black text-[#020617] hover:bg-slate-50 transition-all">
+                            <td className="px-6 py-3">
+                                <div className="flex items-center gap-3">
+                                    <span className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-black min-w-[28px] text-center border border-slate-200">{t.allottedQuestion}</span>
+                                    <span className="uppercase text-[#020617]">{t.teamName}</span>
+                                </div>
+                            </td>
+                            <td className="px-6 py-3 text-slate-400 uppercase">{t.collegeName}</td>
+                            <td className="px-6 py-3 text-right"><button onClick={() => handleDeleteTeam(t.id)} className="text-rose-500 text-[8px] font-black border border-rose-100 px-3 py-1.5 rounded-lg hover:bg-rose-500 hover:text-white transition-all">PURGE</button></td>
+                        </tr>
+                    ))}
+                 </tbody></table></div>
               </div>
            </div>
         )}
@@ -295,7 +316,7 @@ export default function AdminDashboard() {
            <div className="grid grid-cols-2 gap-8 animate-fade-in">
               <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
                  <h2 className="text-[10px] font-black tracking-widest text-slate-400 uppercase">System Parameters</h2>
-                 <div className="space-y-2">
+                 <div className="space-y-4">
                     <label className="text-[9px] font-black text-[#020617] tracking-widest">MISSION TIMER (MIN)</label>
                     <input type="number" className="w-full text-4xl font-black p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 outline-none focus:border-teal-500" value={stats.config?.durationMinutes || 1440} onChange={async (e) => { const val = parseInt(e.target.value); await axios.post(`${getApiUrl()}/admin/test-config`, { durationMinutes: val }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchStats(); }} />
                  </div>
@@ -307,7 +328,7 @@ export default function AdminDashboard() {
               </div>
               <div className="bg-[#020617] p-8 rounded-3xl border border-white/5 shadow-2xl flex flex-col justify-between group overflow-hidden relative">
                  <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
-                 <div className="space-y-4 relative z-10"><h3 className="text-teal-400 font-black text-[10px] tracking-widest uppercase items-center flex gap-2"><span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-ping"></span> Pulse Recovery</h3><p className="text-xs font-medium text-slate-400 normal-case leading-relaxed opacity-60">Full institutional registry reconstruction protocol.</p></div>
+                 <div className="space-y-4 relative z-10"><h3 className="text-teal-400 font-black text-[10px] tracking-widest uppercase items-center flex gap-2"><span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-ping"></span> Pulse Recovery</h3><p className="text-sm font-medium text-slate-400 normal-case leading-relaxed opacity-60">Full institutional registry reconstruction protocol.</p></div>
                  <a href={`${getApiUrl().replace('/v1', '')}/setup-db`} target="_blank" className="w-full py-4 bg-teal-500/10 border border-teal-500/20 text-teal-400 text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-teal-500 hover:text-white transition-all text-center relative z-10 shadow-lg">Force Master Recovery</a>
               </div>
            </div>

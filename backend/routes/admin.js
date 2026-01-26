@@ -149,17 +149,22 @@ router.get('/candidates', async (req, res) => {
         const teams = await prisma.team.findMany({
             include: { submission: true }
         });
+        const problems = await prisma.problemStatement.findMany();
 
-        const formattedTeams = teams.map(t => ({
-            id: t.id,
-            teamName: t.teamName,
-            collegeName: t.collegeName,
-            member1: t.member1,
-            member2: t.member2,
-            status: t.submission?.status || 'NOT_STARTED',
-            progressPercentage: calculateProgress(t.submission),
-            lastSaved: t.submission?.updatedAt || null
-        }));
+        const formattedTeams = teams.map(t => {
+            const ps = problems.find(p => p.allottedTo === t.teamName);
+            return {
+                id: t.id,
+                teamName: t.teamName,
+                collegeName: t.collegeName,
+                member1: t.member1,
+                member2: t.member2,
+                status: t.submission?.status || 'NOT_STARTED',
+                progressPercentage: calculateProgress(t.submission),
+                lastSaved: t.submission?.updatedAt || null,
+                allottedQuestion: ps ? `Q.${ps.questionNo}` : 'UNALLOTTED'
+            };
+        });
 
         res.json({ candidates: formattedTeams });
     } catch (error) {
@@ -460,7 +465,17 @@ router.get('/submissions', async (req, res) => {
             },
             orderBy: { updatedAt: 'desc' }
         });
-        res.json(submissions);
+        const problems = await prisma.problemStatement.findMany();
+
+        const enriched = submissions.map(s => {
+            const ps = problems.find(p => p.allottedTo === s.team.teamName);
+            return {
+                ...s,
+                allottedQuestion: ps ? `Q.${ps.questionNo}` : 'UNALLOTTED'
+            };
+        });
+
+        res.json(enriched);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch vault contents." });
     }
