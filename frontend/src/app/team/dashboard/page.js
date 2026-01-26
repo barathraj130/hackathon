@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 export default function TeamDashboard() {
-  console.log("Dashboard v3.1.0-FIXED");
+  console.log("Dashboard v3.1.1-PATCHED");
   const [timeLeft, setTimeLeft] = useState(86400);
   const [isPaused, setIsPaused] = useState(false);
   const [formattedTime, setFormattedTime] = useState('24:00:00');
@@ -30,13 +30,18 @@ export default function TeamDashboard() {
     import('socket.io-client').then((module) => {
       const socketIO = module.default || module.io;
       if (!socketIO) return;
-      const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
+      // Use hardcoded backend URL as fallback if env vars are missing in Vercel
+      const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || 'https://hackathon-production-7c99.up.railway.app';
+      
       const socket = socketIO(socketUrl);
       socketRef.current = socket;
+      
       socket.on('timerUpdate', (data) => {
-        setTimeLeft(data.timeRemaining);
-        setIsPaused(data.timerPaused);
-        setFormattedTime(data.formattedTime);
+        if (data) {
+          if (data.timeRemaining !== undefined) setTimeLeft(data.timeRemaining);
+          if (data.timerPaused !== undefined) setIsPaused(data.timerPaused);
+          if (data.formattedTime) setFormattedTime(data.formattedTime);
+        }
       });
     });
     return () => { if (socketRef.current) socketRef.current.disconnect(); };
