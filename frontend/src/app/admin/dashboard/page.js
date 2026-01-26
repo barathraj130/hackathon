@@ -78,7 +78,11 @@ export default function AdminDashboard() {
       if (res.data.success) {
         setTimer(prev => ({ ...prev, timerPaused: res.data.isPaused }));
       }
-    } catch (err) { alert("Mission state transition failed."); }
+    } catch (err) { 
+        console.error(err);
+        const msg = err.response?.data?.error || err.message || "Mission state transition failed.";
+        alert(`Mission Control Error: ${msg}\n(Status: ${err.response?.status})`); 
+    }
   }
 
   async function handleToggleCertCollection() {
