@@ -66,12 +66,17 @@ router.get('/profile', async (req, res) => {
 
         const team = await prisma.team.findUnique({ 
             where: { id: teamId },
-            include: { submission: true } 
+            include: { 
+                submission: {
+                    include: { certificates: true }
+                }
+            } 
         });
         
         if (!team) return res.status(404).json({ error: "Identity not found." });
         
-        // Find problem statement allotted to this team name or team ID
+        const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
+
         const problemStatement = await prisma.problemStatement.findFirst({
             where: {
                 OR: [
@@ -81,14 +86,18 @@ router.get('/profile', async (req, res) => {
             }
         });
         
-        console.log(`🔍 [PROFILE SYNC] Team: ${team.teamName}, Artifact: ${team.submission?.pptUrl || 'NONE'}`);
-        
-        // Return a flattened, clean object
         res.json({
             id: team.id,
             teamName: team.teamName,
             collegeName: team.collegeName,
-            submission: team.submission, // Still nested but explicit
+            leaderName: team.member1, // Primary ID from registration
+            member1: team.member2,    // Secondary ID
+            submission: team.submission,
+            config: {
+                allowCertificateDetails: config?.allowCertificateDetails || false,
+                eventEnded: config?.eventEnded || false,
+                isPaused: config?.isPaused || false
+            },
             problemStatement
         });
     } catch (error) {
@@ -363,6 +372,42 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         res.status(500).json({ 
             error: `Expert Synthesis Engine Problem. Detail: ${details}` 
         });
+    }
+});
+
+/**
+ * @route   POST /v1/team/certificate-details
+ * @desc    Submit participant details for certificate generation.
+ */
+router.post('/certificate-details', async (req, res) => {
+    try {
+        const teamId = req.user.id;
+        const { participants } = req.body; // Array of { name, college, year, dept, role }
+
+        const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
+        if (!config || !config.allowCertificateDetails) {
+            return res.status(403).json({ error: "Certificate collection is not open yet." });
+        }
+
+        const submission = await prisma.submission.findUnique({ where: { teamId } });
+        if (!submission) return res.status(404).json({ error: "Submission not found." });
+
+        // Atomic Reset: Purge existing and rebuild
+        await prisma.participantCertificate.deleteMany({
+            where: { submissionId: submission.id }
+        });
+
+        await prisma.participantCertificate.createMany({
+            data: participants.map(p => ({
+                ...p,
+                submissionId: submission.id
+            }))
+        });
+
+        res.json({ success: true, message: "Credentials synchronized with internal vault." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Vault Error" });
     }
 });
 

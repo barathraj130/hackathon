@@ -22,30 +22,43 @@ model Team {
 }
 
 model Submission {
-  id                String    @id @default(uuid())
-  teamId            String    @unique
-  team              Team      @relation(fields: [teamId], references: [id])
-  content           Json      // Stores the 15-slide venture journey data
-  status            String    @default("IN_PROGRESS") // IN_PROGRESS, SUBMITTED, LOCKED
-  pptUrl            String?
-  canRegenerate     Boolean   @default(true)  // Admin can set to false to lock
-  prototypeUrl      String?   // Link to prototype (Google Drive, form, image, etc.)
-  certificateName   String?   // Name for certificate
-  certificateCollege String?  // College for certificate  
-  certificateYear   Int?      // Year for certificate
-  submittedAt       DateTime? // Final submission timestamp
-  updatedAt         DateTime  @updatedAt
+  id                   String    @id @default(uuid())
+  teamId               String    @unique
+  team                 Team      @relation(fields: [teamId], references: [id])
+  content              Json      // Stores the high-fidelity synthesis data
+  status               String    @default("IN_PROGRESS") // IN_PROGRESS, SUBMITTED, LOCKED
+  pptUrl               String?
+  canRegenerate        Boolean   @default(true) 
+  prototypeUrl         String?   
+  certificates         ParticipantCertificate[]
+  submittedAt          DateTime? 
+  updatedAt            DateTime  @updatedAt
+}
+
+model ParticipantCertificate {
+  id           String     @id @default(uuid())
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id])
+  name         String
+  college      String
+  year         String
+  dept         String
+  role         String     // LEADER, MEMBER
+  certificateUrl String?
+  createdAt    DateTime   @default(now())
 }
 
 model HackathonConfig {
-  id              Int      @id @default(1)
-  startTime       DateTime?
-  isPaused        Boolean  @default(true)
-  durationMinutes Int      @default(1440) // Default 24 Hours
-  pptConfig       Json?    // Slide count, titles, limits
-  collegeLogo     String?
-  footerText      String?
-  eventTheme      Json?    // Colors, fonts
+  id                    Int      @id @default(1)
+  startTime             DateTime?
+  isPaused              Boolean  @default(true)
+  eventEnded            Boolean  @default(false)
+  allowCertificateDetails Boolean @default(false)
+  durationMinutes       Int      @default(1440)
+  pptConfig             Json?    
+  collegeLogo           String?
+  footerText            String?
+  eventTheme            Json?    
 }
 
 model ProblemStatement {
@@ -54,7 +67,7 @@ model ProblemStatement {
   subDivisions String?
   title       String
   description String
-  allottedTo  String? // Optional: Team ID if specifically allotted
+  allottedTo  String? 
   createdAt   DateTime @default(now())
 }
 

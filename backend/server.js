@@ -186,6 +186,32 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
     await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "certificateYear" INTEGER;`);
     await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "submittedAt" TIMESTAMP WITH TIME ZONE;`);
     
+    // EMERGENCY HACKATHON CONFIG UPGRADE
+    await prisma.$executeRawUnsafe(`ALTER TABLE "HackathonConfig" ADD COLUMN IF NOT EXISTS "allowCertificateDetails" BOOLEAN DEFAULT false;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "HackathonConfig" ADD COLUMN IF NOT EXISTS "eventEnded" BOOLEAN DEFAULT false;`);
+
+    // EMERGENCY TABLE RECOVERY: Ensure ParticipantCertificate exists
+    try {
+      await prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "ParticipantCertificate" (
+          "id" TEXT NOT NULL,
+          "submissionId" TEXT NOT NULL,
+          "name" TEXT NOT NULL,
+          "college" TEXT NOT NULL,
+          "year" TEXT NOT NULL,
+          "dept" TEXT NOT NULL,
+          "role" TEXT NOT NULL,
+          "certificateUrl" TEXT,
+          "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT "ParticipantCertificate_pkey" PRIMARY KEY ("id"),
+          CONSTRAINT "ParticipantCertificate_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "Submission"("id") ON DELETE CASCADE ON UPDATE CASCADE
+        );
+      `);
+      console.log("🏅 Certification Registry Verified.");
+    } catch (certTblErr) {
+      console.warn("⚠️ Certification Registry Warning:", certTblErr.message);
+    }
+    
     // EMERGENCY TABLE RECOVERY: Ensure ProblemStatement exists
     try {
       await prisma.$executeRawUnsafe(`

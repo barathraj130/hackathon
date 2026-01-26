@@ -63,7 +63,6 @@ router.post('/toggle-halt', async (req, res) => {
             data: { isPaused: newStatus }
         });
 
-        // Broadcast via Socket AND update server state
         const io = req.app.get('socketio');
         const timerState = req.app.get('timerState');
         
@@ -94,13 +93,32 @@ router.post('/toggle-halt', async (req, res) => {
 });
 
 /**
+ * TOGGLE CERTIFICATE COLLECTION
+ */
+router.post('/toggle-certificate-collection', async (req, res) => {
+    try {
+        const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
+        const newState = !config.allowCertificateDetails;
+        await prisma.hackathonConfig.update({
+            where: { id: 1 },
+            data: { allowCertificateDetails: newState }
+        });
+        res.json({ success: true, allowCertificateDetails: newState });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to update state." });
+    }
+});
+
+/**
  * 1. GET DASHBOARD STATS
  */
 router.get('/dashboard', async (req, res) => {
     try {
         const totalTeams = await prisma.team.count();
-        const submissions = await prisma.submission.findMany();
-        const config = await prisma.hackathonConfig.findFirst();
+        const submissions = await prisma.submission.findMany({
+            include: { certificates: true }
+        });
+        const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
 
         const stats = {
             total_candidates: totalTeams,
@@ -109,11 +127,16 @@ router.get('/dashboard', async (req, res) => {
                 in_progress: submissions.filter(s => s.status === 'IN_PROGRESS').length,
                 submitted: submissions.filter(s => s.status === 'SUBMITTED').length
             },
-            test_config: config
+            certificates: {
+                collected: submissions.filter(s => s.certificates.length > 0).length,
+                pending: submissions.length - submissions.filter(s => s.certificates.length > 0).length
+            },
+            config: config
         };
 
         res.json(stats);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Failed to fetch stats" });
     }
 });
@@ -373,29 +396,73 @@ router.post('/force-regenerate', async (req, res) => {
 });
 
 /**
+ * BATCH GENERATE CERTIFICATES FOR A TEAM
+ */
+router.post('/generate-certificates', async (req, res) => {
+    try {
+        const { teamId } = req.body;
+        const submission = await prisma.submission.findUnique({
+            where: { teamId },
+            include: { certificates: true, team: true }
+        });
+
+        if (!submission || submission.certificates.length === 0) {
+            return res.status(404).json({ error: "No participant metadata found." });
+        }
+
+        const tryUrls = [
+            process.env.PYTHON_SERVICE_URL,
+            'http://endearing-liberation.railway.internal:8000',
+            'https://endearing-liberation-production.up.railway.app'
+        ].filter(Boolean);
+
+        for (const part of submission.certificates) {
+            let success = false;
+            for (const url of tryUrls) {
+                try {
+                    const cleanHost = url.replace(/\/$/, "");
+                    const response = await axios.post(`${cleanHost}/generate-certificate`, {
+                        name: part.name,
+                        college: part.college,
+                        year: part.year,
+                        dept: part.dept,
+                        role: part.role
+                    }, { timeout: 30000 });
+
+                    if (response.data?.success) {
+                        const fileName = response.data.file_url.split('/').pop();
+                        const publicUrl = mapInternalToPublic(`${cleanHost}/certs/${fileName}`);
+                        await prisma.participantCertificate.update({
+                            where: { id: part.id },
+                            data: { certificateUrl: publicUrl }
+                        });
+                        success = true;
+                        break;
+                    }
+                } catch (e) { console.warn(`Cert fail: ${e.message}`); }
+            }
+        }
+        res.json({ success: true, message: "Credential synthesis complete." });
+    } catch (error) {
+        res.status(500).json({ error: "Synthesis Engine unreachable." });
+    }
+});
+
+/**
  * GET ALL SUBMISSIONS WITH DETAILS
  */
 router.get('/submissions', async (req, res) => {
     try {
         const submissions = await prisma.submission.findMany({
             include: {
-                team: {
-                    select: {
-                        id: true,
-                        teamName: true,
-                        collegeName: true,
-                        member1: true,
-                        member2: true
-                    }
-                }
+                team: true,
+                certificates: true
             },
             orderBy: { updatedAt: 'desc' }
         });
-
         res.json(submissions);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to fetch submissions" });
+        res.status(500).json({ error: "Failed to fetch vault contents." });
     }
 });
 
