@@ -168,30 +168,17 @@ def draw_prototype(slide, data):
 # ... (Rest of drawers: draw_solution_flow, draw_lean, etc. Unchanged)
 
 
+# --- HELPER FUNCTIONS ---
+
 def add_text_box_simple(slide, text, x, y, w, h, sz, b=False, cl=TEXT_MAIN):
     tx = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     p = tx.text_frame.paragraphs[0]; p.text = text; p.font.size = Pt(sz); p.font.bold = b; p.font.color.rgb = cl
 
-def draw_stakeholders(slide, data):
-    for i, (l, k) in enumerate([("PRIMARY SEGMENT", 's5_primaryUsers'), ("SECONDARY SEGMENT", 's5_secondaryUsers')]):
-        y = 1.8 + i*2.6
-        add_clean_box(slide, l, Inches(0.5), Inches(y), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
-        add_clean_box(slide, data.get(k, 'N/A'), Inches(0.5), Inches(y+0.4), Inches(9), Inches(1.8), 14)
-
-def draw_persona(slide, data):
-    coords = [(0.5, 1.8), (5.1, 1.8), (0.5, 4.4), (5.1, 4.4)]
-    titles = ["PERSONAL INFO", "CHALLENGES", "PROFESSIONAL GOALS", "SUCCESS FACTORS"]
-    vals = [f"Name: {data.get('s6_customerName','X')}\nAge: {data.get('s6_customerAge', 'X')}\nLoc: {data.get('s6_customerLocation','X')}", data.get('s6_pains', 'N/A'), data.get('s6_goals', 'N/A'), data.get('s6_howWeHelp', 'N/A')]
-    for i, (x, y) in enumerate(coords):
-        add_clean_box(slide, titles[i], Inches(x), Inches(y), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
-        add_clean_box(slide, vals[i], Inches(x), Inches(y+0.4), Inches(4.4), Inches(2.0), 11)
-    c = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(4.4), Inches(3.7), Inches(1.2), Inches(1.2))
-    c.fill.solid(); c.fill.fore_color.rgb = PRIMARY_COLOR; c.line.color.rgb = WHITE; c.line.width = Pt(2)
-    add_text_box_centered(slide, data.get('s6_customerName', 'PERSONA').upper()[:10], 4.4, 4.15, 1.2, 0.3, 9, True, WHITE)
-
 def add_text_box_centered(slide, text, x, y, w, h, sz, b, cl):
     tx = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     p = tx.text_frame.paragraphs[0]; p.text = text; p.font.size = Pt(sz); p.font.bold = b; p.font.color.rgb = cl; p.alignment = PP_ALIGN.CENTER
+
+def add_footer(slide, text="HACK@JIT 1.0"):
 
 def draw_gap(slide, data):
     pts = [((0.5, 1.8), "STATUS QUO", 's7_alternatives'), ((5.1, 1.8), "SYSTEMIC GAPS", 's7_limitations'), ((0.5, 4.4), "VALUE GAINS", 's7_gainCreators'), ((5.1, 4.4), "PAIN RELIEF", 's7_painKillers')]
