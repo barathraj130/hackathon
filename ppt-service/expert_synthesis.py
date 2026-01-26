@@ -1,7 +1,51 @@
 from io import BytesIO
 import requests
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.enum.text import PP_ALIGN
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.dml.color import RGBColor
+from pptx.enum.dml import MSO_LINE_DASH_STYLE as MSO_CONNECTOR
+import os
 
-# ... (Imports)
+# Institutional Color Palette
+PRIMARY_COLOR = RGBColor(13, 148, 136)  # Teal-600
+SECONDARY_COLOR = RGBColor(20, 184, 166)  # Teal-500
+TEXT_MAIN = RGBColor(15, 23, 42)  # Slate-900
+ACCENT_GREY = RGBColor(241, 245, 249)  # Slate-50
+BG_LIGHT = RGBColor(248, 250, 252)  # Slate-100
+WHITE = RGBColor(255, 255, 255)
+LINE_COLOR = RGBColor(203, 213, 225)  # Slate-300
+ERROR_ZONE = RGBColor(239, 68, 68)  # Red-500
+
+def set_slide_bg(slide):
+    bg = slide.background
+    fill = bg.fill
+    fill.solid()
+    fill.fore_color.rgb = WHITE
+
+def add_header(slide, title="SLIDE TITLE"):
+    header_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.3), Inches(9.2), Inches(0.5))
+    p = header_box.text_frame.paragraphs[0]
+    p.text = title
+    p.font.size = Pt(18); p.font.bold = True; p.font.name = 'Arial Black'
+    p.font.color.rgb = TEXT_MAIN
+    p.alignment = PP_ALIGN.LEFT
+
+def add_clean_box(slide, text, x, y, w, h, sz, bold=False, txt_color=TEXT_MAIN, border_color=None, bg_color=None):
+    box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
+    if bg_color:
+        box.fill.solid(); box.fill.fore_color.rgb = bg_color
+    else:
+        box.fill.background()
+    if border_color:
+        box.line.color.rgb = border_color; box.line.width = Pt(1)
+    else:
+        box.line.width = 0
+    tf = box.text_frame; tf.word_wrap = True
+    p = tf.paragraphs[0]; p.text = text
+    p.font.size = Pt(sz); p.font.bold = bold; p.font.color.rgb = txt_color
+
 
 def create_expert_deck(team_name, college, data):
     prs = Presentation()
@@ -80,7 +124,44 @@ def create_expert_deck(team_name, college, data):
 
 # --- DRAWERS ---
 
-# ... (draw_strategic, draw_problem Unchanged)
+def draw_strategic(slide, data):
+    add_clean_box(slide, "DOMAIN", Inches(0.5), Inches(1.8), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, data.get('s2_domain', 'N/A'), Inches(0.5), Inches(2.2), Inches(9), Inches(0.8), 14)
+    add_clean_box(slide, "OPERATIONAL CONTEXT", Inches(0.5), Inches(3.2), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, data.get('s2_context', 'N/A'), Inches(0.5), Inches(3.6), Inches(9), Inches(1.8), 12)
+    add_clean_box(slide, "ROOT CATALYST", Inches(0.5), Inches(5.6), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, data.get('s2_rootReason', 'N/A'), Inches(0.5), Inches(6.0), Inches(9), Inches(0.9), 12)
+
+def draw_problem(slide, data):
+    add_clean_box(slide, "CORE PROBLEM", Inches(0.5), Inches(1.8), Inches(9), Inches(0.4), 12, True, ERROR_ZONE, None, BG_LIGHT)
+    add_clean_box(slide, data.get('s3_coreProblem', 'N/A'), Inches(0.5), Inches(2.3), Inches(9), Inches(2.0), 16, False, TEXT_MAIN, LINE_COLOR, WHITE)
+    add_clean_box(slide, "AFFECTED PERSONNEL", Inches(0.5), Inches(4.5), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, data.get('s3_affected', 'N/A'), Inches(0.5), Inches(4.9), Inches(4.4), Inches(1.8), 12)
+    add_clean_box(slide, "CRITICAL GRAVITY", Inches(5.1), Inches(4.5), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, data.get('s3_whyItMatters', 'N/A'), Inches(5.1), Inches(4.9), Inches(4.4), Inches(1.8), 12)
+
+def draw_stakeholders(slide, data):
+    for i, (label, key) in enumerate([("PRIMARY SEGMENT", 's5_primaryUsers'), ("SECONDARY SEGMENT", 's5_secondaryUsers')]):
+        y_pos = 1.8 + i * 2.6
+        add_clean_box(slide, label, Inches(0.5), Inches(y_pos), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
+        add_clean_box(slide, data.get(key, 'N/A'), Inches(0.5), Inches(y_pos + 0.4), Inches(9), Inches(1.8), 14)
+
+def draw_persona(slide, data):
+    coords = [(0.5, 1.8), (5.1, 1.8), (0.5, 4.4), (5.1, 4.4)]
+    titles = ["PERSONAL INFO", "CHALLENGES", "PROFESSIONAL GOALS", "SUCCESS FACTORS"]
+    vals = [
+        f"Name: {data.get('s6_customerName','X')}\nAge: {data.get('s6_customerAge', 'X')}\nLoc: {data.get('s6_customerLocation','X')}",
+        data.get('s6_pains', 'N/A'),
+        data.get('s6_goals', 'N/A'),
+        data.get('s6_howWeHelp', 'N/A')
+    ]
+    for i, (x, y) in enumerate(coords):
+        add_clean_box(slide, titles[i], Inches(x), Inches(y), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+        add_clean_box(slide, vals[i], Inches(x), Inches(y + 0.4), Inches(4.4), Inches(2.0), 11)
+    c = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(4.4), Inches(3.7), Inches(1.2), Inches(1.2))
+    c.fill.solid(); c.fill.fore_color.rgb = PRIMARY_COLOR; c.line.color.rgb = WHITE; c.line.width = Pt(2)
+    add_text_box_centered(slide, data.get('s6_customerName', 'PERSONA').upper()[:10], 4.4, 4.15, 1.2, 0.3, 9, True, WHITE)
+
 
 def draw_impact(slide, data):
     # Professional Visualization Grid
