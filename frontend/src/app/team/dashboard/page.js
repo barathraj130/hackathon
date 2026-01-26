@@ -180,14 +180,14 @@ export default function TeamDashboard() {
         </div>
 
         <div className="lg:col-span-4 space-y-6 sticky top-28 animate-fade-in">
-           <div className="bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 p-8 rounded-3xl border border-white/20 shadow-2xl text-white space-y-6">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-white/90">Synthesis Engine</h3>
+           <div className="bg-indigo-600 p-8 rounded-3xl border border-indigo-500 shadow-2xl text-white space-y-6">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Synthesis Engine</h3>
             <div className="space-y-4">
-                <button onClick={handleGenerateStandardPPT} disabled={isGenerating || submission?.canRegenerate === false} className={`w-full py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-3 ${isGenerating || submission?.canRegenerate === false ? 'bg-black/20 text-white/50 cursor-not-allowed' : 'bg-white text-teal-600 hover:bg-white/90 shadow-xl'}`}>
+                <button onClick={handleGenerateStandardPPT} disabled={isGenerating || submission?.canRegenerate === false} className={`w-full py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-3 ${isGenerating || submission?.canRegenerate === false ? 'bg-indigo-800 text-indigo-400 cursor-not-allowed' : 'bg-white text-indigo-600 hover:bg-indigo-50 shadow-xl'}`}>
                   {isGenerating ? 'Synthesizing...' : submission?.canRegenerate === false ? 'Vault Locked' : 'Generate PPT Artifact'}
                 </button>
                 {teamData?.config?.allowCertificateDetails && (
-                   <button onClick={() => setShowCertModal(true)} className="w-full py-5 border-2 border-white/40 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white hover:bg-white/20 transition-all">Configure Certificates 🎓</button>
+                   <button onClick={() => setShowCertModal(true)} className="w-full py-5 border-2 border-indigo-400 rounded-2xl font-black uppercase text-[10px] tracking-widest text-indigo-100 hover:bg-indigo-700 transition-all">Configure Certificates 🎓</button>
                 )}
             </div>
           </div>
