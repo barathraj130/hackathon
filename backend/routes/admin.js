@@ -25,25 +25,94 @@ router.post('/toggle-halt', async (req, res) => {
         const newStatus = !config.isPaused;
         await prisma.hackathonConfig.update({ where: { id: 1 }, data: { isPaused: newStatus } });
         
-        // Sync in-memory state
+        // Institutional Sync: Update in-memory timer
         const timerState = req.app.get('timerState');
         if (timerState) timerState.setTimerPaused(newStatus);
 
         const io = req.app.get('socketio');
-        if (io) io.emit('timerUpdate', { 
-            timerPaused: newStatus,
-            timeRemaining: timerState ? timerState.getTimerState().timeRemaining : 0
-        });
+        if (io) {
+            const state = timerState ? timerState.getTimerState() : { timeRemaining: 0 };
+            io.emit('timerUpdate', { 
+                timerPaused: newStatus,
+                timeRemaining: state.timeRemaining 
+            });
+        }
         res.json({ success: true, isPaused: newStatus });
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });
 
-router.post('/toggle-certificate-collection', async (req, res) => {
+router.post('/test-config', async (req, res) => {
     try {
-        const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
-        const newState = !config.allowCertificateDetails;
-        await prisma.hackathonConfig.update({ where: { id: 1 }, data: { allowCertificateDetails: newState } });
-        res.json({ success: true, allowCertificateDetails: newState });
+        await prisma.hackathonConfig.upsert({ where: { id: 1 }, update: req.body, create: { id: 1, ...req.body } });
+        if (req.body.durationMinutes) {
+            const timerState = req.app.get('timerState');
+            if (timerState) timerState.setTimeRemaining(req.body.durationMinutes * 60);
+        }
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: "Fail" }); }
+});
+
+router.post('/force-regenerate', async (req, res) => {
+    const { teamId } = req.body;
+    try {
+        const sub = await prisma.submission.findUnique({ where: { teamId }, include: { team: true } });
+        if (!sub) return res.status(404).json({ error: "Context not found." });
+
+        const pyUrl = process.env.PYTHON_SERVICE_URL || 'https://endearing-liberation-production.up.railway.app';
+        let payload;
+        try { payload = JSON.parse(sub.submissionData); } catch(e) { payload = sub.submissionData; }
+
+        const r = await axios.post(`${pyUrl}/generate-artifact`, {
+            team_name: sub.team.teamName,
+            college_name: sub.team.collegeName,
+            content: payload
+        });
+
+        if (r.data.success) {
+            const publicUrl = mapInternalToPublic(`${pyUrl}/outputs/${r.data.file_url}`);
+            await prisma.submission.update({ where: { teamId }, data: { pptUrl: publicUrl, status: 'SUBMITTED' } });
+            return res.json({ success: true, message: "Artifact reconstructed." });
+        }
+        res.status(500).json({ error: "Reconstruction failed." });
+    } catch (e) { res.status(500).json({ error: "Fail" }); }
+});
+
+router.post('/generate-certificates', async (req, res) => {
+    try {
+        const { teamId } = req.body;
+        const sub = await prisma.submission.findUnique({ where: { teamId }, include: { certificates: true } });
+        const tryUrls = [process.env.PYTHON_SERVICE_URL, 'https://endearing-liberation-production.up.railway.app'].filter(Boolean);
+        for (const p of sub.certificates) {
+            for (const url of tryUrls) {
+                try {
+                    const r = await axios.post(`${url}/generate-certificate`, p);
+                    if (r.data.success) {
+                        const publicUrl = mapInternalToPublic(`${url}/${r.data.file_url}`);
+                        await prisma.participantCertificate.update({ where: { id: p.id }, data: { certificateUrl: publicUrl } });
+                        break;
+                    }
+                } catch (e) {}
+            }
+        }
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: "Fail" }); }
+});
+
+router.post('/update-certificates', async (req, res) => {
+    try {
+        const { teamId, participants } = req.body;
+        const sub = await prisma.submission.findUnique({ where: { teamId }, include: { certificates: true } });
+        if (!sub) return res.status(404).json({ error: "No submission" });
+        for (const p of participants) {
+            if (!p.name) continue;
+            const existing = sub.certificates.find(c => c.role === p.role);
+            if (existing) {
+                await prisma.participantCertificate.update({ where: { id: existing.id }, data: { name: p.name, college: p.college, year: p.year, dept: p.dept } });
+            } else {
+                await prisma.participantCertificate.create({ data: { ...p, submissionId: sub.id } });
+            }
+        }
+        res.json({ success: true });
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });
 
@@ -121,70 +190,12 @@ router.get('/submissions', async (req, res) => {
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });
 
-router.post('/update-certificates', async (req, res) => {
+router.post('/toggle-certificate-collection', async (req, res) => {
     try {
-        const { teamId, participants } = req.body;
-        const sub = await prisma.submission.findUnique({ where: { teamId }, include: { certificates: true } });
-        if (!sub) return res.status(404).json({ error: "No submission" });
-        
-        for (const p of participants) {
-            if (!p.name) continue;
-            const existing = sub.certificates.find(c => c.role === p.role);
-            if (existing) {
-                await prisma.participantCertificate.update({ 
-                    where: { id: existing.id }, 
-                    data: { name: p.name, college: p.college, year: p.year, dept: p.dept } 
-                });
-            } else {
-                await prisma.participantCertificate.create({ 
-                    data: { ...p, submissionId: sub.id } 
-                });
-            }
-        }
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
-});
-
-router.post('/generate-certificates', async (req, res) => {
-    try {
-        const { teamId } = req.body;
-        const sub = await prisma.submission.findUnique({ where: { teamId }, include: { certificates: true } });
-        const tryUrls = [process.env.PYTHON_SERVICE_URL, 'https://endearing-liberation-production.up.railway.app'].filter(Boolean);
-        for (const p of sub.certificates) {
-            for (const url of tryUrls) {
-                try {
-                    const r = await axios.post(`${url}/generate-certificate`, p);
-                    if (r.data.success) {
-                        const fileName = r.data.file_url.split('/').pop();
-                        const publicUrl = mapInternalToPublic(`${url}/certs/${fileName}`);
-                        await prisma.participantCertificate.update({ where: { id: p.id }, data: { certificateUrl: publicUrl } });
-                        break;
-                    }
-                } catch (e) {}
-            }
-        }
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
-});
-
-router.post('/toggle-regenerate', async (req, res) => {
-    try {
-        await prisma.submission.update({ where: { teamId: req.body.teamId }, data: { canRegenerate: req.body.canRegenerate } });
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
-});
-
-router.post('/test-config', async (req, res) => {
-    try {
-        await prisma.hackathonConfig.upsert({ where: { id: 1 }, update: req.body, create: { id: 1, ...req.body } });
-        
-        // Institutional Sync: Update in-memory timer
-        if (req.body.durationMinutes) {
-            const timerState = req.app.get('timerState');
-            if (timerState) timerState.setTimeRemaining(req.body.durationMinutes * 60);
-        }
-
-        res.json({ success: true });
+        const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
+        const newState = !config.allowCertificateDetails;
+        await prisma.hackathonConfig.update({ where: { id: 1 }, data: { allowCertificateDetails: newState } });
+        res.json({ success: true, allowCertificateDetails: newState });
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });
 

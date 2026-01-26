@@ -28,9 +28,16 @@ export default function AdminDashboard() {
     import('socket.io-client').then((module) => {
       const socketIO = module.default || module.io;
       if (!socketIO) return;
-      const socketUrl = getApiUrl().replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
-      socketRef.current = socketIO(socketUrl);
-      socketRef.current.on('timerUpdate', (data) => setTimer(data));
+      const apiUrl = getApiUrl();
+      const socketUrl = apiUrl.replace('/v1', '') || window.location.origin;
+      socketRef.current = socketIO(socketUrl, {
+        transports: ['websocket'],
+        reconnection: true
+      });
+      socketRef.current.on('timerUpdate', (data) => {
+        console.log("Timer Event:", data);
+        setTimer(prev => ({ ...prev, ...data }));
+      });
     });
     return () => socketRef.current?.disconnect();
   }, []);
@@ -66,7 +73,14 @@ export default function AdminDashboard() {
   }
 
   async function handleToggleHalt() {
-    try { await axios.post(`${getApiUrl()}/admin/toggle-halt`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchStats(); } catch (err) { alert("Fail"); }
+    try { 
+      const res = await axios.post(`${getApiUrl()}/admin/toggle-halt`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); 
+      fetchStats(); 
+      // Force immediate timer state sync
+      if (res.data.success) {
+        setTimer(prev => ({ ...prev, timerPaused: res.data.isPaused }));
+      }
+    } catch (err) { alert("Mission state transition failed."); }
   }
 
   async function handleToggleCertCollection() {
@@ -76,9 +90,9 @@ export default function AdminDashboard() {
   async function handleGenerateCerts(teamId) {
      try {
        await axios.post(`${getApiUrl()}/admin/generate-certificates`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
-       alert("Certificates generated.");
+       alert("Credentials synthesized successfully ✓");
        fetchSubmissions();
-     } catch (err) { alert("Synthesis timeout."); }
+     } catch (err) { alert("Synthesis cluster timeout."); }
   }
 
   async function handleReallot(teamName, newId) {
@@ -102,6 +116,15 @@ export default function AdminDashboard() {
   async function handleDeleteTeam(id) {
     if(!confirm("Purge Entity?")) return;
     try { await axios.delete(`${getApiUrl()}/admin/teams/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchTeams(); fetchStats(); } catch(e) {}
+  }
+
+  async function handleForceRegenerate(teamId) {
+    if(!confirm("🚨 FORCE SYSTEM RECONSTRUCTION?")) return;
+    try {
+      await axios.post(`${getApiUrl()}/admin/force-regenerate`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      alert("Reconstruction complete ✓");
+      fetchSubmissions();
+    } catch (err) { alert("Reconstruction cluster failed."); }
   }
 
   async function handleCreateStatement(e) {
@@ -145,7 +168,7 @@ export default function AdminDashboard() {
              </button>
            ))}
         </nav>
-        {/* TEMPORAL MONITOR - FIXED VISIBILITY */}
+        {/* TEMPORAL MONITOR */}
         <div className="p-4 bg-white/10 rounded-2xl border border-white/10 text-center shadow-inner relative overflow-hidden group">
             <div className={`absolute inset-0 opacity-10 blur-xl transition-all ${timer.timerPaused ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
             <p className="text-[8px] text-slate-400 font-black mb-1 tracking-[0.3em] relative z-10">TEMPORAL MONITOR</p>
@@ -157,8 +180,8 @@ export default function AdminDashboard() {
 
       <main className="flex-1 p-8 overflow-y-auto space-y-10">
         <header className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-           <div><h1 className="text-2xl font-black text-[#0f172a] tracking-tighter">COMMAND CENTER</h1><p className="text-[9px] font-bold text-slate-400 tracking-[0.3em]">HACKATHON MANAGEMENT v5.6</p></div>
-           <div className="flex gap-3"><button onClick={handleToggleHalt} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${timer.timerPaused ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/10' : 'bg-rose-500 text-white shadow-xl shadow-rose-500/10'}`}>{timer.timerPaused ? 'RESUME MISSION' : 'PAUSE MISSION'}</button><button onClick={handleToggleCertCollection} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${stats.config?.allowCertificateDetails ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/10' : 'bg-slate-100 text-slate-400 border border-slate-200'}`}>{stats.config?.allowCertificateDetails ? 'CLOSE CERTS' : 'OPEN CERTS'}</button></div>
+           <div><h1 className="text-2xl font-black text-[#0f172a] tracking-tighter">COMMAND CENTER</h1><p className="text-[9px] font-bold text-slate-400 tracking-[0.3em]">HACKATHON MANAGEMENT v5.7</p></div>
+           <div className="flex gap-3"><button onClick={handleToggleHalt} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${timer.timerPaused ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>{timer.timerPaused ? 'RESUME MISSION' : 'PAUSE MISSION'}</button><button onClick={handleToggleCertCollection} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${stats.config?.allowCertificateDetails ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400 border border-slate-200'}`}>{stats.config?.allowCertificateDetails ? 'CLOSE CERTS' : 'OPEN CERTS'}</button></div>
         </header>
 
         {activeTab === 'overview' && (
@@ -175,16 +198,16 @@ export default function AdminDashboard() {
         {/* SUBMISSIONS */}
         {activeTab === 'submissions' && (
            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden animate-fade-in">
-              <div className="flex justify-between items-center p-6 border-b border-slate-50 bg-slate-50/50"><h2 className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Vault Registry</h2><div className="flex gap-1">{['ALL', 'PENDING', 'SUBMITTED'].map(f => (<button key={f} onClick={() => setSubFilter(f)} className={`px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest ${subFilter === f ? 'bg-[#020617] text-white shadow-md' : 'text-slate-400 hover:bg-slate-50'}`}>{f}</button>))}</div></div>
+              <div className="flex justify-between items-center p-6 border-b border-slate-50 bg-slate-50/50"><h2 className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Vault Registry</h2><div className="flex gap-1">{['ALL', 'PENDING', 'SUBMITTED'].map(f => (<button key={f} onClick={() => setSubFilter(f)} className={`px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest ${subFilter === f ? 'bg-[#020617] text-white' : 'text-slate-400'}`}>{f}</button>))}</div></div>
               <div className="overflow-x-auto">
               <table className="w-full text-left">
-                 <thead className="bg-slate-50 border-b border-slate-100 text-[8px] font-black text-slate-400 uppercase"><tr><th className="px-5 py-4 min-w-[150px]">TEAM / CHALLENGE</th><th className="px-5 py-4">STATUS</th><th className="px-5 py-4">LINKS</th><th className="px-5 py-4 min-w-[200px]">AWARDS 🏅</th><th className="px-5 py-4 text-right">ACTION</th></tr></thead>
+                 <thead className="bg-slate-50/50 text-[8px] font-black text-slate-400 uppercase"><tr><th className="px-5 py-4 min-w-[150px]">TEAM / CHALLENGE</th><th className="px-5 py-4">STATUS</th><th className="px-5 py-4">LINKS</th><th className="px-5 py-4 min-w-[200px]">AWARDS 🏅</th><th className="px-5 py-4 text-right">ACTION</th></tr></thead>
                  <tbody className="divide-y divide-slate-50">
                     {filteredSubmissions.map(s => (
                       <tr key={s.id} className="text-[11px] font-bold hover:bg-slate-50 transition-all">
                         <td className="px-5 py-3"><div className="flex items-center gap-3"><span className="px-2 py-0.5 bg-teal-500 text-white rounded font-black text-[9px] min-w-[32px] text-center shadow-sm text-white">{s.allottedQuestion}</span><div><p className="font-black text-sm text-[#020617] tracking-tight">{s.team?.teamName}</p><p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{s.team?.collegeName}</p></div></div></td>
                         <td className="px-5 py-3"><span className={`px-2 py-0.5 rounded-full text-[8px] font-black border ${s.status === 'SUBMITTED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>{s.status}</span></td>
-                        <td className="px-5 py-3"><div className="flex gap-2">{s.pptUrl && <a href={s.pptUrl} target="_blank" className="text-indigo-600 border border-indigo-100 px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-600 hover:text-white transition-all">PPT ↓</a>}{s.prototypeUrl && <a href={s.prototypeUrl} target="_blank" className="text-teal-600 border border-teal-100 px-2 py-1 rounded bg-teal-50 hover:bg-teal-600 hover:text-white transition-all">DEMO ↗</a>}</div></td>
+                        <td className="px-5 py-3"><div className="flex gap-2">{s.pptUrl && <a href={s.pptUrl} target="_blank" className="text-indigo-600 border border-indigo-100 px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-600 hover:text-white">PPT ↓</a>}{s.prototypeUrl && <a href={s.prototypeUrl} target="_blank" className="text-teal-600 border border-teal-100 px-2 py-1 rounded bg-teal-50 hover:bg-teal-600 hover:text-white">DEMO ↗</a>}</div></td>
                         <td className="px-5 py-3">
                            <div className="flex flex-wrap gap-2 items-center">
                               {s.certificates?.map((c, idx) => (
@@ -200,7 +223,7 @@ export default function AdminDashboard() {
                            </div>
                         </td>
                         <td className="px-5 py-3 text-right">
-                           <button onClick={() => fetchSubmissions()} className="p-1.5 bg-slate-100 rounded text-slate-400 hover:bg-[#020617] hover:text-white transition-all"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" /></svg></button>
+                           <button onClick={() => handleForceRegenerate(s.teamId)} className="p-1.5 bg-slate-100 rounded text-slate-400 hover:bg-[#020617] hover:text-white transition-all"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" /></svg></button>
                         </td>
                       </tr>
                     ))}
@@ -210,7 +233,6 @@ export default function AdminDashboard() {
            </div>
         )}
 
-        {/* PROBLEMS */}
         {activeTab === 'problems' && (
            <div className="grid grid-cols-12 gap-8 animate-fade-in">
               <div className="col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm h-fit space-y-6">
@@ -239,7 +261,6 @@ export default function AdminDashboard() {
            </div>
         )}
 
-        {/* TEAMS */}
         {activeTab === 'teams' && (
            <div className="grid grid-cols-12 gap-8 animate-fade-in">
               <div className="col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm h-fit space-y-6">

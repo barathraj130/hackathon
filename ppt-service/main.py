@@ -10,25 +10,27 @@ import uvicorn
 import os
 import traceback
 
-app = FastAPI(title="Institutional Synthesis Hub 4.0")
+app = FastAPI(title="Institutional Synthesis Hub 4.2")
 
-OUT_DIR = "ppt_outputs"
-if not os.path.exists(OUT_DIR):
-    os.makedirs(OUT_DIR)
+# USE ABSOLUTE PATHS FOR STABILITY
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUT_DIR = os.path.join(BASE_DIR, "ppt_outputs")
+CERTS_DIR = os.path.join(BASE_DIR, "certs_outputs")
 
-CERTS_DIR = "certs_outputs"
-if not os.path.exists(CERTS_DIR):
-    os.makedirs(CERTS_DIR)
+if not os.path.exists(OUT_DIR): os.makedirs(OUT_DIR)
+if not os.path.exists(CERTS_DIR): os.makedirs(CERTS_DIR)
 
 # --- DIAGNOSTIC TOOLS ---
 @app.get("/")
 @app.get("/health")
 def health():
     files = [f for f in os.listdir(OUT_DIR) if f.endswith('.pptx')]
+    cert_files = [f for f in os.listdir(CERTS_DIR) if f.endswith('.pptx')]
     return {
         "status": "online", 
         "artifact_count": len(files),
-        "engine": "v4.0.0-PROD"
+        "credential_count": len(cert_files),
+        "engine": "v4.2.0-PROD"
     }
 
 # --- ARTIFACT DELIVERY ---
@@ -50,17 +52,25 @@ def certificate_handler(data: dict = Body(...)):
         p_dept = data.get('dept', 'N/A')
         p_role = data.get('role', 'MEMBER')
         
-        file_path = create_certificate(p_name, p_college, p_year, p_dept, p_role)
+        # Pass full path to engine
+        safe_name = p_name.lower().replace(' ', '_')
+        out_path = os.path.join(CERTS_DIR, f"certificate_{safe_name}.pptx")
+        
+        create_certificate(p_name, p_college, p_year, p_dept, p_role, out_path=out_path)
+        
         return {
             "success": True,
-            "file_url": f"certs/{os.path.basename(file_path)}"
+            "file_url": f"certs/certificate_{safe_name}.pptx"
         }
     except Exception as e:
+        print(f"CRITICAL ERROR IN CREDENTIAL SYNTHESIS: {str(e)}")
+        traceback.print_exc()
         return {"success": False, "error": str(e)}
 
 @app.get("/certs/{filename}")
 def get_certificate(filename: str):
     file_path = os.path.join(CERTS_DIR, filename)
+    print(f"DEBUG: Requesting credential at {file_path}")
     if os.path.exists(file_path):
         return FileResponse(file_path)
     raise HTTPException(status_code=404, detail="Credential not found.")
