@@ -63,7 +63,7 @@ def create_expert_deck(team_name, college, data):
     tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(2.0), Inches(9), Inches(1.5))
     p_title = tx_title.text_frame.paragraphs[0]
     p_title.text = data.get('projectName', 'VENTURE PROTOTYPE').upper()
-    p_title.font.size = Pt(64); p_title.font.bold = True; p_title.font.color.rgb = PRIMARY_COLOR; p_title.alignment = PP_ALIGN.CENTER
+    p_title.font.size = Pt(64); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
     
     # Elegant Underline on cover
     line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.4), Inches(6.5), Inches(3.4))
@@ -80,7 +80,7 @@ def create_expert_deck(team_name, college, data):
     p2.text = f"from {college.upper()}"; p2.font.size = Pt(16); p2.font.italic = True; p2.font.color.rgb = SECONDARY_COLOR
     
     p3 = tf_d.add_paragraph(); p3.alignment = PP_ALIGN.CENTER
-    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(20); p3.font.bold = True; p3.font.color.rgb = PRIMARY_COLOR
+    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(20); p3.font.bold = True; p3.font.color.rgb = TEXT_MAIN
     
     p4 = tf_d.add_paragraph(); p4.alignment = PP_ALIGN.CENTER
     p4.text = f"NODE MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(12); p4.font.bold = False; p4.font.color.rgb = SECONDARY_COLOR; p4.font.name = 'Arial Narrow'
@@ -114,7 +114,7 @@ def create_expert_deck(team_name, college, data):
     if os.path.exists("institution_logo.png"):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
     tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
-    p = tx.text_frame.paragraphs[0]; p.text = "THANK YOU."; p.font.size = Pt(64); p.font.bold = True; p.font.color.rgb = PRIMARY_COLOR; p.alignment = PP_ALIGN.CENTER
+    p = tx.text_frame.paragraphs[0]; p.text = "THANK YOU."; p.font.size = Pt(64); p.font.bold = True; p.font.color.rgb = TEXT_MAIN; p.alignment = PP_ALIGN.CENTER
     add_footer(slide)
 
     if not os.path.exists('ppt_outputs'): os.makedirs('ppt_outputs')
