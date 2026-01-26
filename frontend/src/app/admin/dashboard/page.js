@@ -131,10 +131,19 @@ export default function AdminDashboard() {
       }
       fetchSubmissions();
     } catch (err) { 
-      const msg = err.response?.data?.error || "Reconstruction cluster timeout. Synthesis engine taking too long.";
-      alert("ERROR: " + msg); 
+        const msg = err.response?.data?.error || "Reconstruction cluster timeout. Synthesis engine taking too long.";
+        alert("ERROR: " + msg); 
+      }
     }
-  }
+  
+    async function handleUnlockTeam(teamId) {
+      if(!confirm("🔓 UNLOCK MISSION?\nThis will revert the team status to 'IN_PROGRESS' and allow them to edit data.")) return;
+      try {
+        await axios.post(`${getApiUrl()}/admin/unlock-team`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+        alert("Mission Unlocked ✓");
+        fetchSubmissions();
+      } catch (err) { alert("Unlock failed."); }
+    }
 
   async function handleCreateStatement(e) {
     e.preventDefault();
@@ -227,6 +236,7 @@ export default function AdminDashboard() {
                               ))}
                               <div className="flex gap-1 ml-auto">
                                 <button onClick={() => { setSelectedTeam(s); setShowCertModal(true); }} className="text-[7px] font-black text-indigo-500 uppercase border border-indigo-100 px-2 py-1 rounded hover:bg-indigo-600 hover:text-white transition-all">MANUAL EDIT ✍️</button>
+                                <button onClick={() => handleUnlockTeam(s.teamId)} className="text-[7px] font-black text-amber-500 uppercase border border-amber-100 px-2 py-1 rounded hover:bg-amber-500 hover:text-white transition-all">UNLOCK 🔓</button>
                                 <button onClick={() => handleGenerateCerts(s.teamId)} className="text-[7px] font-black text-rose-500 uppercase border border-rose-100 px-2 py-1 rounded hover:bg-rose-500 hover:text-white transition-all">GENERATE ALL 🎓</button>
                               </div>
                            </div>
