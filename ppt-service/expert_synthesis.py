@@ -77,13 +77,13 @@ def create_expert_deck(team_name, college, data):
     p1.text = f"TEAM {team_name.upper()}"; p1.font.size = Pt(28); p1.font.bold = True; p1.font.color.rgb = TEXT_MAIN
     
     p2 = tf_d.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
-    p2.text = f"from {college.upper()}"; p2.font.size = Pt(16); p2.font.italic = True; p2.font.color.rgb = SECONDARY_COLOR
+    p2.text = f"from {college.upper()}"; p2.font.size = Pt(16); p2.font.italic = True; p2.font.color.rgb = TEXT_MAIN
     
     p3 = tf_d.add_paragraph(); p3.alignment = PP_ALIGN.CENTER
     p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(20); p3.font.bold = True; p3.font.color.rgb = TEXT_MAIN
     
     p4 = tf_d.add_paragraph(); p4.alignment = PP_ALIGN.CENTER
-    p4.text = f"NODE MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(12); p4.font.bold = False; p4.font.color.rgb = SECONDARY_COLOR; p4.font.name = 'Arial Narrow'
+    p4.text = f"TEAM MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(12); p4.font.bold = False; p4.font.color.rgb = TEXT_MAIN; p4.font.name = 'Arial Narrow'
     
     add_footer(slide)
 
