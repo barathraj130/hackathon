@@ -10,9 +10,9 @@ import uvicorn
 import os
 import traceback
 
-app = FastAPI(title="Institutional Synthesis Hub 4.2")
+app = FastAPI(title="Institutional Synthesis Hub 4.5")
 
-# USE ABSOLUTE PATHS FOR STABILITY
+# USE ABSOLUTE PATHS FOR DISTRIBUTED STABILITY
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(BASE_DIR, "ppt_outputs")
 CERTS_DIR = os.path.join(BASE_DIR, "certs_outputs")
@@ -30,19 +30,18 @@ def health():
         "status": "online", 
         "artifact_count": len(files),
         "credential_count": len(cert_files),
-        "engine": "v4.2.0-PROD"
+        "engine": "v4.5.0-PROD"
     }
 
 # --- ARTIFACT DELIVERY ---
 @app.get("/outputs/{filename}")
-@app.get("/api/outputs/{filename}")
 def get_artifact(filename: str):
     file_path = os.path.join(OUT_DIR, filename)
     if os.path.exists(file_path):
         return FileResponse(file_path)
-    raise HTTPException(status_code=404, detail=f"Institutional Vault empty.")
+    raise HTTPException(status_code=404, detail=f"Artifact not found in vault.")
 
-# --- CERTIFICATE SYNTHESIS ---
+# --- CERTIFICATE SYNTHESIS & DELIVERY ---
 @app.post("/generate-certificate")
 def certificate_handler(data: dict = Body(...)):
     try:
@@ -52,30 +51,37 @@ def certificate_handler(data: dict = Body(...)):
         p_dept = data.get('dept', 'N/A')
         p_role = data.get('role', 'MEMBER')
         
-        # Pass full path to engine
         safe_name = p_name.lower().replace(' ', '_')
-        out_path = os.path.join(CERTS_DIR, f"certificate_{safe_name}.pptx")
+        out_filename = f"certificate_{safe_name}.pptx"
+        out_path = os.path.join(CERTS_DIR, out_filename)
         
+        # Core Synthesis Call
         create_certificate(p_name, p_college, p_year, p_dept, p_role, out_path=out_path)
         
+        # Verify serialization
+        if not os.path.exists(out_path):
+            raise Exception("Synthesis failed to serialize artifact.")
+
         return {
             "success": True,
-            "file_url": f"certs/certificate_{safe_name}.pptx"
+            "file_url": out_filename # Return just filename, backend maps to /certs/
         }
     except Exception as e:
-        print(f"CRITICAL ERROR IN CREDENTIAL SYNTHESIS: {str(e)}")
-        traceback.print_exc()
+        print(f"CRITICAL: {str(e)}")
         return {"success": False, "error": str(e)}
 
 @app.get("/certs/{filename}")
-def get_certificate(filename: str):
+def get_credential(filename: str):
     file_path = os.path.join(CERTS_DIR, filename)
-    print(f"DEBUG: Requesting credential at {file_path}")
     if os.path.exists(file_path):
         return FileResponse(file_path)
-    raise HTTPException(status_code=404, detail="Credential not found.")
+    # Attempt legacy cleanup pathing
+    legacy_path = os.path.join(BASE_DIR, "certs_outputs", filename)
+    if os.path.exists(legacy_path):
+        return FileResponse(legacy_path)
+    raise HTTPException(status_code=404, detail="Credential not found in institutional vault.")
 
-# --- CORE SYNTHESIS ENGINE ---
+# --- CORE MISSION SYNTHESIS ---
 @app.post("/generate-artifact")
 @app.post("/generate-expert-pitch")
 def unified_handler(data: dict = Body(...)):
@@ -84,10 +90,15 @@ def unified_handler(data: dict = Body(...)):
         college_name = data.get('college_name', 'Institution')
         payload = data.get('content') or data.get('project_data')
         
-        if not payload:
-            return {"success": False, "error": "Context Missing"}
+        if not payload: return {"success": False, "error": "Context Missing"}
 
-        is_expert = 'projectName' in payload
+        # Logic Branching
+        is_expert = False
+        if isinstance(payload, dict) and 'projectName' in payload:
+            is_expert = True
+        elif isinstance(payload, str) and 'projectName' in payload:
+            is_expert = True
+
         if is_expert:
             file_path = create_expert_deck(team_name, college_name, payload)
         else:
@@ -99,6 +110,7 @@ def unified_handler(data: dict = Body(...)):
             "file_url": os.path.basename(file_path)
         }
     except Exception as e:
+        traceback.print_exc()
         return {"success": False, "error": str(e)}
 
 if __name__ == "__main__":
