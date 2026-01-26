@@ -436,11 +436,11 @@ export default function PitchGenerator() {
                                  <div><label className="label-caps !text-[8px]">Weaknesses</label><input className="input-field !bg-white" value={c.weakness} onChange={e => { let u = [...data.s12_competitors]; u[i].weakness = e.target.value; setData({...data, s12_competitors: u})}} /></div>
                               </div>
                            ))}
-                           <div className="bg-slate-800 p-8 rounded-3xl grid grid-cols-3 gap-6 shadow-2xl relative overflow-hidden group border border-slate-700">
-                              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition-transform"></div>
-                              <div><label className="text-[9px] font-black text-teal-300 uppercase tracking-widest block mb-2">OUR VENTURE</label><input className="w-full bg-slate-900 border border-teal-500/30 rounded-xl px-4 py-3 text-white font-black uppercase text-xs" value={data.s12_ourVenture.name} readOnly /></div>
-                              <div><label className="text-[9px] font-black text-teal-300 uppercase tracking-widest block mb-2">UNFAIR ADVANTAGE</label><input className="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white italic text-xs focus:border-teal-400 outline-none" value={data.s12_ourVenture.strength} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, strength: e.target.value}})} /></div>
-                              <div><label className="text-[9px] font-black text-teal-300 uppercase tracking-widest block mb-2">GAP BRIDGED</label><input className="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white italic text-xs focus:border-teal-400 outline-none" value={data.s12_ourVenture.weakness} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, weakness: e.target.value}})} /></div>
+                           <div className="bg-teal-50/50 p-8 rounded-3xl grid grid-cols-3 gap-6 shadow-sm relative overflow-hidden group border border-teal-200/50">
+                              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl -mr-16 -mt-16 transition-transform"></div>
+                              <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">OUR VENTURE</label><input className="w-full bg-white border border-teal-500/20 rounded-xl px-4 py-3 text-[#020617] font-black uppercase text-xs" value={data.s12_ourVenture.name} readOnly /></div>
+                              <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">UNFAIR ADVANTAGE</label><input className="w-full bg-white border border-teal-200 rounded-xl px-4 py-3 text-[#020617] italic text-xs focus:border-teal-400 outline-none" value={data.s12_ourVenture.strength} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, strength: e.target.value}})} /></div>
+                              <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">GAP BRIDGED</label><input className="w-full bg-white border border-teal-200 rounded-xl px-4 py-3 text-[#020617] italic text-xs focus:border-teal-400 outline-none" value={data.s12_ourVenture.weakness} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, weakness: e.target.value}})} /></div>
                            </div>
                         </div>
                      </div>
@@ -449,11 +449,11 @@ export default function PitchGenerator() {
                   {step === 13 && (
                     <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">13</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Market Sizing (TAM SAM SOM)</h2></div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-teal-600">TAM (Total Market)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: $500B" value={data.s13_tam} onChange={e => setData({...data, s13_tam: e.target.value})} /></div>
-                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-orange-500">SAM (Serviceable)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: $10B" value={data.s13_sam} onChange={e => setData({...data, s13_sam: e.target.value})} /></div>
-                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-navy">SOM (Obtainable)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: $200M" value={data.s13_som} onChange={e => setData({...data, s13_som: e.target.value})} /></div>
+                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-teal-600">TAM (Total Market)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: ₹500 Cr" value={data.s13_tam} onChange={e => setData({...data, s13_tam: e.target.value})} /></div>
+                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-orange-500">SAM (Serviceable)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: ₹10 Cr" value={data.s13_sam} onChange={e => setData({...data, s13_sam: e.target.value})} /></div>
+                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-navy">SOM (Obtainable)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: ₹20 Lakhs" value={data.s13_som} onChange={e => setData({...data, s13_som: e.target.value})} /></div>
                         </div>
-                        <div className="mt-8"><label className="label-caps">Valuation Logic</label><textarea className="input-field min-h-[120px]" placeholder="Explain your market sizing data..." value={data.s13_marketLogic} onChange={e => setData({...data, s13_marketLogic: e.target.value})} /></div>
+                        <div className="mt-8"><label className="label-caps">Valuation Logic (Rupees)</label><textarea className="input-field min-h-[120px]" placeholder="Explain your market sizing data in ₹..." value={data.s13_marketLogic} onChange={e => setData({...data, s13_marketLogic: e.target.value})} /></div>
                     </div>
                   )}
 
@@ -465,8 +465,8 @@ export default function PitchGenerator() {
                               <div><label className="label-caps">Secondary Stream</label><input className="input-field font-black uppercase" value={data.s14_secondaryStream} onChange={e => setData({...data, s14_secondaryStream: e.target.value})} /></div>
                            </div>
                            <div className="space-y-6">
-                              <div><label className="label-caps">Pricing Strategy</label><input className="input-field font-black" value={data.s14_pricingStrategy} onChange={e => setData({...data, s14_pricingStrategy: e.target.value})} /></div>
-                              <div><label className="label-caps">Economic Logic</label><textarea className="input-field min-h-[80px]" value={data.s14_revenueLogic} onChange={e => setData({...data, s14_revenueLogic: e.target.value})} /></div>
+                              <div><label className="label-caps">Pricing Strategy (₹)</label><input className="input-field font-black" value={data.s14_pricingStrategy} onChange={e => setData({...data, s14_pricingStrategy: e.target.value})} /></div>
+                              <div><label className="label-caps">Economic Logic (Rupees)</label><textarea className="input-field min-h-[80px]" value={data.s14_revenueLogic} onChange={e => setData({...data, s14_revenueLogic: e.target.value})} /></div>
                            </div>
                         </div>
                     </div>
@@ -477,16 +477,30 @@ export default function PitchGenerator() {
                         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                            <table className="w-full text-left">
                               <thead>
-                                 <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                 <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-widest text-[#020617]">
                                     <th className="px-6 py-4">Allocation Item</th>
-                                    <th className="px-6 py-4 text-right">Value Descriptor / Pricing</th>
+                                    <th className="px-6 py-4 text-right">Value Descriptor / Pricing (₹)</th>
                                  </tr>
                               </thead>
                               <tbody className="divide-y divide-slate-100">
                                  {data.s15_allocations.map((alloc, i) => (
-                                    <tr key={i}>
-                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-black uppercase text-xs text-[#020617] outline-none" value={alloc.category} onChange={e => { let u = [...data.s15_allocations]; u[i].category = e.target.value; setData({...data, s15_allocations: u}) }} /></td>
-                                       <td className="px-6 py-4"><input className="w-full bg-transparent font-bold text-xs text-teal-600 outline-none text-right" value={alloc.amount} onChange={e => { let u = [...data.s15_allocations]; u[i].amount = e.target.value; setData({...data, s15_allocations: u}) }} /></td>
+                                    <tr key={i} className="hover:bg-slate-50/50 transition-all">
+                                       <td className="px-6 py-3">
+                                          <input 
+                                             className="w-full bg-slate-50/80 border border-slate-200 rounded-lg py-3 px-4 font-black uppercase text-xs text-[#020617] outline-none focus:border-teal-500 focus:bg-white transition-all shadow-inner" 
+                                             value={alloc.category} 
+                                             onChange={e => { let u = [...data.s15_allocations]; u[i].category = e.target.value; setData({...data, s15_allocations: u}) }} 
+                                             placeholder="EX: CLOUD NODES"
+                                          />
+                                       </td>
+                                       <td className="px-6 py-3">
+                                          <input 
+                                             className="w-full bg-slate-50/80 border border-slate-200 rounded-lg py-3 px-4 font-bold text-xs text-teal-600 outline-none text-right focus:border-teal-500 focus:bg-white transition-all shadow-inner" 
+                                             value={alloc.amount} 
+                                             onChange={e => { let u = [...data.s15_allocations]; u[i].amount = e.target.value; setData({...data, s15_allocations: u}) }} 
+                                             placeholder="₹ 15,000"
+                                          />
+                                       </td>
                                     </tr>
                                  ))}
                               </tbody>
