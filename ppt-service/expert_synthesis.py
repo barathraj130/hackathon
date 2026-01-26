@@ -52,15 +52,14 @@ def create_expert_deck(team_name, college, data):
         ("06 // TARGET PERSONA", lambda s: draw_persona(s, data)),
         ("07 // GAP ANALYSIS", lambda s: draw_gap(s, data)),
         ("08 // PROPOSED SOLUTION", lambda s: draw_solution_statement(s, data)),
-        ("09 // PROTOTYPE EVIDENCE", lambda s: draw_prototype(s, data)),
-        ("10 // SOLUTION ARCHITECTURE", lambda s: draw_solution_flow(s, data)),
-        ("11 // LEAN OPERATIONAL LOGIC", lambda s: draw_lean(s, data)),
-        ("12 // ALTITUDE METRICS", lambda s: draw_balloon(s, data)),
-        ("13 // MARKET POSITIONING", lambda s: draw_market_matrix(s, data)),
-        ("14 // MARKET SIZING (TAM SAM SOM)", lambda s: draw_market_sizing(s, data)),
-        ("15 // REVENUE ARCHITECTURE", lambda s: draw_revenue(s, data)),
-        ("16 // FISCAL ALLOCATION", lambda s: draw_fiscal(s, data)),
-        ("17 // FUTURE TRAJECTORY", lambda s: draw_vision(s, data))
+        ("09 // SOLUTION ARCHITECTURE", lambda s: draw_solution_flow(s, data)),
+        ("10 // LEAN OPERATIONAL LOGIC", lambda s: draw_lean(s, data)),
+        ("11 // ALTITUDE METRICS", lambda s: draw_balloon(s, data)),
+        ("12 // MARKET POSITIONING", lambda s: draw_market_matrix(s, data)),
+        ("13 // MARKET SIZING (TAM SAM SOM)", lambda s: draw_market_sizing(s, data)),
+        ("14 // REVENUE ARCHITECTURE", lambda s: draw_revenue(s, data)),
+        ("15 // FISCAL ALLOCATION", lambda s: draw_fiscal(s, data)),
+        ("16 // FUTURE TRAJECTORY", lambda s: draw_vision(s, data))
     ]
 
     for title, fn in modules:
