@@ -357,7 +357,7 @@ def draw_revenue(slide, data):
     m = [("PRIMARY STREAM", 's14_primaryStream', 0.5, 1.8), ("SECONDARY STREAM", 's14_secondaryStream', 5.1, 1.8), ("PRICING LOGIC", 's14_pricingStrategy', 0.5, 4.4), ("ECONOMIC LOGIC", 's14_revenueLogic', 5.1, 4.4)]
     for lb, k, x, y in m:
         add_clean_box(slide, lb, Inches(x), Inches(y), Inches(4.4), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
-        add_clean_box(slide, data.get(k, 'N/A'), Inches(x), Inches(y+0.4), Inches(4.4), Inches(2.0))
+        add_clean_box(slide, data.get(k, 'N/A'), Inches(x), Inches(y+0.4), Inches(4.4), Inches(2.0), 11)
 
 def draw_fiscal(slide, data):
     als = [a for a in data.get('s15_allocations', []) if a.get('category')]
@@ -373,6 +373,6 @@ def draw_fiscal(slide, data):
 
 def draw_vision(slide, data):
     add_clean_box(slide, "MACRO IMPACT", Inches(0.5), Inches(1.8), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, data.get('s16_socialEconomic', 'N/A'), Inches(0.5), Inches(2.2), Inches(9), Inches(2.3))
+    add_clean_box(slide, data.get('s16_socialEconomic', 'N/A'), Inches(0.5), Inches(2.2), Inches(9), Inches(2.3), 12)
     add_clean_box(slide, "FUTURE TRAJECTORY", Inches(0.5), Inches(4.8), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, data.get('s16_vision', 'N/A'), Inches(0.5), Inches(5.2), Inches(9), Inches(1.5))
+    add_clean_box(slide, data.get('s16_vision', 'N/A'), Inches(0.5), Inches(5.2), Inches(9), Inches(1.5), 12)
