@@ -11,6 +11,16 @@ export default function PitchGenerator() {
   const [uploading, setUploading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const router = useRouter();
+  const [saving, setSaving] = useState(false);
+
+  // Auto-Save Mechanism
+  useEffect(() => {
+    if (!mounted) return;
+    const timer = setTimeout(() => {
+      if (Object.keys(data).length > 0) handleSaveDraft(true);
+    }, 5000); 
+    return () => clearTimeout(timer);
+  }, [data, mounted]);
 
   const [data, setData] = useState({
     // S1: Identity
@@ -90,19 +100,7 @@ export default function PitchGenerator() {
     init();
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    const saveTimer = setTimeout(() => {
-      if (data.projectName || data.teamName) { 
-        const token = localStorage.getItem('token');
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
-        axios.post(`${apiUrl}/team/submission`, { content: data }, {
-          headers: { Authorization: `Bearer ${token}` }
-        }).catch(err => console.error("Auto-save failed", err));
-      }
-    }, 5000); 
-    return () => clearTimeout(saveTimer);
-  }, [data, mounted]);
+
 
   useEffect(() => {
     if (!mounted) return;
@@ -147,15 +145,7 @@ export default function PitchGenerator() {
     } catch (err) { alert("Upload failed."); } finally { setUploading(false); }
   }
 
-  const [saving, setSaving] = useState(false);
 
-  // Auto-Save Mechanism
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (Object.keys(data).length > 0) handleSaveDraft(true);
-    }, 5000); // Auto-save every 5s
-    return () => clearTimeout(timer);
-  }, [data]);
 
   async function handleSaveDraft(silent = false) {
     if (!silent) setSaving(true);
