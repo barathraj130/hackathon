@@ -60,7 +60,6 @@ router.post('/force-regenerate', async (req, res) => {
         const sub = await prisma.submission.findUnique({ where: { teamId }, include: { team: true } });
         if (!sub) return res.status(404).json({ error: "No artifact found." });
 
-        // Fixed field name: 'content' is where the data lives
         if (!sub.content || JSON.stringify(sub.content) === "{}" || JSON.stringify(sub.content) === "[]") {
             return res.status(400).json({ error: "Insufficient payload for reconstruction." });
         }
@@ -94,6 +93,25 @@ router.post('/force-regenerate', async (req, res) => {
 });
 
 /**
+ * MISSION UNLOCK PROTOCOL
+ * Allows teams to edit their mission data after submission.
+ */
+router.post('/unlock-team', async (req, res) => {
+    const { teamId } = req.body;
+    try {
+        await prisma.submission.update({ 
+            where: { teamId }, 
+            data: { 
+                status: 'IN_PROGRESS',
+                pptUrl: null, // Revoke artifact to force regeneration
+                canRegenerate: true
+            } 
+        });
+        res.json({ success: true, message: "Team mission unlocked." });
+    } catch (e) { res.status(500).json({ error: "Unlock failed." }); }
+});
+
+/**
  * CREDENTIAL SYNTHESIS HUB
  */
 router.post('/generate-certificates', async (req, res) => {
@@ -108,7 +126,6 @@ router.post('/generate-certificates', async (req, res) => {
                 try {
                     const r = await axios.post(`${url.replace(/\/$/, "")}/generate-certificate`, p, { timeout: 30000 });
                     if (r.data.success) {
-                        // Corrected mapping: Ensure /certs/ is included in the persistent URL
                         const certPublicUrl = mapInternalToPublic(`${url.replace(/\/$/, "")}/certs/${r.data.file_url}`);
                         await prisma.participantCertificate.update({ where: { id: p.id }, data: { certificateUrl: certPublicUrl } });
                         break;
@@ -220,6 +237,20 @@ router.post('/toggle-certificate-collection', async (req, res) => {
         const newState = !config.allowCertificateDetails;
         await prisma.hackathonConfig.update({ where: { id: 1 }, data: { allowCertificateDetails: newState } });
         res.json({ success: true, allowCertificateDetails: newState });
+    } catch (e) { res.status(500).json({ error: "Fail" }); }
+});
+
+router.post('/problem-statements', async (req, res) => {
+    try {
+        const ps = await prisma.problemStatement.create({ data: req.body });
+        res.json({ success: true, statement: ps });
+    } catch (e) { res.status(500).json({ error: "Fail" }); }
+});
+
+router.delete('/problem-statements/:id', async (req, res) => {
+    try {
+        await prisma.problemStatement.delete({ where: { id: req.params.id } });
+        res.json({ success: true });
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });
 
