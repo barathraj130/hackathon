@@ -64,7 +64,13 @@ router.post('/force-regenerate', async (req, res) => {
             return res.status(400).json({ error: "Insufficient payload for reconstruction." });
         }
 
-        const tryUrls = [process.env.PYTHON_SERVICE_URL, 'https://endearing-liberation-production.up.railway.app'].filter(Boolean);
+        const tryUrls = [
+            process.env.PYTHON_SERVICE_URL,
+            'http://ppt-service:8000',
+            'http://ppt-service.railway.internal:8000',
+            'http://endearing-liberation.railway.internal:8000',
+            'https://endearing-liberation-production.up.railway.app'
+        ].filter(Boolean);
         
         let payload = sub.content;
         const isExpert = (payload.projectName || (typeof payload === 'string' && payload.includes('projectName')));
@@ -120,7 +126,13 @@ router.post('/generate-certificates', async (req, res) => {
         const sub = await prisma.submission.findUnique({ where: { teamId }, include: { certificates: true } });
         if (!sub) return res.status(404).json({ error: "Context missing." });
 
-        const tryUrls = [process.env.PYTHON_SERVICE_URL, 'https://endearing-liberation-production.up.railway.app'].filter(Boolean);
+        const tryUrls = [
+            process.env.PYTHON_SERVICE_URL,
+            'http://ppt-service:8000',
+            'http://ppt-service.railway.internal:8000',
+            'http://endearing-liberation.railway.internal:8000',
+            'https://endearing-liberation-production.up.railway.app'
+        ].filter(Boolean);
         for (const p of sub.certificates) {
             for (const url of tryUrls) {
                 try {
