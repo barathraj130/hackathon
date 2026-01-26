@@ -35,7 +35,6 @@ export default function AdminDashboard() {
         reconnection: true
       });
       socketRef.current.on('timerUpdate', (data) => {
-        console.log("Timer Event:", data);
         setTimer(prev => ({ ...prev, ...data }));
       });
     });
@@ -76,7 +75,6 @@ export default function AdminDashboard() {
     try { 
       const res = await axios.post(`${getApiUrl()}/admin/toggle-halt`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); 
       fetchStats(); 
-      // Force immediate timer state sync
       if (res.data.success) {
         setTimer(prev => ({ ...prev, timerPaused: res.data.isPaused }));
       }
@@ -89,10 +87,14 @@ export default function AdminDashboard() {
 
   async function handleGenerateCerts(teamId) {
      try {
-       await axios.post(`${getApiUrl()}/admin/generate-certificates`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
-       alert("Credentials synthesized successfully ✓");
+       const res = await axios.post(`${getApiUrl()}/admin/generate-certificates`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+       if (res.data.success) {
+         alert("Credentials synthesized successfully ✓");
+       } else {
+         alert("Synthesis Error: " + (res.data.error || "Cluster timeout"));
+       }
        fetchSubmissions();
-     } catch (err) { alert("Synthesis cluster timeout."); }
+     } catch (err) { alert("Synthesis cluster timeout. Artifacts might still be generating in background."); }
   }
 
   async function handleReallot(teamName, newId) {
@@ -119,12 +121,19 @@ export default function AdminDashboard() {
   }
 
   async function handleForceRegenerate(teamId) {
-    if(!confirm("🚨 FORCE SYSTEM RECONSTRUCTION?")) return;
+    if(!confirm("🚨 FORCE SYSTEM RECONSTRUCTION?\nThis will rebuild the PPT artifact from mission coordinates.")) return;
     try {
-      await axios.post(`${getApiUrl()}/admin/force-regenerate`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
-      alert("Reconstruction complete ✓");
+      const res = await axios.post(`${getApiUrl()}/admin/force-regenerate`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      if (res.data.success) {
+        alert("Reconstruction complete ✓");
+      } else {
+        alert("Reconstruction Failed: " + (res.data.error || "Unknown Cluster Error"));
+      }
       fetchSubmissions();
-    } catch (err) { alert("Reconstruction cluster failed."); }
+    } catch (err) { 
+      const msg = err.response?.data?.error || "Reconstruction cluster timeout. Synthesis engine taking too long.";
+      alert("ERROR: " + msg); 
+    }
   }
 
   async function handleCreateStatement(e) {
@@ -180,8 +189,8 @@ export default function AdminDashboard() {
 
       <main className="flex-1 p-8 overflow-y-auto space-y-10">
         <header className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-           <div><h1 className="text-2xl font-black text-[#0f172a] tracking-tighter">COMMAND CENTER</h1><p className="text-[9px] font-bold text-slate-400 tracking-[0.3em]">HACKATHON MANAGEMENT v5.7</p></div>
-           <div className="flex gap-3"><button onClick={handleToggleHalt} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${timer.timerPaused ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>{timer.timerPaused ? 'RESUME MISSION' : 'PAUSE MISSION'}</button><button onClick={handleToggleCertCollection} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${stats.config?.allowCertificateDetails ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400 border border-slate-200'}`}>{stats.config?.allowCertificateDetails ? 'CLOSE CERTS' : 'OPEN CERTS'}</button></div>
+           <div><h1 className="text-2xl font-black text-[#0f172a] tracking-tighter">COMMAND CENTER</h1><p className="text-[9px] font-bold text-slate-400 tracking-[0.3em]">HACKATHON MANAGEMENT v5.8</p></div>
+           <div className="flex gap-3"><button onClick={handleToggleHalt} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${timer.timerPaused ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>{timer.timerPaused ? 'RESUME MISSION' : 'PAUSE MISSION'}</button><button onClick={handleToggleCertCollection} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${stats.config?.allowCertificateDetails ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/10' : 'bg-slate-100 text-slate-400 border border-slate-200'}`}>{stats.config?.allowCertificateDetails ? 'CLOSE CERTS' : 'OPEN CERTS'}</button></div>
         </header>
 
         {activeTab === 'overview' && (
@@ -223,7 +232,7 @@ export default function AdminDashboard() {
                            </div>
                         </td>
                         <td className="px-5 py-3 text-right">
-                           <button onClick={() => handleForceRegenerate(s.teamId)} className="p-1.5 bg-slate-100 rounded text-slate-400 hover:bg-[#020617] hover:text-white transition-all"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" /></svg></button>
+                           <button onClick={() => handleForceRegenerate(s.teamId)} className="p-1.5 bg-slate-100 rounded text-slate-400 hover:bg-[#020617] hover:text-white transition-all" title="Force Artifact Reconstruction"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" /></svg></button>
                         </td>
                       </tr>
                     ))}
