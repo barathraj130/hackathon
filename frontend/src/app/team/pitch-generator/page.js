@@ -71,32 +71,24 @@ export default function PitchGenerator() {
   
   useEffect(() => {
     setMounted(true);
-    checkStatus();
-  }, []);
-
-  async function checkStatus() {
+    const token = localStorage.getItem('token');
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const res = await axios.get(`${apiUrl}/team/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
-         router.push('/team/dashboard');
-      } else if (res.data.submission?.content) {
-         setData(prev => ({ ...prev, ...res.data.submission.content }));
-      }
-      
-      const statsRes = await axios.get(`${apiUrl.replace('/v1', '')}/health`);
-      if (statsRes.data?.timerPaused) setIsPaused(true);
-
-    } catch (err) {
-      console.error("Status check failed", err);
+    
+    async function init() {
+      try {
+        if (!token) return;
+        const res = await axios.get(`${apiUrl}/team/profile`, { headers: { Authorization: `Bearer ${token}` } });
+        if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
+           router.push('/team/dashboard');
+        } else if (res.data.submission?.content) {
+           setData(prev => ({ ...prev, ...res.data.submission.content }));
+        }
+        const statsRes = await axios.get(`${apiUrl.replace('/v1', '')}/health`);
+        if (statsRes.data?.timerPaused) setIsPaused(true);
+      } catch (err) { console.error("Synthesis Init Failed", err); }
     }
-  }
+    init();
+  }, []);
 
   useEffect(() => {
     if (!mounted) return;
@@ -109,7 +101,6 @@ export default function PitchGenerator() {
         }).catch(err => console.error("Auto-save failed", err));
       }
     }, 5000); 
-
     return () => clearTimeout(saveTimer);
   }, [data, mounted]);
 
@@ -117,11 +108,12 @@ export default function PitchGenerator() {
     if (!mounted) return;
     import('socket.io-client').then((module) => {
       const socketIO = module.default || module.io;
-      if (!socketIO) return;
-      const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || window.location.origin;
-      const socket = socketIO(socketUrl);
-      socket.on('timerUpdate', (data) => setIsPaused(data.timerPaused));
-      return () => socket.disconnect();
+      if (socketIO) {
+        const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || window.location.origin;
+        const socket = socketIO(socketUrl);
+        socket.on('timerUpdate', (data) => setIsPaused(data.timerPaused));
+        return () => socket.disconnect();
+      }
     });
   }, [mounted]);
 
@@ -149,22 +141,10 @@ export default function PitchGenerator() {
       const token = localStorage.getItem('token');
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
       const res = await axios.post(`${apiUrl}/team/upload-asset`, formData, {
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
-      updateAsset(`${slideId}_img`, res.data.fileUrl);
-    } catch (err) {
-      alert("Upload failed. Use external link if needed.");
-    } finally {
-      setUploading(false);
-    }
-  }
-
-  function handleInputChange(e) {
-    const { name, value } = e.target;
-    setData(prev => ({ ...prev, [name]: value }));
+      setData(prev => ({ ...prev, slide_assets: { ...prev.slide_assets, [`s${slideId}_img`]: res.data.fileUrl } }));
+    } catch (err) { alert("Upload failed."); } finally { setUploading(false); }
   }
 
   async function handleSubmit() {
@@ -172,380 +152,172 @@ export default function PitchGenerator() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      alert(res.data.message || "Synthesis Success.");
+      await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, { headers: { Authorization: `Bearer ${token}` } });
+      alert("Synthesis Complete ✓");
       router.push('/team/dashboard');
-    } catch (err) {
-      alert(`Synthesis Error: ${err.response?.data?.error || "Unknown Failure"}`);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { alert("Synthesis cluster error."); } finally { setLoading(false); }
   }
 
   function nextStep() { setStep(prev => Math.min(prev + 1, 17)); window.scrollTo(0,0); }
   function prevStep() { setStep(prev => Math.max(prev - 1, 1)); window.scrollTo(0,0); }
 
-  function updateAsset(slideId, val) {
-    setData(prev => ({
-      ...prev,
-      slide_assets: { ...prev.slide_assets, [slideId]: val }
-    }));
-  }
-
   return (
     <div className="min-h-screen bg-[#f1f5f9] font-sans text-slate-800">
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 py-3 flex justify-between items-center shadow-sm">
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 py-3 flex justify-between items-center shadow-sm">
         <Link href="/team/dashboard" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 bg-[#020617] text-white flex items-center justify-center rounded-lg font-black text-xs transition-transform group-hover:-translate-x-1">←</div>
-          <div className="hidden sm:block">
-            <h1 className="text-xs font-black uppercase tracking-widest text-[#020617]">Intelligence Synthesis</h1>
-            <p className="text-[8px] font-bold text-teal-600 uppercase tracking-widest leading-none mt-1">Institutional Node</p>
-          </div>
+          <div className="w-8 h-8 bg-[#020617] text-white flex items-center justify-center rounded-lg font-black text-xs group-hover:-translate-x-1 transition-all">←</div>
+          <div><h1 className="text-xs font-black uppercase tracking-widest text-[#020617]">Intelligence Synthesis</h1><p className="text-[8px] font-bold text-teal-600 uppercase tracking-widest leading-none mt-1">Institutional Node</p></div>
         </Link>
         <div className="flex items-center gap-4">
-          <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-right">
-             <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 block">Mission Progress</span>
-             <div className="text-xs font-black text-[#020617] mt-0.5">SLIDE {step} / 17</div>
-          </div>
-          <div className="w-8 h-8 relative hidden sm:block">
-             <img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" />
-          </div>
+          <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-right"><span className="text-[8px] font-black uppercase tracking-widest text-slate-400 block">Progress</span><div className="text-xs font-black text-[#020617] mt-0.5">SLIDE {step} / 17</div></div>
+          <div className="w-8 h-8 relative hidden sm:block"><img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" /></div>
         </div>
       </nav>
 
-      <main className="max-w-[1200px] mx-auto py-6 md:py-8 px-4 md:px-8 animate-fade-in">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          <div className="hidden lg:block lg:col-span-3">
+      <main className="max-w-[1200px] mx-auto py-8 px-8 animate-fade-in">
+        <div className="grid grid-cols-12 gap-8">
+          <aside className="col-span-3 hidden lg:block">
              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm sticky top-24">
-                <h3 className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-4 px-2 italic">Synthesis Modules</h3>
-                <nav className="space-y-1 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar pr-1">
-                   {[
-                     'Identity', 'Strategic Context', 'Problem Statement', 'Impact Matrix', 'Stakeholders',
-                     'Persona Node', 'Gap Analysis', 'Solution Concept', 'Solution Flow', 'Lean Logic', 'Value Metrics',
-                     'Market Positioning', 'Market Sizing', 'Revenue Model', 'Financial Allocation', 'Impact Vision', 'Repository'
-                   ].map((label, i) => (
-                     <button 
-                        key={i} 
-                        onClick={() => (i+1) <= step && setStep(i+1)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all flex items-center justify-between ${step === (i+1) ? 'bg-[#020617] text-white shadow-lg' : i+1 < step ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-300 pointer-events-none'}`}
-                     >
-                        <span className="truncate">{label}</span>
-                        {i+1 < step && <span>✓</span>}
+                <h3 className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-4 px-2 italic">Modules</h3>
+                <nav className="space-y-1 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
+                   {['Identity', 'Strategic Context', 'Problem Statement', 'Impact Matrix', 'Stakeholders', 'Persona Node', 'Gap Analysis', 'Solution Concept', 'Solution Flow', 'Lean Logic', 'Value Metrics', 'Market Positioning', 'Market Sizing', 'Revenue Model', 'Financial Allocation', 'Impact Vision', 'Repository'].map((label, i) => (
+                     <button key={i} onClick={() => (i+1) <= step && setStep(i+1)} className={`w-full text-left px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all flex items-center justify-between ${step === (i+1) ? 'bg-[#020617] text-white shadow-lg' : i+1 < step ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-300 pointer-events-none'}`}>
+                        <span className="truncate">{label}</span>{i+1 < step && <span>✓</span>}
                      </button>
                    ))}
                 </nav>
              </div>
-          </div>
+          </aside>
 
-          <div className="lg:col-span-9">
-            <div className="bg-white p-6 md:p-10 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden min-h-[600px] flex flex-col justify-between">
-               <div className="relative z-10 flex-grow">
+          <section className="col-span-12 lg:col-span-9 bg-white p-10 rounded-2xl border border-slate-200 shadow-sm min-h-[600px] flex flex-col justify-between overflow-hidden relative">
+             <div className="flex-grow z-10">
                  {step === 1 && (
                     <div className="space-y-6 animate-fade-in">
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">01</span>
-                        <h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Identity & Context</h2>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <div className="md:col-span-2">
-                           <label className="label-caps">Project Name</label>
-                           <input name="projectName" className="input-field !text-lg !font-bold" value={data.projectName} onChange={handleInputChange} />
-                         </div>
-                         <div><label className="label-caps">Team Name</label><input name="teamName" className="input-field" value={data.teamName} onChange={handleInputChange} /></div>
-                         <div><label className="label-caps">Institution</label><input name="institutionName" className="input-field" value={data.institutionName} onChange={e => setData({...data, institutionName: e.target.value})} /></div>
-                         <div><label className="label-caps">Leader</label><input name="leaderName" className="input-field" value={data.leaderName} onChange={handleInputChange} /></div>
-                         <div><label className="label-caps">Members</label><input name="memberNames" className="input-field" value={data.memberNames} onChange={handleInputChange} /></div>
-                      </div>
+                      <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">01</span><h2 className="text-xl font-black text-[#020617] uppercase">Identity</h2></div>
+                      <div className="grid grid-cols-2 gap-6"><div className="col-span-2"><label className="label-caps">Project Name</label><input className="input-field !text-lg !font-bold" value={data.projectName} onChange={e => setData({...data, projectName: e.target.value})} /></div><div><label className="label-caps">Team Name</label><input className="input-field" value={data.teamName} onChange={e => setData({...data, teamName: e.target.value})} /></div><div><label className="label-caps">Institution</label><input className="input-field" value={data.institutionName} onChange={e => setData({...data, institutionName: e.target.value})} /></div><div><label className="label-caps">Leader</label><input className="input-field" value={data.leaderName} onChange={e => setData({...data, leaderName: e.target.value})} /></div><div><label className="label-caps">Members</label><input className="input-field" value={data.memberNames} onChange={e => setData({...data, memberNames: e.target.value})} /></div></div>
                     </div>
                   )}
 
                   {step === 2 && (
-                    <div className="space-y-6 animate-fade-in">
-                      <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">02</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Strategic Context</h2></div>
-                      <div className="space-y-6">
-                        <div><label className="label-caps">Domain</label><input className="input-field" value={data.s2_domain} onChange={e => setData({...data, s2_domain: e.target.value})} /></div>
-                        <div><label className="label-caps">Context</label><textarea className="input-field min-h-[120px]" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} /></div>
-                        <div><label className="label-caps">Root Cause</label><input className="input-field" value={data.s2_rootReason} onChange={e => setData({...data, s2_rootReason: e.target.value})} /></div>
-                      </div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">02</span><h2 className="text-xl font-black text-[#020617] uppercase">Strategic Context</h2></div><div className="space-y-6"><div><label className="label-caps">Domain</label><input className="input-field" value={data.s2_domain} onChange={e => setData({...data, s2_domain: e.target.value})} /></div><div><label className="label-caps">Operational Context</label><textarea className="input-field min-h-[120px]" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} /></div><div><label className="label-caps">Root Catalyst</label><input className="input-field" value={data.s2_rootReason} onChange={e => setData({...data, s2_rootReason: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 3 && (
-                    <div className="space-y-6 animate-fade-in">
-                      <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">03</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Problem Statement</h2></div>
-                      <div className="space-y-6">
-                        <div><label className="label-caps">Core Problem</label><textarea className="input-field min-h-[120px]" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: e.target.value})} /></div>
-                        <div><label className="label-caps">Affected Personnel</label><input className="input-field" value={data.s3_affected} onChange={e => setData({...data, s3_affected: e.target.value})} /></div>
-                        <div><label className="label-caps">Critical Gravity</label><input className="input-field" value={data.s3_whyItMatters} onChange={e => setData({...data, s3_whyItMatters: e.target.value})} /></div>
-                      </div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">03</span><h2 className="text-xl font-black text-[#020617] uppercase">Problem Statement</h2></div><div className="space-y-6"><div><label className="label-caps text-rose-500">Core Problem</label><textarea className="input-field min-h-[120px]" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: e.target.value})} /></div><div><label className="label-caps">Affected Personnel</label><input className="input-field" value={data.s3_affected} onChange={e => setData({...data, s3_affected: e.target.value})} /></div><div><label className="label-caps">Critical Gravity</label><input className="input-field" value={data.s3_whyItMatters} onChange={e => setData({...data, s3_whyItMatters: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 4 && (
-                    <div className="space-y-4 animate-fade-in">
-                       <div className="flex items-center gap-3 mb-4"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">04</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Impact Matrix</h2></div>
-                       <div className="max-h-[500px] overflow-y-auto pr-2 custom-scrollbar space-y-3">
-                          {data.s4_painPoints.map((pp, idx) => (
-                            <div key={idx} className="bg-slate-50 p-4 rounded-xl flex gap-4 items-end">
-                               <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[10px] font-black text-slate-300 border border-slate-100">{idx+1}</div>
-                               <div className="flex-grow"><input className="input-field !bg-white !py-2 !text-xs" value={pp.point} onChange={e => {
-                                  let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], point: e.target.value }; setData({...data, s4_painPoints: u});
-                               }} placeholder="Problem facet..." /></div>
-                               <select className="input-field !bg-white !py-2 !text-[9px] !w-fit" value={pp.impact} onChange={e => {
-                                  let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], impact: e.target.value }; setData({...data, s4_painPoints: u});
-                               }}><option>High</option><option>Medium</option><option>Low</option></select>
-                               <select className="input-field !bg-white !py-2 !text-[9px] !w-fit" value={pp.freq} onChange={e => {
-                                  let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], freq: e.target.value }; setData({...data, s4_painPoints: u});
-                               }}><option>Frequent</option><option>Occasional</option><option>Rare</option></select>
-                            </div>
-                          ))}
-                       </div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">04</span><h2 className="text-xl font-black text-[#020617] uppercase">Impact Matrix</h2></div><div className="max-h-[450px] overflow-y-auto pr-2 custom-scrollbar space-y-3">{data.s4_painPoints.map((pp, idx) => (<div key={idx} className="bg-slate-50 p-4 rounded-xl flex gap-4 items-end border border-slate-100"><div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[10px] font-black text-slate-300 border border-slate-100">{idx+1}</div><div className="flex-grow"><input className="input-field !bg-white !py-2 !text-xs" value={pp.point} onChange={e => { let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], point: e.target.value }; setData({...data, s4_painPoints: u}) }} placeholder="Enter pain point facet..." /></div><select className="input-field !bg-white !py-2 !text-[9px] !w-fit font-bold" value={pp.impact} onChange={e => { let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], impact: e.target.value }; setData({...data, s4_painPoints: u}) }}><option>High</option><option>Medium</option><option>Low</option></select><select className="input-field !bg-white !py-2 !text-[9px] !w-fit font-bold" value={pp.freq} onChange={e => { let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], freq: e.target.value }; setData({...data, s4_painPoints: u}) }}><option>Frequent</option><option>Occasional</option><option>Rare</option></select></div>))}</div></div>
                   )}
 
                   {step === 5 && (
-                    <div className="space-y-6 animate-fade-in">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">05</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Stakeholders</h2></div>
-                       <div className="space-y-6">
-                        <div><label className="label-caps">Primary Nodes</label><textarea className="input-field min-h-[120px]" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: e.target.value})} /></div>
-                        <div><label className="label-caps">Secondary Nodes</label><textarea className="input-field min-h-[120px]" value={data.s5_secondaryUsers} onChange={e => setData({...data, s5_secondaryUsers: e.target.value})} /></div>
-                       </div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">05</span><h2 className="text-xl font-black text-[#020617] uppercase">Stakeholders</h2></div><div className="space-y-6"><div><label className="label-caps">Primary Consumers</label><textarea className="input-field min-h-[120px]" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: e.target.value})} /></div><div><label className="label-caps">Secondary Entities</label><textarea className="input-field min-h-[120px]" value={data.s5_secondaryUsers} onChange={e => setData({...data, s5_secondaryUsers: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 6 && (
-                    <div className="space-y-6 animate-fade-in max-h-[550px] overflow-y-auto pr-2">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">06</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Persona Node</h2></div>
-                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                         <div><label className="label-caps">Name</label><input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} /></div>
-                         <div><label className="label-caps">Age</label><input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} /></div>
-                         <div><label className="label-caps">Gender</label><input className="input-field !py-2 !text-xs" value={data.s6_customerGender} onChange={e => setData({...data, s6_customerGender: e.target.value})} /></div>
-                         <div><label className="label-caps">Locality</label><input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} /></div>
-                       </div>
-                       <div className="grid grid-cols-2 gap-4">
-                         <div className="p-4 bg-rose-50 rounded-xl border border-rose-100"><label className="label-caps text-rose-500">Pains</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} /></div>
-                         <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100"><label className="label-caps text-emerald-500">Goals</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px]" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} /></div>
-                       </div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">06</span><h2 className="text-xl font-black text-[#020617] uppercase">Persona Node</h2></div><div className="grid grid-cols-4 gap-4"><div><label className="label-caps">Name</label><input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} /></div><div><label className="label-caps">Age</label><input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} /></div><div><label className="label-caps">Gender</label><input className="input-field !py-2 !text-xs" value={data.s6_customerGender} onChange={e => setData({...data, s6_customerGender: e.target.value})} /></div><div><label className="label-caps">Location</label><input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} /></div></div><div className="grid grid-cols-2 gap-4"><div className="p-4 bg-rose-50/50 rounded-xl border border-rose-100"><label className="label-caps text-rose-500">Core Pains</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} /></div><div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100"><label className="label-caps text-emerald-500">Success Goals</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[80px]" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 7 && (
-                    <div className="space-y-6 animate-fade-in">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">07</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Gap Analysis</h2></div>
-                       <div className="grid grid-cols-2 gap-6">
-                        <div><label className="label-caps">Status Quo</label><textarea className="input-field min-h-[120px]" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} /></div>
-                        <div><label className="label-caps">Limitations</label><textarea className="input-field min-h-[120px]" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: e.target.value})} /></div>
-                        <div><label className="label-caps text-teal-600">Gains</label><textarea className="input-field min-h-[100px] border-teal-50" value={data.s7_gainCreators} onChange={e => setData({...data, s7_gainCreators: e.target.value})} /></div>
-                        <div><label className="label-caps text-[#020617]">Relief</label><textarea className="input-field min-h-[100px] border-teal-50" value={data.s7_painKillers} onChange={e => setData({...data, s7_painKillers: e.target.value})} /></div>
-                       </div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">07</span><h2 className="text-xl font-black text-[#020617] uppercase">Gap Analysis</h2></div><div className="grid grid-cols-2 gap-6"><div><label className="label-caps">Status Quo</label><textarea className="input-field min-h-[120px]" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} /></div><div><label className="label-caps">Limitations</label><textarea className="input-field min-h-[120px]" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: e.target.value})} /></div><div><label className="label-caps text-teal-600">Gains Creator</label><textarea className="input-field min-h-[100px]" value={data.s7_gainCreators} onChange={e => setData({...data, s7_gainCreators: e.target.value})} /></div><div><label className="label-caps text-rose-600">Pain Reliever</label><textarea className="input-field min-h-[100px]" value={data.s7_painKillers} onChange={e => setData({...data, s7_painKillers: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 8 && (
-                    <div className="space-y-6 animate-fade-in">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">08</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Solution Concept</h2></div>
-                       <div className="space-y-6">
-                        <div><label className="label-caps">The Solution</label><textarea className="input-field min-h-[150px]" placeholder="Deep dive into how your idea solves the core problem..." value={data.s8_solution} onChange={e => setData({...data, s8_solution: e.target.value})} /></div>
-                        <div><label className="label-caps">Core Technology</label><input className="input-field" placeholder="Ex: AI, IoT, Biotechnology..." value={data.s8_coreTech} onChange={e => setData({...data, s8_coreTech: e.target.value})} /></div>
-                       </div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">08</span><h2 className="text-xl font-black text-[#020617] uppercase">Solution Concept</h2></div><div className="space-y-6"><div><label className="label-caps text-teal-600">The Proposed Mission</label><textarea className="input-field min-h-[150px]" value={data.s8_solution} onChange={e => setData({...data, s8_solution: e.target.value})} /></div><div><label className="label-caps text-navy">Core Technology Architecture</label><input className="input-field" placeholder="AI, Blockchain, Web3, Cloud..." value={data.s8_coreTech} onChange={e => setData({...data, s8_coreTech: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 9 && (
-                    <div className="space-y-6 animate-fade-in">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">09</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Solution Flow</h2></div>
-                       <div className="grid grid-cols-2 gap-6">
-                        <div><label className="label-caps">One Line Pitch</label><input className="input-field" value={data.s9_oneline} onChange={e => setData({...data, s9_oneline: e.target.value})} /></div>
-                        <div><label className="label-caps">Logic</label><input className="input-field" value={data.s9_howItWorks} onChange={e => setData({...data, s9_howItWorks: e.target.value})} /></div>
-                       </div>
-                       <div className="pt-6">
-                          <label className="label-caps font-black italic">Execution Path (10 Phases)</label>
-                          <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-4 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
-                             {data.s9_flowSteps.map((sVal, idx) => (
-                               <div key={idx} className="flex items-center gap-2"><span className="text-[9px] font-black text-slate-300 w-4">{idx+1}</span><input className="input-field !py-2 !text-xs !bg-slate-50 border-none" value={sVal} onChange={e => { let u = [...data.s9_flowSteps]; u[idx] = e.target.value; setData({...data, s9_flowSteps: u}) }} /></div>
-                             ))}
-                          </div>
-                       </div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">09</span><h2 className="text-xl font-black text-[#020617] uppercase">Solution Flow</h2></div><div className="grid grid-cols-2 gap-6"><div><label className="label-caps">One Line Logic</label><input className="input-field font-bold italic" value={data.s9_oneline} onChange={e => setData({...data, s9_oneline: e.target.value})} /></div><div><label className="label-caps">System Process</label><input className="input-field" value={data.s9_howItWorks} onChange={e => setData({...data, s9_howItWorks: e.target.value})} /></div></div><div className="mt-8 border-t pt-6"><label className="label-caps font-black mb-4 block underline">Institutional Workflow (10 Steps)</label><div className="grid grid-cols-2 gap-x-8 gap-y-3">{data.s9_flowSteps.map((sv, i) => (<div key={i} className="flex items-center gap-3"><span className="text-[10px] font-black text-slate-300 w-4">#{i+1}</span><input className="input-field !py-2 !text-xs !bg-slate-50 border-slate-100" value={sv} onChange={e => { let u = [...data.s9_flowSteps]; u[i] = e.target.value; setData({...data, s9_flowSteps: u}) }} /></div>))}</div></div></div>
                   )}
 
                   {step === 10 && (
-                    <div className="space-y-4 animate-fade-in max-h-[550px] overflow-y-auto pr-2 custom-scrollbar">
-                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">10</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Lean Logic</h2></div>
-                       
-                       <div className="grid grid-cols-3 gap-3">
-                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
-                             <label className="label-caps !text-[8px] text-rose-500">01. Problem</label>
-                             <textarea name="s10_leanProblem" className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-xs !normal-case" value={data.s10_leanProblem} onChange={handleInputChange} placeholder="What is the pain point?" />
+                    <div className="space-y-4 animate-fade-in">
+                       <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">10</span><h2 className="text-xl font-black text-[#020617] uppercase">Lean Logic</h2></div>
+                       <div className="grid grid-cols-3 gap-4">
+                          <div className="p-3 bg-white rounded-xl border-2 border-slate-200 flex flex-col hover:border-rose-300 transition-all">
+                             <label className="label-caps !text-[8px] text-rose-500 mb-1">01. Problem</label>
+                             <textarea className="input-field !bg-slate-50 !border-0 !p-2 min-h-[80px] !text-xs !normal-case" value={data.s10_leanProblem} onChange={e => setData({...data, s10_leanProblem: e.target.value})} placeholder="Market pain point..." />
                           </div>
-                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
-                             <label className="label-caps !text-[8px] text-teal-600">02. Solution</label>
-                             <textarea name="s10_leanSolution" className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs !normal-case" value={data.s10_leanSolution} onChange={handleInputChange} placeholder="Your high-level fix..." />
-                             <div className="mt-2 pt-2 border-t border-slate-100">
-                                <label className="label-caps !text-[7px] opacity-60">Key Metrics</label>
-                                <textarea name="s10_leanMetrics" className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs !normal-case" value={data.s10_leanMetrics} onChange={handleInputChange} placeholder="Success numbers..." />
-                             </div>
+                          <div className="p-3 bg-white rounded-xl border-2 border-slate-200 flex flex-col hover:border-teal-300 transition-all">
+                             <label className="label-caps !text-[8px] text-teal-600 mb-1">02. Solution</label>
+                             <textarea className="input-field !bg-slate-50 !border-0 !p-2 min-h-[40px] !text-xs !normal-case" value={data.s10_leanSolution} onChange={e => setData({...data, s10_leanSolution: e.target.value})} placeholder="High-level fix..." />
+                             <div className="mt-2 pt-2 border-t border-slate-100"><label className="label-caps !text-[7px] opacity-60 mb-1">Metrics</label><textarea className="input-field !bg-slate-50 !border-0 !p-2 min-h-[40px] !text-xs !normal-case" value={data.s10_leanMetrics} onChange={e => setData({...data, s10_leanMetrics: e.target.value})} placeholder="Key numbers..." /></div>
                           </div>
-                          <div className="p-3 bg-teal-50/50 rounded-lg border border-teal-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
-                             <label className="label-caps !text-[8px] text-[#020617]">03. Unique Value Prop</label>
-                             <textarea name="s10_leanUSP" className="input-field !bg-transparent !border-0 !p-0 min-h-[90px] !text-xs !normal-case font-bold" value={data.s10_leanUSP} onChange={handleInputChange} placeholder="Single clear compelling message..." />
+                          <div className="p-3 bg-white rounded-xl border-2 border-teal-200 flex flex-col hover:border-teal-500 transition-all">
+                             <label className="label-caps !text-[8px] text-[#020617] mb-1 font-black">03. Value Prop</label>
+                             <textarea className="input-field !bg-teal-50/50 !border-0 !p-2 min-h-[90px] !text-xs !normal-case font-bold" value={data.s10_leanUSP} onChange={e => setData({...data, s10_leanUSP: e.target.value})} placeholder="Single compelling message..." />
                           </div>
                        </div>
-
-                       <div className="grid grid-cols-2 gap-3 mt-1">
-                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
-                             <label className="label-caps !text-[8px] text-[#020617]">04. Unfair Advantage</label>
-                             <textarea name="s10_leanUnfair" className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs !normal-case" value={data.s10_leanUnfair} onChange={handleInputChange} placeholder="What can't be copied?" />
-                             <div className="mt-2 pt-2 border-t border-slate-100">
-                                <label className="label-caps !text-[7px] opacity-60">Channels</label>
-                                <textarea name="s10_leanChannels" className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs !normal-case" value={data.s10_leanChannels} onChange={handleInputChange} placeholder="Path to customers..." />
-                             </div>
+                       <div className="grid grid-cols-2 gap-4">
+                          <div className="p-3 bg-white rounded-xl border-2 border-slate-200 flex flex-col hover:border-indigo-400 transition-all">
+                             <label className="label-caps !text-[8px] text-[#020617] mb-1">04. Unfair Advantage</label>
+                             <textarea className="input-field !bg-slate-50 !border-0 !p-2 min-h-[40px] !text-xs !normal-case" value={data.s10_leanUnfair} onChange={e => setData({...data, s10_leanUnfair: e.target.value})} placeholder="Competitive moat..." />
+                             <div className="mt-2 pt-2 border-t border-slate-100"><label className="label-caps !text-[7px] opacity-60 mb-1">Channels</label><textarea className="input-field !bg-slate-50 !border-0 !p-2 min-h-[40px] !text-xs !normal-case" value={data.s10_leanChannels} onChange={e => setData({...data, s10_leanChannels: e.target.value})} placeholder="Customer path..." /></div>
                           </div>
-                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
-                             <label className="label-caps !text-[8px] text-indigo-600">05. Customer Segments</label>
-                             <textarea name="s10_leanSegments" className="input-field !bg-transparent !border-0 !p-0 min-h-[90px] !text-xs !normal-case" value={data.s10_leanSegments} onChange={handleInputChange} placeholder="Who are the targets?" />
+                          <div className="p-3 bg-white rounded-xl border-2 border-slate-200 flex flex-col hover:border-indigo-600 transition-all">
+                             <label className="label-caps !text-[8px] text-indigo-600 mb-1">05. Customer Nodes</label>
+                             <textarea className="input-field !bg-slate-50 !border-0 !p-2 min-h-[90px] !text-xs !normal-case" value={data.s10_leanSegments} onChange={e => setData({...data, s10_leanSegments: e.target.value})} placeholder="Primary cohorts..." />
                           </div>
                        </div>
-
-                       <div className="grid grid-cols-2 gap-3 mt-1">
-                          <div className="p-3 bg-rose-50/50 rounded-lg border border-rose-100"><label className="label-caps !text-[8px] text-rose-500">Costs</label><textarea name="s10_leanCosts" className="input-field !bg-transparent !border-0 !p-0 min-h-[50px] !text-xs !normal-case" value={data.s10_leanCosts} onChange={handleInputChange} placeholder="Infrastructure, Personnel, Nodes..." /></div>
-                          <div className="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100"><label className="label-caps !text-[8px] text-emerald-600">Revenue</label><textarea name="s10_leanRevenue" className="input-field !bg-transparent !border-0 !p-0 min-h-[50px] !text-xs !normal-case" value={data.s10_leanRevenue} onChange={handleInputChange} placeholder="Streams, Subscriptions, Sales..." /></div>
+                       <div className="grid grid-cols-2 gap-4">
+                          <div className="p-3 bg-white rounded-xl border-2 border-rose-200"><label className="label-caps !text-[8px] text-rose-500 mb-1">06. Costs</label><textarea className="input-field !bg-slate-50 !border-0 !p-2 min-h-[50px] !text-xs !normal-case" value={data.s10_leanCosts} onChange={e => setData({...data, s10_leanCosts: e.target.value})} placeholder="Operating structure (₹)..." /></div>
+                          <div className="p-3 bg-white rounded-xl border-2 border-emerald-200"><label className="label-caps !text-[8px] text-emerald-600 mb-1">07. Revenue</label><textarea className="input-field !bg-slate-50 !border-0 !p-2 min-h-[50px] !text-xs !normal-case" value={data.s10_leanRevenue} onChange={e => setData({...data, s10_leanRevenue: e.target.value})} placeholder="Monetization logic (₹)..." /></div>
                        </div>
                     </div>
                   )}
 
                   {step === 11 && (
-                     <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">11</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Value Metrics</h2></div><div className="grid grid-cols-4 gap-4">
-                        <div className="space-y-2"><label className="label-caps text-emerald-500 !text-[8px]">🎈 Lifts</label>{data.s11_lifts.map((v, i) => (<input key={i} className="input-field !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s11_lifts]; u[i] = e.target.value; setData({...data, s11_lifts: u})}} />))}</div>
-                        <div className="space-y-2"><label className="label-caps text-rose-500 !text-[8px]">⚓ Pulls</label>{data.s11_pulls.map((v, i) => (<input key={i} className="input-field !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s11_pulls]; u[i] = e.target.value; setData({...data, s11_pulls: u})}} />))}</div>
-                        <div className="space-y-2"><label className="label-caps text-teal-600 !text-[8px]">⚡ Fuels</label>{data.s11_fuels.map((v, i) => (<input key={i} className="input-field !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s11_fuels]; u[i] = e.target.value; setData({...data, s11_fuels: u})}} />))}</div>
-                        <div className="space-y-2"><label className="label-caps text-navy !text-[8px]">🏁 Outcomes</label>{data.s11_outcomes.map((v, i) => (<input key={i} className="input-field !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s11_outcomes]; u[i] = e.target.value; setData({...data, s11_outcomes: u})}} />))}</div>
-                     </div></div>
+                     <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">11</span><h2 className="text-xl font-black text-[#020617] uppercase">Value Metrics</h2></div><div className="grid grid-cols-4 gap-4"><div className="space-y-2"><label className="label-caps text-emerald-500 !text-[8px]">Lifts</label>{data.s11_lifts.map((v, i) => (<input key={i} className="input-field !bg-slate-50 border-slate-100 !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s11_lifts]; u[i] = e.target.value; setData({...data, s11_lifts: u})}} />))}</div><div className="space-y-2"><label className="label-caps text-rose-500 !text-[8px]">Pulls</label>{data.s11_pulls.map((v, i) => (<input key={i} className="input-field !bg-slate-50 border-slate-100 !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s11_pulls]; u[i] = e.target.value; setData({...data, s11_pulls: u})}} />))}</div><div className="space-y-2"><label className="label-caps text-teal-600 !text-[8px]">Fuels</label>{data.s11_fuels.map((v, i) => (<input key={i} className="input-field !bg-slate-50 border-slate-100 !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s11_fuels]; u[i] = e.target.value; setData({...data, s11_fuels: u})}} />))}</div><div className="space-y-2"><label className="label-caps text-navy !text-[8px]">Outcomes</label>{data.s11_outcomes.map((v, i) => (<input key={i} className="input-field !bg-slate-50 border-slate-100 !py-2 !text-[9px]" value={v} onChange={e => { let u = [...data.s11_outcomes]; u[i] = e.target.value; setData({...data, s11_outcomes: u})}} />))}</div></div></div>
                   )}
 
                   {step === 12 && (
-                     <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">12</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Market Positioning</h2></div>
-                        <div className="space-y-4">
-                           {data.s12_competitors.map((c, i) => (
-                              <div key={i} className="bg-slate-50 p-6 rounded-2xl grid grid-cols-3 gap-6 border border-slate-100">
-                                 <div><label className="label-caps !text-[8px]">Competitor {i+1}</label><input className="input-field !bg-white" value={c.name} onChange={e => { let u = [...data.s12_competitors]; u[i].name = e.target.value; setData({...data, s12_competitors: u})}} /></div>
-                                 <div><label className="label-caps !text-[8px]">Strengths</label><input className="input-field !bg-white" value={c.strength} onChange={e => { let u = [...data.s12_competitors]; u[i].strength = e.target.value; setData({...data, s12_competitors: u})}} /></div>
-                                 <div><label className="label-caps !text-[8px]">Weaknesses</label><input className="input-field !bg-white" value={c.weakness} onChange={e => { let u = [...data.s12_competitors]; u[i].weakness = e.target.value; setData({...data, s12_competitors: u})}} /></div>
-                              </div>
-                           ))}
-                           <div className="bg-teal-50/50 p-8 rounded-3xl grid grid-cols-3 gap-6 shadow-sm relative overflow-hidden group border border-teal-200/50">
-                              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl -mr-16 -mt-16 transition-transform"></div>
-                              <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">OUR VENTURE</label><input className="w-full bg-white border border-teal-500/20 rounded-xl px-4 py-3 text-[#020617] font-black uppercase text-xs" value={data.s12_ourVenture.name} readOnly /></div>
-                              <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">UNFAIR ADVANTAGE</label><input className="w-full bg-white border border-teal-200 rounded-xl px-4 py-3 text-[#020617] italic text-xs focus:border-teal-400 outline-none" value={data.s12_ourVenture.strength} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, strength: e.target.value}})} /></div>
-                              <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">GAP BRIDGED</label><input className="w-full bg-white border border-teal-200 rounded-xl px-4 py-3 text-[#020617] italic text-xs focus:border-teal-400 outline-none" value={data.s12_ourVenture.weakness} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, weakness: e.target.value}})} /></div>
-                           </div>
-                        </div>
-                     </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">12</span><h2 className="text-xl font-black text-[#020617] uppercase">Positioning</h2></div><div className="space-y-4">{data.s12_competitors.map((c, i) => (<div key={i} className="bg-slate-50 p-6 rounded-2xl grid grid-cols-3 gap-6 border-2 border-slate-100"><div><label className="label-caps">Comp. {i+1}</label><input className="input-field !bg-white border-slate-200" value={c.name} onChange={e => { let u = [...data.s12_competitors]; u[i].name = e.target.value; setData({...data, s12_competitors: u})}} /></div><div><label className="label-caps">Strength</label><input className="input-field !bg-white border-slate-200" value={c.strength} onChange={e => { let u = [...data.s12_competitors]; u[i].strength = e.target.value; setData({...data, s12_competitors: u})}} /></div><div><label className="label-caps">Weakness</label><input className="input-field !bg-white border-slate-200" value={c.weakness} onChange={e => { let u = [...data.s12_competitors]; u[i].weakness = e.target.value; setData({...data, s12_competitors: u})}} /></div></div>))}<div className="bg-teal-50/50 p-8 rounded-3xl grid grid-cols-3 gap-6 border-2 border-teal-200 relative overflow-hidden group shadow-sm"><div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div><div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Our Mission</label><input className="w-full bg-white border-2 border-teal-200/50 rounded-xl px-4 py-3 text-[#020617] font-black uppercase text-xs shadow-inner" value={data.s12_ourVenture.name} readOnly /></div><div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Unfair Edge</label><input className="w-full bg-white border-2 border-teal-300 rounded-xl px-4 py-3 text-[#020617] italic text-xs outline-none shadow-sm" value={data.s12_ourVenture.strength} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, strength: e.target.value}})} /></div><div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Market Gap Bridged</label><input className="w-full bg-white border-2 border-teal-300 rounded-xl px-4 py-3 text-[#020617] italic text-xs outline-none shadow-sm" value={data.s12_ourVenture.weakness} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, weakness: e.target.value}})} /></div></div></div></div>
                   )}
 
                   {step === 13 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">13</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Market Sizing (TAM SAM SOM)</h2></div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-teal-600">TAM (Total Market)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: ₹500 Cr" value={data.s13_tam} onChange={e => setData({...data, s13_tam: e.target.value})} /></div>
-                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-orange-500">SAM (Serviceable)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: ₹10 Cr" value={data.s13_sam} onChange={e => setData({...data, s13_sam: e.target.value})} /></div>
-                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100"><label className="label-caps !text-navy">SOM (Obtainable)</label><input className="input-field !bg-white !text-lg font-black" placeholder="Ex: ₹20 Lakhs" value={data.s13_som} onChange={e => setData({...data, s13_som: e.target.value})} /></div>
-                        </div>
-                        <div className="mt-8"><label className="label-caps">Valuation Logic (Rupees)</label><textarea className="input-field min-h-[120px]" placeholder="Explain your market sizing data in ₹..." value={data.s13_marketLogic} onChange={e => setData({...data, s13_marketLogic: e.target.value})} /></div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">13</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Market Sizing (₹)</h2></div><div className="grid grid-cols-3 gap-6">{[ {l: 'TAM', c: 'teal', k: 's13_tam', m: '500 Cr'}, {l: 'SAM', c: 'orange', k: 's13_sam', m: '10 Cr'}, {l: 'SOM', c: 'navy', k: 's13_som', m: '20 Lakhs'} ].map((m, i) => (<div key={i} className="p-6 bg-white rounded-2xl border-2 border-slate-100 shadow-sm transition-all hover:border-slate-300"><label className={`label-caps !text-${m.c}-600`}>{m.l}</label><input className="input-field !bg-slate-50 border-slate-100 !text-lg font-black" placeholder={`Ex: ₹${m.m}`} value={data[m.k]} onChange={e => setData({...data, [m.k]: e.target.value})} /></div>))}</div><div className="mt-8"><label className="label-caps">Valuation Logic & Research Basis (Rupees)</label><textarea className="input-field border-2 border-slate-100 !bg-white min-h-[120px]" placeholder="Explain research methodology for ₹ sizing..." value={data.s13_marketLogic} onChange={e => setData({...data, s13_marketLogic: e.target.value})} /></div></div>
                   )}
 
                   {step === 14 && (
-                    <div className="space-y-8 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">14</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Revenue Model</h2></div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                           <div className="space-y-6">
-                              <div><label className="label-caps">Primary Stream</label><input className="input-field font-black uppercase text-teal-600" value={data.s14_primaryStream} onChange={e => setData({...data, s14_primaryStream: e.target.value})} /></div>
-                              <div><label className="label-caps">Secondary Stream</label><input className="input-field font-black uppercase" value={data.s14_secondaryStream} onChange={e => setData({...data, s14_secondaryStream: e.target.value})} /></div>
-                           </div>
-                           <div className="space-y-6">
-                              <div><label className="label-caps">Pricing Strategy (₹)</label><input className="input-field font-black" value={data.s14_pricingStrategy} onChange={e => setData({...data, s14_pricingStrategy: e.target.value})} /></div>
-                              <div><label className="label-caps">Economic Logic (Rupees)</label><textarea className="input-field min-h-[80px]" value={data.s14_revenueLogic} onChange={e => setData({...data, s14_revenueLogic: e.target.value})} /></div>
-                           </div>
-                        </div>
-                    </div>
+                    <div className="space-y-8 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">14</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Revenue Model (₹)</h2></div><div className="grid grid-cols-2 gap-10"><div><label className="label-caps text-teal-600 underline">Primary Stream</label><input className="input-field font-black uppercase text-teal-600 border-2 border-teal-100 mb-6" value={data.s14_primaryStream} onChange={e => setData({...data, s14_primaryStream: e.target.value})} /><label className="label-caps">Secondary Nodes</label><input className="input-field font-black uppercase border-2 border-slate-100" value={data.s14_secondaryStream} onChange={e => setData({...data, s14_secondaryStream: e.target.value})} /></div><div><label className="label-caps">Pricing Strategy (₹)</label><input className="input-field font-black border-2 border-slate-100 mb-6" value={data.s14_pricingStrategy} onChange={e => setData({...data, s14_pricingStrategy: e.target.value})} /><label className="label-caps">Economic Logic (Rupees)</label><textarea className="input-field min-h-[100px] border-2 border-slate-100" value={data.s14_revenueLogic} onChange={e => setData({...data, s14_revenueLogic: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 15 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">15</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Financial Allocation</h2></div>
-                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                           <table className="w-full text-left">
-                              <thead>
-                                 <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-widest text-[#020617]">
-                                    <th className="px-6 py-4">Allocation Item</th>
-                                    <th className="px-6 py-4 text-right">Value Descriptor / Pricing (₹)</th>
-                                 </tr>
-                              </thead>
-                              <tbody className="divide-y divide-slate-100">
-                                 {data.s15_allocations.map((alloc, i) => (
-                                    <tr key={i} className="hover:bg-slate-50/50 transition-all">
-                                       <td className="px-6 py-3">
-                                          <input 
-                                             className="w-full bg-slate-50/80 border border-slate-200 rounded-lg py-3 px-4 font-black uppercase text-xs text-[#020617] outline-none focus:border-teal-500 focus:bg-white transition-all shadow-inner" 
-                                             value={alloc.category} 
-                                             onChange={e => { let u = [...data.s15_allocations]; u[i].category = e.target.value; setData({...data, s15_allocations: u}) }} 
-                                             placeholder="EX: CLOUD NODES"
-                                          />
-                                       </td>
-                                       <td className="px-6 py-3">
-                                          <input 
-                                             className="w-full bg-slate-50/80 border border-slate-200 rounded-lg py-3 px-4 font-bold text-xs text-teal-600 outline-none text-right focus:border-teal-500 focus:bg-white transition-all shadow-inner" 
-                                             value={alloc.amount} 
-                                             onChange={e => { let u = [...data.s15_allocations]; u[i].amount = e.target.value; setData({...data, s15_allocations: u}) }} 
-                                             placeholder="₹ 15,000"
-                                          />
-                                       </td>
-                                    </tr>
-                                 ))}
-                              </tbody>
-                           </table>
-                        </div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">15</span><h2 className="text-xl font-black text-[#020617] uppercase">Financial Allocation</h2></div><div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-sm table-fixed w-full"><table className="w-full text-left font-sans"><thead><tr className="bg-slate-900 border-b border-white/10 text-[9px] font-black uppercase tracking-widest text-teal-400"><th className="px-6 py-4">Allocation Item</th><th className="px-6 py-4 text-right">Valuation / Pricing (₹)</th></tr></thead><tbody className="divide-y divide-slate-100">{data.s15_allocations.map((alloc, i) => (<tr key={i} className="hover:bg-slate-50 transition-all"><td className="px-6 py-3"><input className="w-full bg-white border-2 border-slate-200 rounded-lg py-3 px-4 font-black uppercase text-xs text-[#020617] focus:border-teal-500 shadow-sm" value={alloc.category} onChange={e => { let u = [...data.s15_allocations]; u[i].category = e.target.value; setData({...data, s15_allocations: u}) }} placeholder="EX: PRODUCT NODES" /></td><td className="px-6 py-3 text-right"><input className="w-full bg-white border-2 border-slate-200 rounded-lg py-3 px-4 font-bold text-xs text-teal-600 text-right focus:border-teal-500 shadow-sm" value={alloc.amount} onChange={e => { let u = [...data.s15_allocations]; u[i].amount = e.target.value; setData({...data, s15_allocations: u}) }} placeholder="₹ 0.00" /></td></tr>))}</tbody></table></div></div>
                   )}
 
                   {step === 16 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">16</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Success Vision</h2></div>
-                        <div className="space-y-6"><div><label className="label-caps">Broad Impact</label><textarea className="input-field min-h-[120px]" value={data.s16_socialEconomic} onChange={e => setData({...data, s16_socialEconomic: e.target.value})} /></div><div><label className="label-caps">Long-term Vision</label><input className="input-field" value={data.s16_vision} onChange={e => setData({...data, s16_vision: e.target.value})} /></div></div>
-                    </div>
+                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">16</span><h2 className="text-xl font-black text-[#020617] uppercase">Success Vision</h2></div><div className="space-y-8"><div><label className="label-caps">Social/Economic Impact</label><textarea className="input-field border-2 border-slate-100 min-h-[140px]" value={data.s16_socialEconomic} onChange={e => setData({...data, s16_socialEconomic: e.target.value})} /></div><div><label className="label-caps text-teal-600">Institutional Vision Boundary</label><input className="input-field border-2 border-teal-100 font-bold" value={data.s16_vision} onChange={e => setData({...data, s16_vision: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 17 && (
-                    <div className="space-y-12 animate-fade-in flex flex-col items-center justify-center text-center py-10"><div className="text-5xl mb-6">🏛️</div><div className="space-y-4"><h2 className="text-3xl font-black text-navy uppercase tracking-tight">Synthesis Seal</h2><p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">All 17 modules verified for generation.</p></div></div>
+                    <div className="space-y-12 animate-fade-in flex flex-col items-center justify-center text-center py-20"><div className="text-6xl mb-8 animate-bounce">🏛️</div><div className="space-y-4"><h2 className="text-4xl font-black text-navy uppercase tracking-tighter">Synthesis Authorization</h2><p className="text-slate-400 font-bold text-[11px] uppercase tracking-widest leading-loose max-w-lg">All mission coordinates verified. Artifact generation phase initialized.</p></div></div>
                   )}
-               </div>
+             </div>
 
-               <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col md:flex-row gap-4">
-                  {step < 17 && (
-                    <div className="flex-1 space-y-2">
-                       <label className="label-caps !mb-2 opacity-50">Visual Artifact</label>
-                       <div className="flex gap-2">
-                          <input type="file" id="up" className="hidden" onChange={e => handleFileUpload(e, step)} /><label htmlFor="up" className="bg-slate-100 px-4 py-2 rounded-lg text-[9px] font-black uppercase cursor-pointer hover:bg-slate-200">{uploading ? '...' : 'Upload'}</label>
-                          <input className="input-field !py-2 !text-xs flex-grow" placeholder="External Asset URL..." value={data.slide_assets[`s${step}_img`] || ''} onChange={e => updateAsset(`s${step}_img`, e.target.value)} />
-                       </div>
-                    </div>
-                  )}
-               </div>
-
-               <div className="mt-8 flex items-center justify-between pt-6 border-t border-slate-100 relative z-10">
-                  {step > 1 && <button onClick={prevStep} className="px-6 py-3 rounded-xl border border-slate-200 text-[10px] font-black uppercase text-slate-400 hover:text-navy transition-all">Back</button>}
-                  {step < 17 ? (
-                    <button onClick={nextStep} className="ml-auto bg-[#020617] text-white px-8 py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-500 transition-all shadow-xl active:scale-95">Proceed Journey →</button>
-                  ) : (
-                    <button onClick={handleSubmit} disabled={loading} className="ml-auto bg-teal-500 text-white px-10 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-[#020617] transition-all shadow-xl active:scale-95">
-                      {loading ? 'Synthesizing...' : 'Initialize Final Synthesis'}
-                    </button>
-                  )}
-               </div>
-            </div>
-          </div>
+             <footer className="mt-12 pt-8 border-t border-slate-100 relative z-20 flex flex-col md:flex-row gap-6">
+                {step < 17 && (
+                   <div className="flex-1 space-y-3"><label className="label-caps !text-[9px] opacity-40 italic">Visual Support Node</label><div className="flex gap-3"><input type="file" id="sys-up" className="hidden" onChange={e => handleFileUpload(e, step)} /><label htmlFor="sys-up" className="bg-slate-100 px-6 py-3 rounded-xl text-[10px] font-black uppercase cursor-pointer hover:bg-slate-200 transition-all border border-slate-200">{uploading ? 'UPLOADING...' : 'LOCAL UPLOAD'}</label><input className="input-field !py-3 !text-xs flex-grow font-mono !bg-slate-50 border-slate-100" placeholder="Repository Asset URL (Direct)..." value={data.slide_assets[`s${step}_img`] || ''} onChange={e => setData(prev => ({...prev, slide_assets: {...prev.slide_assets, [`s${step}_img`]: e.target.value}}))} /></div></div>
+                )}
+                <div className="flex items-center gap-3 ml-auto">
+                   {step > 1 && <button onClick={prevStep} className="px-8 py-4 rounded-xl border-2 border-slate-100 text-[11px] font-black uppercase text-slate-400 hover:text-navy hover:border-navy transition-all">Back</button>}
+                   {step < 17 ? (
+                     <button onClick={nextStep} className="bg-navy text-white px-10 py-4 rounded-xl font-black uppercase text-[11px] tracking-widest hover:bg-teal-500 transition-all shadow-2xl active:scale-95">Proceed Journey</button>
+                   ) : (
+                     <button onClick={handleSubmit} disabled={loading} className="bg-teal-500 text-navy px-12 py-5 rounded-2xl font-black uppercase text-[13px] tracking-widest hover:bg-navy hover:text-white transition-all shadow-2xl active:scale-95 border-b-4 border-teal-700">
+                        {loading ? 'SYNTHESIZING ARTIFACT...' : 'AUTHORIZE FINAL GENERATION'}
+                     </button>
+                   )}
+                </div>
+             </footer>
+          </section>
         </div>
       </main>
+      <style jsx global>{`
+        .input-field { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .input-field:focus { box-shadow: 0 0 15px rgba(20, 184, 166, 0.15); transform: translateY(-1px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      `}</style>
     </div>
   );
 }
