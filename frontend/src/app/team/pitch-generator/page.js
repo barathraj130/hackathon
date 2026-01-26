@@ -375,14 +375,44 @@ export default function PitchGenerator() {
                   {step === 10 && (
                     <div className="space-y-4 animate-fade-in max-h-[550px] overflow-y-auto pr-2 custom-scrollbar">
                        <div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded uppercase tracking-widest">10</span><h2 className="text-xl font-black text-[#020617] uppercase tracking-tight">Lean Logic</h2></div>
+                       
                        <div className="grid grid-cols-3 gap-3">
-                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100"><label className="label-caps !text-[8px]">Problem</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-xs" value={data.s10_leanProblem} onChange={e => setData({...data, s10_leanProblem: e.target.value})} /></div>
-                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100"><label className="label-caps !text-[8px]">Solution</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-xs" value={data.s10_leanSolution} onChange={e => setData({...data, s10_leanSolution: e.target.value})} /></div>
-                          <div className="p-3 bg-teal-50/50 rounded-lg border border-teal-100"><label className="label-caps !text-[8px] text-teal-600">Value Prop</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[60px] !text-xs" value={data.s10_leanUSP} onChange={e => setData({...data, s10_leanUSP: e.target.value})} /></div>
+                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
+                             <label className="label-caps !text-[8px] text-rose-500">01. Problem</label>
+                             <textarea name="s10_leanProblem" className="input-field !bg-transparent !border-0 !p-0 min-h-[80px] !text-xs !normal-case" value={data.s10_leanProblem} onChange={handleInputChange} placeholder="What is the pain point?" />
+                          </div>
+                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
+                             <label className="label-caps !text-[8px] text-teal-600">02. Solution</label>
+                             <textarea name="s10_leanSolution" className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs !normal-case" value={data.s10_leanSolution} onChange={handleInputChange} placeholder="Your high-level fix..." />
+                             <div className="mt-2 pt-2 border-t border-slate-100">
+                                <label className="label-caps !text-[7px] opacity-60">Key Metrics</label>
+                                <textarea name="s10_leanMetrics" className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs !normal-case" value={data.s10_leanMetrics} onChange={handleInputChange} placeholder="Success numbers..." />
+                             </div>
+                          </div>
+                          <div className="p-3 bg-teal-50/50 rounded-lg border border-teal-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
+                             <label className="label-caps !text-[8px] text-[#020617]">03. Unique Value Prop</label>
+                             <textarea name="s10_leanUSP" className="input-field !bg-transparent !border-0 !p-0 min-h-[90px] !text-xs !normal-case font-bold" value={data.s10_leanUSP} onChange={handleInputChange} placeholder="Single clear compelling message..." />
+                          </div>
                        </div>
-                       <div className="grid grid-cols-2 gap-3 mt-4">
-                          <div className="p-3 bg-rose-50/50 rounded-lg border border-rose-100"><label className="label-caps !text-[8px] text-rose-500">Costs</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs" value={data.s10_leanCosts} onChange={e => setData({...data, s10_leanCosts: e.target.value})} /></div>
-                          <div className="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100"><label className="label-caps !text-[8px] text-emerald-600">Revenue</label><textarea className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs" value={data.s10_leanRevenue} onChange={e => setData({...data, s10_leanRevenue: e.target.value})} /></div>
+
+                       <div className="grid grid-cols-2 gap-3 mt-1">
+                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
+                             <label className="label-caps !text-[8px] text-[#020617]">04. Unfair Advantage</label>
+                             <textarea name="s10_leanUnfair" className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs !normal-case" value={data.s10_leanUnfair} onChange={handleInputChange} placeholder="What can't be copied?" />
+                             <div className="mt-2 pt-2 border-t border-slate-100">
+                                <label className="label-caps !text-[7px] opacity-60">Channels</label>
+                                <textarea name="s10_leanChannels" className="input-field !bg-transparent !border-0 !p-0 min-h-[40px] !text-xs !normal-case" value={data.s10_leanChannels} onChange={handleInputChange} placeholder="Path to customers..." />
+                             </div>
+                          </div>
+                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col group transition-all hover:bg-white hover:shadow-md">
+                             <label className="label-caps !text-[8px] text-indigo-600">05. Customer Segments</label>
+                             <textarea name="s10_leanSegments" className="input-field !bg-transparent !border-0 !p-0 min-h-[90px] !text-xs !normal-case" value={data.s10_leanSegments} onChange={handleInputChange} placeholder="Who are the targets?" />
+                          </div>
+                       </div>
+
+                       <div className="grid grid-cols-2 gap-3 mt-1">
+                          <div className="p-3 bg-rose-50/50 rounded-lg border border-rose-100"><label className="label-caps !text-[8px] text-rose-500">Costs</label><textarea name="s10_leanCosts" className="input-field !bg-transparent !border-0 !p-0 min-h-[50px] !text-xs !normal-case" value={data.s10_leanCosts} onChange={handleInputChange} placeholder="Infrastructure, Personnel, Nodes..." /></div>
+                          <div className="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100"><label className="label-caps !text-[8px] text-emerald-600">Revenue</label><textarea name="s10_leanRevenue" className="input-field !bg-transparent !border-0 !p-0 min-h-[50px] !text-xs !normal-case" value={data.s10_leanRevenue} onChange={handleInputChange} placeholder="Streams, Subscriptions, Sales..." /></div>
                        </div>
                     </div>
                   )}
