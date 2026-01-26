@@ -159,7 +159,7 @@ def draw_prototype(slide, data):
                 pic.line.color.rgb = PRIMARY_COLOR
                 pic.line.width = Pt(2)
                 # Add Label
-                add_text_box_centered(slide, f"EVIDENCE NODE {String.fromCharCode(65+i) if 'String' in locals() else chr(65+i)}", l, t+h+0.1, w, 0.3, 10, True, SECONDARY_COLOR)
+                add_text_box_centered(slide, f"EVIDENCE NODE {chr(65+i)}", l, t+h+0.1, w, 0.3, 10, True, SECONDARY_COLOR)
             else:
                 add_clean_box(slide, f"IMG LOAD FAIL: {url[:30]}...", Inches(l), Inches(t), Inches(w), Inches(h), 10, False, ERROR_ZONE)
         except Exception as e:
