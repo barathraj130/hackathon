@@ -140,7 +140,7 @@ export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, a
                 type="text"
                 value={certificateCollege}
                 onChange={(e) => setCertificateCollege(e.target.value)}
-                placeholder="Jeppiaar Institute of Technology"
+                placeholder="Jansons Institute of Technology"
                 className="w-full px-6 py-4 rounded-xl border-2 border-slate-200 focus:border-teal focus:outline-none font-medium"
               />
             </div>
