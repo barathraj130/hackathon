@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 export default function TeamDashboard() {
-  console.log("Dashboard v3.1.1-PATCHED");
+  console.log("Dashboard v3.1.2-STABLE");
   const [timeLeft, setTimeLeft] = useState(86400);
   const [isPaused, setIsPaused] = useState(false);
   const [formattedTime, setFormattedTime] = useState('24:00:00');
@@ -27,24 +27,45 @@ export default function TeamDashboard() {
 
   useEffect(() => {
     fetchInitialData();
-    import('socket.io-client').then((module) => {
-      const socketIO = module.default || module.io;
-      if (!socketIO) return;
-      // Use hardcoded backend URL as fallback if env vars are missing in Vercel
-      const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || 'https://hackathon-production-7c99.up.railway.app';
-      
-      const socket = socketIO(socketUrl);
-      socketRef.current = socket;
-      
-      socket.on('timerUpdate', (data) => {
-        if (data) {
-          if (data.timeRemaining !== undefined) setTimeLeft(data.timeRemaining);
-          if (data.timerPaused !== undefined) setIsPaused(data.timerPaused);
-          if (data.formattedTime) setFormattedTime(data.formattedTime);
-        }
-      });
-    });
-    return () => { if (socketRef.current) socketRef.current.disconnect(); };
+    
+    let socketInstance = null;
+    const initSocket = async () => {
+      try {
+        const module = await import('socket.io-client');
+        const socketIO = module.default || module.io;
+        
+        if (typeof socketIO !== 'function') return;
+
+        // Fallback logic for socket URL to ensure connection stability
+        const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || 'https://hackathon-production-7c99.up.railway.app';
+        
+        socketInstance = socketIO(socketUrl, {
+           transports: ['websocket', 'polling'],
+           reconnectionAttempts: 5
+        });
+        socketRef.current = socketInstance;
+
+        socketInstance.on('connect_error', (err) => {
+           console.warn("Socket connect error:", err);
+        });
+
+        socketInstance.on('timerUpdate', (data) => {
+          if (!data) return;
+          try {
+             if (typeof data.timeRemaining === 'number') setTimeLeft(data.timeRemaining);
+             if (typeof data.timerPaused === 'boolean') setIsPaused(data.timerPaused);
+             if (typeof data.formattedTime === 'string') setFormattedTime(data.formattedTime);
+          } catch (e) {
+             console.error("Socket data error", e);
+          }
+        });
+      } catch (e) {
+         console.error("Socket init failed", e);
+      }
+    };
+
+    initSocket();
+    return () => { if (socketInstance) socketInstance.disconnect(); };
   }, []); 
 
   useEffect(() => { setMounted(true); }, []);
