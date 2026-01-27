@@ -40,8 +40,13 @@ def set_slide_bg(slide):
     fill.fore_color.rgb = WHITE
 
 def add_header(slide, title="SLIDE TITLE"):
-    # SLIDE TITLE
-    header_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.3), Inches(7.5), Inches(0.5))
+    # VIKSIT BHARAT GLOBAL LOGO (Top Left)
+    if os.path.exists("viksit_bharat_global.png"):
+        vb_logo = slide.shapes.add_picture("viksit_bharat_global.png", Inches(0.2), Inches(0.2), height=Inches(0.6))
+        disable_shadow(vb_logo)
+
+    # SLIDE TITLE (Shifted right for logo)
+    header_box = slide.shapes.add_textbox(Inches(1.1), Inches(0.3), Inches(7.0), Inches(0.5))
     disable_shadow(header_box)
     p = header_box.text_frame.paragraphs[0]
     p.text = title
@@ -84,8 +89,8 @@ def create_expert_deck(team_name, college, data):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
 
     # Viksit Bharat Branding - Top Left
-    if os.path.exists("viksit_bharat.png"):
-        vb_img = slide.shapes.add_picture("viksit_bharat.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
+    if os.path.exists("viksit_bharat_global.png"):
+        vb_img = slide.shapes.add_picture("viksit_bharat_global.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
         disable_shadow(vb_img)
         # Optional text label for Viksit Bharat
         tx_vb = slide.shapes.add_textbox(Inches(0.4), Inches(1.2), Inches(2), Inches(0.3))
@@ -153,8 +158,8 @@ def create_expert_deck(team_name, college, data):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
     
     # Viksit Bharat branding on closure
-    if os.path.exists("viksit_bharat.png"):
-        vb_close = slide.shapes.add_picture("viksit_bharat.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
+    if os.path.exists("viksit_bharat_global.png"):
+        vb_close = slide.shapes.add_picture("viksit_bharat_global.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
         disable_shadow(vb_close)
 
     tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
