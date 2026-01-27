@@ -26,7 +26,6 @@ export default function AdminDashboard() {
     const token = localStorage.getItem('token');
     
     if (!token || storedRole !== 'ADMIN') {
-      console.warn("[SESSION-GUARD] Unauthorized role detected or missing token. Re-routing to verification portal.");
       localStorage.clear();
       window.location.href = '/login';
       return;
@@ -37,18 +36,25 @@ export default function AdminDashboard() {
     fetchProblemStatements();
     fetchSubmissions();
     
+    // Dynamic Socket Initialization
     let socketInstance = null;
-    import('socket.io-client').then((module) => {
-      const socketIO = module.default || module.io;
-      if (!socketIO) return;
-      const apiUrl = getApiUrl();
-      const socketUrl = apiUrl.replace('/v1', '') || window.location.origin;
-      socketInstance = socketIO(socketUrl, { transports: ['websocket'], reconnection: true });
-      socketRef.current = socketInstance;
-      socketInstance.on('timerUpdate', (data) => setTimer(prev => ({ ...prev, ...data })));
-    });
+    const initSocket = async () => {
+      try {
+        const { io } = await import('socket.io-client');
+        const apiUrl = getApiUrl();
+        const socketUrl = apiUrl.replace('/v1', '') || window.location.origin;
+        socketInstance = io(socketUrl, { transports: ['websocket'], reconnection: true });
+        socketRef.current = socketInstance;
+        socketInstance.on('timerUpdate', (data) => setTimer(prev => ({ ...prev, ...data })));
+      } catch (err) {
+        console.error("Socket initialization failed:", err);
+      }
+    };
+    initSocket();
     
-    return () => socketInstance?.disconnect();
+    return () => {
+      if (socketInstance) socketInstance.disconnect();
+    };
   }, []);
 
   useEffect(() => { setMounted(true); }, []);
@@ -90,8 +96,15 @@ export default function AdminDashboard() {
       }
     } catch (err) { 
         console.error(err);
-        const msg = err.response?.data?.error || err.message || "Mission state transition failed.";
-        alert(`Mission Control Error: ${msg}\n(Status: ${err.response?.status})`); 
+        const serverDetail = err.response?.data?.error;
+        const status = err.response?.status;
+        
+        if (status === 403) {
+            alert(`🔒 ACCESS DENIED\n\n${serverDetail}\n\nREASON: Your session may have been overwritten by a Team login in another tab.\n\nACTION: Please Logout and Login again as Admin.`);
+        } else {
+            const msg = serverDetail || err.message || "Mission state transition failed.";
+            alert(`Mission Control Error: ${msg}\n(Status: ${status})`); 
+        }
     }
   }
 
@@ -368,7 +381,23 @@ export default function AdminDashboard() {
                  <div className="space-y-4"><label className="text-[9px] font-black text-[#020617] tracking-widest">MISSION TIMER (MIN)</label><input type="number" className="w-full text-4xl font-black p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 outline-none focus:border-teal-500" value={stats.config?.durationMinutes || 1440} onChange={async (e) => { const val = parseInt(e.target.value); await axios.post(`${getApiUrl()}/admin/test-config`, { durationMinutes: val }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchStats(); }} /></div>
                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4"><div className="flex items-center gap-3"><span className="text-lg">🎓</span><p className="text-[9px] font-black text-indigo-700 tracking-widest uppercase">Certification</p></div><p className="text-[10px] font-medium text-slate-500 italic">Configure post-event award data phase.</p><button onClick={handleToggleCertCollection} className={`w-full py-4 rounded-xl font-black text-[10px] tracking-widest transition-all uppercase shadow-md ${stats.config?.allowCertificateDetails ? 'bg-indigo-600 text-white shadow-indigo-600/10' : 'bg-white text-slate-400 border-2 border-slate-200'}`}>{stats.config?.allowCertificateDetails ? 'Terminate Phase' : 'Initialize Phase'}</button></div>
               </div>
-              <div className="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col justify-between group overflow-hidden relative"><div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 rounded-full blur-[100px] -mr-32 -mt-32"></div><div className="space-y-4 relative z-10"><h3 className="text-teal-600 font-black text-[10px] tracking-widest uppercase flex items-center gap-2"><span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-ping"></span> Pulse Force Recovery</h3><p className="text-xs font-medium text-slate-500 normal-case">Master registry reconstruction.</p></div><a href={`${getApiUrl().replace('/v1', '')}/setup-db`} target="_blank" className="w-full py-4 bg-[#020617] text-white text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-teal-500 hover:text-white transition-all text-center relative z-10 shadow-lg">Restructure Mission Registry</a></div>
+              <div className="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col justify-between group overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+                <div className="space-y-4 relative z-10">
+                  <h3 className="text-teal-600 font-black text-[10px] tracking-widest uppercase flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-ping"></span> 
+                    Pulse Force Recovery
+                  </h3>
+                  <p className="text-xs font-medium text-slate-500 normal-case">Master registry reconstruction.</p>
+                </div>
+                <a 
+                  href={`${getApiUrl().replace('/v1', '')}/setup-db`} 
+                  target="_blank" 
+                  className="w-full py-4 bg-[#020617] text-white text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-teal-500 hover:text-white transition-all text-center relative z-10 shadow-lg"
+                >
+                  Restructure Mission Registry
+                </a>
+              </div>
            </div>
         )}
       </main>
