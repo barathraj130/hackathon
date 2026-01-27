@@ -49,10 +49,10 @@ export default function PitchGenerator() {
     s11_outcomes: Array(5).fill(''),
     // S12: Market Positioning
     s12_competitors: [
-      { name: '', strength: '', weakness: '' },
-      { name: '', strength: '', weakness: '' }
+      { name: '', strength: '', weakness: '', pricingModel: '', featureRichness: '' },
+      { name: '', strength: '', weakness: '', pricingModel: '', featureRichness: '' }
     ],
-    s12_ourVenture: { name: 'Our Venture', strength: '', weakness: '' },
+    s12_ourVenture: { name: 'Our Venture', strength: '', weakness: '', pricingModel: '', featureRichness: '' },
     // S13: Market Sizing (TAM SAM SOM)
     s13_tam: '', s13_sam: '', s13_som: '', s13_marketLogic: '',
     // S14: Revenue Model
@@ -228,8 +228,37 @@ export default function PitchGenerator() {
                     <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">05</span><h2 className="text-xl font-black text-[#020617] uppercase">Stakeholders</h2></div><div className="space-y-6"><div><label className="label-caps">Primary Consumers</label><textarea className="input-field min-h-[120px]" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: e.target.value})} /></div><div><label className="label-caps">Secondary Entities</label><textarea className="input-field min-h-[120px]" value={data.s5_secondaryUsers} onChange={e => setData({...data, s5_secondaryUsers: e.target.value})} /></div></div></div>
                   )}
 
+
                   {step === 6 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">06</span><h2 className="text-xl font-black text-[#020617] uppercase">Persona Node</h2></div><div className="grid grid-cols-4 gap-4"><div><label className="label-caps">Name</label><input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} /></div><div><label className="label-caps">Age</label><input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} /></div><div><label className="label-caps">Gender</label><input className="input-field !py-2 !text-xs" value={data.s6_customerGender} onChange={e => setData({...data, s6_customerGender: e.target.value})} /></div><div><label className="label-caps">Location</label><input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} /></div></div><div className="grid grid-cols-2 gap-4"><div className="p-4 bg-rose-50 rounded-xl border border-rose-100"><label className="label-caps text-rose-500 mb-2 block">Core Pains</label><textarea className="input-field w-full bg-white border border-rose-200 rounded-lg p-3 min-h-[80px] focus:border-rose-400 text-xs" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} /></div><div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100"><label className="label-caps text-emerald-500 mb-2 block">Success Goals</label><textarea className="input-field w-full bg-white border border-emerald-200 rounded-lg p-3 min-h-[80px] focus:border-emerald-400 text-xs" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} /></div></div></div>
+                    <div className="space-y-6 animate-fade-in">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">06</span>
+                        <h2 className="text-xl font-black text-[#020617] uppercase">Persona Node</h2>
+                      </div>
+                      
+                      <div className="grid grid-cols-4 gap-4">
+                        <div><label className="label-caps">Name</label><input className="input-field !py-2 !text-xs" value={data.s6_customerName} onChange={e => setData({...data, s6_customerName: e.target.value})} /></div>
+                        <div><label className="label-caps">Age</label><input className="input-field !py-2 !text-xs" value={data.s6_customerAge} onChange={e => setData({...data, s6_customerAge: e.target.value})} /></div>
+                        <div><label className="label-caps">Gender</label><input className="input-field !py-2 !text-xs" value={data.s6_customerGender} onChange={e => setData({...data, s6_customerGender: e.target.value})} /></div>
+                        <div><label className="label-caps">Location</label><input className="input-field !py-2 !text-xs" value={data.s6_customerLocation} onChange={e => setData({...data, s6_customerLocation: e.target.value})} /></div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-rose-50 rounded-xl border border-rose-100">
+                          <label className="label-caps text-rose-500 mb-2 block">Core Pains / Challenges</label>
+                          <textarea className="input-field w-full bg-white border border-rose-200 rounded-lg p-3 min-h-[80px] focus:border-rose-400 text-xs" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} placeholder="List daily challenges..." />
+                        </div>
+                        <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                          <label className="label-caps text-emerald-500 mb-2 block">Professional Goals</label>
+                          <textarea className="input-field w-full bg-white border border-emerald-200 rounded-lg p-3 min-h-[80px] focus:border-emerald-400 text-xs" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} placeholder="What they want to achieve..." />
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <label className="label-caps text-blue-600 mb-2 block">Success Factors / How We Help</label>
+                        <textarea className="input-field w-full bg-white border border-blue-200 rounded-lg p-3 min-h-[100px] focus:border-blue-400 text-xs" value={data.s6_howWeHelp} onChange={e => setData({...data, s6_howWeHelp: e.target.value})} placeholder="• Bullet point 1&#10;• Bullet point 2&#10;• Bullet point 3" />
+                      </div>
+                    </div>
                   )}
 
                   {step === 7 && (
@@ -285,7 +314,39 @@ export default function PitchGenerator() {
                   )}
 
                   {step === 12 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">12</span><h2 className="text-xl font-black text-[#020617] uppercase">Positioning</h2></div><div className="space-y-4">{data.s12_competitors.map((c, i) => (<div key={i} className="bg-slate-50 p-6 rounded-2xl grid grid-cols-3 gap-6 border-2 border-slate-100"><div><label className="label-caps">Comp. {i+1}</label><input className="input-field !bg-white border-slate-200" value={c.name} onChange={e => { let u = [...data.s12_competitors]; u[i].name = e.target.value; setData({...data, s12_competitors: u})}} /></div><div><label className="label-caps">Strength</label><input className="input-field !bg-white border-slate-200" value={c.strength} onChange={e => { let u = [...data.s12_competitors]; u[i].strength = e.target.value; setData({...data, s12_competitors: u})}} /></div><div><label className="label-caps">Weakness</label><input className="input-field !bg-white border-slate-200" value={c.weakness} onChange={e => { let u = [...data.s12_competitors]; u[i].weakness = e.target.value; setData({...data, s12_competitors: u})}} /></div></div>))}<div className="bg-teal-50/50 p-8 rounded-3xl grid grid-cols-3 gap-6 border-2 border-teal-200 relative overflow-hidden group shadow-sm"><div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div><div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Our Mission</label><input className="w-full bg-white border-2 border-teal-200/50 rounded-xl px-4 py-3 text-[#020617] font-black uppercase text-xs shadow-inner" value={data.s12_ourVenture.name} readOnly /></div><div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Unfair Edge</label><input className="w-full bg-white border-2 border-teal-300 rounded-xl px-4 py-3 text-[#020617] italic text-xs outline-none shadow-sm" value={data.s12_ourVenture.strength} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, strength: e.target.value}})} /></div><div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Market Gap Bridged</label><input className="w-full bg-white border-2 border-teal-300 rounded-xl px-4 py-3 text-[#020617] italic text-xs outline-none shadow-sm" value={data.s12_ourVenture.weakness} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, weakness: e.target.value}})} /></div></div></div></div>
+                    <div className="space-y-6 animate-fade-in">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">12</span>
+                        <h2 className="text-xl font-black text-[#020617] uppercase">Market Positioning</h2>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {data.s12_competitors.map((c, i) => (
+                          <div key={i} className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100">
+                            <h3 className="text-xs font-black uppercase text-slate-400 mb-4">Competitor {i+1}</h3>
+                            <div className="grid grid-cols-5 gap-4">
+                              <div><label className="label-caps">Name</label><input className="input-field !bg-white border-slate-200 !py-2 !text-xs" value={c.name} onChange={e => { let u = [...data.s12_competitors]; u[i].name = e.target.value; setData({...data, s12_competitors: u})}} /></div>
+                              <div><label className="label-caps">Strength</label><input className="input-field !bg-white border-slate-200 !py-2 !text-xs" value={c.strength} onChange={e => { let u = [...data.s12_competitors]; u[i].strength = e.target.value; setData({...data, s12_competitors: u})}} /></div>
+                              <div><label className="label-caps">Weakness</label><input className="input-field !bg-white border-slate-200 !py-2 !text-xs" value={c.weakness} onChange={e => { let u = [...data.s12_competitors]; u[i].weakness = e.target.value; setData({...data, s12_competitors: u})}} /></div>
+                              <div><label className="label-caps">Pricing Model</label><input className="input-field !bg-white border-slate-200 !py-2 !text-xs" value={c.pricingModel} onChange={e => { let u = [...data.s12_competitors]; u[i].pricingModel = e.target.value; setData({...data, s12_competitors: u})}} placeholder="Baseline" /></div>
+                              <div><label className="label-caps">Feature Richness</label><input className="input-field !bg-white border-slate-200 !py-2 !text-xs" value={c.featureRichness} onChange={e => { let u = [...data.s12_competitors]; u[i].featureRichness = e.target.value; setData({...data, s12_competitors: u})}} placeholder="Baseline" /></div>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        <div className="bg-teal-50/50 p-8 rounded-3xl border-2 border-teal-200 relative overflow-hidden shadow-sm">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                          <h3 className="text-xs font-black uppercase text-teal-600 mb-4">Our Venture</h3>
+                          <div className="grid grid-cols-5 gap-4 relative z-10">
+                            <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Mission Name</label><input className="w-full bg-white border-2 border-teal-200/50 rounded-xl px-4 py-3 text-[#020617] font-black uppercase text-xs shadow-inner" value={data.s12_ourVenture.name} readOnly /></div>
+                            <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Unfair Edge</label><input className="w-full bg-white border-2 border-teal-300 rounded-xl px-4 py-3 text-[#020617] italic text-xs outline-none shadow-sm" value={data.s12_ourVenture.strength} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, strength: e.target.value}})} /></div>
+                            <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Market Gap</label><input className="w-full bg-white border-2 border-teal-300 rounded-xl px-4 py-3 text-[#020617] italic text-xs outline-none shadow-sm" value={data.s12_ourVenture.weakness} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, weakness: e.target.value}})} /></div>
+                            <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Pricing Model</label><input className="w-full bg-white border-2 border-teal-300 rounded-xl px-4 py-3 text-[#020617] italic text-xs outline-none shadow-sm" value={data.s12_ourVenture.pricingModel} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, pricingModel: e.target.value}})} placeholder="Disruptive" /></div>
+                            <div><label className="text-[9px] font-black text-teal-600 uppercase tracking-widest block mb-2">Feature Richness</label><input className="w-full bg-white border-2 border-teal-300 rounded-xl px-4 py-3 text-[#020617] italic text-xs outline-none shadow-sm" value={data.s12_ourVenture.featureRichness} onChange={e => setData({...data, s12_ourVenture: {...data.s12_ourVenture, featureRichness: e.target.value}})} placeholder="Disruptive" /></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   )}
 
                   {step === 13 && (
@@ -297,12 +358,56 @@ export default function PitchGenerator() {
                   )}
 
                   {step === 15 && (
-                    <div className="space-y-6 animate-fade-in"><div className="flex items-center gap-3"><span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">15</span><h2 className="text-xl font-black text-[#020617] uppercase">Financial Allocation</h2></div><div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-sm table-fixed w-full"><table className="w-full text-left font-sans"><thead>
-                                 <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-500">
-                                    <th className="px-6 py-4">Allocation Item</th>
-                                    <th className="px-6 py-4 text-right">Value Descriptor / Pricing (₹)</th>
-                                 </tr>
-                              </thead><tbody className="divide-y divide-slate-100">{data.s15_allocations.map((alloc, i) => (<tr key={i} className="hover:bg-slate-50 transition-all"><td className="px-6 py-3"><input className="w-full bg-white border-2 border-slate-200 rounded-lg py-3 px-4 font-black uppercase text-xs text-[#020617] focus:border-teal-500 shadow-sm" value={alloc.category} onChange={e => { let u = [...data.s15_allocations]; u[i].category = e.target.value; setData({...data, s15_allocations: u}) }} placeholder="EX: PRODUCT NODES" /></td><td className="px-6 py-3 text-right"><input className="w-full bg-white border-2 border-slate-200 rounded-lg py-3 px-4 font-bold text-xs text-teal-600 text-right focus:border-teal-500 shadow-sm" value={alloc.amount} onChange={e => { let u = [...data.s15_allocations]; u[i].amount = e.target.value; setData({...data, s15_allocations: u}) }} placeholder="₹ 0.00" /></td></tr>))}</tbody></table></div></div>
+                    <div className="space-y-6 animate-fade-in">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-black bg-[#020617] text-white px-3 py-1 rounded">15</span>
+                        <h2 className="text-xl font-black text-[#020617] uppercase">Financial Allocation</h2>
+                      </div>
+                      
+                      <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-sm">
+                        <table className="w-full text-left font-sans">
+                          <thead>
+                            <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-500">
+                              <th className="px-6 py-4">Allocation Item</th>
+                              <th className="px-6 py-4 text-right">Value / Pricing (₹)</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {data.s15_allocations.map((alloc, i) => (
+                              <tr key={i} className="hover:bg-slate-50 transition-all">
+                                <td className="px-6 py-3">
+                                  <input 
+                                    className="w-full bg-white border-2 border-slate-200 rounded-lg py-3 px-4 font-black uppercase text-xs text-[#020617] focus:border-teal-500 shadow-sm" 
+                                    value={alloc.category} 
+                                    onChange={e => { let u = [...data.s15_allocations]; u[i].category = e.target.value; setData({...data, s15_allocations: u}) }} 
+                                    placeholder="EX: PRODUCT DEVELOPMENT" 
+                                  />
+                                </td>
+                                <td className="px-6 py-3 text-right">
+                                  <input 
+                                    type="number" 
+                                    className="w-full bg-white border-2 border-slate-200 rounded-lg py-3 px-4 font-bold text-xs text-teal-600 text-right focus:border-teal-500 shadow-sm" 
+                                    value={alloc.amount} 
+                                    onChange={e => { let u = [...data.s15_allocations]; u[i].amount = e.target.value; setData({...data, s15_allocations: u}) }} 
+                                    placeholder="0" 
+                                  />
+                                </td>
+                              </tr>
+                            ))}
+                            <tr className="bg-teal-50 border-t-2 border-teal-200">
+                              <td className="px-6 py-4">
+                                <span className="font-black uppercase text-sm text-teal-700 tracking-widest">TOTAL VALUE</span>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <span className="font-black text-2xl text-teal-700">
+                                  ₹ {data.s15_allocations.reduce((sum, alloc) => sum + (parseFloat(alloc.amount) || 0), 0).toLocaleString('en-IN')}
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   )}
 
                   {step === 16 && (
