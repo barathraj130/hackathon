@@ -16,6 +16,8 @@ BG_LIGHT = RGBColor(248, 250, 252)  # Slate-100
 WHITE = RGBColor(255, 255, 255)
 LINE_COLOR = RGBColor(203, 213, 225)  # Slate-300
 ERROR_ZONE = RGBColor(239, 68, 68)  # Red-500
+SUCCESS_ZONE = RGBColor(34, 197, 94)  # Green-500
+WARNING_ZONE = RGBColor(234, 179, 8)  # Amber-500
 
 def disable_shadow(shape):
     """
@@ -195,13 +197,7 @@ def draw_impact(slide, data):
     q2 = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x0), Inches(y0+h/2), Inches(x0+w), Inches(y0+h/2))
     q2.line.color.rgb = LINE_COLOR; q2.line.width = Pt(1); q2.line.dash_style = 2
     
-    # WATERMARKS (Subtle Background Labels)
-    add_text_box_centered(slide, "High medium", x0 + 0.1, y0 + 1.8, 2.0, 0.5, 18, True, LINE_COLOR)
-    add_text_box_centered(slide, "High", x0 + 2.7, y0 + 1.8, 2.0, 0.5, 18, True, LINE_COLOR)
-    add_text_box_centered(slide, "Low", x0 + 0.1, y0 + 3.8, 2.0, 0.5, 18, True, LINE_COLOR)
-    add_text_box_centered(slide, "Low medium", x0 + 2.7, y0 + 3.8, 2.0, 0.5, 18, True, LINE_COLOR)
-
-    # Axis Labels
+    # Axis Labels (Watermarks removed as requested)
     add_text_box_simple(slide, "CRITICAL IMPACT ⭡", x0+0.1, y0 - 0.4, 2.0, 0.4, 10, True, ERROR_ZONE)
     add_text_box_simple(slide, "FREQUENCY ⭢", x0 + w - 1.0, y0+h+0.1, 1.5, 0.4, 10, True, PRIMARY_COLOR)
 
@@ -214,7 +210,14 @@ def draw_impact(slide, data):
         
         dot = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(px-0.18), Inches(py-0.18), Inches(0.36), Inches(0.36))
         disable_shadow(dot)
-        dot.fill.solid(); dot.fill.fore_color.rgb = ERROR_ZONE; dot.line.color.rgb = WHITE; dot.line.width = Pt(1.5)
+        
+        # COLOR-CODED IMPACT LOGIC
+        imp_val = p.get('impact', 'Medium')
+        dot_color = ERROR_ZONE # Default High
+        if imp_val == 'Low': dot_color = SUCCESS_ZONE
+        elif imp_val == 'Medium': dot_color = WARNING_ZONE
+        
+        dot.fill.solid(); dot.fill.fore_color.rgb = dot_color; dot.line.color.rgb = WHITE; dot.line.width = Pt(1.5)
         
         tx_dot = slide.shapes.add_textbox(Inches(px-0.18), Inches(py-0.18), Inches(0.36), Inches(0.36))
         disable_shadow(tx_dot)
@@ -223,9 +226,9 @@ def draw_impact(slide, data):
         ly = y0 + (i * 0.6)
         leg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(6.5), Inches(ly), Inches(3.2), Inches(0.5))
         disable_shadow(leg)
-        leg.fill.solid(); leg.fill.fore_color.rgb = ACCENT_GREY if i%2==0 else WHITE
-        leg.line.color.rgb = LINE_COLOR; leg.line.width = Pt(0.5)
-        p_leg = leg.text_frame.paragraphs[0]; p_leg.text = f"{i+1}. {p['point'][:60]}"; p_leg.font.size=Pt(9); p_leg.font.bold=True; p_leg.font.color.rgb=TEXT_MAIN
+        leg.fill.solid(); leg.fill.fore_color.rgb = dot_color # Match legend to dot
+        leg.line.color.rgb = WHITE; leg.line.width = Pt(0.5)
+        p_leg = leg.text_frame.paragraphs[0]; p_leg.text = f"{i+1}. {p['point'][:60]}"; p_leg.font.size=Pt(9); p_leg.font.bold=True; p_leg.font.color.rgb=WHITE
 
 def draw_prototype(slide, data):
     # Fetch images from data s8_5_img1, s8_5_img2, s8_5_img3
@@ -284,13 +287,9 @@ def add_text_box_centered(slide, text, x, y, w, h, sz, b, cl):
     disable_shadow(tx)
     p = tx.text_frame.paragraphs[0]; p.text = text; p.font.size = Pt(sz); p.font.bold = b; p.font.color.rgb = cl; p.alignment = PP_ALIGN.CENTER
 
-def add_footer(slide, text="HACK@JIT 1.0"):
-    f_box = slide.shapes.add_textbox(Inches(0.4), Inches(7.1), Inches(9.2), Inches(0.3))
-    disable_shadow(f_box)
-    p = f_box.text_frame.paragraphs[0]
-    p.text = text
-    p.font.size = Pt(8); p.font.name = 'Arial'; p.font.color.rgb = RGBColor(148, 163, 184)
-    p.alignment = PP_ALIGN.RIGHT
+def add_footer(slide, text=""):
+    # Footer disabled as per watermark removal request
+    pass
 
 def draw_gap(slide, data):
     pts = [((0.5, 1.8), "STATUS QUO", 's7_alternatives'), ((5.1, 1.8), "SYSTEMIC GAPS", 's7_limitations'), ((0.5, 4.4), "VALUE GAINS", 's7_gainCreators'), ((5.1, 4.4), "PAIN RELIEF", 's7_painKillers')]
