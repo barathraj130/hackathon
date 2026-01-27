@@ -83,6 +83,16 @@ def create_expert_deck(team_name, college, data):
     if os.path.exists("institution_logo.png"):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
 
+    # Viksit Bharat Branding - Top Left
+    if os.path.exists("viksit_bharat.png"):
+        vb_img = slide.shapes.add_picture("viksit_bharat.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
+        disable_shadow(vb_img)
+        # Optional text label for Viksit Bharat
+        tx_vb = slide.shapes.add_textbox(Inches(0.4), Inches(1.2), Inches(2), Inches(0.3))
+        p_vb = tx_vb.text_frame.paragraphs[0]
+        p_vb.text = "VIKSIT BHARAT @ 2047"; p_vb.font.size = Pt(8); p_vb.font.bold = True; p_vb.font.color.rgb = PRIMARY_COLOR
+        p_vb.alignment = PP_ALIGN.LEFT
+
     # High-impact Project Title - REDUCED FONT TO PREVENT OVERLAP
     tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(1.8), Inches(9), Inches(1.8))
     p_title = tx_title.text_frame.paragraphs[0]
@@ -141,6 +151,12 @@ def create_expert_deck(team_name, college, data):
     slide = prs.slides.add_slide(prs.slide_layouts[6]); set_slide_bg(slide)
     if os.path.exists("institution_logo.png"):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
+    
+    # Viksit Bharat branding on closure
+    if os.path.exists("viksit_bharat.png"):
+        vb_close = slide.shapes.add_picture("viksit_bharat.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
+        disable_shadow(vb_close)
+
     tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
     p = tx.text_frame.paragraphs[0]; p.text = "THANK YOU."; p.font.size = Pt(64); p.font.bold = True; p.font.color.rgb = TEXT_MAIN; p.alignment = PP_ALIGN.CENTER
     add_footer(slide)
