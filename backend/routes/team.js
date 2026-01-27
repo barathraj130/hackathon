@@ -329,8 +329,8 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
                 try {
                     console.log(`[EXPERT] Probing: ${cleanHost}${endpoint}`);
                     const res = await axios.post(`${cleanHost}${endpoint}`, {
-                        team_name: team.teamName,
-                        college_name: team.collegeName,
+                        team_name: projectData.teamName || team.teamName,
+                        college_name: projectData.institutionName || team.collegeName,
                         project_data: projectData
                     }, { timeout: 180000 });
                     

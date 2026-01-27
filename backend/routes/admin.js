@@ -79,8 +79,8 @@ router.post('/force-regenerate', async (req, res) => {
             try {
                 const endpoint = isExpert ? '/generate-expert-pitch' : '/generate-artifact';
                 const r = await axios.post(`${pyUrl.replace(/\/$/, "")}${endpoint}`, {
-                    team_name: sub.team.teamName,
-                    college_name: sub.team.collegeName,
+                    team_name: payload.teamName || sub.team.teamName,
+                    college_name: payload.institutionName || sub.team.collegeName,
                     content: payload,
                     project_data: payload 
                 }, { timeout: 180000 });
