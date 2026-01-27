@@ -40,13 +40,19 @@ def set_slide_bg(slide):
     fill.fore_color.rgb = WHITE
 
 def add_header(slide, title="SLIDE TITLE"):
-    header_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.3), Inches(9.2), Inches(0.5))
+    # SLIDE TITLE
+    header_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.3), Inches(7.5), Inches(0.5))
     disable_shadow(header_box)
     p = header_box.text_frame.paragraphs[0]
     p.text = title
     p.font.size = Pt(18); p.font.bold = True; p.font.name = 'Arial Black'
     p.font.color.rgb = TEXT_MAIN
     p.alignment = PP_ALIGN.LEFT
+
+    # TOP RIGHT LOGO (Institutional Branding)
+    if os.path.exists("institution_logo.png"):
+        logo = slide.shapes.add_picture("institution_logo.png", Inches(8.8), Inches(0.2), height=Inches(0.6))
+        disable_shadow(logo)
 
 def add_clean_box(slide, text, x, y, w, h, sz, bold=False, txt_color=TEXT_MAIN, border_color=None, bg_color=None):
     box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
