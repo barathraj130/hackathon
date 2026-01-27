@@ -22,20 +22,27 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     // Session Integrity Check
-    const storedRole = localStorage.getItem('role');
-    const token = localStorage.getItem('token');
-    
-    if (!token || storedRole !== 'ADMIN') {
-      localStorage.clear();
-      window.location.href = '/login';
-      return;
-    }
+    const checkSession = () => {
+      const storedRole = localStorage.getItem('role');
+      const token = localStorage.getItem('token');
+      if (!token || storedRole !== 'ADMIN') {
+        localStorage.clear();
+        window.location.href = '/login?error=SessionExpired';
+        return false;
+      }
+      return true;
+    };
+
+    if (!checkSession()) return;
 
     fetchStats();
     fetchTeams();
     fetchProblemStatements();
     fetchSubmissions();
     
+    // Interval check for session cross-pollution (every 30s)
+    const interval = setInterval(checkSession, 30000);
+
     // Dynamic Socket Initialization
     let socketInstance = null;
     const initSocket = async () => {
@@ -54,8 +61,26 @@ export default function AdminDashboard() {
     
     return () => {
       if (socketInstance) socketInstance.disconnect();
+      clearInterval(interval);
     };
   }, []);
+
+  const handleAuthError = (err) => {
+    const status = err.response?.status;
+    const serverDetail = err.response?.data?.error;
+    
+    if (status === 403 && serverDetail?.includes("role is: [TEAM]")) {
+        localStorage.clear();
+        alert("🚨 SESSION CONFLICT DETECTED\n\nYour session was overwritten by a Team login in another tab.\n\nLogging you out for security...");
+        window.location.href = '/login';
+    } else if (status === 401 || status === 403) {
+        localStorage.clear();
+        window.location.href = '/login';
+    } else {
+        const msg = serverDetail || err.message || "Operation failed.";
+        alert(`Error: ${msg}`);
+    }
+  };
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -95,21 +120,12 @@ export default function AdminDashboard() {
         setTimer(prev => ({ ...prev, timerPaused: res.data.isPaused }));
       }
     } catch (err) { 
-        console.error(err);
-        const serverDetail = err.response?.data?.error;
-        const status = err.response?.status;
-        
-        if (status === 403) {
-            alert(`🔒 ACCESS DENIED\n\n${serverDetail}\n\nREASON: Your session may have been overwritten by a Team login in another tab.\n\nACTION: Please Logout and Login again as Admin.`);
-        } else {
-            const msg = serverDetail || err.message || "Mission state transition failed.";
-            alert(`Mission Control Error: ${msg}\n(Status: ${status})`); 
-        }
+        handleAuthError(err);
     }
   }
 
   async function handleToggleCertCollection() {
-    try { await axios.post(`${getApiUrl()}/admin/toggle-certificate-collection`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchStats(); } catch (err) { alert("Toggle fail"); }
+    try { await axios.post(`${getApiUrl()}/admin/toggle-certificate-collection`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchStats(); } catch (err) { handleAuthError(err); }
   }
 
   async function handleGenerateCerts(teamId) {
@@ -172,7 +188,7 @@ export default function AdminDashboard() {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-           alert("Session Void: Institutional authentication required.");
+           handleAuthError({ response: { status: 401 } });
            return;
         }
         
@@ -181,20 +197,11 @@ export default function AdminDashboard() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         
-        alert("Mission Unlocked ✓");
         fetchSubmissions();
+        alert("Mission Unlocked ✓");
         fetchStats(); // Update dashboard counts
       } catch (err) { 
-        console.error("[UNLOCK ERROR]", err);
-        const serverDetail = err.response?.data?.error;
-        const status = err.response?.status;
-        
-        if (status === 403) {
-            alert(`🔒 ACCESS DENIED\n\n${serverDetail}\n\nREASON: Your session may have been overwritten by a Team login in another tab.\n\nACTION: Please Logout and Login again as Admin.`);
-        } else {
-            const msg = serverDetail || err.response?.data?.message || err.message || "Cluster communication failure";
-            alert(`Unlock Error: ${msg}\n(Status: ${status || '503'})`); 
-        }
+        handleAuthError(err);
       }
     }
 
