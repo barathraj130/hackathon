@@ -26,8 +26,12 @@ const isAdmin = (req, res, next) => {
     // CASE-INSENSITIVE CHECK for mission stability
     const role = String(req.user.role || "").toUpperCase();
     if (role !== 'ADMIN') {
-        console.error(`[AUTH-SENTINEL] ACCESS DENY: Insufficient Clearance. Role: ${role}, Expected: ADMIN`);
-        return res.status(403).json({ error: "Access Denied: High-level Administrative clearance required.", currentRole: role });
+        console.error(`[AUTH-SENTINEL] ACCESS DENY: Role Mismatch. User: ${req.user.id}, Role: ${role}, Expected: ADMIN`);
+        return res.status(403).json({ 
+            error: `High-level Administrative clearance required. Your current session role is: [${role}]`,
+            debugRole: role,
+            userId: req.user.id 
+        });
     }
     
     console.log('[AUTH-SENTINEL] ACCESS GRANTED: Institutional authority confirmed.');

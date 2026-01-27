@@ -21,24 +21,34 @@ export default function AdminDashboard() {
   const getApiUrl = () => process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
 
   useEffect(() => {
+    // Session Integrity Check
+    const storedRole = localStorage.getItem('role');
+    const token = localStorage.getItem('token');
+    
+    if (!token || storedRole !== 'ADMIN') {
+      console.warn("[SESSION-GUARD] Unauthorized role detected or missing token. Re-routing to verification portal.");
+      localStorage.clear();
+      window.location.href = '/login';
+      return;
+    }
+
     fetchStats();
     fetchTeams();
     fetchProblemStatements();
     fetchSubmissions();
+    
+    let socketInstance = null;
     import('socket.io-client').then((module) => {
       const socketIO = module.default || module.io;
       if (!socketIO) return;
       const apiUrl = getApiUrl();
       const socketUrl = apiUrl.replace('/v1', '') || window.location.origin;
-      socketRef.current = socketIO(socketUrl, {
-        transports: ['websocket'],
-        reconnection: true
-      });
-      socketRef.current.on('timerUpdate', (data) => {
-        setTimer(prev => ({ ...prev, ...data }));
-      });
+      socketInstance = socketIO(socketUrl, { transports: ['websocket'], reconnection: true });
+      socketRef.current = socketInstance;
+      socketInstance.on('timerUpdate', (data) => setTimer(prev => ({ ...prev, ...data })));
     });
-    return () => socketRef.current?.disconnect();
+    
+    return () => socketInstance?.disconnect();
   }, []);
 
   useEffect(() => { setMounted(true); }, []);
@@ -163,9 +173,15 @@ export default function AdminDashboard() {
         fetchStats(); // Update dashboard counts
       } catch (err) { 
         console.error("[UNLOCK ERROR]", err);
-        const serverDetail = err.response?.data?.error || err.response?.data?.message;
-        const msg = serverDetail || err.message || "Cluster communication failure";
-        alert(`Unlock Error: ${msg}\n(Status: ${err.response?.status || '503'})`); 
+        const serverDetail = err.response?.data?.error;
+        const status = err.response?.status;
+        
+        if (status === 403) {
+            alert(`🔒 ACCESS DENIED\n\n${serverDetail}\n\nREASON: Your session may have been overwritten by a Team login in another tab.\n\nACTION: Please Logout and Login again as Admin.`);
+        } else {
+            const msg = serverDetail || err.response?.data?.message || err.message || "Cluster communication failure";
+            alert(`Unlock Error: ${msg}\n(Status: ${status || '503'})`); 
+        }
       }
     }
 
