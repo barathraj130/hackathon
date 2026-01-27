@@ -123,8 +123,8 @@ export default function TeamDashboard() {
         <div className="min-h-screen bg-[#f1f5f9] font-sans text-slate-800">
           <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 flex justify-between items-center px-8 py-4 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-[#020617] rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg">H</div>
-              <div><h1 className="text-sm font-black uppercase tracking-tight text-[#020617] leading-none">hack@jit</h1><p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest mt-1">Institutional Node</p></div>
+              <div className="w-9 h-9 bg-[#020617] rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg">B</div>
+              <div><h1 className="text-sm font-black uppercase tracking-tight text-[#020617] leading-none">BRILLIANT BHARAT</h1><p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest mt-1">Institutional Node</p></div>
             </div>
             <div className="flex items-center gap-6">
               <div className="text-right"><p className="text-[8px] uppercase font-black text-slate-400 tracking-widest leading-none mb-1">Temporal Clock</p><p className={`text-xl font-mono font-black tabular-nums ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-[#020617]'}`}>{formattedTime}</p></div>

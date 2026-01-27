@@ -14,10 +14,10 @@ export default function HomePage() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 glass-pane border-b border-gray-100 px-10 py-5 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-navy/20">H</div>
+          <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-navy/20">B</div>
           <div>
-            <span className="text-xl font-black text-navy tracking-tighter uppercase leading-none block">hack</span>
-            <span className="text-[10px] font-bold text-teal tracking-[0.2em] uppercase leading-none">@jit</span>
+            <span className="text-xl font-black text-navy tracking-tighter uppercase leading-none block">BRILLIANT</span>
+            <span className="text-[10px] font-bold text-teal tracking-[0.2em] uppercase leading-none">BHARAT</span>
           </div>
         </div>
         
@@ -63,7 +63,7 @@ export default function HomePage() {
                 Start Processing
               </button>
               <div className="flex flex-col items-center lg:items-start">
-                <span className="text-2xl font-black text-navy leading-none">JIT-HACK</span>
+                <span className="text-2xl font-black text-navy leading-none uppercase">Brilliant Bharat</span>
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Official Portal</span>
               </div>
             </div>

@@ -12,7 +12,7 @@ TEXT_MAIN = RGBColor(30, 41, 59)       # Slate-800
 ACCENT_GREY = RGBColor(241, 245, 249)  # Slate-100
 WHITE = RGBColor(255, 255, 255)
 
-def create_certificate(name, college, year, dept, role, event_name="HACK@JIT 1.0", out_path=None):
+def create_certificate(name, college, year, dept, role, event_name="BRILLIANT BHARAT", out_path=None):
     prs = Presentation()
     # Use 16:9 Aspect Ratio
     prs.slide_width = Inches(13.33)

@@ -11,7 +11,7 @@ def create_pptx(team_name, college, slides_data):
         # 1. Top Left - Event Branding
         branding_box = slide.shapes.add_textbox(Inches(0.2), Inches(0.2), Inches(2), Inches(0.4))
         p = branding_box.text_frame.paragraphs[0]
-        p.text = "HACK@JIT 1.0"
+        p.text = "BRILLIANT BHARAT"
         p.font.size = Pt(14)
         p.font.bold = True
         p.font.color.rgb = RGBColor(0, 0, 0)

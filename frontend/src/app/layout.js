@@ -6,7 +6,7 @@ const roboto = Roboto({ weight: ['400', '700', '900'], subsets: ['latin'], varia
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata = {
-  title: 'hack@jit | Institutional Innovation Engine',
+  title: 'BRILLIANT BHARAT | Institutional Innovation Engine',
   description: 'High-fidelity synthesis platform for rapid deployment cycles.',
 }
 

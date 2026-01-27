@@ -229,8 +229,8 @@ export default function AdminDashboard() {
       {/* SIDEBAR */}
       <aside className="w-64 bg-[#020617] text-white flex flex-col h-screen sticky top-0 p-5 space-y-8 border-r border-white/5 shadow-2xl">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-black text-sm border border-white/10">H</div>
-          <div><p className="font-black text-lg tracking-tighter leading-none text-white italic">HACK@JIT</p><p className="text-[8px] text-slate-500 font-bold tracking-[0.2em] mt-1">ADMIN AUTHORITY</p></div>
+          <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-black text-sm border border-white/10">B</div>
+          <div><p className="font-black text-lg tracking-tighter leading-none text-white italic">BRILLIANT BHARAT</p><p className="text-[8px] text-slate-500 font-bold tracking-[0.2em] mt-1">ADMIN AUTHORITY</p></div>
         </div>
         <nav className="flex-1 space-y-1">
            {['OVERVIEW', 'SUBMISSIONS', 'PROBLEMS', 'TEAMS', 'CONFIGURATION'].map(tab => (
