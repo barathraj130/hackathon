@@ -59,31 +59,35 @@ def create_expert_deck(team_name, college, data):
     if os.path.exists("institution_logo.png"):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
 
-    # High-impact Project Title
-    tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(2.0), Inches(9), Inches(1.5))
+    # High-impact Project Title - ADJUSTED POSITION TO PREVENT OVERLAP
+    tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(2.2), Inches(9), Inches(1.2))
     p_title = tx_title.text_frame.paragraphs[0]
     p_title.text = data.get('projectName', 'VENTURE PROTOTYPE').upper()
-    p_title.font.size = Pt(64); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
+    p_title.font.size = Pt(54); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
+    p_title.line_spacing = 1.0
     
-    # Elegant Underline on cover
-    line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.4), Inches(6.5), Inches(3.4))
+    # Elegant Underline on cover - ADJUSTED POSITION
+    line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.6), Inches(6.5), Inches(3.6))
     line.line.color.rgb = TEXT_MAIN; line.line.width = Pt(2)
 
-    # Detailed Personnel Info
-    tx_id = slide.shapes.add_textbox(Inches(1), Inches(3.8), Inches(8), Inches(3))
+    # Detailed Personnel Info - ADJUSTED POSITION AND SPACING
+    tx_id = slide.shapes.add_textbox(Inches(1), Inches(4.0), Inches(8), Inches(2.8))
     tf_d = tx_id.text_frame; tf_d.word_wrap = True
     
     p1 = tf_d.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
-    p1.text = f"TEAM {team_name.upper()}"; p1.font.size = Pt(28); p1.font.bold = True; p1.font.color.rgb = TEXT_MAIN
+    p1.text = f"TEAM {team_name.upper()}"; p1.font.size = Pt(24); p1.font.bold = True; p1.font.color.rgb = TEXT_MAIN
+    p1.space_after = Pt(8)
     
     p2 = tf_d.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
-    p2.text = f"from {college.upper()}"; p2.font.size = Pt(16); p2.font.italic = True; p2.font.color.rgb = TEXT_MAIN
+    p2.text = f"from {college.upper()}"; p2.font.size = Pt(14); p2.font.italic = True; p2.font.color.rgb = TEXT_MAIN
+    p2.space_after = Pt(12)
     
     p3 = tf_d.add_paragraph(); p3.alignment = PP_ALIGN.CENTER
-    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(20); p3.font.bold = True; p3.font.color.rgb = TEXT_MAIN
+    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(18); p3.font.bold = True; p3.font.color.rgb = TEXT_MAIN
+    p3.space_after = Pt(8)
     
     p4 = tf_d.add_paragraph(); p4.alignment = PP_ALIGN.CENTER
-    p4.text = f"TEAM MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(12); p4.font.bold = False; p4.font.color.rgb = TEXT_MAIN; p4.font.name = 'Arial Narrow'
+    p4.text = f"TEAM MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(11); p4.font.bold = False; p4.font.color.rgb = TEXT_MAIN; p4.font.name = 'Arial Narrow'
     
     add_footer(slide)
 
@@ -323,14 +327,47 @@ def draw_market_matrix(slide, data):
     for i, h in enumerate(hdrs):
         c = t.cell(0, i); c.text = h; c.fill.solid(); c.fill.fore_color.rgb = PRIMARY_COLOR
         p = c.text_frame.paragraphs[0]; p.font.size=Pt(11); p.font.bold=True; p.font.color.rgb=WHITE
+    
     f_rows = ["Market Depth", "Pricing Model", "Feature Richness", "Future Readiness"]
     comps = data.get('s12_competitors', [])
     our = data.get('s12_ourVenture', {})
+    
     for r in range(1, rows):
         t.cell(r, 0).text = f_rows[r-1]
-        if len(comps) > 0: t.cell(r, 1).text = comps[0].get('strength','N/A') if r == 1 else "Baseline"
-        if len(comps) > 1: t.cell(r, 2).text = comps[1].get('strength','N/A') if r == 1 else "Baseline"
-        t.cell(r, 3).text = our.get('strength','N/A') if r == 1 else "Disruptive"
+        
+        # Competitor 1 data
+        if len(comps) > 0:
+            if r == 1:  # Market Depth
+                t.cell(r, 1).text = comps[0].get('strength', 'N/A')
+            elif r == 2:  # Pricing Model
+                t.cell(r, 1).text = comps[0].get('pricingModel', 'Baseline')
+            elif r == 3:  # Feature Richness
+                t.cell(r, 1).text = comps[0].get('featureRichness', 'Baseline')
+            else:  # Future Readiness
+                t.cell(r, 1).text = "Baseline"
+        
+        # Competitor 2 data
+        if len(comps) > 1:
+            if r == 1:  # Market Depth
+                t.cell(r, 2).text = comps[1].get('strength', 'N/A')
+            elif r == 2:  # Pricing Model
+                t.cell(r, 2).text = comps[1].get('pricingModel', 'Baseline')
+            elif r == 3:  # Feature Richness
+                t.cell(r, 2).text = comps[1].get('featureRichness', 'Baseline')
+            else:  # Future Readiness
+                t.cell(r, 2).text = "Baseline"
+        
+        # Our Venture data
+        if r == 1:  # Market Depth
+            t.cell(r, 3).text = our.get('strength', 'N/A')
+        elif r == 2:  # Pricing Model
+            t.cell(r, 3).text = our.get('pricingModel', 'Disruptive')
+        elif r == 3:  # Feature Richness
+            t.cell(r, 3).text = our.get('featureRichness', 'Disruptive')
+        else:  # Future Readiness
+            t.cell(r, 3).text = "Disruptive"
+        
+        # Apply styling
         for c in range(cols):
             p = t.cell(r, c).text_frame.paragraphs[0]; p.font.size = Pt(10)
             if r % 2 == 0:
