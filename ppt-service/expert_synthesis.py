@@ -17,6 +17,20 @@ WHITE = RGBColor(255, 255, 255)
 LINE_COLOR = RGBColor(203, 213, 225)  # Slate-300
 ERROR_ZONE = RGBColor(239, 68, 68)  # Red-500
 
+def disable_shadow(shape):
+    """
+    POLARIS PROTOCOL: Hard-disable all shadows for clean, modern aesthetics.
+    """
+    try:
+        if hasattr(shape, 'shadow'):
+            shape.shadow.inherit = False
+            # Some versions of pptx require setting visibility
+            try: shape.shadow.visible = False
+            except: pass
+    except:
+        pass
+    return shape
+
 def set_slide_bg(slide):
     bg = slide.background
     fill = bg.fill
@@ -25,6 +39,7 @@ def set_slide_bg(slide):
 
 def add_header(slide, title="SLIDE TITLE"):
     header_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.3), Inches(9.2), Inches(0.5))
+    disable_shadow(header_box)
     p = header_box.text_frame.paragraphs[0]
     p.text = title
     p.font.size = Pt(18); p.font.bold = True; p.font.name = 'Arial Black'
@@ -33,6 +48,7 @@ def add_header(slide, title="SLIDE TITLE"):
 
 def add_clean_box(slide, text, x, y, w, h, sz, bold=False, txt_color=TEXT_MAIN, border_color=None, bg_color=None):
     box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
+    disable_shadow(box)
     if bg_color:
         box.fill.solid(); box.fill.fore_color.rgb = bg_color
     else:
@@ -197,13 +213,16 @@ def draw_impact(slide, data):
         px = x0 + (ix/3.8)*w; py = (y0+h) - (iy/3.8)*h
         
         dot = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(px-0.18), Inches(py-0.18), Inches(0.36), Inches(0.36))
+        disable_shadow(dot)
         dot.fill.solid(); dot.fill.fore_color.rgb = ERROR_ZONE; dot.line.color.rgb = WHITE; dot.line.width = Pt(1.5)
         
         tx_dot = slide.shapes.add_textbox(Inches(px-0.18), Inches(py-0.18), Inches(0.36), Inches(0.36))
+        disable_shadow(tx_dot)
         p_dot = tx_dot.text_frame.paragraphs[0]; p_dot.text = str(i+1); p_dot.font.size=Pt(10); p_dot.font.bold=True; p_dot.font.color.rgb=WHITE; p_dot.alignment=PP_ALIGN.CENTER
         
         ly = y0 + (i * 0.6)
         leg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(6.5), Inches(ly), Inches(3.2), Inches(0.5))
+        disable_shadow(leg)
         leg.fill.solid(); leg.fill.fore_color.rgb = ACCENT_GREY if i%2==0 else WHITE
         leg.line.color.rgb = LINE_COLOR; leg.line.width = Pt(0.5)
         p_leg = leg.text_frame.paragraphs[0]; p_leg.text = f"{i+1}. {p['point'][:60]}"; p_leg.font.size=Pt(9); p_leg.font.bold=True; p_leg.font.color.rgb=TEXT_MAIN
@@ -238,6 +257,7 @@ def draw_prototype(slide, data):
             if response.status_code == 200:
                 img_stream = io.BytesIO(response.content)
                 pic = slide.shapes.add_picture(img_stream, Inches(l), Inches(t), width=Inches(w))
+                disable_shadow(pic)
                 # Add border
                 pic.line.color.rgb = PRIMARY_COLOR
                 pic.line.width = Pt(2)
@@ -256,14 +276,17 @@ def draw_prototype(slide, data):
 
 def add_text_box_simple(slide, text, x, y, w, h, sz, b=False, cl=TEXT_MAIN):
     tx = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+    disable_shadow(tx)
     p = tx.text_frame.paragraphs[0]; p.text = text; p.font.size = Pt(sz); p.font.bold = b; p.font.color.rgb = cl
 
 def add_text_box_centered(slide, text, x, y, w, h, sz, b, cl):
     tx = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+    disable_shadow(tx)
     p = tx.text_frame.paragraphs[0]; p.text = text; p.font.size = Pt(sz); p.font.bold = b; p.font.color.rgb = cl; p.alignment = PP_ALIGN.CENTER
 
 def add_footer(slide, text="HACK@JIT 1.0"):
     f_box = slide.shapes.add_textbox(Inches(0.4), Inches(7.1), Inches(9.2), Inches(0.3))
+    disable_shadow(f_box)
     p = f_box.text_frame.paragraphs[0]
     p.text = text
     p.font.size = Pt(8); p.font.name = 'Arial'; p.font.color.rgb = RGBColor(148, 163, 184)
@@ -379,6 +402,7 @@ def draw_market_sizing(slide, data):
     configs = [ (4.4, PRIMARY_COLOR, 0.8), (3.2, SECONDARY_COLOR, 0.6), (2.0, ERROR_ZONE, 0.4) ]
     for d, cl, tr in configs:
         sh = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(cx-d/2), Inches(cy-d/2), Inches(d), Inches(d))
+        disable_shadow(sh)
         sh.fill.solid(); sh.fill.fore_color.rgb = cl; sh.fill.transparency = tr
         sh.line.color.rgb = cl; sh.line.width = Pt(1.5)
     
