@@ -13,15 +13,7 @@ export default function PitchGenerator() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
 
-  // Auto-Save Mechanism
-  useEffect(() => {
-    if (!mounted) return;
-    const timer = setTimeout(() => {
-      if (Object.keys(data).length > 0) handleSaveDraft(true);
-    }, 5000); 
-    return () => clearTimeout(timer);
-  }, [data, mounted]);
-
+  // MOVED DATA STATE BEFORE AUTO-SAVE EFFECT TO FIX TDZ ERROR
   const [data, setData] = useState({
     // S1: Identity
     projectName: '', teamName: '', institutionName: '', leaderName: '', memberNames: '',
@@ -78,6 +70,15 @@ export default function PitchGenerator() {
     // S17: Repository
     slide_assets: {}
   });
+
+  // Auto-Save Mechanism
+  useEffect(() => {
+    if (!mounted) return;
+    const timer = setTimeout(() => {
+      if (Object.keys(data).length > 0) handleSaveDraft(true);
+    }, 5000); 
+    return () => clearTimeout(timer);
+  }, [data, mounted]);
   
   useEffect(() => {
     setMounted(true);

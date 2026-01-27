@@ -3,10 +3,10 @@ import PostHackathonCertificateModal from '@/components/PostHackathonCertificate
 import SubmissionWorkflowModal from '@/components/SubmissionWorkflowModal';
 import axios from 'axios';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export default function TeamDashboard() {
-  console.log("Dashboard v3.1.2-STABLE");
+  console.log("Dashboard v3.2.0-FINAL");
   const [timeLeft, setTimeLeft] = useState(86400);
   const [isPaused, setIsPaused] = useState(false);
   const [formattedTime, setFormattedTime] = useState('24:00:00');
@@ -25,6 +25,24 @@ export default function TeamDashboard() {
     isPausedRef.current = isPaused;
   }, [isPaused]);
 
+  const fetchInitialData = useCallback(async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      const res = await axios.get(`${apiUrl}/team/profile`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setTeamData(res.data);
+      if (res.data?.submission) {
+        setSubmission(res.data.submission);
+      }
+      if (res.data?.problemStatement) setProblemStatement(res.data.problemStatement);
+      
+      if (res.data?.config?.allowCertificateDetails && (!res.data.submission?.certificates || res.data.submission.certificates.length === 0)) {
+         setShowCertModal(true);
+      }
+    } catch (err) { console.error(err); }
+  }, []);
+
   useEffect(() => {
     fetchInitialData();
     
@@ -36,7 +54,6 @@ export default function TeamDashboard() {
         
         if (typeof socketIO !== 'function') return;
 
-        // Fallback logic for socket URL to ensure connection stability
         const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || 'https://hackathon-production-7c99.up.railway.app';
         
         socketInstance = socketIO(socketUrl, {
@@ -66,27 +83,9 @@ export default function TeamDashboard() {
 
     initSocket();
     return () => { if (socketInstance) socketInstance.disconnect(); };
-  }, []); 
+  }, [fetchInitialData]); 
 
   useEffect(() => { setMounted(true); }, []);
-
-  async function fetchInitialData() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
-    try {
-      const res = await axios.get(`${apiUrl}/team/profile`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      setTeamData(res.data);
-      if (res.data?.submission) {
-        setSubmission(res.data.submission);
-      }
-      if (res.data?.problemStatement) setProblemStatement(res.data.problemStatement);
-      
-      if (res.data?.config?.allowCertificateDetails && (!res.data.submission?.certificates || res.data.submission.certificates.length === 0)) {
-         setShowCertModal(true);
-      }
-    } catch (err) { console.error(err); }
-  }
 
   const handleGenerateStandardPPT = async () => {
     setIsGenerating(true);
