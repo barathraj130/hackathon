@@ -140,16 +140,32 @@ export default function AdminDashboard() {
       }
     }
   
-    async function handleUnlockTeam(teamId) {
+    async function handleUnlockTeam(id) {
+      if(!id) {
+        alert("Mission Logic Failure: Team Identifier is missing. Sync registry and try again.");
+        return;
+      }
       if(!confirm("🔓 UNLOCK MISSION?\nThis will revert the team status to 'IN_PROGRESS' and allow them to edit data.")) return;
       try {
-        await axios.post(`${getApiUrl()}/admin/unlock-team`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+        const token = localStorage.getItem('token');
+        if (!token) {
+           alert("Session Void: Institutional authentication required.");
+           return;
+        }
+        
+        await axios.post(`${getApiUrl()}/admin/unlock-team`, 
+          { teamId: id }, 
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        
         alert("Mission Unlocked ✓");
         fetchSubmissions();
+        fetchStats(); // Update dashboard counts
       } catch (err) { 
-        console.error(err);
-        const msg = err.response?.data?.error || err.message || "Unlock failed";
-        alert(`Unlock Error: ${msg}\n(Status: ${err.response?.status})`); 
+        console.error("[UNLOCK ERROR]", err);
+        const serverDetail = err.response?.data?.error || err.response?.data?.message;
+        const msg = serverDetail || err.message || "Cluster communication failure";
+        alert(`Unlock Error: ${msg}\n(Status: ${err.response?.status || '503'})`); 
       }
     }
 
@@ -244,13 +260,13 @@ export default function AdminDashboard() {
                               ))}
                               <div className="flex gap-1 ml-auto">
                                 <button onClick={() => { setSelectedTeam(s); setShowCertModal(true); }} className="text-[7px] font-black text-indigo-500 uppercase border border-indigo-100 px-2 py-1 rounded hover:bg-indigo-600 hover:text-white transition-all">MANUAL EDIT ✍️</button>
-                                <button onClick={() => handleUnlockTeam(s.teamId)} className="text-[9px] font-black text-amber-500 uppercase border-2 border-amber-200 px-4 py-2 rounded-lg hover:bg-amber-500 hover:text-white transition-all shadow-md active:scale-95 mx-2">UNLOCK MISSION 🔓</button>
-                                <button onClick={() => handleGenerateCerts(s.teamId)} className="text-[7px] font-black text-rose-500 uppercase border border-rose-100 px-2 py-1 rounded hover:bg-rose-500 hover:text-white transition-all">GENERATE ALL 🎓</button>
+                                <button onClick={() => handleUnlockTeam(s.teamId || s.team?.id)} className="text-[9px] font-black text-amber-500 uppercase border-2 border-amber-200 px-4 py-2 rounded-lg hover:bg-amber-500 hover:text-white transition-all shadow-md active:scale-95 mx-2">UNLOCK MISSION 🔓</button>
+                                <button onClick={() => handleGenerateCerts(s.teamId || s.team?.id)} className="text-[7px] font-black text-rose-500 uppercase border border-rose-100 px-2 py-1 rounded hover:bg-rose-500 hover:text-white transition-all">GENERATE ALL 🎓</button>
                               </div>
                            </div>
                         </td>
                         <td className="px-5 py-3 text-right">
-                           <button onClick={() => handleForceRegenerate(s.teamId)} className="p-1.5 bg-slate-100 rounded text-slate-400 hover:bg-[#020617] hover:text-white transition-all" title="Force Artifact Reconstruction"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" /></svg></button>
+                           <button onClick={() => handleForceRegenerate(s.teamId || s.team?.id)} className="p-1.5 bg-slate-100 rounded text-slate-400 hover:bg-[#020617] hover:text-white transition-all" title="Force Artifact Reconstruction"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" /></svg></button>
                         </td>
                       </tr>
                     ))}

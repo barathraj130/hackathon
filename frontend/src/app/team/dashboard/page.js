@@ -148,8 +148,11 @@ export default function TeamDashboard() {
                   <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest">Operation Protocol</span>
                   <h2 className="text-4xl font-black text-[#020617] tracking-tighter uppercase leading-tight italic">Engineering the Future</h2>
                   <p className="text-slate-500 font-bold text-base leading-relaxed opacity-80 uppercase tracking-tight">Construct professional pitch decks through modular intelligence synthesis. Our engine transforms your code and logic into investor-ready artifacts.</p>
-                  <Link href={submission?.canRegenerate === false ? '#' : "/team/pitch-generator"} className={`inline-flex items-center gap-6 px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${submission?.canRegenerate === false ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-[#020617] text-white hover:bg-teal-500 hover:shadow-2xl active:scale-95'}`}>
-                    <span>{submission?.canRegenerate === false ? 'System Locked' : 'Initialize Synthesis Engine →'}</span>
+                  <Link 
+                    href={submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? '#' : "/team/pitch-generator"} 
+                    className={`inline-flex items-center gap-6 px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-[#020617] text-white hover:bg-teal-500 hover:shadow-2xl active:scale-95'}`}
+                  >
+                    <span>{submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'System Locked' : 'Initialize Synthesis Engine →'}</span>
                   </Link>
                 </div>
               </div>
@@ -159,8 +162,8 @@ export default function TeamDashboard() {
                <div className="bg-indigo-600 p-8 rounded-3xl border border-indigo-500 shadow-2xl text-white space-y-6">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Synthesis Engine</h3>
                 <div className="space-y-4">
-                    <button onClick={handleGenerateStandardPPT} disabled={isGenerating || submission?.canRegenerate === false} className={`w-full py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-3 ${isGenerating || submission?.canRegenerate === false ? 'bg-indigo-800 text-indigo-400 cursor-not-allowed' : 'bg-white text-indigo-600 hover:bg-indigo-50 shadow-xl'}`}>
-                      {isGenerating ? 'Synthesizing...' : submission?.canRegenerate === false ? 'Vault Locked' : 'Generate PPT Artifact'}
+                    <button onClick={handleGenerateStandardPPT} disabled={isGenerating || (submission?.canRegenerate === false && submission?.status === 'SUBMITTED')} className={`w-full py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-3 ${isGenerating || (submission?.canRegenerate === false && submission?.status === 'SUBMITTED') ? 'bg-indigo-800 text-indigo-400 cursor-not-allowed' : 'bg-white text-indigo-600 hover:bg-indigo-50 shadow-xl'}`}>
+                      {isGenerating ? 'Synthesizing...' : (submission?.canRegenerate === false && submission?.status === 'SUBMITTED') ? 'Vault Locked' : 'Generate PPT Artifact'}
                     </button>
                     {teamData?.config?.allowCertificateDetails && (
                        <button onClick={() => setShowCertModal(true)} className="w-full py-5 border-2 border-indigo-400 rounded-2xl font-black uppercase text-[10px] tracking-widest text-indigo-100 hover:bg-indigo-700 transition-all">Configure Certificates 🎓</button>

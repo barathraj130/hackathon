@@ -104,7 +104,24 @@ router.post('/force-regenerate', async (req, res) => {
  */
 router.post('/unlock-team', async (req, res) => {
     const { teamId } = req.body;
+    console.log('[UNLOCK] Request received:', { teamId, user: req.user });
+    
+    if (!teamId) {
+        console.error('[UNLOCK] Missing teamId in request body');
+        return res.status(400).json({ error: "Team ID is required" });
+    }
+    
     try {
+        // Check if submission exists
+        const existingSubmission = await prisma.submission.findUnique({ where: { teamId } });
+        
+        if (!existingSubmission) {
+            console.error(`[UNLOCK] No submission found for teamId: ${teamId}`);
+            return res.status(404).json({ error: "No submission found for this team" });
+        }
+        
+        console.log(`[UNLOCK] Found submission for team ${teamId}, current status: ${existingSubmission.status}`);
+        
         await prisma.submission.update({ 
             where: { teamId }, 
             data: { 
@@ -113,8 +130,13 @@ router.post('/unlock-team', async (req, res) => {
                 canRegenerate: true
             } 
         });
+        
+        console.log(`[UNLOCK] Successfully unlocked team ${teamId}`);
         res.json({ success: true, message: "Team mission unlocked." });
-    } catch (e) { res.status(500).json({ error: "Unlock failed." }); }
+    } catch (e) { 
+        console.error('[UNLOCK] Error:', e);
+        res.status(500).json({ error: "Unlock failed: " + e.message }); 
+    }
 });
 
 /**
