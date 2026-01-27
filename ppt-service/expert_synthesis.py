@@ -59,19 +59,19 @@ def create_expert_deck(team_name, college, data):
     if os.path.exists("institution_logo.png"):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
 
-    # High-impact Project Title - ADJUSTED POSITION TO PREVENT OVERLAP
-    tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(2.2), Inches(9), Inches(1.2))
+    # High-impact Project Title - REDUCED FONT TO PREVENT OVERLAP
+    tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(1.8), Inches(9), Inches(1.8))
     p_title = tx_title.text_frame.paragraphs[0]
     p_title.text = data.get('projectName', 'VENTURE PROTOTYPE').upper()
-    p_title.font.size = Pt(54); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
+    p_title.font.size = Pt(38); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
     p_title.line_spacing = 1.0
     
     # Elegant Underline on cover - ADJUSTED POSITION
-    line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.6), Inches(6.5), Inches(3.6))
+    line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.7), Inches(6.5), Inches(3.7))
     line.line.color.rgb = TEXT_MAIN; line.line.width = Pt(2)
 
-    # Detailed Personnel Info - ADJUSTED POSITION AND SPACING
-    tx_id = slide.shapes.add_textbox(Inches(1), Inches(4.0), Inches(8), Inches(2.8))
+    # Detailed Personnel Info - LOWERED TO PREVENT OVERLAP
+    tx_id = slide.shapes.add_textbox(Inches(1), Inches(4.5), Inches(8), Inches(2.5))
     tf_d = tx_id.text_frame; tf_d.word_wrap = True
     
     p1 = tf_d.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
@@ -398,15 +398,43 @@ def draw_revenue(slide, data):
 
 def draw_fiscal(slide, data):
     als = [a for a in data.get('s15_allocations', []) if a.get('category')]
-    if not als: als = [{"category": "SYSTEMIC DEVELOPMENT", "amount": "TBD"}]
-    rows = len(als) + 1
-    t = slide.shapes.add_table(rows, 2, Inches(1), Inches(2.0), Inches(8), Inches(rows*0.6)).table
-    t.cell(0,0).text = "ALLOCATION NODE"; t.cell(0,1).text = "VALUATION / PURPOSE"
+    if not als: als = [{"category": "SYSTEMIC DEVELOPMENT", "amount": "0"}]
+    
+    total = 0
+    for a in als:
+        try:
+            val = str(a.get('amount', '0')).replace(',', '').replace('₹', '').strip()
+            total += float(val) if val else 0
+        except: pass
+
+    rows = len(als) + 2 # Header + Data + Total
+    t = slide.shapes.add_table(rows, 2, Inches(1), Inches(2.0), Inches(8), Inches(min(5, rows*0.6))).table
+    t.cell(0,0).text = "ALLOCATION NODE"; t.cell(0,1).text = "VALUATION / PURPOSE (₹)"
+    
     for r in range(rows):
         for c in range(2):
-            cell = t.cell(r,c); cell.fill.solid(); cell.fill.fore_color.rgb = PRIMARY_COLOR if r==0 else (ACCENT_GREY if r%2==0 else WHITE)
-            p = cell.text_frame.paragraphs[0]; p.font.size=Pt(12); p.font.bold=(r==0); p.font.color.rgb=(WHITE if r==0 else TEXT_MAIN)
-            if r > 0: cell.text = als[r-1]['category'].upper() if c==0 else str(als[r-1]['amount'])
+            cell = t.cell(r,c); cell.fill.solid()
+            # Styling branching
+            is_header = (r == 0)
+            is_total = (r == rows - 1)
+            
+            if is_header:
+                cell.fill.fore_color.rgb = PRIMARY_COLOR
+            elif is_total:
+                cell.fill.fore_color.rgb = SECONDARY_COLOR
+            else:
+                cell.fill.fore_color.rgb = ACCENT_GREY if r % 2 == 0 else WHITE
+                
+            p = cell.text_frame.paragraphs[0]
+            p.font.size = Pt(14 if is_total else 11)
+            p.font.bold = is_header or is_total
+            p.font.color.rgb = WHITE if (is_header or is_total) else TEXT_MAIN
+            
+            if r > 0 and r < rows - 1:
+                idx = r - 1
+                cell.text = als[idx]['category'].upper() if c == 0 else f"₹ {als[idx]['amount']}"
+            elif is_total:
+                cell.text = "TOTAL FISCAL ALLOCATION" if c == 0 else f"₹ {total:,.2f}"
 
 def draw_vision(slide, data):
     add_clean_box(slide, "MACRO IMPACT", Inches(0.5), Inches(1.8), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
