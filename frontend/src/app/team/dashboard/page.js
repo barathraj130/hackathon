@@ -210,20 +210,78 @@ export default function TeamDashboard() {
                     )}
                 </div>
               </div>
-              <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
-                <div className="flex items-center justify-between"><h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Downloads</h3><button onClick={fetchInitialData} className="text-xs font-bold text-[var(--secondary-blue)] hover:text-[var(--accent-orange)] transition-colors">Refresh</button></div>
+              <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Submission Status</h3>
+                  <button onClick={fetchInitialData} className="text-xs font-bold text-[var(--secondary-blue)] hover:text-[var(--accent-orange)] transition-colors">Refresh</button>
+                </div>
+
                 {submission?.pptUrl ? (
-                  <div className="space-y-4">
-                     <div className="p-4 bg-green-50 rounded-2xl border border-green-100 flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[var(--primary-green)] text-white flex items-center justify-center rounded-xl font-bold">✓</div>
+                  <div className="space-y-3">
+                    {/* PPT Generated */}
+                    <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
+                      <div className="w-8 h-8 bg-[var(--primary-green)] rounded-lg flex items-center justify-center text-white text-sm">✓</div>
+                      <div className="flex-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-green-700">PPT Generated</p>
+                        <p className="text-[8px] text-green-600/60 uppercase mt-0.5 font-bold">Presentation Created</p>
+                      </div>
+                    </div>
+
+                    {/* Prototype Submitted */}
+                    {submission.prototypeUrl ? (
+                      <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
+                        <div className="w-8 h-8 bg-[var(--primary-green)] rounded-lg flex items-center justify-center text-white text-sm">✓</div>
                         <div className="flex-1">
-                          <p className="text-xs font-bold text-green-700">Success</p>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase">File Ready for Download</p>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-green-700">Prototype Submitted</p>
+                          <p className="text-[8px] text-green-600/60 uppercase mt-0.5 font-bold truncate">{submission.prototypeUrl}</p>
                         </div>
-                     </div>
-                     <a href={submission.pptUrl} target="_blank" rel="noopener noreferrer" className="w-full py-4 btn-green !rounded-2xl text-xs flex items-center justify-center gap-2">Download File</a>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
+                        <div className="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center text-white text-sm">⏳</div>
+                        <div className="flex-1">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700">Prototype Pending</p>
+                          <p className="text-[8px] text-amber-600/60 uppercase mt-0.5 font-bold">Submit your prototype link</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Certificate Info */}
+                    {(submission.certificates && submission.certificates.length > 0) || submission.certificateName ? (
+                      <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
+                        <div className="w-8 h-8 bg-[var(--primary-green)] rounded-lg flex items-center justify-center text-white text-sm">✓</div>
+                        <div className="flex-1">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-green-700">Certificate Details</p>
+                          <p className="text-[8px] text-green-600/60 uppercase mt-0.5 font-bold">Team Names Provided</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                        <div className="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-white text-sm text-[10px]">○</div>
+                        <div className="flex-1">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Certificate Pending</p>
+                          <p className="text-[8px] text-slate-400 uppercase mt-0.5 font-bold">Complete prototype first</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="pt-4">
+                      <a href={submission.pptUrl} target="_blank" rel="noopener noreferrer" className="w-full py-4 btn-green !rounded-2xl text-xs flex items-center justify-center gap-2">Download PPT</a>
+                    </div>
+
+                    {submission.status === 'LOCKED' && (
+                      <div className="mt-4 p-4 bg-slate-100 border border-slate-200 rounded-2xl text-center">
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-800">🔒 Submission Locked</p>
+                        <p className="text-[8px] text-slate-500 mt-1 uppercase font-bold">Contact admin for changes</p>
+                      </div>
+                    )}
                   </div>
-                ) : <div className="text-center py-10 opacity-30"><p className="text-4xl mb-4">📁</p><p className="text-xs font-bold text-slate-400 uppercase tracking-widest">No Files Yet</p></div>}
+                ) : (
+                  <div className="text-center py-10 opacity-30">
+                    <p className="text-4xl mb-4">📁</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">No Artifacts Found</p>
+                  </div>
+                )}
               </div>
             </div>
           </main>

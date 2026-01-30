@@ -102,13 +102,14 @@ router.get('/profile', async (req, res) => {
             selectedProblem: selectedProblem,
             selectedProblemId: team.selectedProblemId,
             config: {
-                allowCertificateDetails: config?.allowCertificateDetails || false,
+                allowCertificateDetails: config?.allowCertificateDetails !== false, // Default to true if not explicitly false
                 eventEnded: config?.eventEnded || false,
                 isPaused: config?.isPaused || false
             }
         });
     } catch (error) {
-        res.status(500).json({ error: "Failed to sync with repository." });
+        console.error("[TeamProfile] ERROR:", error);
+        res.status(500).json({ error: "Failed to sync with repository.", details: error.message });
     }
 });
 

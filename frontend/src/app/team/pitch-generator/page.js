@@ -84,6 +84,7 @@ export default function PitchGenerator() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     
     async function init() {
+      setLoading(true);
       try {
         if (!token) return;
         const res = await axios.get(`${apiUrl}/team/profile`, { headers: { Authorization: `Bearer ${token}` } });
@@ -112,7 +113,13 @@ export default function PitchGenerator() {
               setData(prev => ({ ...prev, ...profileData }));
            }
         }
-      } catch (err) { console.error("Init failed", err); }
+        setIsPaused(res.data.config?.isPaused || false);
+      } catch (err) { 
+        console.error("Init failed", err);
+        if (err.response?.status === 404) alert("Team identity not found. Please logout and login again.");
+      } finally {
+        setLoading(false);
+      }
     }
     init();
   }, []);
@@ -141,7 +148,12 @@ export default function PitchGenerator() {
   function nextStep() { setStep(prev => Math.min(prev + 1, 17)); window.scrollTo(0,0); }
   function prevStep() { setStep(prev => Math.max(prev - 1, 1)); window.scrollTo(0,0); }
 
-  if (!mounted) return <div className="min-h-screen bg-slate-50 animate-pulse" />;
+  if (!mounted || loading) return (
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center space-y-6">
+      <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Synchronizing Repository...</p>
+    </div>
+  );
 
   const stepsList = [
     'Identity', 'Strategic Context', 'Problem Statement', 'Impact Matrix', 'Stakeholders', 
