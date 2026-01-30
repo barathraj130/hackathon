@@ -66,8 +66,8 @@ def add_header(slide, title="SLIDE TITLE"):
         logo = slide.shapes.add_picture("hackathon_logo.png", Inches(8.8), Inches(0.2), height=Inches(0.6))
         disable_shadow(logo)
 
-    # SLIDE TITLE (Shifted left)
-    header_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.3), Inches(7.0), Inches(0.5))
+    # SLIDE TITLE (Respecting high-fidelity margins)
+    header_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.4), Inches(7.0), Inches(0.5))
     disable_shadow(header_box)
     p = header_box.text_frame.paragraphs[0]
     p.text = title
@@ -179,29 +179,33 @@ def create_expert_deck(team_name, college, data):
 # --- DRAWERS ---
 
 def draw_strategic(slide, data):
-    add_clean_box(slide, "DOMAIN", Inches(0.5), Inches(1.8), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, clean_text(data.get('s2_domain'), 8), Inches(0.5), Inches(2.2), Inches(9), Inches(0.8), 14)
-    add_clean_box(slide, "OPERATIONAL CONTEXT", Inches(0.5), Inches(3.2), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, clean_text(data.get('s2_context'), 35), Inches(0.5), Inches(3.6), Inches(9), Inches(1.8), 12)
-    add_clean_box(slide, "ROOT CATALYST", Inches(0.5), Inches(5.6), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, clean_text(data.get('s2_rootReason'), 20), Inches(0.5), Inches(6.0), Inches(9), Inches(0.9), 12)
+    m = 0.8; w = 8.4
+    add_clean_box(slide, "DOMAIN", Inches(m), Inches(1.8), Inches(w), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, clean_text(data.get('s2_domain'), 8), Inches(m), Inches(2.2), Inches(w), Inches(0.8), 14)
+    add_clean_box(slide, "OPERATIONAL CONTEXT", Inches(m), Inches(3.2), Inches(w), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, clean_text(data.get('s2_context'), 35), Inches(m), Inches(3.6), Inches(w), Inches(1.8), 12)
+    add_clean_box(slide, "ROOT CATALYST", Inches(m), Inches(5.6), Inches(w), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, clean_text(data.get('s2_rootReason'), 20), Inches(m), Inches(6.0), Inches(w), Inches(0.9), 12)
 
 def draw_problem(slide, data):
-    add_clean_box(slide, "CORE PROBLEM", Inches(0.5), Inches(1.8), Inches(9), Inches(0.4), 12, True, ERROR_ZONE, None, BG_LIGHT)
-    add_clean_box(slide, clean_text(data.get('s3_coreProblem'), 50), Inches(0.5), Inches(2.3), Inches(9), Inches(2.0), 16, False, TEXT_MAIN, LINE_COLOR, WHITE)
-    add_clean_box(slide, "AFFECTED PERSONNEL", Inches(0.5), Inches(4.5), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, clean_text(data.get('s3_affected'), 20), Inches(0.5), Inches(4.9), Inches(4.4), Inches(1.8), 12)
-    add_clean_box(slide, "CRITICAL GRAVITY", Inches(5.1), Inches(4.5), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, clean_text(data.get('s3_whyItMatters'), 30), Inches(5.1), Inches(4.9), Inches(4.4), Inches(1.8), 12)
+    m = 0.8; w = 8.4; hw = 4.1
+    add_clean_box(slide, "CORE PROBLEM", Inches(m), Inches(1.8), Inches(w), Inches(0.4), 12, True, ERROR_ZONE, None, BG_LIGHT)
+    add_clean_box(slide, clean_text(data.get('s3_coreProblem'), 50), Inches(m), Inches(2.3), Inches(w), Inches(2.0), 16, False, TEXT_MAIN, LINE_COLOR, WHITE)
+    add_clean_box(slide, "AFFECTED PERSONNEL", Inches(m), Inches(4.5), Inches(hw), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, clean_text(data.get('s3_affected'), 20), Inches(m), Inches(4.9), Inches(hw), Inches(1.8), 12)
+    add_clean_box(slide, "CRITICAL GRAVITY", Inches(m + hw + 0.2), Inches(4.5), Inches(hw), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, clean_text(data.get('s3_whyItMatters'), 30), Inches(m + hw + 0.2), Inches(4.9), Inches(hw), Inches(1.8), 12)
 
 def draw_stakeholders(slide, data):
+    m = 0.8; w = 8.4
     for i, (label, key) in enumerate([("PRIMARY SEGMENT", 's5_primaryUsers'), ("SECONDARY SEGMENT", 's5_secondaryUsers')]):
         y_pos = 1.8 + i * 2.6
-        add_clean_box(slide, label, Inches(0.5), Inches(y_pos), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
-        add_clean_box(slide, clean_text(data.get(key), 35), Inches(0.5), Inches(y_pos + 0.4), Inches(9), Inches(1.8), 14)
+        add_clean_box(slide, label, Inches(m), Inches(y_pos), Inches(w), Inches(0.35), 12, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
+        add_clean_box(slide, clean_text(data.get(key), 35), Inches(m), Inches(y_pos + 0.4), Inches(w), Inches(1.8), 14)
 
 def draw_persona(slide, data):
-    coords = [(0.5, 1.8), (5.1, 1.8), (0.5, 4.4), (5.1, 4.4)]
+    m = 0.8; w = 8.4; hw = 4.1
+    coords = [(m, 1.8), (m+hw+0.2, 1.8), (m, 4.4), (m+hw+0.2, 4.4)]
     titles = ["PERSONAL INFO", "CHALLENGES", "PROFESSIONAL GOALS", "SUCCESS FACTORS"]
     vals = [
         f"Name: {data.get('s6_customerName','X')[:20]}\nAge: {data.get('s6_customerAge', 'X')[:5]}\nLoc: {data.get('s6_customerLocation','X')[:20]}",
@@ -210,11 +214,14 @@ def draw_persona(slide, data):
         clean_text(data.get('s6_howWeHelp'), 35)
     ]
     for i, (x, y) in enumerate(coords):
-        add_clean_box(slide, titles[i], Inches(x), Inches(y), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
-        add_clean_box(slide, vals[i], Inches(x), Inches(y + 0.4), Inches(4.4), Inches(2.0), 11)
-    c = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(4.4), Inches(3.7), Inches(1.2), Inches(1.2))
+        add_clean_box(slide, titles[i], Inches(x), Inches(y), Inches(hw), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+        add_clean_box(slide, vals[i], Inches(x), Inches(y + 0.4), Inches(hw), Inches(2.0), 11)
+    
+    # Avatar Circle
+    cx, cy = 5.0, 4.3
+    c = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(cx-0.6), Inches(cy-0.6), Inches(1.2), Inches(1.2))
     c.fill.solid(); c.fill.fore_color.rgb = PRIMARY_COLOR; c.line.color.rgb = WHITE; c.line.width = Pt(2)
-    add_text_box_centered(slide, str(data.get('s6_customerName', 'PERSONA')).upper()[:10], 4.4, 4.15, 1.2, 0.3, 9, True, WHITE)
+    add_text_box_centered(slide, str(data.get('s6_customerName', 'PERSONA')).upper()[:10], cx-0.6, cy-0.15, 1.2, 0.3, 9, True, WHITE)
 
 
 def draw_impact(slide, data):
@@ -325,10 +332,11 @@ def add_footer(slide, text=""):
     pass
 
 def draw_gap(slide, data):
-    pts = [((0.5, 1.8), "STATUS QUO", 's7_alternatives'), ((5.1, 1.8), "SYSTEMIC GAPS", 's7_limitations'), ((0.5, 4.4), "VALUE GAINS", 's7_gainCreators'), ((5.1, 4.4), "PAIN RELIEF", 's7_painKillers')]
+    m = 0.8; w = 8.4; hw = 4.1
+    pts = [((m, 1.8), "STATUS QUO", 's7_alternatives'), ((m+hw+0.2, 1.8), "SYSTEMIC GAPS", 's7_limitations'), ((m, 4.4), "VALUE GAINS", 's7_gainCreators'), ((m+hw+0.2, 4.4), "PAIN RELIEF", 's7_painKillers')]
     for (x,y), t, k in pts:
-        add_clean_box(slide, t, Inches(x), Inches(y), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
-        add_clean_box(slide, clean_text(data.get(k), 35), Inches(x), Inches(y+0.4), Inches(4.4), Inches(2.0), 11)
+        add_clean_box(slide, t, Inches(x), Inches(y), Inches(hw), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+        add_clean_box(slide, clean_text(data.get(k), 35), Inches(x), Inches(y+0.4), Inches(hw), Inches(2.0), 11)
 
 def draw_solution_statement(slide, data):
     add_clean_box(slide, "THE VENTURE UNVEILED", Inches(0.5), Inches(1.6), Inches(9), Inches(0.4), 12, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
@@ -339,21 +347,53 @@ def draw_solution_statement(slide, data):
     add_clean_box(slide, clean_text(data.get('s8_coreTech'), 15), Inches(0.5), Inches(5.6), Inches(9), Inches(1.1), 16, False, PRIMARY_COLOR)
 
 def draw_solution_flow(slide, data):
-    add_clean_box(slide, clean_text(data.get('s9_oneline'), 15), Inches(0.5), Inches(1.5), Inches(9), Inches(0.6), 22, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
+    m = 0.8; w = 8.4
+    add_clean_box(slide, clean_text(data.get('s9_oneline'), 15), Inches(m), Inches(1.5), Inches(w), Inches(0.6), 22, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
+    
     sps = [clean_text(s, 12) for s in data.get('s9_flowSteps', []) if s.strip()][:6]
+    bw, bh = 2.6, 1.1
+    gx, gy = 0.3, 0.4
+    
+    # SNAKE FLOW POSITIONAL LOGIC: 1->2->3, then wrap to 4<-5<-6? 
+    # Actually, simpler 1->2->3 and 4->5->6 is less confusing for reports.
+    # We will add arrows between row nodes.
+    
     for i, s in enumerate(sps):
-        x, y = 0.5 + (i%3)*3.2, 3.2 + (i//3)*1.6
-        add_clean_box(slide, f"{i+1}. {s}", Inches(x), Inches(y), Inches(2.8), Inches(1.3), 10, True, TEXT_MAIN, PRIMARY_COLOR, ACCENT_GREY)
+        col, row = i % 3, i // 3
+        px = m + col * (bw + gx)
+        py = 3.2 + row * (bh + gy)
+        
+        # Draw Box
+        add_clean_box(slide, f"{i+1}. {s}", Inches(px), Inches(py), Inches(bw), Inches(bh), 10, True, TEXT_MAIN, PRIMARY_COLOR, ACCENT_GREY)
+        
+        # Add Horizontal Arrow Connector
+        if col < 2 and (i + 1) < len(sps):
+            conn = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, 
+                                             Inches(px + bw), Inches(py + bh/2), 
+                                             Inches(px + bw + gx), Inches(py + bh/2))
+            conn.line.color.rgb = PRIMARY_COLOR
+            conn.line.width = Pt(1.5)
+            # Use end_arrowhead = 1 (Triangle)
+            conn.line.end_arrowhead = 1
+
+        # Add Vertical Continuity Arrow between rows (from index 2 to 5 or similar)
+        if col == 2 and row == 0 and len(sps) > 3:
+            v_conn = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT,
+                                              Inches(px + bw/2), Inches(py + bh),
+                                              Inches(px + bw/2), Inches(py + bh + gy))
+            v_conn.line.color.rgb = SECONDARY_COLOR
+            v_conn.line.width = Pt(1.5)
+            v_conn.line.end_arrowhead = 1
 
 def draw_lean(slide, data):
-    w = 1.9; pillars = [('PROBLEM','s10_leanProblem',0.4,4.0), ('SOLUTION','s10_leanSolution',0.4+w,2.0), ('USP','s10_leanUSP',0.4+2*w,4.0), ('ADVANAGE','s10_leanUnfair',0.4+3*w,2.0), ('SEGMENTS','s10_leanSegments',0.4+4*w,4.0)]
+    w = 1.68; m = 0.8; pillars = [('PROBLEM','s10_leanProblem',m,4.0), ('SOLUTION','s10_leanSolution',m+w,2.0), ('USP','s10_leanUSP',m+2*w,4.0), ('ADVANAGE','s10_leanUnfair',m+3*w,2.0), ('SEGMENTS','s10_leanSegments',m+4*w,4.0)]
     for t,k,x,h in pillars:
-        add_clean_box(slide, t, Inches(x), Inches(1.6), Inches(w-0.1), Inches(0.35), 9, True, PRIMARY_COLOR, None, BG_LIGHT)
-        add_clean_box(slide, clean_text(data.get(k), 10 if h < 3 else 25), Inches(x), Inches(2.0), Inches(w-0.1), Inches(h-0.4), 8)
-    for t,k,x,y in [("METRICS","s10_leanMetrics",0.4+w,3.6), ("CHANNELS","s10_leanChannels",0.4+3*w,3.6)]:
-        add_clean_box(slide, t, Inches(x), Inches(y), Inches(w-0.1), Inches(0.35), 8, True, PRIMARY_COLOR, None, BG_LIGHT)
-        add_clean_box(slide, clean_text(data.get(k), 15), Inches(x), Inches(y+0.4), Inches(w-0.1), Inches(1.6), 8)
-    for t,k,x in [("COSTS","s10_leanCosts",0.4), ("REVENUE","s10_leanRevenue",0.4+w*3)]:
+        add_clean_box(slide, t, Inches(x), Inches(1.6), Inches(w-0.05), Inches(0.35), 9, True, PRIMARY_COLOR, None, BG_LIGHT)
+        add_clean_box(slide, clean_text(data.get(k), 10 if h < 3 else 25), Inches(x), Inches(2.0), Inches(w-0.05), Inches(h-0.4), 8)
+    for t,k,x,y in [("METRICS","s10_leanMetrics",m+w,3.6), ("CHANNELS","s10_leanChannels",m+3*w,3.6)]:
+        add_clean_box(slide, t, Inches(x), Inches(y), Inches(w-0.05), Inches(0.35), 8, True, PRIMARY_COLOR, None, BG_LIGHT)
+        add_clean_box(slide, clean_text(data.get(k), 15), Inches(x), Inches(y+0.4), Inches(w-0.05), Inches(1.6), 8)
+    for t,k,x in [("COSTS","s10_leanCosts",m), ("REVENUE","s10_leanRevenue",m+w*3)]:
         add_clean_box(slide, t, Inches(x), Inches(5.7), Inches(w*2), Inches(0.35), 9, True, PRIMARY_COLOR, ACCENT_GREY, ACCENT_GREY)
         add_clean_box(slide, clean_text(data.get(k), 15), Inches(x), Inches(6.1), Inches(w*2), Inches(0.9), 8, False, TEXT_MAIN, ACCENT_GREY, ACCENT_GREY)
 
@@ -377,7 +417,8 @@ def draw_balloon(slide, data):
 
 def draw_market_matrix(slide, data):
     rows = 4; cols = 4
-    t = slide.shapes.add_table(rows, cols, Inches(0.5), Inches(1.8), Inches(9), Inches(5)).table
+    m = 0.8; w = 8.4
+    t = slide.shapes.add_table(rows, cols, Inches(m), Inches(1.8), Inches(w), Inches(5)).table
     hdrs = ["FEATURE / METRIC", "COMPETITOR 1", "COMPETITOR 2", "OUR VENTURE"]
     for i, h in enumerate(hdrs):
         c = t.cell(0, i); c.text = h; c.fill.solid(); c.fill.fore_color.rgb = PRIMARY_COLOR
@@ -443,14 +484,15 @@ def draw_market_sizing(slide, data):
         slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(cx+0.5), Inches(y_pos), Inches(7.0), Inches(y_pos)).line.color.rgb = col
         add_text_box_simple(slide, f"{name}: {data.get(key, 'N/A')}", 7.1, y_pos-0.2, 2.5, 0.4, 15, True, col)
 
-    add_clean_box(slide, "VALUATION LOGIC & SOURCE DATA", Inches(0.5), Inches(6.1), Inches(9), Inches(0.35), 10, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, data.get('s13_marketLogic', 'N/A'), Inches(0.5), Inches(6.45), Inches(9), Inches(0.65), 10)
+    add_clean_box(slide, "VALUATION LOGIC & SOURCE DATA", Inches(0.8), Inches(6.1), Inches(8.4), Inches(0.35), 10, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, data.get('s13_marketLogic', 'N/A'), Inches(0.8), Inches(6.45), Inches(8.4), Inches(0.65), 10)
 
 def draw_revenue(slide, data):
-    m = [("PRIMARY STREAM", 's14_primaryStream', 0.5, 1.8), ("SECONDARY STREAM", 's14_secondaryStream', 5.1, 1.8), ("PRICING LOGIC", 's14_pricingStrategy', 0.5, 4.4), ("ECONOMIC LOGIC", 's14_revenueLogic', 5.1, 4.4)]
-    for lb, k, x, y in m:
-        add_clean_box(slide, lb, Inches(x), Inches(y), Inches(4.4), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
-        add_clean_box(slide, clean_text(data.get(k), 40), Inches(x), Inches(y+0.4), Inches(4.4), Inches(2.0), 11)
+    m = 0.8; w = 4.1
+    pts = [("PRIMARY STREAM", 's14_primaryStream', m, 1.8), ("SECONDARY STREAM", 's14_secondaryStream', m + w + 0.2, 1.8), ("PRICING LOGIC", 's14_pricingStrategy', m, 4.4), ("ECONOMIC LOGIC", 's14_revenueLogic', m + w + 0.2, 4.4)]
+    for lb, k, x, y in pts:
+        add_clean_box(slide, lb, Inches(x), Inches(y), Inches(w), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
+        add_clean_box(slide, clean_text(data.get(k), 40), Inches(x), Inches(y+0.4), Inches(w), Inches(2.0), 11)
 
 def draw_fiscal(slide, data):
     als = [a for a in data.get('s15_allocations', []) if a.get('category')]
@@ -493,7 +535,8 @@ def draw_fiscal(slide, data):
                 cell.text = "TOTAL FISCAL ALLOCATION" if c == 0 else f"₹ {total:,.2f}"
 
 def draw_vision(slide, data):
-    add_clean_box(slide, "MACRO IMPACT", Inches(0.5), Inches(1.8), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, clean_text(data.get('s16_socialEconomic'), 50), Inches(0.5), Inches(2.2), Inches(9), Inches(2.3), 12)
-    add_clean_box(slide, "FUTURE TRAJECTORY", Inches(0.5), Inches(4.8), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
-    add_clean_box(slide, clean_text(data.get('s16_vision'), 40), Inches(0.5), Inches(5.2), Inches(9), Inches(1.5), 12)
+    m = 0.8; w = 8.4
+    add_clean_box(slide, "MACRO IMPACT", Inches(m), Inches(1.8), Inches(w), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, clean_text(data.get('s16_socialEconomic'), 50), Inches(m), Inches(2.2), Inches(w), Inches(2.3), 12)
+    add_clean_box(slide, "FUTURE TRAJECTORY", Inches(m), Inches(4.8), Inches(w), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, clean_text(data.get('s16_vision'), 40), Inches(m), Inches(5.2), Inches(w), Inches(1.5), 12)
