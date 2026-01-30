@@ -26,9 +26,20 @@ export default function TeamDashboard() {
 
   const fetchInitialData = useCallback(async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    const role = localStorage.getItem('role');
+    const token = localStorage.getItem('token');
+
+    // SECURITY SENTINEL: Ensure only teams access this panel
+    if (!token || role !== 'TEAM') {
+        console.warn("[TeamSentinel] Unauthorized access attempted. Redirecting...");
+        localStorage.clear();
+        window.location.href = '/?error=SessionMismatch';
+        return;
+    }
+
     try {
       const res = await axios.get(`${apiUrl}/team/profile`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setTeamData(res.data);
       if (res.data?.submission) {
