@@ -215,13 +215,20 @@ const handleGenerateCertificates = async (req, res) => {
             'https://endearing-liberation-production.up.railway.app'
         ].filter(Boolean);
 
+        const dateStr = sub.submittedAt 
+            ? new Date(sub.submittedAt).toLocaleDateString('en-GB').split('/').join('-') 
+            : '[Submission Date]';
+
         let successCount = 0;
         for (const p of sub.certificates) {
             let processed = false;
             for (const url of tryUrls) {
                 try {
                     console.log(`[AdminGenerateCerts] Probing ${url} for ${p.name}`);
-                    const r = await axios.post(`${url.replace(/\/$/, "")}/generate-certificate`, p, { timeout: 30000 });
+                    const r = await axios.post(`${url.replace(/\/$/, "")}/generate-certificate`, {
+                        ...p,
+                        submission_date: dateStr
+                    }, { timeout: 30000 });
                     if (r.data.success) {
                         const certPublicUrl = mapInternalToPublic(`${url.replace(/\/$/, "")}/certs/${r.data.file_url}`);
                         await prisma.participantCertificate.update({ 

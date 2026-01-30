@@ -50,13 +50,14 @@ def certificate_handler(data: dict = Body(...)):
         p_year = data.get('year', 'N/A')
         p_dept = data.get('dept', 'N/A')
         p_role = data.get('role', 'MEMBER')
+        p_date = data.get('submission_date', '[Submission Date]')
         
         safe_name = p_name.lower().replace(' ', '_')
         out_filename = f"certificate_{safe_name}.pptx"
         out_path = os.path.join(CERTS_DIR, out_filename)
         
         # Core Synthesis Call
-        create_certificate(p_name, p_college, p_year, p_dept, p_role, out_path=out_path)
+        create_certificate(p_name, p_college, p_year, p_dept, p_role, submission_date=p_date, out_path=out_path)
         
         # Verify serialization
         if not os.path.exists(out_path):

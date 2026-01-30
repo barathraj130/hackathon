@@ -12,7 +12,7 @@ TEXT_MAIN = RGBColor(30, 41, 59)       # Slate-800
 ACCENT_GREY = RGBColor(241, 245, 249)  # Slate-100
 WHITE = RGBColor(255, 255, 255)
 
-def create_certificate(name, college, year, dept, role, event_name="BHARAT BRILLIANT HACKATHON", out_path=None):
+def create_certificate(name, college, year, dept, role, event_name="BHARAT BRILLIANT HACKATHON", submission_date="[Submission Date]", out_path=None):
     prs = Presentation()
     # Use 16:9 Aspect Ratio
     prs.slide_width = Inches(13.33)
@@ -59,7 +59,7 @@ def create_certificate(name, college, year, dept, role, event_name="BHARAT BRILL
 
     tx_event = slide.shapes.add_textbox(0, Inches(5.4), prs.slide_width, Inches(0.8))
     p_e = tx_event.text_frame.paragraphs[0]; p_e.alignment = PP_ALIGN.CENTER
-    p_e.text = f"has successfully completed the innovation mission as a {role.capitalize()}\nduring {event_name}, an official institutional hackathon."
+    p_e.text = f"Has successfully completed the Innovation Mission by participating in the {event_name.upper()}, an official institutional hackathon, with the final submission made on {submission_date}."
     p_e.font.size = Pt(14); p_e.font.color.rgb = RGBColor(71, 85, 105)
 
     # 5. Bottom Signatures
