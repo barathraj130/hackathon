@@ -446,10 +446,16 @@ router.post('/certificate-details', async (req, res) => {
             return res.status(403).json({ error: "Certificate collection is not open yet." });
         }
 
-        // Centralized Team Resolution
-        let team = await prisma.team.findUnique({ where: { id: teamIdFromToken } });
-        if (!team) team = await prisma.team.findUnique({ where: { teamName: teamIdFromToken } });
-        if (!team && req.user.teamName) team = await prisma.team.findUnique({ where: { teamName: req.user.teamName } });
+        // Robust Identity Resolution: Try ID (UUID), then TeamName (from ID or Token)
+        let team = await prisma.team.findFirst({
+            where: {
+                OR: [
+                    { id: teamIdFromToken },
+                    { teamName: teamIdFromToken },
+                    { teamName: req.user.teamName || "" }
+                ]
+            }
+        });
 
         if (!team) return res.status(404).json({ error: "Identity not recognized." });
 
@@ -494,10 +500,16 @@ router.post('/generate-certificates', async (req, res) => {
     try {
         const teamIdFromToken = req.user.id;
         
-        // Centralized Team Resolution
-        let team = await prisma.team.findUnique({ where: { id: teamIdFromToken } });
-        if (!team) team = await prisma.team.findUnique({ where: { teamName: teamIdFromToken } });
-        if (!team && req.user.teamName) team = await prisma.team.findUnique({ where: { teamName: req.user.teamName } });
+        // Robust Identity Resolution: Try ID (UUID), then TeamName (from ID or Token)
+        let team = await prisma.team.findFirst({
+            where: {
+                OR: [
+                    { id: teamIdFromToken },
+                    { teamName: teamIdFromToken },
+                    { teamName: req.user.teamName || "" }
+                ]
+            }
+        });
 
         if (!team) return res.status(404).json({ error: "Identity not recognized." });
 

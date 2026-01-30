@@ -313,7 +313,7 @@ router.get('/candidates', async (req, res) => {
         const formatted = teams.map(t => {
             const psArray = problems.filter(p => p.allottedTo === t.teamName);
             const selectedPs = problems.find(p => p.id === t.selectedProblemId);
-            const allottedQuestion = psArray.length > 0 ? psArray.map(p => `Q.${p.questionNo}`).join(', ') : 'NONE';
+            const allottedQuestion = psArray.length > 0 ? psArray.map(p => `Q.${p.questionNo}${p.subDivisions ? ` (${p.subDivisions})` : ''}`).join(', ') : 'NONE';
             return { 
                 ...t, 
                 status: t.submission?.status || 'IDLE', 
@@ -381,8 +381,8 @@ router.get('/submissions', async (req, res) => {
             const selectedPs = problems.find(p => p.id === t.selectedProblemId);
             const isPicked = !!t.selectedProblemId;
             const allottedQuestion = selectedPs 
-                ? `Q.${selectedPs.questionNo}` 
-                : (psArray.length > 0 ? psArray.map(p => `Q.${p.questionNo}`).join(', ') : 'NONE');
+                ? `Q.${selectedPs.questionNo}${selectedPs.subDivisions ? ` - ${selectedPs.subDivisions}` : ''}` 
+                : (psArray.length > 0 ? psArray.map(p => `Q.${p.questionNo}${p.subDivisions ? ` (${p.subDivisions})` : ''}`).join(', ') : 'NONE');
             
             return {
                 id: t.submission?.id || `virtual-${t.id}`,

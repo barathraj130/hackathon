@@ -276,7 +276,15 @@ export default function AdminDashboard() {
                            </div>
                         </td>
                         <td className="px-6 py-4"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${s.status === 'SUBMITTED' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>{s.status}</span></td>
-                        <td className="px-6 py-4"><div className="flex gap-2">{s.pptUrl && <a href={s.pptUrl} target="_blank" className="text-blue-500 font-bold hover:underline">Download</a>}</div></td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-1">
+                            {s.pptUrl && <a href={s.pptUrl} target="_blank" className="text-blue-500 font-bold hover:underline text-[10px] uppercase">PPT Artifact</a>}
+                            {s.certificates?.map(c => c.certificateUrl && (
+                               <a key={c.id} href={c.certificateUrl} target="_blank" className="text-indigo-500 font-bold hover:underline text-[10px] uppercase">Cert: {c.name.split(' ')[0]}</a>
+                            ))}
+                            {!s.pptUrl && !s.certificates?.some(c => c.certificateUrl) && <span className="text-[10px] text-slate-300 font-bold uppercase italic tracking-tighter">No files yet</span>}
+                          </div>
+                        </td>
                         <td className="px-6 py-4">
                            <div className="flex flex-wrap gap-2">
                               <button onClick={() => { setSelectedTeam(s); setShowCertModal(true); }} className="text-[10px] font-bold text-blue-500 uppercase px-2 py-1 rounded bg-blue-50 border border-blue-100 hover:bg-blue-500 hover:text-white transition-all">Edit Names</button>

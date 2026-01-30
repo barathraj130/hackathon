@@ -264,11 +264,20 @@ export default function TeamDashboard() {
 
                     {/* Certificate Info */}
                     {(submission.certificates && submission.certificates.length > 0) || submission.certificateName ? (
-                      <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
-                        <div className="w-8 h-8 bg-[var(--primary-green)] rounded-lg flex items-center justify-center text-white text-sm">✓</div>
-                        <div className="flex-1">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-green-700">Certificate Details</p>
-                          <p className="text-[8px] text-green-600/60 uppercase mt-0.5 font-bold">Team Names Provided</p>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
+                          <div className="w-8 h-8 bg-[var(--primary-green)] rounded-lg flex items-center justify-center text-white text-sm">✓</div>
+                          <div className="flex-1">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-green-700">Certificate Details</p>
+                            <p className="text-[8px] text-green-600/60 uppercase mt-0.5 font-bold">Team Names Provided</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2 pl-4">
+                          {submission.certificates?.map(c => c.certificateUrl && (
+                            <a key={c.id} href={c.certificateUrl} target="_blank" className="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 flex items-center gap-2 uppercase tracking-wider">
+                              <span>⬇</span> Download Certificate: {c.name}
+                            </a>
+                          ))}
                         </div>
                       </div>
                     ) : (
