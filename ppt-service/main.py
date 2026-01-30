@@ -54,35 +54,51 @@ def certificate_handler(data: dict = Body(...)):
         if not p_date or p_date == "None" or p_date == "null":
             p_date = "[Submission Date]"
         
-        safe_name = p_name.lower().replace(' ', '_')
+        # Sanitize name for filename persistence
+        p_name_clean = str(p_name).strip()
+        safe_name = p_name_clean.lower().replace(' ', '_')
         out_filename = f"certificate_{safe_name}.pptx"
-        out_path = os.path.join(CERTS_DIR, out_filename)
+        out_path = os.path.abspath(os.path.join(CERTS_DIR, out_filename))
+        
+        print(f"[SYNTHESIS] Generating credential for {p_name_clean} at {out_path}")
         
         # Core Synthesis Call
-        create_certificate(p_name, p_college, p_year, p_dept, p_role, submission_date=p_date, out_path=out_path)
+        create_certificate(p_name_clean, p_college, p_year, p_dept, p_role, submission_date=p_date, out_path=out_path)
         
         # Verify serialization
         if not os.path.exists(out_path):
+            print(f"[CRITICAL] Serialization failed for {out_path}")
             raise Exception("Synthesis failed to serialize artifact.")
 
         return {
             "success": True,
-            "file_url": out_filename # Return just filename, backend maps to /certs/
+            "file_url": out_filename 
         }
     except Exception as e:
         print(f"CRITICAL: {str(e)}")
+        traceback.print_exc()
         return {"success": False, "error": str(e)}
 
 @app.get("/certs/{filename}")
 def get_credential(filename: str):
-    file_path = os.path.join(CERTS_DIR, filename)
+    # Normalize filename request
+    clean_filename = filename.strip()
+    file_path = os.path.abspath(os.path.join(CERTS_DIR, clean_filename))
+    
+    print(f"[SHIELD] Credential Pull: {clean_filename} (Resolved: {file_path})")
+    
     if os.path.exists(file_path):
         return FileResponse(file_path)
-    # Attempt legacy cleanup pathing
-    legacy_path = os.path.join(BASE_DIR, "certs_outputs", filename)
-    if os.path.exists(legacy_path):
-        return FileResponse(legacy_path)
-    raise HTTPException(status_code=404, detail="Credential not found in institutional vault.")
+    
+    # Second-chance lookup (case-insensitive)
+    try:
+        all_files = os.listdir(CERTS_DIR)
+        for f in all_files:
+            if f.lower() == clean_filename.lower():
+                return FileResponse(os.path.join(CERTS_DIR, f))
+    except: pass
+
+    raise HTTPException(status_code=404, detail=f"Credential [{clean_filename}] not found in institutional vault.")
 
 # --- CORE MISSION SYNTHESIS ---
 @app.post("/generate-artifact")
