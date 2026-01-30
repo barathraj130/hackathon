@@ -61,18 +61,23 @@ def set_slide_bg(slide):
     fill.fore_color.rgb = WHITE
 
 def add_header(slide, title="SLIDE TITLE"):
-    # CENTERED LOGO (Institutional Branding)
+    # SLIDE FRAME (Institutional Safety Margin Definition)
+    m = 0.2
+    frame = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(m), Inches(m), Inches(10-2*m), Inches(7.5-2*m))
+    frame.fill.background(); frame.line.color.rgb = LINE_COLOR; frame.line.width = Pt(0.5)
+
+    # TITANIC LOGO (Top-Right Positioning)
     if os.path.exists("hackathon_logo.png"):
-        logo = slide.shapes.add_picture("hackathon_logo.png", Inches(8.8), Inches(0.2), height=Inches(0.6))
+        logo = slide.shapes.add_picture("hackathon_logo.png", Inches(8.8), Inches(0.3), height=Inches(0.6))
         disable_shadow(logo)
 
-    # SLIDE TITLE (Respecting high-fidelity margins)
-    header_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.4), Inches(7.0), Inches(0.5))
+    # SLIDE TITLE (Centrally Aligned in Top Safety Zone)
+    header_box = slide.shapes.add_textbox(Inches(1.0), Inches(0.4), Inches(7.0), Inches(0.5))
     disable_shadow(header_box)
     p = header_box.text_frame.paragraphs[0]
     p.text = title
-    p.font.size = Pt(18); p.font.bold = True; p.font.name = 'Arial Black'
-    p.font.color.rgb = TEXT_MAIN
+    p.font.size = Pt(20); p.font.bold = True; p.font.name = 'Arial Black'
+    p.font.color.rgb = PRIMARY_COLOR
     p.alignment = PP_ALIGN.LEFT
 
 def add_clean_box(slide, text, x, y, w, h, sz, bold=False, txt_color=TEXT_MAIN, border_color=None, bg_color=None):
@@ -104,24 +109,23 @@ def create_expert_deck(team_name, college, data):
     if os.path.exists("hackathon_logo.png"):
         slide.shapes.add_picture("hackathon_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
 
-    # High-impact Project Title
-    tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(1.8), Inches(9), Inches(1.8))
+    # High-impact Project Title (Locked to 1.0" Margin)
+    tx_title = slide.shapes.add_textbox(Inches(1.0), Inches(1.8), Inches(8.0), Inches(1.8))
     p_title = tx_title.text_frame.paragraphs[0]
     p_title.text = "BHARAT BRILLIANT HACKATHON"
     p_title.font.size = Pt(38); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
-    p_title.line_spacing = 1.0
-
+    
     # Sub-title (Actual Project Name)
     p_subtitle = tx_title.text_frame.add_paragraph()
     p_subtitle.text = data.get('projectName', 'VENTURE PROTOTYPE').upper()
     p_subtitle.font.size = Pt(24); p_subtitle.font.bold = False; p_subtitle.font.color.rgb = PRIMARY_COLOR; p_subtitle.alignment = PP_ALIGN.CENTER
     
-    # Elegant Underline on cover - ADJUSTED POSITION
+    # Elegant Underline on cover
     line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.7), Inches(6.5), Inches(3.7))
     line.line.color.rgb = TEXT_MAIN; line.line.width = Pt(2)
 
-    # Detailed Personnel Info - LOWERED TO PREVENT OVERLAP
-    tx_id = slide.shapes.add_textbox(Inches(1), Inches(4.5), Inches(8), Inches(2.5))
+    # Detailed Personnel Info (Safe Centering with 1.5" Side Padding)
+    tx_id = slide.shapes.add_textbox(Inches(1.5), Inches(4.5), Inches(7.0), Inches(2.5))
     tf_d = tx_id.text_frame; tf_d.word_wrap = True
     
     p1 = tf_d.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
@@ -133,11 +137,11 @@ def create_expert_deck(team_name, college, data):
     p2.space_after = Pt(12)
     
     p3 = tf_d.add_paragraph(); p3.alignment = PP_ALIGN.CENTER
-    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(18); p3.font.bold = True; p3.font.color.rgb = TEXT_MAIN; p3.font.name = 'Poppins'
+    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(18); p3.font.bold = True; p3.font.color.rgb = TEXT_MAIN
     p3.space_after = Pt(8)
     
     p4 = tf_d.add_paragraph(); p4.alignment = PP_ALIGN.CENTER
-    p4.text = f"MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(11); p4.font.bold = False; p4.font.color.rgb = TEXT_MAIN; p4.font.name = 'Inter'
+    p4.text = f"MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(11); p4.font.bold = False; p4.font.color.rgb = TEXT_MAIN
     
     add_footer(slide)
 
@@ -179,7 +183,7 @@ def create_expert_deck(team_name, college, data):
 # --- DRAWERS ---
 
 def draw_strategic(slide, data):
-    m = 0.8; w = 8.4
+    m = 1.0; w = 8.0
     add_clean_box(slide, "DOMAIN", Inches(m), Inches(1.8), Inches(w), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
     add_clean_box(slide, clean_text(data.get('s2_domain'), 8), Inches(m), Inches(2.2), Inches(w), Inches(0.8), 14)
     add_clean_box(slide, "OPERATIONAL CONTEXT", Inches(m), Inches(3.2), Inches(w), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
@@ -188,7 +192,7 @@ def draw_strategic(slide, data):
     add_clean_box(slide, clean_text(data.get('s2_rootReason'), 20), Inches(m), Inches(6.0), Inches(w), Inches(0.9), 12)
 
 def draw_problem(slide, data):
-    m = 0.8; w = 8.4; hw = 4.1
+    m = 1.0; w = 8.0; hw = hw = (w-0.2)/2
     add_clean_box(slide, "CORE PROBLEM", Inches(m), Inches(1.8), Inches(w), Inches(0.4), 12, True, ERROR_ZONE, None, BG_LIGHT)
     add_clean_box(slide, clean_text(data.get('s3_coreProblem'), 50), Inches(m), Inches(2.3), Inches(w), Inches(2.0), 16, False, TEXT_MAIN, LINE_COLOR, WHITE)
     add_clean_box(slide, "AFFECTED PERSONNEL", Inches(m), Inches(4.5), Inches(hw), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
@@ -197,7 +201,7 @@ def draw_problem(slide, data):
     add_clean_box(slide, clean_text(data.get('s3_whyItMatters'), 30), Inches(m + hw + 0.2), Inches(4.9), Inches(hw), Inches(1.8), 12)
 
 def draw_stakeholders(slide, data):
-    m = 0.8; w = 8.4
+    m = 1.0; w = 8.0
     for i, (label, key) in enumerate([("PRIMARY SEGMENT", 's5_primaryUsers'), ("SECONDARY SEGMENT", 's5_secondaryUsers')]):
         y_pos = 1.8 + i * 2.6
         add_clean_box(slide, label, Inches(m), Inches(y_pos), Inches(w), Inches(0.35), 12, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
@@ -347,16 +351,12 @@ def draw_solution_statement(slide, data):
     add_clean_box(slide, clean_text(data.get('s8_coreTech'), 15), Inches(0.5), Inches(5.6), Inches(9), Inches(1.1), 16, False, PRIMARY_COLOR)
 
 def draw_solution_flow(slide, data):
-    m = 0.8; w = 8.4
+    m = 1.0; w = 8.0
     add_clean_box(slide, clean_text(data.get('s9_oneline'), 15), Inches(m), Inches(1.5), Inches(w), Inches(0.6), 22, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
     
     sps = [clean_text(s, 12) for s in data.get('s9_flowSteps', []) if s.strip()][:6]
-    bw, bh = 2.6, 1.1
+    bw, bh = (w-0.6)/3, 1.1
     gx, gy = 0.3, 0.4
-    
-    # SNAKE FLOW POSITIONAL LOGIC: 1->2->3, then wrap to 4<-5<-6? 
-    # Actually, simpler 1->2->3 and 4->5->6 is less confusing for reports.
-    # We will add arrows between row nodes.
     
     for i, s in enumerate(sps):
         col, row = i % 3, i // 3
@@ -373,10 +373,9 @@ def draw_solution_flow(slide, data):
                                              Inches(px + bw + gx), Inches(py + bh/2))
             conn.line.color.rgb = PRIMARY_COLOR
             conn.line.width = Pt(1.5)
-            # Use end_arrowhead = 1 (Triangle)
             conn.line.end_arrowhead = 1
 
-        # Add Vertical Continuity Arrow between rows (from index 2 to 5 or similar)
+        # Add Vertical Continuity Arrow between rows
         if col == 2 and row == 0 and len(sps) > 3:
             v_conn = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT,
                                               Inches(px + bw/2), Inches(py + bh),
