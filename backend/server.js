@@ -185,6 +185,7 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
     await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "certificateCollege" TEXT;`);
     await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "certificateYear" INTEGER;`);
     await prisma.$executeRawUnsafe(`ALTER TABLE "Submission" ADD COLUMN IF NOT EXISTS "submittedAt" TIMESTAMP WITH TIME ZONE;`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Team" ADD COLUMN IF NOT EXISTS "selectedProblemId" TEXT;`);
     
     // EMERGENCY HACKATHON CONFIG UPGRADE
     await prisma.$executeRawUnsafe(`ALTER TABLE "HackathonConfig" ADD COLUMN IF NOT EXISTS "allowCertificateDetails" BOOLEAN DEFAULT false;`);
