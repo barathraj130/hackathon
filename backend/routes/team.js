@@ -453,6 +453,12 @@ router.post('/certificate-details', async (req, res) => {
 
         if (!team) return res.status(404).json({ error: "Identity not recognized." });
 
+        // Filter out empty rows
+        const validParticipants = participants.filter(p => p.name && p.name.trim() !== "");
+        if (validParticipants.length === 0) {
+            return res.status(400).json({ error: "At least one participant name is required." });
+        }
+
         // Find or create submission using UUID
         let submission = await prisma.submission.findUnique({ where: { teamId: team.id } });
         if (!submission) {
@@ -467,7 +473,7 @@ router.post('/certificate-details', async (req, res) => {
         });
 
         await prisma.participantCertificate.createMany({
-            data: participants.map(p => ({
+            data: validParticipants.map(p => ({
                 ...p,
                 submissionId: submission.id
             }))

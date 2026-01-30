@@ -129,15 +129,18 @@ router.post('/update-certificates', async (req, res) => {
         console.log('[CertificateUpdate] Request from teamId:', teamId);
         console.log('[CertificateUpdate] Participants:', JSON.stringify(participants));
 
-        if (!participants || !Array.isArray(participants) || participants.length === 0) {
-            return res.status(400).json({ error: "Participant details are required." });
+        // Filter out empty rows - Only process participants who have at least a Name
+        const validParticipants = participants.filter(p => p.name && p.name.trim() !== "");
+        
+        if (validParticipants.length === 0) {
+            return res.status(400).json({ error: "At least one participant name is required." });
         }
 
-        // Validate all participants have required fields
-        for (const p of participants) {
-            if (!p.name || !p.college || !p.dept || !p.year || !p.role) {
-                console.error('[CertificateUpdate] Missing fields in participant:', p);
-                return res.status(400).json({ error: "All participant fields are required." });
+        // Validate remaining valid participants have other required fields
+        for (const p of validParticipants) {
+            if (!p.college || !p.dept || !p.year || !p.role) {
+                console.error('[CertificateUpdate] Missing fields in valid participant:', p);
+                return res.status(400).json({ error: `Please fill out all fields for ${p.name}` });
             }
         }
 
@@ -182,7 +185,7 @@ router.post('/update-certificates', async (req, res) => {
         console.log('[CertificateUpdate] Deleted', deleteCount.count, 'existing certificates');
 
         // Create new certificates
-        const certificatePromises = participants.map(p => 
+        const certificatePromises = validParticipants.map(p => 
             prisma.participantCertificate.create({
                 data: {
                     submissionId: submission.id,
