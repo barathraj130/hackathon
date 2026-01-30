@@ -9,16 +9,16 @@ def create_pptx(team_name, college, slides_data):
     
     def add_branding(slide):
         # 1. Top Left - Event Branding
-        branding_box = slide.shapes.add_textbox(Inches(0.2), Inches(0.2), Inches(2), Inches(0.4))
+        branding_box = slide.shapes.add_textbox(Inches(0.2), Inches(0.2), Inches(3), Inches(0.4))
         p = branding_box.text_frame.paragraphs[0]
-        p.text = "BRILLIANT BHARAT"
+        p.text = "BHARAT BRILLIANT HACKATHON"
         p.font.size = Pt(14)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(0, 0, 0)
+        p.font.color.rgb = RGBColor(13, 148, 136) # Teal
         
         # 2. Top Right - Logo
-        if os.path.exists("institution_logo.png"):
-            slide.shapes.add_picture("institution_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
+        if os.path.exists("hackathon_logo.png"):
+            slide.shapes.add_picture("hackathon_logo.png", Inches(8.5), Inches(0.2), width=Inches(1.2))
 
     def set_dark_bg(slide):
         background = slide.background
@@ -34,11 +34,17 @@ def create_pptx(team_name, college, slides_data):
     left, top, width, height = Inches(0.5), Inches(0.5), Inches(9), Inches(1)
     tx_title = slide.shapes.add_textbox(left, top, width, height)
     tf_title = tx_title.text_frame
-    tf_title.text = "Idea and team identification".upper()
+    tf_title.text = "BHARAT BRILLIANT HACKATHON"
     p = tf_title.paragraphs[0]
     p.font.size = Pt(40); p.font.bold = True; p.font.name = 'Times New Roman'
     p.font.color.rgb = RGBColor(0, 0, 0)
     p.alignment = PP_ALIGN.CENTER
+
+    # Subtitle Text (Actual Task)
+    p2 = tf_title.add_paragraph()
+    p2.text = slides_data.get('title', {}).get('bullets', ['Idea Formulation'])[0].upper()
+    p2.font.size = Pt(24); p2.font.bold = False; p2.font.color.rgb = RGBColor(13, 148, 136)
+    p2.alignment = PP_ALIGN.CENTER
 
     # Details Text - BOTTOM RIGHT
     left, top, width, height = Inches(5.0), Inches(5.0), Inches(4.5), Inches(3.5)

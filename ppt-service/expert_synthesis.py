@@ -40,24 +40,19 @@ def set_slide_bg(slide):
     fill.fore_color.rgb = WHITE
 
 def add_header(slide, title="SLIDE TITLE"):
-    # VIKSIT BHARAT GLOBAL LOGO (Top Left)
-    if os.path.exists("viksit_bharat_global.png"):
-        vb_logo = slide.shapes.add_picture("viksit_bharat_global.png", Inches(0.2), Inches(0.2), height=Inches(0.6))
-        disable_shadow(vb_logo)
+    # CENTERED LOGO (Institutional Branding)
+    if os.path.exists("hackathon_logo.png"):
+        logo = slide.shapes.add_picture("hackathon_logo.png", Inches(8.8), Inches(0.2), height=Inches(0.6))
+        disable_shadow(logo)
 
-    # SLIDE TITLE (Shifted right for logo)
-    header_box = slide.shapes.add_textbox(Inches(1.1), Inches(0.3), Inches(7.0), Inches(0.5))
+    # SLIDE TITLE (Shifted left)
+    header_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.3), Inches(7.0), Inches(0.5))
     disable_shadow(header_box)
     p = header_box.text_frame.paragraphs[0]
     p.text = title
     p.font.size = Pt(18); p.font.bold = True; p.font.name = 'Arial Black'
     p.font.color.rgb = TEXT_MAIN
     p.alignment = PP_ALIGN.LEFT
-
-    # TOP RIGHT LOGO (Institutional Branding)
-    if os.path.exists("institution_logo.png"):
-        logo = slide.shapes.add_picture("institution_logo.png", Inches(8.8), Inches(0.2), height=Inches(0.6))
-        disable_shadow(logo)
 
 def add_clean_box(slide, text, x, y, w, h, sz, bold=False, txt_color=TEXT_MAIN, border_color=None, bg_color=None):
     box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
@@ -85,25 +80,20 @@ def create_expert_deck(team_name, college, data):
     set_slide_bg(slide)
     
     # Large centered Logo on cover
-    if os.path.exists("institution_logo.png"):
-        slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
+    if os.path.exists("hackathon_logo.png"):
+        slide.shapes.add_picture("hackathon_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
 
-    # Viksit Bharat Branding - Top Left
-    if os.path.exists("viksit_bharat_global.png"):
-        vb_img = slide.shapes.add_picture("viksit_bharat_global.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
-        disable_shadow(vb_img)
-        # Optional text label for Viksit Bharat
-        tx_vb = slide.shapes.add_textbox(Inches(0.4), Inches(1.2), Inches(2), Inches(0.3))
-        p_vb = tx_vb.text_frame.paragraphs[0]
-        p_vb.text = "VIKSIT BHARAT @ 2047"; p_vb.font.size = Pt(8); p_vb.font.bold = True; p_vb.font.color.rgb = PRIMARY_COLOR
-        p_vb.alignment = PP_ALIGN.LEFT
-
-    # High-impact Project Title - REDUCED FONT TO PREVENT OVERLAP
+    # High-impact Project Title
     tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(1.8), Inches(9), Inches(1.8))
     p_title = tx_title.text_frame.paragraphs[0]
-    p_title.text = data.get('projectName', 'VENTURE PROTOTYPE').upper()
+    p_title.text = "BHARAT BRILLIANT HACKATHON"
     p_title.font.size = Pt(38); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
     p_title.line_spacing = 1.0
+
+    # Sub-title (Actual Project Name)
+    p_subtitle = tx_title.text_frame.add_paragraph()
+    p_subtitle.text = data.get('projectName', 'VENTURE PROTOTYPE').upper()
+    p_subtitle.font.size = Pt(24); p_subtitle.font.bold = False; p_subtitle.font.color.rgb = PRIMARY_COLOR; p_subtitle.alignment = PP_ALIGN.CENTER
     
     # Elegant Underline on cover - ADJUSTED POSITION
     line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.7), Inches(6.5), Inches(3.7))
@@ -152,15 +142,10 @@ def create_expert_deck(team_name, college, data):
         s = prs.slides.add_slide(prs.slide_layouts[6]); set_slide_bg(s)
         add_header(s, title); fn(s)
 
-    # CLOSURE (Unchanged)
+    # CLOSURE
     slide = prs.slides.add_slide(prs.slide_layouts[6]); set_slide_bg(slide)
-    if os.path.exists("institution_logo.png"):
-        slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
-    
-    # Viksit Bharat branding on closure
-    if os.path.exists("viksit_bharat_global.png"):
-        vb_close = slide.shapes.add_picture("viksit_bharat_global.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
-        disable_shadow(vb_close)
+    if os.path.exists("hackathon_logo.png"):
+        slide.shapes.add_picture("hackathon_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
 
     tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
     p = tx.text_frame.paragraphs[0]; p.text = "THANK YOU."; p.font.size = Pt(64); p.font.bold = True; p.font.color.rgb = TEXT_MAIN; p.alignment = PP_ALIGN.CENTER

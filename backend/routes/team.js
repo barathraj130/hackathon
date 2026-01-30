@@ -487,6 +487,69 @@ router.post('/certificate-details', async (req, res) => {
 });
 
 /**
+ * @route   POST /v1/team/generate-certificates
+ * @desc    Triggers self-service certificate synthesis for the team.
+ */
+router.post('/generate-certificates', async (req, res) => {
+    try {
+        const teamIdFromToken = req.user.id;
+        
+        // Centralized Team Resolution
+        let team = await prisma.team.findUnique({ where: { id: teamIdFromToken } });
+        if (!team) team = await prisma.team.findUnique({ where: { teamName: teamIdFromToken } });
+        if (!team && req.user.teamName) team = await prisma.team.findUnique({ where: { teamName: req.user.teamName } });
+
+        if (!team) return res.status(404).json({ error: "Identity not recognized." });
+
+        const submission = await prisma.submission.findUnique({ 
+            where: { teamId: team.id }, 
+            include: { certificates: true } 
+        });
+
+        if (!submission || !submission.certificates || submission.certificates.length === 0) {
+            return res.status(400).json({ error: "No participant names found. Please enter names first." });
+        }
+
+        const tryUrls = [
+            process.env.PYTHON_SERVICE_URL,
+            'http://ppt-service:8000',
+            'http://ppt-service.railway.internal:8000',
+            'http://endearing-liberation.railway.internal:8000',
+            'https://endearing-liberation-production.up.railway.app'
+        ].filter(Boolean);
+
+        let successCount = 0;
+        for (const p of submission.certificates) {
+            for (const url of tryUrls) {
+                try {
+                    const r = await axios.post(`${url.replace(/\/$/, "")}/generate-certificate`, p, { timeout: 30000 });
+                    if (r.data.success) {
+                        const certPublicUrl = mapInternalToPublic(`${url.replace(/\/$/, "")}/certs/${r.data.file_url}`);
+                        await prisma.participantCertificate.update({ 
+                            where: { id: p.id }, 
+                            data: { certificateUrl: certPublicUrl } 
+                        });
+                        successCount++;
+                        break;
+                    }
+                } catch (e) {
+                    console.warn(`[TeamGenerateCerts] Node ${url} unreachable for certificate.`);
+                }
+            }
+        }
+
+        if (successCount === 0) {
+            return res.status(500).json({ error: "Synthesis cluster unreachable. Contact technical support." });
+        }
+
+        res.json({ success: true, message: `Successfully synthesized ${successCount} certificate(s).` });
+    } catch (error) {
+        console.error("[TeamGenerateCerts] ERROR:", error);
+        res.status(500).json({ error: "Certificate synthesis failed." });
+    }
+});
+
+/**
  * @route   POST /v1/team/upload-asset
  * @desc    Securely uploads binary evidence (images/screenshots) to the repository.
  */

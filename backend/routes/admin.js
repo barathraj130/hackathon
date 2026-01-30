@@ -187,11 +187,25 @@ router.post('/unlock-team', async (req, res) => {
 /**
  * CREDENTIAL SYNTHESIS HUB
  */
-router.post('/generate-certificates', async (req, res) => {
+const handleGenerateCertificates = async (req, res) => {
     try {
         const { teamId } = req.body;
-        const sub = await prisma.submission.findUnique({ where: { teamId }, include: { certificates: true } });
-        if (!sub) return res.status(404).json({ error: "Context missing." });
+        console.log(`[AdminGenerateCerts] Resolving team: ${teamId}`);
+        
+        let team = await prisma.team.findUnique({ where: { id: teamId } });
+        if (!team) team = await prisma.team.findUnique({ where: { teamName: teamId } });
+        
+        const finalTeamId = team ? team.id : teamId;
+
+        const sub = await prisma.submission.findUnique({ 
+            where: { teamId: finalTeamId }, 
+            include: { certificates: true } 
+        });
+
+        if (!sub) return res.status(404).json({ error: "No submission context found for this team." });
+        if (!sub.certificates || sub.certificates.length === 0) {
+            return res.status(400).json({ error: "No participant names found. Save names first." });
+        }
 
         const tryUrls = [
             process.env.PYTHON_SERVICE_URL,
@@ -200,23 +214,44 @@ router.post('/generate-certificates', async (req, res) => {
             'http://endearing-liberation.railway.internal:8000',
             'https://endearing-liberation-production.up.railway.app'
         ].filter(Boolean);
+
+        let successCount = 0;
         for (const p of sub.certificates) {
+            let processed = false;
             for (const url of tryUrls) {
                 try {
+                    console.log(`[AdminGenerateCerts] Probing ${url} for ${p.name}`);
                     const r = await axios.post(`${url.replace(/\/$/, "")}/generate-certificate`, p, { timeout: 30000 });
                     if (r.data.success) {
                         const certPublicUrl = mapInternalToPublic(`${url.replace(/\/$/, "")}/certs/${r.data.file_url}`);
-                        await prisma.participantCertificate.update({ where: { id: p.id }, data: { certificateUrl: certPublicUrl } });
+                        await prisma.participantCertificate.update({ 
+                            where: { id: p.id }, 
+                            data: { certificateUrl: certPublicUrl } 
+                        });
+                        processed = true;
+                        successCount++;
+                        console.log(`✅ [AdminGenerateCerts] Success for ${p.name}`);
                         break;
                     }
                 } catch (e) {
-                    console.warn(`Synthesis node ${url} unreachable for certificate.`);
+                    console.warn(`[AdminGenerateCerts] Node ${url} unreachable for certificate.`);
                 }
             }
         }
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
-});
+
+        if (successCount === 0) {
+            return res.status(500).json({ error: "Synthesis cluster unreachable or failed to generate any certificates." });
+        }
+
+        res.json({ success: true, message: `Successfully generated ${successCount} certificates.` });
+    } catch (e) { 
+        console.error("[AdminGenerateCerts] CRITICAL ERROR:", e);
+        res.status(500).json({ error: "Internal server error during certificate synthesis." }); 
+    }
+};
+
+router.post('/generate-certificates', handleGenerateCertificates);
+router.post('/generate-team-certificates', handleGenerateCertificates);
 
 router.post('/update-certificates', async (req, res) => {
     try {

@@ -8,11 +8,15 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
     { name: '', role: 'Member', college: '', year: '', dept: '' }
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
     if (teamData?.submission?.certificates && teamData.submission.certificates.length > 0) {
-      setParticipants(teamData.submission.certificates);
+      setParticipants(teamData.submission.certificates.map(c => ({
+        ...c,
+        year: c.year || '1'
+      })));
     } else {
         setParticipants([
             { name: '', role: 'Leader', college: teamData?.collegeName || '', year: '1', dept: 'N/A' },
@@ -28,16 +32,36 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
     setStatus(null);
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${apiUrl}/team/update-certificates`, {
-        teamId: teamData.id,
+      await axios.post(`${apiUrl}/team/certificate-details`, {
         participants
       }, { headers: { Authorization: `Bearer ${token}` } });
       setStatus({ type: 'success', message: 'Names saved successfully!' });
-      setTimeout(onClose, 1500);
     } catch (err) {
-      setStatus({ type: 'error', message: 'Failed to save names.' });
+      setStatus({ type: 'error', message: err.response?.data?.error || 'Failed to save names.' });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    setStatus(null);
+    try {
+      const token = localStorage.getItem('token');
+      // Save names first to ensure latest are used
+      await axios.post(`${apiUrl}/team/certificate-details`, { participants }, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+      
+      const res = await axios.post(`${apiUrl}/team/generate-certificates`, {}, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+      setStatus({ type: 'success', message: res.data.message || 'Certificates generated!' });
+      setTimeout(onClose, 2000);
+    } catch (err) {
+      setStatus({ type: 'error', message: err.response?.data?.error || 'Generation failed.' });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -56,7 +80,7 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
           {participants.map((p, idx) => (
             <div key={idx} className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[10px] font-bold bg-blue-100 text-blue-600 px-3 py-1 rounded-full">{p.role === 'Leader' ? '01' : '02'}</span>
+                  <span className="text-[10px] font-bold bg-blue-100 text-blue-600 px-3 py-1 rounded-full">{p.role === 'Leader' || p.role === 'LEADER' ? '01' : '02'}</span>
                   <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">{p.role} Details</span>
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -109,16 +133,23 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
         <div className="flex gap-4 border-t border-slate-100 pt-6">
           <button 
             onClick={onClose} 
-            className="flex-1 px-6 py-4 rounded-2xl border-2 border-slate-100 text-xs font-bold text-slate-500 hover:bg-slate-50 transition-all uppercase tracking-widest"
+            className="px-6 py-4 rounded-2xl border-2 border-slate-100 text-xs font-bold text-slate-500 hover:bg-slate-50 transition-all uppercase tracking-widest"
           >
-            Go Back
+            Close
           </button>
           <button 
-            disabled={isSubmitting}
+            disabled={isSubmitting || isGenerating}
             onClick={handleSubmit}
+            className="flex-1 bg-white border-2 border-[var(--secondary-blue)] text-[var(--secondary-blue)] px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-blue-50 transition-all"
+          >
+            {isSubmitting ? 'Syncing...' : 'Save Details'}
+          </button>
+          <button 
+            disabled={isSubmitting || isGenerating}
+            onClick={handleGenerate}
             className="flex-1 btn-blue !py-4 text-xs uppercase font-bold tracking-widest shadow-lg shadow-blue-100 disabled:opacity-50"
           >
-            {isSubmitting ? 'Syncing...' : 'Save & Confirm'}
+            {isGenerating ? 'Processing...' : 'Generate Certificates'}
           </button>
         </div>
       </div>

@@ -12,7 +12,7 @@ TEXT_MAIN = RGBColor(30, 41, 59)       # Slate-800
 ACCENT_GREY = RGBColor(241, 245, 249)  # Slate-100
 WHITE = RGBColor(255, 255, 255)
 
-def create_certificate(name, college, year, dept, role, event_name="BRILLIANT BHARAT", out_path=None):
+def create_certificate(name, college, year, dept, role, event_name="BHARAT BRILLIANT HACKATHON", out_path=None):
     prs = Presentation()
     # Use 16:9 Aspect Ratio
     prs.slide_width = Inches(13.33)
@@ -31,9 +31,9 @@ def create_certificate(name, college, year, dept, role, event_name="BRILLIANT BH
     # Inner thin border
     border2 = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.55), Inches(0.55), prs.slide_width - Inches(1.1), prs.slide_height - Inches(1.1))
     border2.fill.background(); border2.line.color.rgb = PRIMARY_COLOR; border2.line.width = Pt(1)
-
+ 
     # 3. Logo
-    logo_path = os.path.join(os.path.dirname(__file__), "institution_logo.png")
+    logo_path = os.path.join(os.path.dirname(__file__), "hackathon_logo.png")
     if os.path.exists(logo_path):
         slide.shapes.add_picture(logo_path, (prs.slide_width - Inches(1.5))/2, Inches(0.8), width=Inches(1.5))
 
