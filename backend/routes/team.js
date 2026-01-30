@@ -64,7 +64,8 @@ router.get('/profile', async (req, res) => {
         const teamId = req.user.id;
         if (!teamId) return res.status(400).json({ error: 'Invalid Token' });
 
-        const team = await prisma.team.findUnique({ 
+        // CENTRALIZED RESOLUTION: Support UUID or Name-based tokens
+        let team = await prisma.team.findUnique({ 
             where: { id: teamId },
             include: { 
                 submission: {
@@ -72,8 +73,30 @@ router.get('/profile', async (req, res) => {
                 }
             } 
         });
+
+        if (!team) {
+            team = await prisma.team.findUnique({ 
+                where: { teamName: teamId },
+                include: { 
+                    submission: {
+                        include: { certificates: true }
+                    }
+                }
+            });
+        }
+
+        if (!team && req.user.teamName) {
+            team = await prisma.team.findUnique({ 
+                where: { teamName: req.user.teamName },
+                include: { 
+                    submission: {
+                        include: { certificates: true }
+                    }
+                }
+            });
+        }
         
-        if (!team) return res.status(404).json({ error: "Identity not found." });
+        if (!team) return res.status(404).json({ error: "Identity not found. Please log in again." });
         
         const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
 
@@ -81,7 +104,7 @@ router.get('/profile', async (req, res) => {
             where: {
                 OR: [
                     { allottedTo: team.teamName },
-                    { allottedTo: teamId }
+                    { allottedTo: team.id }
                 ]
             }
         });
@@ -102,7 +125,7 @@ router.get('/profile', async (req, res) => {
             selectedProblem: selectedProblem,
             selectedProblemId: team.selectedProblemId,
             config: {
-                allowCertificateDetails: config?.allowCertificateDetails !== false, // Default to true if not explicitly false
+                allowCertificateDetails: config?.allowCertificateDetails !== false,
                 eventEnded: config?.eventEnded || false,
                 isPaused: config?.isPaused || false
             }
@@ -415,16 +438,28 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
  */
 router.post('/certificate-details', async (req, res) => {
     try {
-        const teamId = req.user.id;
-        const { participants } = req.body; // Array of { name, college, year, dept, role }
+        const teamIdFromToken = req.user.id;
+        const { participants } = req.body;
 
         const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
         if (!config || !config.allowCertificateDetails) {
             return res.status(403).json({ error: "Certificate collection is not open yet." });
         }
 
-        const submission = await prisma.submission.findUnique({ where: { teamId } });
-        if (!submission) return res.status(404).json({ error: "Submission not found." });
+        // Centralized Team Resolution
+        let team = await prisma.team.findUnique({ where: { id: teamIdFromToken } });
+        if (!team) team = await prisma.team.findUnique({ where: { teamName: teamIdFromToken } });
+        if (!team && req.user.teamName) team = await prisma.team.findUnique({ where: { teamName: req.user.teamName } });
+
+        if (!team) return res.status(404).json({ error: "Identity not recognized." });
+
+        // Find or create submission using UUID
+        let submission = await prisma.submission.findUnique({ where: { teamId: team.id } });
+        if (!submission) {
+            submission = await prisma.submission.create({
+                data: { teamId: team.id, content: {}, status: 'IN_PROGRESS' }
+            });
+        }
 
         // Atomic Reset: Purge existing and rebuild
         await prisma.participantCertificate.deleteMany({
@@ -440,7 +475,7 @@ router.post('/certificate-details', async (req, res) => {
 
         res.json({ success: true, message: "Credentials synchronized with internal vault." });
     } catch (error) {
-        console.error(error);
+        console.error("[CertificateDetails] ERROR:", error);
         res.status(500).json({ error: "Internal Vault Error" });
     }
 });

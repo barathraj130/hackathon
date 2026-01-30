@@ -141,24 +141,38 @@ router.post('/update-certificates', async (req, res) => {
             }
         }
 
-        // Find or create submission
+        // Centralized Team Resolution: Support UUID or Name-based tokens
+        let team = await prisma.team.findUnique({ where: { id: teamId } });
+        if (!team) {
+            team = await prisma.team.findUnique({ where: { teamName: teamId } });
+        }
+        if (!team && req.user.teamName) {
+            team = await prisma.team.findUnique({ where: { teamName: req.user.teamName } });
+        }
+
+        if (!team) {
+            console.error('[CertificateUpdate] CRITICAL: Identity mismatch. req.user:', req.user);
+            return res.status(404).json({ error: "Team account not recognized. Please re-login." });
+        }
+
+        const resolvedTeamId = team.id;
+
+        // Find or create submission using the verified UUID
         let submission = await prisma.submission.findUnique({
-            where: { teamId },
+            where: { teamId: resolvedTeamId },
             include: { certificates: true }
         });
 
         if (!submission) {
-            console.log('[CertificateUpdate] No submission found, creating one...');
-            // Create a submission record if it doesn't exist
+            console.log('[CertificateUpdate] Creating submission for team:', team.teamName);
             submission = await prisma.submission.create({
                 data: {
-                    teamId: teamId,
+                    teamId: resolvedTeamId,
                     content: {},
                     status: 'IN_PROGRESS'
                 },
                 include: { certificates: true }
             });
-            console.log('[CertificateUpdate] Submission created:', submission.id);
         }
 
         // Delete existing certificates
