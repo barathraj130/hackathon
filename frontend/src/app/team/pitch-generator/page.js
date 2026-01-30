@@ -243,9 +243,9 @@ export default function PitchGenerator() {
                       <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-orange-50 text-[var(--accent-orange)] flex items-center justify-center font-bold">01</span><h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Identity</h2></div>
                       <div className="grid grid-cols-2 gap-8">
                         <div className="col-span-2"><label className="label-premium">Project Name (Max 10 Words)</label><input className="input-premium text-lg font-bold" value={data.projectName} onChange={e => setData({...data, projectName: limitWords(e.target.value, 10)})} /></div>
-                        <div><label className="label-premium">Team Name</label><input className="input-premium" value={data.teamName} readOnly /></div>
-                        <div><label className="label-premium">Institution</label><input className="input-premium" value={data.institutionName} readOnly /></div>
-                        <div><label className="label-premium">Leader</label><input className="input-premium" value={data.leaderName} readOnly /></div>
+                        <div><label className="label-premium">Team Name</label><input className="input-premium" value={data.teamName} onChange={e => setData({...data, teamName: e.target.value})} /></div>
+                        <div><label className="label-premium">Institution</label><input className="input-premium" value={data.institutionName} onChange={e => setData({...data, institutionName: e.target.value})} /></div>
+                        <div><label className="label-premium">Leader</label><input className="input-premium" value={data.leaderName} onChange={e => setData({...data, leaderName: e.target.value})} /></div>
                         <div><label className="label-premium">Members (Max 15 Words)</label><input className="input-premium" value={data.memberNames} onChange={e => setData({...data, memberNames: limitWords(e.target.value, 15)})} /></div>
                       </div>
                     </div>
