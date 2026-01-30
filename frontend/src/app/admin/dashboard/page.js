@@ -25,7 +25,6 @@ export default function AdminDashboard() {
       const storedRole = localStorage.getItem('role');
       const token = localStorage.getItem('token');
       if (!token || storedRole !== 'ADMIN') {
-        localStorage.clear();
         window.location.href = '/login?error=SessionExpired';
         return false;
       }
@@ -38,8 +37,6 @@ export default function AdminDashboard() {
     fetchProblemStatements();
     fetchSubmissions();
     
-    const interval = setInterval(checkSession, 30000);
-
     let socketInstance = null;
     const initSocket = async () => {
       try {
@@ -57,14 +54,12 @@ export default function AdminDashboard() {
     
     return () => {
       if (socketInstance) socketInstance.disconnect();
-      clearInterval(interval);
     };
   }, []);
 
   const handleAuthError = (err) => {
     const status = err.response?.status;
     if (status === 401 || status === 403) {
-        localStorage.clear();
         window.location.href = '/login';
     } else {
         alert("Error: " + (err.response?.data?.error || err.message));

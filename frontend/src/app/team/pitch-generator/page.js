@@ -182,7 +182,6 @@ export default function PitchGenerator() {
     } catch (err) { 
       console.error("Submit fail", err);
       if (err.response?.status === 401 || err.response?.status === 403) {
-        localStorage.clear();
         router.push('/login?error=session_expired');
         return;
       }

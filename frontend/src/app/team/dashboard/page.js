@@ -31,8 +31,7 @@ export default function TeamDashboard() {
 
     // SECURITY SENTINEL: Ensure only teams access this panel
     if (!token || role !== 'TEAM') {
-        console.warn("[TeamSentinel] Unauthorized access attempted. Redirecting...");
-        localStorage.clear();
+        console.warn("[TeamSentinel] Role mismatch detected. Redirecting to appropriate portal...");
         window.location.href = '/?error=SessionMismatch';
         return;
     }
