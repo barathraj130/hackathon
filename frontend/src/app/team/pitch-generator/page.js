@@ -97,11 +97,13 @@ export default function PitchGenerator() {
         if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
            router.push('/team/dashboard');
         } else {
+           const coreProblem = res.data.selectedProblem?.description || (res.data.problemStatements?.length === 1 ? res.data.problemStatements[0].description : '');
            const profileData = {
               teamName: res.data.teamName || '',
               institutionName: res.data.collegeName || '',
               leaderName: res.data.leaderName || '',
-              s3_coreProblem: res.data.selectedProblem?.description || (res.data.problemStatements?.length === 1 ? res.data.problemStatements[0].description : '')
+              s3_coreProblem: coreProblem,
+              s10_leanProblem: coreProblem
            };
 
            if (res.data.submission?.content && Object.keys(res.data.submission.content).length > 0) {
@@ -306,7 +308,7 @@ export default function PitchGenerator() {
                     </div>
                   )}
 
-                  {step === 10 && (
+                   {step === 10 && (
                     <div className="space-y-6 animate-fade">
                        <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-slate-800 text-white flex items-center justify-center font-bold">10</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Lean Logic</h2></div>
                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -335,6 +337,16 @@ export default function PitchGenerator() {
                           <div className="card-premium !p-6">
                              <label className="label-premium !text-indigo-600 mb-2 uppercase">05. Customer Nodes</label>
                              <textarea className="input-premium !min-h-[150px] !text-xs !bg-slate-50 border-0" value={data.s10_leanSegments} onChange={e => setData({...data, s10_leanSegments: e.target.value})} placeholder="Primary cohorts..." />
+                          </div>
+                       </div>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="card-premium !p-6 !bg-slate-50 border-slate-200">
+                             <label className="label-premium mb-2 uppercase">06. Cost Structure</label>
+                             <textarea className="input-premium !min-h-[100px] !text-xs !bg-white border-0" value={data.s10_leanCosts} onChange={e => setData({...data, s10_leanCosts: e.target.value})} placeholder="Infrastructure, R&D, Operations..." />
+                          </div>
+                          <div className="card-premium !p-6 !bg-emerald-50 border-emerald-100">
+                             <label className="label-premium !text-emerald-600 mb-2 uppercase">07. Revenue Streams</label>
+                             <textarea className="input-premium !min-h-[100px] !text-xs !bg-white border-0" value={data.s10_leanRevenue} onChange={e => setData({...data, s10_leanRevenue: e.target.value})} placeholder="Subscriptions, Licensing, Ad-hoc..." />
                           </div>
                        </div>
                     </div>
