@@ -9,12 +9,9 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-[var(--primary-green)] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm">H</div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold text-slate-900 tracking-tight leading-none uppercase">HACKATHON</span>
-            <span className="text-[10px] font-bold text-[var(--accent-orange)] tracking-widest uppercase leading-none">PORTAL</span>
-          </div>
+          <span className="text-xl font-bold text-slate-800 tracking-tight">Hackathon Portal</span>
         </div>
         
         <div className="flex items-center gap-6">
@@ -51,7 +48,7 @@ export default function HomePage() {
                 Get Started
               </button>
               <div className="flex flex-col items-center lg:items-start">
-                <span className="text-xl font-bold text-slate-800 uppercase">Universal System</span>
+                <span className="text-xl font-bold text-slate-800">Universal System</span>
                 <span className="text-sm font-semibold text-slate-400">All Project Categories</span>
               </div>
             </div>
@@ -69,8 +66,8 @@ export default function HomePage() {
               
               <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-sm p-4 rounded-2xl border border-white/50 shadow-lg">
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs font-bold text-slate-800 uppercase">Project Status</span>
-                  <span className="text-[10px] font-bold text-white uppercase px-2 py-0.5 bg-[var(--primary-green)] rounded">In Progress</span>
+                  <span className="text-xs font-bold text-slate-800">Project Status</span>
+                  <span className="text-[10px] font-bold text-white px-2 py-0.5 bg-[var(--primary-green)] rounded">In Progress</span>
                 </div>
                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                   <div className="bg-[var(--primary-green)] h-full w-[65%]"></div>
@@ -96,7 +93,7 @@ export default function HomePage() {
       </main>
 
       <footer className="px-6 py-16 border-t border-slate-100 text-center">
-        <p className="text-sm font-semibold text-slate-400">HACKATHON PORTAL // 2026 Edition</p>
+        <p className="text-sm font-semibold text-slate-400">Hackathon Portal // 2026 Edition</p>
       </footer>
     </div>
   );

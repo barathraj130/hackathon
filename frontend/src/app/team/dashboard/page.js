@@ -119,7 +119,7 @@ export default function TeamDashboard() {
           <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 flex justify-between items-center px-8 py-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-[var(--primary-green)] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-green-200">B</div>
-              <div><h1 className="text-sm font-bold text-slate-800 leading-none">TEAM PANEL</h1><p className="text-[10px] font-bold text-[var(--secondary-blue)] uppercase tracking-wider mt-1">Control Center</p></div>
+              <div><h1 className="text-sm font-bold text-slate-800 leading-none caps">Hackathon portal</h1><p className="text-[10px] font-bold text-slate-400 tracking-wider mt-1">Control Center</p></div>
             </div>
             <div className="flex items-center gap-8">
               <div className="text-right"><p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Time Remaining</p><p className={`text-2xl font-bold tabular-nums ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-slate-800'}`}>{formattedTime}</p></div>

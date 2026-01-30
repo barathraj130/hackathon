@@ -35,8 +35,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center relative overflow-hidden font-sans">
       
-      <Link href="/" className="fixed top-8 left-8 flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-[var(--secondary-blue)] transition-all group z-50 uppercase tracking-widest">
-         ← Go Back
+      <Link href="/" className="fixed top-8 left-8 flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-[var(--secondary-blue)] transition-all group z-50 tracking-widest">
+         ← Go back
       </Link>
 
       <div className="fixed top-8 right-8 z-50">
@@ -48,8 +48,8 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md px-6 animate-fade text-center">
          <div className="mb-10">
             <div className="w-16 h-16 bg-[var(--primary-green)] rounded-2xl flex items-center justify-center text-white font-bold text-3xl shadow-xl mx-auto mb-6">H</div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight uppercase">HACKATHON</h1>
-            <p className="text-[10px] font-bold text-[var(--accent-orange)] uppercase tracking-widest mt-2">LOGIN PORTAL</p>
+            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Hackathon Portal</h1>
+            <p className="text-[10px] font-bold text-slate-400 tracking-widest mt-2">Login portal</p>
          </div>
 
         <div className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100 text-left">

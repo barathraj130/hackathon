@@ -208,14 +208,14 @@ export default function AdminDashboard() {
       <aside className="w-64 bg-white flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-slate-200 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-[var(--secondary-blue)] rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-100">C</div>
-          <div><p className="font-bold text-lg text-slate-800 leading-tight">Control Panel</p><p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Settings</p></div>
+          <div><p className="font-bold text-lg text-slate-800 leading-tight">Control Panel</p><p className="text-[10px] text-slate-400 font-bold tracking-wider">Settings</p></div>
         </div>
         <nav className="flex-1 space-y-2">
            {['STATS', 'WORK', 'TASKS', 'GROUPS', 'SETUP'].map(tab => {
              const tabKey = tab === 'STATS' ? 'overview' : tab === 'WORK' ? 'submissions' : tab === 'TASKS' ? 'problems' : tab === 'GROUPS' ? 'teams' : 'configuration';
              return (
                <button key={tab} onClick={() => setActiveTab(tabKey)} className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between ${activeTab === tabKey ? 'bg-blue-50 text-[var(--secondary-blue)]' : 'text-slate-500 hover:bg-slate-50'}`}>
-                 {tab}
+                 {tab.charAt(0) + tab.slice(1).toLowerCase()}
                </button>
              );
            })}

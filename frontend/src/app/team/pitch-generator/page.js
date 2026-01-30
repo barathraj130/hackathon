@@ -117,7 +117,7 @@ export default function PitchGenerator() {
       <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-sm">
         <Link href="/team/dashboard" className="flex items-center gap-4 group">
           <div className="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-bold group-hover:-translate-x-1 transition-all">←</div>
-          <h1 className="text-sm font-bold text-slate-800 uppercase tracking-wide">Generator</h1>
+          <h1 className="text-sm font-bold text-slate-800 tracking-wide">Pitch Builder</h1>
         </Link>
         <div className="px-4 py-1 bg-slate-50 border border-slate-200 rounded-full">
            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Step {step} of 17</span>
@@ -130,7 +130,7 @@ export default function PitchGenerator() {
              <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
                 <nav className="space-y-1">
                    {stepsList.map((label, i) => (
-                     <button key={i} onClick={() => (i+1) <= step && setStep(i+1)} className={`w-full text-left px-4 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-between ${step === (i+1) ? 'bg-blue-50 text-[var(--secondary-blue)]' : i+1 < step ? 'text-[var(--primary-green)]' : 'text-slate-300 pointer-events-none'}`}>
+                     <button key={i} onClick={() => (i+1) <= step && setStep(i+1)} className={`w-full text-left px-4 py-2.5 rounded-xl text-[11px] font-bold tracking-wider transition-all flex items-center justify-between ${step === (i+1) ? 'bg-blue-50 text-[var(--secondary-blue)]' : i+1 < step ? 'text-[var(--primary-green)]' : 'text-slate-300 pointer-events-none'}`}>
                         <span className="truncate">{label}</span>{i+1 < step && <span>✓</span>}
                      </button>
                    ))}
@@ -142,7 +142,7 @@ export default function PitchGenerator() {
              <div className="flex-grow">
                  {step === 1 && (
                     <div className="space-y-8 animate-fade">
-                      <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-orange-50 text-[var(--accent-orange)] flex items-center justify-center font-bold">01</span><h2 className="text-2xl font-bold text-slate-900 uppercase">About You</h2></div>
+                      <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-orange-50 text-[var(--accent-orange)] flex items-center justify-center font-bold">01</span><h2 className="text-2xl font-bold text-slate-900">About You</h2></div>
                       <div className="grid grid-cols-2 gap-8">
                         <div className="col-span-2"><label className="label-premium">Project Name</label><input className="input-premium text-lg font-bold" value={data.projectName} onChange={e => setData({...data, projectName: e.target.value})} /></div>
                         <div><label className="label-premium">Group Name</label><input className="input-premium" value={data.teamName} onChange={e => setData({...data, teamName: e.target.value})} /></div>
@@ -154,15 +154,15 @@ export default function PitchGenerator() {
                   )}
 
                   {step === 2 && (
-                    <div className="space-y-8 animate-fade"><div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">02</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Background</h2></div><div className="space-y-8"><div><label className="label-premium">Category / Domain</label><input className="input-premium" value={data.s2_domain} onChange={e => setData({...data, s2_domain: e.target.value})} /></div><div><label className="label-premium">Current Situation</label><textarea className="input-premium min-h-[150px]" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} /></div></div></div>
+                    <div className="space-y-8 animate-fade"><div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">02</span><h2 className="text-2xl font-bold text-slate-900">Background</h2></div><div className="space-y-8"><div><label className="label-premium">Category / Domain</label><input className="input-premium" value={data.s2_domain} onChange={e => setData({...data, s2_domain: e.target.value})} /></div><div><label className="label-premium">Current Situation</label><textarea className="input-premium min-h-[150px]" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 3 && (
-                    <div className="space-y-8 animate-fade"><div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center font-bold">03</span><h2 className="text-2xl font-bold text-slate-900 uppercase">The Problem</h2></div><div className="space-y-8"><div><label className="label-premium">What is wrong?</label><textarea className="input-premium min-h-[150px]" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: e.target.value})} /></div><div><label className="label-premium">Who suffers most?</label><input className="input-premium" value={data.s3_affected} onChange={e => setData({...data, s3_affected: e.target.value})} /></div></div></div>
+                    <div className="space-y-8 animate-fade"><div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center font-bold">03</span><h2 className="text-2xl font-bold text-slate-900">The Problem</h2></div><div className="space-y-8"><div><label className="label-premium">What is wrong?</label><textarea className="input-premium min-h-[150px]" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: e.target.value})} /></div><div><label className="label-premium">Who suffers most?</label><input className="input-premium" value={data.s3_affected} onChange={e => setData({...data, s3_affected: e.target.value})} /></div></div></div>
                   )}
 
                   {step === 8 && (
-                    <div className="space-y-8 animate-fade"><div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-green-50 text-[var(--primary-green)] flex items-center justify-center font-bold">08</span><h2 className="text-2xl font-bold text-slate-900 uppercase">The Idea</h2></div><div className="space-y-8"><div><label className="label-premium">Your Solution</label><textarea className="input-premium min-h-[180px]" value={data.s8_solution} onChange={e => setData({...data, s8_solution: e.target.value})} /></div><div><label className="label-premium">Main Technology</label><input className="input-premium" placeholder="AI, Web, App, etc" value={data.s8_coreTech} onChange={e => setData({...data, s8_coreTech: e.target.value})} /></div></div></div>
+                    <div className="space-y-8 animate-fade"><div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-green-50 text-[var(--primary-green)] flex items-center justify-center font-bold">08</span><h2 className="text-2xl font-bold text-slate-900">The Idea</h2></div><div className="space-y-8"><div><label className="label-premium">Your Solution</label><textarea className="input-premium min-h-[180px]" value={data.s8_solution} onChange={e => setData({...data, s8_solution: e.target.value})} /></div><div><label className="label-premium">Main Technology</label><input className="input-premium" placeholder="AI, Web, App, etc" value={data.s8_coreTech} onChange={e => setData({...data, s8_coreTech: e.target.value})} /></div></div></div>
                   )}
 
                   {/* Other steps simplified in a similar way for brevity in this tool call, mapping the rest as per instructions */}
@@ -170,7 +170,7 @@ export default function PitchGenerator() {
                     <div className="space-y-10 animate-fade text-center py-20">
                       <div className="text-6xl">🎉</div>
                       <div className="space-y-4">
-                        <h2 className="text-4xl font-bold text-slate-900 uppercase">Ready!</h2>
+                        <h2 className="text-4xl font-bold text-slate-900">Ready!</h2>
                         <p className="text-slate-500 font-medium max-w-md mx-auto">You've completed all the steps. Click below to create your professional presentation file.</p>
                       </div>
                     </div>
@@ -178,7 +178,7 @@ export default function PitchGenerator() {
                   {/* ... (Middle steps fall back to base layout if not explicitly defined above during this overhaul) */}
                   {(step > 3 && step < 8) || (step > 8 && step < 17) ? (
                     <div className="space-y-8">
-                       <h2 className="text-2xl font-bold text-slate-800 uppercase tracking-tight">Step {step}: {stepsList[step-1]}</h2>
+                       <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Step {step}: {stepsList[step-1]}</h2>
                        <p className="text-slate-500">Please provide details for this section to complete your presentation.</p>
                        <textarea className="input-premium min-h-[300px]" placeholder="Enter details here..." />
                     </div>
