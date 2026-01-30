@@ -126,6 +126,9 @@ router.post('/update-certificates', async (req, res) => {
         const teamId = req.user.id;
         const { participants } = req.body;
 
+        console.log('[CertificateUpdate] Request from teamId:', teamId);
+        console.log('[CertificateUpdate] Participants:', JSON.stringify(participants));
+
         if (!participants || !Array.isArray(participants) || participants.length === 0) {
             return res.status(400).json({ error: "Participant details are required." });
         }
@@ -133,23 +136,36 @@ router.post('/update-certificates', async (req, res) => {
         // Validate all participants have required fields
         for (const p of participants) {
             if (!p.name || !p.college || !p.dept || !p.year || !p.role) {
+                console.error('[CertificateUpdate] Missing fields in participant:', p);
                 return res.status(400).json({ error: "All participant fields are required." });
             }
         }
 
-        const submission = await prisma.submission.findUnique({
+        // Find or create submission
+        let submission = await prisma.submission.findUnique({
             where: { teamId },
             include: { certificates: true }
         });
 
         if (!submission) {
-            return res.status(400).json({ error: "No submission found. Please generate your presentation first." });
+            console.log('[CertificateUpdate] No submission found, creating one...');
+            // Create a submission record if it doesn't exist
+            submission = await prisma.submission.create({
+                data: {
+                    teamId: teamId,
+                    content: {},
+                    status: 'IN_PROGRESS'
+                },
+                include: { certificates: true }
+            });
+            console.log('[CertificateUpdate] Submission created:', submission.id);
         }
 
         // Delete existing certificates
-        await prisma.participantCertificate.deleteMany({
+        const deleteCount = await prisma.participantCertificate.deleteMany({
             where: { submissionId: submission.id }
         });
+        console.log('[CertificateUpdate] Deleted', deleteCount.count, 'existing certificates');
 
         // Create new certificates
         const certificatePromises = participants.map(p => 
@@ -165,7 +181,8 @@ router.post('/update-certificates', async (req, res) => {
             })
         );
 
-        await Promise.all(certificatePromises);
+        const createdCerts = await Promise.all(certificatePromises);
+        console.log('[CertificateUpdate] Created', createdCerts.length, 'certificates');
 
         res.json({ 
             success: true, 
@@ -174,7 +191,8 @@ router.post('/update-certificates', async (req, res) => {
         });
     } catch (error) {
         console.error('[CertificateUpdate] Error:', error);
-        res.status(500).json({ error: "Failed to save certificate details." });
+        console.error('[CertificateUpdate] Stack:', error.stack);
+        res.status(500).json({ error: "Failed to save certificate details.", details: error.message });
     }
 });
 
