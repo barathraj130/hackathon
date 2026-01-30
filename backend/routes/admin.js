@@ -241,28 +241,34 @@ router.post('/update-certificates', async (req, res) => {
 
 router.get('/dashboard', async (req, res) => {
     try {
-        const totalTeams = await prisma.team.count();
-        const submissions = await prisma.submission.findMany({ include: { certificates: true } });
+        const teams = await prisma.team.findMany({ include: { submission: { include: { certificates: true } } } });
+        const problems = await prisma.problemStatement.findMany();
         const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
-        const teams = await prisma.team.findMany();
-        const problems = await prisma.problemStatement.findMany({ where: { NOT: { allottedTo: null } } });
+        
+        const submissions = teams.map(t => t.submission).filter(Boolean);
         
         const pendingSelection = teams.filter(t => {
-            const hasAllotment = problems.some(p => p.allottedTo === t.teamName);
-            return hasAllotment && !t.selectedProblemId;
+            const psArray = problems.filter(p => p.allottedTo === t.teamName);
+            return psArray.length > 0 && !t.selectedProblemId;
         }).length;
 
         res.json({
-            total_candidates: totalTeams,
+            total_candidates: teams.length,
             statuses: { 
                 in_progress: submissions.filter(s => s.status === 'IN_PROGRESS').length, 
                 submitted: submissions.filter(s => s.status === 'SUBMITTED' || s.status === 'LOCKED').length,
                 pending_selection: pendingSelection
             },
-            certificates: { collected: submissions.filter(s => s.certificates.some(c => c.certificateUrl)).length },
+            certificates: { 
+                collected: submissions.filter(s => s.certificates.some(c => c.certificateUrl)).length,
+                names_entered: submissions.filter(s => s.certificates.length > 0 && s.certificates.every(c => c.name)).length
+            },
             config
         });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+    } catch (e) { 
+        console.error("[AdminDashboard] Error:", e);
+        res.status(500).json({ error: "Fail" }); 
+    }
 });
 
 router.get('/candidates', async (req, res) => {
@@ -332,14 +338,41 @@ router.get('/problem-statements', async (req, res) => {
 
 router.get('/submissions', async (req, res) => {
     try {
-        const subs = await prisma.submission.findMany({ include: { team: true, certificates: true }, orderBy: { updatedAt: 'desc' } });
+        const teams = await prisma.team.findMany({ include: { submission: { include: { certificates: true } } } });
         const problems = await prisma.problemStatement.findMany();
-        const enriched = subs.map(s => {
-            const ps = problems.find(p => p.allottedTo === s.team.teamName);
-            return { ...s, allottedQuestion: ps ? `Q.${ps.questionNo}` : 'NONE' };
+        
+        const submissions = teams.map(t => {
+            const psArray = problems.filter(p => p.allottedTo === t.teamName);
+            const selectedPs = problems.find(p => p.id === t.selectedProblemId);
+            const allottedQuestion = selectedPs 
+                ? `Q.${selectedPs.questionNo}` 
+                : (psArray.length > 0 ? psArray.map(p => `Q.${p.questionNo}`).join(', ') : 'NONE');
+            
+            // Return an object that fits the frontend submission expectations
+            return {
+                id: t.submission?.id || `virtual-${t.id}`,
+                teamId: t.id,
+                team: t,
+                status: t.submission?.status || 'PENDING',
+                pptUrl: t.submission?.pptUrl || null,
+                allottedQuestion: allottedQuestion,
+                certificates: t.submission?.certificates || [],
+                submittedAt: t.submission?.submittedAt || null,
+                canRegenerate: t.submission?.canRegenerate ?? true
+            };
         });
-        res.json(enriched);
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+        
+        // Sort: Submitted first, then In Progress, then Pending
+        submissions.sort((a, b) => {
+            const order = { 'SUBMITTED': 0, 'LOCKED': 0, 'IN_PROGRESS': 1, 'PENDING': 2 };
+            return (order[a.status] ?? 3) - (order[b.status] ?? 3);
+        });
+
+        res.json(submissions);
+    } catch (e) { 
+        console.error("[AdminSubmissions] Error:", e);
+        res.status(500).json({ error: "Fail" }); 
+    }
 });
 
 router.post('/toggle-certificate-collection', async (req, res) => {
