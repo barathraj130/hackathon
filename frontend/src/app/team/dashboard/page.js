@@ -166,7 +166,12 @@ export default function TeamDashboard() {
                     {teamData.problemStatements.map(ps => (
                       <div key={ps.id} className="card-premium border-2 border-slate-100 hover:border-[var(--secondary-blue)] cursor-pointer transition-all flex flex-col justify-between group" onClick={() => handleSelectQuestion(ps.id)}>
                         <div>
-                          <p className="text-[10px] font-bold text-slate-400 mb-2 uppercase">Q.{ps.questionNo}</p>
+                          <div className="flex justify-between items-start mb-2 text-[10px] font-bold uppercase tracking-wider">
+                            <span className="text-slate-400">Q.{ps.questionNo}</span>
+                            {ps.subDivisions && (
+                              <span className="bg-blue-50 text-[var(--secondary-blue)] px-2 py-0.5 rounded-md border border-blue-100">Division: {ps.subDivisions}</span>
+                            )}
+                          </div>
                           <h4 className="font-bold text-slate-800 mb-3 group-hover:text-[var(--secondary-blue)]">{ps.title}</h4>
                           <p className="text-xs text-slate-500 line-clamp-3">{ps.description}</p>
                         </div>
