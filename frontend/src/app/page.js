@@ -84,7 +84,7 @@ export default function HomePage() {
           {[
             { icon: '📝', title: 'Easy Formatting', desc: 'Automatically organizes your technical details into beautiful slides.' },
             { icon: '☁️', title: 'Real-time Saving', desc: 'Your progress is saved as you type, so you never lose your work.' },
-            { icon: '🎬', title: 'Professional Design', desc: 'Expertly designed layouts that impress judges and mentors.' }
+            { icon: '🎨', title: 'Professional Design', desc: 'Expertly designed layouts that impress judges and mentors.' }
           ].map((feature, i) => (
             <div key={i} className="card-premium hover:-translate-y-2 transition-transform duration-300">
               <div className="text-4xl mb-6">{feature.icon}</div>
