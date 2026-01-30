@@ -191,7 +191,7 @@ export default function AdminDashboard() {
     } catch (err) { alert("Failed to delete."); }
   }
 
-  if (!mounted) return <div className="min-h-screen bg-slate-50" />;
+  if (!mounted) return <div className="min-h-screen bg-innovation relative overflow-hidden" />;
 
   const filteredSubmissions = Array.isArray(submissions) ? submissions.filter(sub => {
     if (subFilter === 'ALL') return true;
@@ -201,32 +201,41 @@ export default function AdminDashboard() {
   }) : [];
 
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans tracking-tight">
+    <div className="flex min-h-screen bg-innovation relative overflow-hidden font-sans tracking-tight">
+      {/* Background Decor */}
+      <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none fixed"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-green-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
+
       {/* SIDEBAR */}
-      <aside className="w-64 bg-white flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-slate-200 shadow-sm">
+      <aside className="w-64 bg-white/70 backdrop-blur-xl flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-white/50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[var(--secondary-blue)] rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-100">C</div>
-          <div><p className="font-bold text-lg text-slate-800 leading-tight">Control Panel</p><p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Settings</p></div>
+          <div className="w-10 h-10 bg-gradient-to-br from-[var(--secondary-blue)] to-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-200">C</div>
+          <div><p className="font-extrabold text-lg text-slate-800 leading-none tracking-tight">COMMAND</p><p className="text-[9px] text-[var(--primary-green)] font-black uppercase tracking-[0.2em] mt-1">CENTER</p></div>
         </div>
         <nav className="flex-1 space-y-2">
            {['STATS', 'WORK', 'TASKS', 'GROUPS', 'SETUP'].map(tab => {
              const tabKey = tab === 'STATS' ? 'overview' : tab === 'WORK' ? 'submissions' : tab === 'TASKS' ? 'problems' : tab === 'GROUPS' ? 'teams' : 'configuration';
+             const isActive = activeTab === tabKey;
              return (
-               <button key={tab} onClick={() => setActiveTab(tabKey)} className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between ${activeTab === tabKey ? 'bg-blue-50 text-[var(--secondary-blue)]' : 'text-slate-500 hover:bg-slate-50'}`}>
+               <button key={tab} onClick={() => setActiveTab(tabKey)} 
+                 className={`w-full text-left px-5 py-3.5 rounded-xl text-[11px] font-bold transition-all flex items-center justify-between group
+                 ${isActive ? 'bg-gradient-to-r from-blue-50 to-white text-[var(--secondary-blue)] shadow-sm border border-blue-100' : 'text-slate-500 hover:bg-white/50 hover:text-slate-700'}`}>
                  {tab}
+                 {isActive && <div className="w-1.5 h-1.5 rounded-full bg-[var(--secondary-blue)] shadow-sm"></div>}
                </button>
-             );
+             )
            })}
         </nav>
-        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center">
-            <p className="text-[10px] text-slate-400 font-bold mb-1 tracking-widest uppercase">Timer</p>
-            <p className={`text-2xl font-bold tabular-nums ${timer.timerPaused ? 'text-[var(--accent-orange)]' : 'text-[var(--primary-green)]'}`}>
+        <div className="p-5 bg-white/50 rounded-2xl border border-white/60 text-center shadow-inner">
+            <p className="text-[9px] text-slate-400 font-black mb-2 tracking-[0.2em] uppercase">MISSION TIMER</p>
+            <p className={`text-2xl font-black tabular-nums tracking-tight ${timer.timerPaused ? 'text-[var(--accent-orange)]' : 'text-[var(--primary-green)]'}`}>
               {timer.formattedTime || '24:00:00'}
             </p>
         </div>
       </aside>
 
-      <main className="flex-1 p-10 overflow-y-auto space-y-10">
+      <main className="flex-1 p-10 overflow-y-auto space-y-10 relative z-10 scroll-smooth">
         <header className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
            <div><h1 className="text-2xl font-bold text-slate-800 tracking-tight">Main Control</h1><p className="text-xs font-semibold text-slate-400">System Tools</p></div>
            <div className="flex gap-4">

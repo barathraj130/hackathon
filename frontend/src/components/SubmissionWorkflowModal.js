@@ -346,27 +346,27 @@ export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, a
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade">
-      <div className="card-premium w-full max-w-2xl space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade">
+      <div className="card-premium w-full max-w-2xl space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto !bg-white/90 !backdrop-blur-2xl !border-white/60">
+        <div className="flex justify-between items-center border-b border-slate-200/50 pb-4">
           <div>
             <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest">Submission Workflow</h2>
             <div className="flex gap-1 mt-2">
               {[1,2,3].map(s => (
                 <div 
                   key={s} 
-                  className={`h-1 rounded-full transition-all duration-300 ${
-                    step >= s ? 'w-8 bg-blue-600' : 'w-4 bg-slate-200'
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    step >= s ? 'w-10 bg-[var(--secondary-blue)]' : 'w-4 bg-slate-200'
                   }`} 
                 />
               ))}
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors text-xl">✕</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors text-xl font-bold">✕</button>
         </div>
 
         {error && (
-          <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl text-xs font-bold text-rose-600 uppercase text-center">
+          <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl text-xs font-bold text-rose-600 uppercase text-center animate-shake">
             {error}
           </div>
         )}

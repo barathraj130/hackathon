@@ -67,10 +67,10 @@ export default function HomePage() {
           <div className="relative">
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] border-8 border-white bg-slate-100 group">
               <Image 
-                src="https://cdn.dribbble.com/users/1233499/screenshots/3850691/media/0f9706a1377516d2b6389fbd47b95c6f.gif" 
+                src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm95Zm55bm95Zm55bm95Zm55bm95Zm55bm95Zm55bm95Zm55bm95Zm55/L1R1TVThqWgtW/giphy.gif"
                 alt="Innovation GIF" 
                 fill 
-                className="object-cover transition-scale duration-700 group-hover:scale-105"
+                className="object-cover transition-scale duration-700 group-hover:scale-105 opacity-90"
                 unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
@@ -93,13 +93,13 @@ export default function HomePage() {
 
         <div className="grid md:grid-cols-3 gap-8 mt-40">
           {[
-            { icon: 'https://cdn.dribbble.com/users/1162077/screenshots/3142718/media/1a9e8631ed94b150c76d910a5e8ce632.gif', title: 'Seamless Flow', desc: 'Watch your mission data transform into structured artifacts in real-time.' },
-            { icon: 'https://cdn.dribbble.com/users/1162077/screenshots/3142701/media/3142701_teaser.gif', title: 'Asset Logic', desc: 'Intelligent persistence ensures your vision is never lost during the mission.' },
-            { icon: 'https://cdn.dribbble.com/users/4181802/screenshots/11267425/media/33919e13d9e262142e03e3362146e492.gif', title: 'Final Delivery', desc: 'Expert-grade PPTX synthesized with precise institutional formatting.' }
+            { icon: 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5/3o7TKSjRrfIPjeiB5C/giphy.gif', title: 'Seamless Flow', desc: 'Watch your mission data transform into structured artifacts in real-time.' },
+            { icon: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5/3oKIPEqDGUULpEU0aQ/giphy.gif', title: 'Asset Logic', desc: 'Intelligent persistence ensures your vision is never lost during the mission.' },
+            { icon: 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5/xT1R9T8c5gJ0F00K6A/giphy.gif', title: 'Final Delivery', desc: 'Expert-grade PPTX synthesized with precise institutional formatting.' }
           ].map((feature, i) => (
             <div key={i} className="bg-white/70 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white hover:-translate-y-2 transition-all duration-300 group cursor-default">
-              <div className="w-20 h-20 mb-8 rounded-2xl overflow-hidden shadow-inner bg-slate-50 border border-slate-100">
-                <Image src={feature.icon} alt="Icon" width={80} height={80} className="object-cover transition-transform group-hover:scale-110" unoptimized />
+              <div className="w-20 h-20 mb-8 rounded-2xl overflow-hidden shadow-inner bg-slate-50 border border-slate-100 relative">
+                <Image src={feature.icon} alt="Icon" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
               </div>
               <h3 className="font-extrabold text-2xl text-slate-900 mb-3 tracking-tight">{feature.title}</h3>
               <p className="text-slate-500 text-sm leading-relaxed font-medium">{feature.desc}</p>

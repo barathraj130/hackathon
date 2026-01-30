@@ -66,28 +66,28 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade">
-      <div className="card-premium w-full max-w-2xl space-y-6 shadow-2xl overflow-y-auto max-h-[90vh]">
-        <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade">
+      <div className="card-premium w-full max-w-2xl space-y-6 shadow-[0_20px_60px_rgba(0,0,0,0.3)] overflow-y-auto max-h-[90vh] !bg-white/90 !backdrop-blur-2xl !border-white/60">
+        <div className="flex justify-between items-center border-b border-slate-200/50 pb-4">
           <div>
             <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest">Certificate Details</h2>
             <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Verify names for final generation</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">✕</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors font-bold text-xl">✕</button>
         </div>
 
         <div className="space-y-6">
           {participants.map((p, idx) => (
-            <div key={idx} className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
+            <div key={idx} className="p-5 bg-white/50 rounded-2xl border border-slate-200/50 space-y-4 shadow-sm">
                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[10px] font-bold bg-blue-100 text-blue-600 px-3 py-1 rounded-full">{p.role === 'Leader' || p.role === 'LEADER' ? '01' : '02'}</span>
+                  <span className="text-[10px] font-bold bg-blue-100/80 text-blue-600 px-3 py-1 rounded-full backdrop-blur-sm">{p.role === 'Leader' || p.role === 'LEADER' ? '01' : '02'}</span>
                   <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">{p.role} Details</span>
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Full Name</label>
                     <input 
-                      className="input-premium py-2 !text-xs !bg-white" 
+                      className="input-premium py-2 !text-xs !bg-white/80" 
                       value={p.name} 
                       onChange={e => { let u = [...participants]; u[idx].name = e.target.value; setParticipants(u); }}
                       placeholder="As it should appear on certificate"
@@ -96,7 +96,7 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Institution</label>
                     <input 
-                      className="input-premium py-2 !text-xs !bg-white" 
+                      className="input-premium py-2 !text-xs !bg-white/80" 
                       value={p.college} 
                       onChange={e => { let u = [...participants]; u[idx].college = e.target.value; setParticipants(u); }}
                     />
@@ -104,7 +104,7 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Department</label>
                     <input 
-                      className="input-premium py-2 !text-xs !bg-white" 
+                      className="input-premium py-2 !text-xs !bg-white/80" 
                       value={p.dept} 
                       onChange={e => { let u = [...participants]; u[idx].dept = e.target.value; setParticipants(u); }}
                     />
@@ -112,7 +112,7 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Year of Study</label>
                     <select 
-                      className="input-premium py-2 !text-xs !bg-white font-bold" 
+                      className="input-premium py-2 !text-xs !bg-white/80 font-bold" 
                       value={p.year} 
                       onChange={e => { let u = [...participants]; u[idx].year = e.target.value; setParticipants(u); }}
                     >
@@ -125,22 +125,22 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
         </div>
 
         {status && (
-          <div className={`p-4 rounded-xl text-xs font-bold uppercase text-center ${status.type === 'success' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-rose-50 text-rose-600 border border-rose-100'}`}>
+          <div className={`p-4 rounded-xl text-xs font-bold uppercase text-center ${status.type === 'success' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-rose-50 text-rose-600 border border-rose-100'} animate-pulse`}>
             {status.message}
           </div>
         )}
 
-        <div className="flex gap-4 border-t border-slate-100 pt-6">
+        <div className="flex gap-4 border-t border-slate-200/50 pt-6">
           <button 
             onClick={onClose} 
-            className="px-6 py-4 rounded-2xl border-2 border-slate-100 text-xs font-bold text-slate-500 hover:bg-slate-50 transition-all uppercase tracking-widest"
+            className="px-6 py-4 rounded-2xl border-2 border-slate-200 text-xs font-bold text-slate-500 hover:bg-slate-50 transition-all uppercase tracking-widest"
           >
             Close
           </button>
           <button 
             disabled={isSubmitting || isGenerating}
             onClick={handleSubmit}
-            className="flex-1 bg-white border-2 border-[var(--secondary-blue)] text-[var(--secondary-blue)] px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-blue-50 transition-all"
+            className="flex-1 bg-white/80 border-2 border-[var(--secondary-blue)] text-[var(--secondary-blue)] px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-blue-50 transition-all backdrop-blur-sm"
           >
             {isSubmitting ? 'Syncing...' : 'Save Details'}
           </button>

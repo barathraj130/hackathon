@@ -139,8 +139,13 @@ export default function TeamDashboard() {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen bg-slate-50 font-sans tracking-tight">
-          <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 flex justify-between items-center px-8 py-4 shadow-sm">
+        <div className="min-h-screen bg-innovation font-sans tracking-tight relative overflow-hidden">
+          {/* Background Decor */}
+          <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none fixed"></div>
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
+          <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-green-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
+
+          <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/40 flex justify-between items-center px-8 py-4 shadow-[0_4px_30px_rgba(0,0,0,0.03)]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-[var(--primary-green)] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-green-200">B</div>
               <div><h1 className="text-sm font-bold text-slate-800 leading-none">TEAM PANEL</h1><p className="text-[10px] font-bold text-[var(--secondary-blue)] uppercase tracking-wider mt-1">Control Center</p></div>

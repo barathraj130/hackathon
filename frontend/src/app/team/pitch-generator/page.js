@@ -210,24 +210,29 @@ export default function PitchGenerator() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans tracking-tight">
-      <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-sm">
+    <div className="min-h-screen bg-innovation font-sans tracking-tight relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none fixed"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-green-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
+
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/40 px-8 py-4 flex justify-between items-center shadow-[0_4px_30px_rgba(0,0,0,0.03)]">
         <Link href="/team/dashboard" className="flex items-center gap-4 group">
           <div className="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-bold group-hover:-translate-x-1 transition-all">←</div>
           <h1 className="text-sm font-bold text-slate-800 uppercase tracking-wide">Generator</h1>
         </Link>
-        <div className="px-4 py-1 bg-slate-50 border border-slate-200 rounded-full">
+        <div className="px-4 py-1 bg-white/50 border border-white/60 rounded-full backdrop-blur-sm">
            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Step {step} of 17</span>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-10 px-6">
+      <main className="max-w-7xl mx-auto py-10 px-6 relative z-10">
         <div className="grid grid-cols-12 gap-10">
           <aside className="col-span-3 hidden lg:block sticky top-28 h-fit">
-             <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+             <div className="bg-white/70 backdrop-blur-xl p-4 rounded-3xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                 <nav className="space-y-1 max-h-[calc(100vh-200px)] overflow-y-auto">
                    {stepsList.map((label, i) => (
-                     <button key={i} onClick={() => (i+1) <= step && setStep(i+1)} className={`w-full text-left px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-between ${step === (i+1) ? 'bg-blue-50 text-[var(--secondary-blue)] shadow-inner' : i+1 < step ? 'text-[var(--primary-green)]' : 'text-slate-300 pointer-events-none'}`}>
+                     <button key={i} onClick={() => (i+1) <= step && setStep(i+1)} className={`w-full text-left px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-between ${step === (i+1) ? 'bg-gradient-to-r from-blue-50 to-white text-[var(--secondary-blue)] shadow-sm border border-blue-50' : i+1 < step ? 'text-[var(--primary-green)] hover:bg-white/50' : 'text-slate-300 pointer-events-none'}`}>
                         <span className="truncate">{label}</span>{i+1 < step && <span>✓</span>}
                      </button>
                    ))}
@@ -235,7 +240,7 @@ export default function PitchGenerator() {
              </div>
           </aside>
 
-          <section className="col-span-12 lg:col-span-9 bg-white p-12 rounded-[2.5rem] border border-slate-100 shadow-xl min-h-[700px] flex flex-col justify-between">
+          <section className="col-span-12 lg:col-span-9 bg-white/60 backdrop-blur-xl p-12 rounded-[2.5rem] border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[700px] flex flex-col justify-between transition-all duration-300">
              <div className="flex-grow">
                  {step === 1 && (
                     <div className="space-y-8 animate-fade">
