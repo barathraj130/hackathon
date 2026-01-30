@@ -12,6 +12,7 @@ export default function PitchGenerator() {
   const [isPaused, setIsPaused] = useState(false);
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [selectedProblem, setSelectedProblem] = useState(null);
 
   const [data, setData] = useState({
     // S1: Identity
@@ -86,10 +87,28 @@ export default function PitchGenerator() {
       try {
         if (!token) return;
         const res = await axios.get(`${apiUrl}/team/profile`, { headers: { Authorization: `Bearer ${token}` } });
+        
+        // Redirect if they have multiple questions but haven't picked one yet
+        if (res.data.problemStatements?.length > 1 && !res.data.selectedProblemId) {
+          router.push('/team/dashboard');
+          return;
+        }
+
         if (res.data.submission?.pptUrl && !res.data.submission.canRegenerate) {
            router.push('/team/dashboard');
-        } else if (res.data.submission?.content) {
-           setData(prev => ({ ...prev, ...res.data.submission.content }));
+        } else {
+           const profileData = {
+              teamName: res.data.teamName || '',
+              institutionName: res.data.collegeName || '',
+              leaderName: res.data.leaderName || '',
+              s3_coreProblem: res.data.selectedProblem?.description || (res.data.problemStatements?.length === 1 ? res.data.problemStatements[0].description : '')
+           };
+
+           if (res.data.submission?.content && Object.keys(res.data.submission.content).length > 0) {
+              setData(prev => ({ ...prev, ...profileData, ...res.data.submission.content }));
+           } else {
+              setData(prev => ({ ...prev, ...profileData }));
+           }
         }
       } catch (err) { console.error("Init failed", err); }
     }
@@ -455,9 +474,10 @@ export default function PitchGenerator() {
                         <h2 className="text-4xl font-bold text-slate-900 uppercase tracking-tight">Ready for Submission</h2>
                         <p className="text-slate-500 font-medium max-w-xl mx-auto leading-relaxed">Your project data is complete. Click below to generate your professional pitch artifact.</p>
                       </div>
-                      <div className="grid grid-cols-2 gap-8 max-w-2xl mx-auto mt-12 bg-slate-50 p-8 rounded-3xl border border-slate-100">
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-2xl mx-auto mt-12 bg-slate-50 p-8 rounded-3xl border border-slate-100">
                          <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm"><p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Project Name</p><p className="text-sm font-bold text-slate-800">{data.projectName || 'Unnamed Project'}</p></div>
                          <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm"><p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Team</p><p className="text-sm font-bold text-slate-800">{data.teamName || 'Unknown Team'}</p></div>
+                         <div className="p-4 bg-[var(--secondary-blue)] rounded-2xl border border-blue-200 shadow-sm"><p className="text-[10px] font-bold text-white/60 uppercase mb-2">Question</p><p className="text-sm font-bold text-white">{selectedProblem ? `Q.${selectedProblem.questionNo}` : (data.s3_coreProblem ? 'Custom' : 'NONE')}</p></div>
                       </div>
                     </div>
                   )}

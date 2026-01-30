@@ -77,7 +77,7 @@ router.get('/profile', async (req, res) => {
         
         const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
 
-        const problemStatement = await prisma.problemStatement.findFirst({
+        const problemStatements = await prisma.problemStatement.findMany({
             where: {
                 OR: [
                     { allottedTo: team.teamName },
@@ -86,13 +86,21 @@ router.get('/profile', async (req, res) => {
             }
         });
         
+        let selectedProblem = null;
+        if (team.selectedProblemId) {
+            selectedProblem = problemStatements.find(p => p.id === team.selectedProblemId);
+        }
+        
         res.json({
             id: team.id,
             teamName: team.teamName,
             collegeName: team.collegeName,
-            leaderName: team.member1, // Primary ID from registration
-            member1: team.member2,    // Secondary ID
+            leaderName: team.member1, 
+            member1: team.member2,    
             submission: team.submission,
+            problemStatements: problemStatements,
+            selectedProblem: selectedProblem,
+            selectedProblemId: team.selectedProblemId,
             config: {
                 allowCertificateDetails: config?.allowCertificateDetails || false,
                 eventEnded: config?.eventEnded || false,
@@ -454,6 +462,33 @@ router.post('/upload-asset', [checkOperationalStatus, upload.single('file')], as
     } catch (error) {
         res.status(500).json({ error: "Asset persistent failure." });
     }
+});
+
+/**
+ * @route   POST /v1/team/select-question
+ * @desc    Sets the selected problem for the team from their allotted options.
+ */
+router.post('/select-question', checkOperationalStatus, async (req, res) => {
+    const { problemId } = req.body;
+    const teamId = req.user.id;
+    
+    try {
+        const team = await prisma.team.findUnique({ where: { id: teamId } });
+        if (!team) return res.status(404).json({ error: "Team not found." });
+        
+        // Verify this problem is allotted to the team
+        const ps = await prisma.problemStatement.findUnique({ where: { id: problemId } });
+        if (!ps || (ps.allottedTo !== team.teamName && ps.allottedTo !== teamId)) {
+            return res.status(403).json({ error: "This question is not allotted to your team." });
+        }
+        
+        await prisma.team.update({
+            where: { id: teamId },
+            data: { selectedProblemId: problemId }
+        });
+        
+        res.json({ success: true, message: "Question selected successfully." });
+    } catch (e) { res.status(500).json({ error: "Selection failed." }); }
 });
 
 module.exports = router;

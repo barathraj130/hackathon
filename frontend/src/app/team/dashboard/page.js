@@ -34,7 +34,11 @@ export default function TeamDashboard() {
       if (res.data?.submission) {
         setSubmission(res.data.submission);
       }
-      if (res.data?.problemStatement) setProblemStatement(res.data.problemStatement);
+      if (res.data?.selectedProblem) {
+        setProblemStatement(res.data.selectedProblem);
+      } else if (res.data?.problemStatements?.length === 1) {
+        setProblemStatement(res.data.problemStatements[0]);
+      }
       
       if (res.data?.config?.allowCertificateDetails && (!res.data.submission?.certificates || res.data.submission.certificates.length === 0)) {
          setShowCertModal(true);
@@ -82,6 +86,16 @@ export default function TeamDashboard() {
 
   useEffect(() => { setMounted(true); }, []);
 
+  const handleSelectQuestion = async (problemId) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
+    try {
+      await axios.post(`${apiUrl}/team/select-question`, { problemId }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      fetchInitialData();
+    } catch (err) { alert(`Error: ${err.response?.data?.error || err.message}`); }
+  };
+
   const handleGenerateStandardPPT = async () => {
     setIsGenerating(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
@@ -119,7 +133,7 @@ export default function TeamDashboard() {
           <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 flex justify-between items-center px-8 py-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-[var(--primary-green)] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-green-200">B</div>
-              <div><h1 className="text-sm font-bold text-slate-800 leading-none caps">Hackathon portal</h1><p className="text-[10px] font-bold text-slate-400 tracking-wider mt-1">Control Center</p></div>
+              <div><h1 className="text-sm font-bold text-slate-800 leading-none">TEAM PANEL</h1><p className="text-[10px] font-bold text-[var(--secondary-blue)] uppercase tracking-wider mt-1">Control Center</p></div>
             </div>
             <div className="flex items-center gap-8">
               <div className="text-right"><p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Time Remaining</p><p className={`text-2xl font-bold tabular-nums ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-slate-800'}`}>{formattedTime}</p></div>
@@ -130,34 +144,58 @@ export default function TeamDashboard() {
 
           <main className="max-w-7xl mx-auto py-10 px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8 space-y-8">
-              {problemStatement && (
-                <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 border-l-8 border-l-[var(--secondary-blue)]">
-                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                      <div className="flex-1">
-                        <span className="text-xs font-bold text-[var(--secondary-blue)] uppercase tracking-widest">My Task</span>
-                        <h3 className="text-2xl font-bold text-slate-900 mt-2">{problemStatement.title}</h3>
-                        <p className="text-slate-500 font-medium mt-4 leading-relaxed">{problemStatement.description}</p>
+              {teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId ? (
+                <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-xl space-y-8 animate-fade">
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-[var(--accent-orange)] uppercase tracking-widest">Action Required</span>
+                    <h2 className="text-3xl font-bold text-slate-900">Choose Your Question</h2>
+                    <p className="text-slate-500 font-medium">The administrator has provided multiple options for your team. Please select the one you wish to solve.</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {teamData.problemStatements.map(ps => (
+                      <div key={ps.id} className="card-premium border-2 border-slate-100 hover:border-[var(--secondary-blue)] cursor-pointer transition-all flex flex-col justify-between group" onClick={() => handleSelectQuestion(ps.id)}>
+                        <div>
+                          <p className="text-[10px] font-bold text-slate-400 mb-2 uppercase">Q.{ps.questionNo}</p>
+                          <h4 className="font-bold text-slate-800 mb-3 group-hover:text-[var(--secondary-blue)]">{ps.title}</h4>
+                          <p className="text-xs text-slate-500 line-clamp-3">{ps.description}</p>
+                        </div>
+                        <button className="mt-6 w-full py-3 bg-[var(--secondary-blue)] text-white font-bold text-xs uppercase rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">Select This Task</button>
                       </div>
-                      <div className="bg-slate-50 px-6 py-4 rounded-2xl text-center border border-slate-100 min-w-[120px]">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Task ID</p>
-                        <p className="text-3xl font-bold text-slate-800">{problemStatement.questionNo}</p>
-                      </div>
-                   </div>
+                    ))}
+                  </div>
                 </div>
+              ) : (
+                <>
+                  {problemStatement && (
+                    <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 border-l-8 border-l-[var(--secondary-blue)]">
+                       <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                          <div className="flex-1">
+                            <span className="text-xs font-bold text-[var(--secondary-blue)] uppercase tracking-widest">My Task</span>
+                            <h3 className="text-2xl font-bold text-slate-900 mt-2">{problemStatement.title}</h3>
+                            <p className="text-slate-500 font-medium mt-4 leading-relaxed">{problemStatement.description}</p>
+                          </div>
+                          <div className="bg-slate-50 px-6 py-4 rounded-2xl text-center border border-slate-100 min-w-[120px]">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Task ID</p>
+                            <p className="text-3xl font-bold text-slate-800">{problemStatement.questionNo}</p>
+                          </div>
+                       </div>
+                    </div>
+                  )}
+                   <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
+                    <div className="max-w-xl space-y-6">
+                      <span className="text-xs font-bold text-[var(--primary-green)] uppercase tracking-widest">Start Here</span>
+                      <h2 className="text-4xl font-bold text-slate-900 leading-tight">Create Your Deck</h2>
+                      <p className="text-slate-500 font-medium text-lg leading-relaxed">Fill in the details about your project to build a professional presentation. Use our step-by-step tool organize your information easily.</p>
+                      <Link 
+                        href={submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? '#' : (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId ? '#' : "/team/pitch-generator")} 
+                        className={`inline-flex items-center gap-4 px-10 py-4 rounded-xl font-bold uppercase text-sm tracking-wide transition-all ${submission?.canRegenerate === false && submission?.status === 'SUBMITTED' || (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId) ? 'bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200' : 'btn-green shadow-xl shadow-green-100 hover:-translate-y-1'}`}
+                      >
+                        <span>{(teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId) ? 'Select Question First' : (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'Locked' : 'Open Generator')}</span>
+                      </Link>
+                    </div>
+                  </div>
+                </>
               )}
-               <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
-                <div className="max-w-xl space-y-6">
-                  <span className="text-xs font-bold text-[var(--primary-green)] uppercase tracking-widest">Start Here</span>
-                  <h2 className="text-4xl font-bold text-slate-900 leading-tight">Create Your Deck</h2>
-                  <p className="text-slate-500 font-medium text-lg leading-relaxed">Fill in the details about your project to build a professional presentation. Use our step-by-step tool to organize your information easily.</p>
-                  <Link 
-                    href={submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? '#' : "/team/pitch-generator"} 
-                    className={`inline-flex items-center gap-4 px-10 py-4 rounded-xl font-bold uppercase text-sm tracking-wide transition-all ${submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200' : 'btn-green shadow-xl shadow-green-100 hover:-translate-y-1'}`}
-                  >
-                    <span>{submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'Locked' : 'Open Generator'}</span>
-                  </Link>
-                </div>
-              </div>
             </div>
 
             <div className="lg:col-span-4 space-y-8 sticky top-28">

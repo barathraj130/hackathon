@@ -244,9 +244,21 @@ router.get('/dashboard', async (req, res) => {
         const totalTeams = await prisma.team.count();
         const submissions = await prisma.submission.findMany({ include: { certificates: true } });
         const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
+        const teams = await prisma.team.findMany();
+        const problems = await prisma.problemStatement.findMany({ where: { NOT: { allottedTo: null } } });
+        
+        const pendingSelection = teams.filter(t => {
+            const hasAllotment = problems.some(p => p.allottedTo === t.teamName);
+            return hasAllotment && !t.selectedProblemId;
+        }).length;
+
         res.json({
             total_candidates: totalTeams,
-            statuses: { in_progress: submissions.filter(s => s.status === 'IN_PROGRESS').length, submitted: submissions.filter(s => s.status === 'SUBMITTED' || s.status === 'LOCKED').length },
+            statuses: { 
+                in_progress: submissions.filter(s => s.status === 'IN_PROGRESS').length, 
+                submitted: submissions.filter(s => s.status === 'SUBMITTED' || s.status === 'LOCKED').length,
+                pending_selection: pendingSelection
+            },
             certificates: { collected: submissions.filter(s => s.certificates.some(c => c.certificateUrl)).length },
             config
         });
@@ -258,27 +270,47 @@ router.get('/candidates', async (req, res) => {
         const teams = await prisma.team.findMany({ include: { submission: true } });
         const problems = await prisma.problemStatement.findMany();
         const formatted = teams.map(t => {
-            const ps = problems.find(p => p.allottedTo === t.teamName);
-            return { ...t, status: t.submission?.status || 'IDLE', allottedQuestion: ps ? `Q.${ps.questionNo}` : 'NONE' };
+            const psArray = problems.filter(p => p.allottedTo === t.teamName);
+            const selectedPs = problems.find(p => p.id === t.selectedProblemId);
+            const allottedQuestion = psArray.length > 0 ? psArray.map(p => `Q.${p.questionNo}`).join(', ') : 'NONE';
+            return { 
+                ...t, 
+                status: t.submission?.status || 'IDLE', 
+                allottedQuestion, 
+                allottedIds: psArray.map(p => p.id),
+                selectedQuestion: selectedPs ? `Q.${selectedPs.questionNo}` : null
+            };
         });
         res.json({ candidates: formatted });
     } catch (error) { res.status(500).json({ error: "Fail" }); }
 });
 
 router.post('/create-team', async (req, res) => {
-    const { teamName, collegeName, problemStatementId } = req.body;
+    const { teamName, collegeName, problemStatementIds } = req.body;
     try {
         const team = await prisma.team.create({ data: { teamName, collegeName, member1: teamName, member2: 'Member', dept: 'N/A', year: 1 } });
-        if (problemStatementId) await prisma.problemStatement.update({ where: { id: problemStatementId }, data: { allottedTo: teamName } });
+        if (problemStatementIds && Array.isArray(problemStatementIds)) {
+            for (const id of problemStatementIds) {
+                if (id) await prisma.problemStatement.update({ where: { id }, data: { allottedTo: teamName } });
+            }
+        } else if (req.body.problemStatementId) {
+            await prisma.problemStatement.update({ where: { id: req.body.problemStatementId }, data: { allottedTo: teamName } });
+        }
         res.json({ success: true, team });
     } catch (error) { res.status(400).json({ error: "Conflict" }); }
 });
 
 router.post('/reallot-team', async (req, res) => {
-    const { teamName, newProblemStatementId } = req.body;
+    const { teamName, newProblemStatementIds } = req.body; // Expecting an array [id1, id2]
     try {
         await prisma.problemStatement.updateMany({ where: { allottedTo: teamName }, data: { allottedTo: null } });
-        if (newProblemStatementId) await prisma.problemStatement.update({ where: { id: newProblemStatementId }, data: { allottedTo: teamName } });
+        if (newProblemStatementIds && Array.isArray(newProblemStatementIds)) {
+            for (const id of newProblemStatementIds) {
+                if (id) await prisma.problemStatement.update({ where: { id }, data: { allottedTo: teamName } });
+            }
+        } else if (newProblemStatementIds) {
+            await prisma.problemStatement.update({ where: { id: newProblemStatementIds }, data: { allottedTo: teamName } });
+        }
         res.json({ success: true });
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });

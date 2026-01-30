@@ -18,6 +18,7 @@ model Team {
   dept         String
   year         Int
   isActive     Boolean     @default(true)
+  selectedProblemId String?
   submission   Submission?
 }
 
