@@ -263,7 +263,18 @@ export default function AdminDashboard() {
                  <tbody className="divide-y divide-slate-100">
                     {filteredSubmissions.map(s => (
                        <tr key={s.id} className="text-sm hover:bg-slate-50 transition-all font-medium">
-                        <td className="px-6 py-4"><div className="flex items-center gap-3"><span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded font-bold text-[10px]">{s.allottedQuestion}</span><div><p className="font-bold text-slate-800">{s.team?.teamName}</p><p className="text-[10px] text-slate-400 uppercase">{s.team?.collegeName}</p></div></div></td>
+                        <td className="px-6 py-4">
+                           <div className="flex items-center gap-3">
+                              <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${s.isPicked ? 'bg-indigo-100 text-indigo-600 border border-indigo-200' : 'bg-blue-100 text-blue-600'}`}>
+                                {s.allottedQuestion}
+                              </span>
+                              {s.isPicked && <span className="text-[8px] font-black uppercase text-indigo-400 tracking-tighter">Selected ✓</span>}
+                              <div>
+                                <p className="font-bold text-slate-800">{s.team?.teamName}</p>
+                                <p className="text-[10px] text-slate-400 uppercase">{s.team?.collegeName}</p>
+                              </div>
+                           </div>
+                        </td>
                         <td className="px-6 py-4"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${s.status === 'SUBMITTED' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>{s.status}</span></td>
                         <td className="px-6 py-4"><div className="flex gap-2">{s.pptUrl && <a href={s.pptUrl} target="_blank" className="text-blue-500 font-bold hover:underline">Download</a>}</div></td>
                         <td className="px-6 py-4">
@@ -441,8 +452,9 @@ export default function AdminDashboard() {
         <AdminCertificateModal 
           isOpen={showCertModal} 
           onClose={() => setShowCertModal(false)} 
-          teamId={selectedTeam?.teamId} 
+          teamId={selectedTeam?.teamId || selectedTeam?.team?.id} 
           teamName={selectedTeam?.team?.teamName} 
+          certificates={selectedTeam?.certificates}
           apiUrl={getApiUrl()} 
           onComplete={fetchSubmissions} 
         />

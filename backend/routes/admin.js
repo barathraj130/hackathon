@@ -344,11 +344,11 @@ router.get('/submissions', async (req, res) => {
         const submissions = teams.map(t => {
             const psArray = problems.filter(p => p.allottedTo === t.teamName);
             const selectedPs = problems.find(p => p.id === t.selectedProblemId);
+            const isPicked = !!t.selectedProblemId;
             const allottedQuestion = selectedPs 
                 ? `Q.${selectedPs.questionNo}` 
                 : (psArray.length > 0 ? psArray.map(p => `Q.${p.questionNo}`).join(', ') : 'NONE');
             
-            // Return an object that fits the frontend submission expectations
             return {
                 id: t.submission?.id || `virtual-${t.id}`,
                 teamId: t.id,
@@ -356,13 +356,13 @@ router.get('/submissions', async (req, res) => {
                 status: t.submission?.status || 'PENDING',
                 pptUrl: t.submission?.pptUrl || null,
                 allottedQuestion: allottedQuestion,
+                isPicked: isPicked,
                 certificates: t.submission?.certificates || [],
                 submittedAt: t.submission?.submittedAt || null,
                 canRegenerate: t.submission?.canRegenerate ?? true
             };
         });
         
-        // Sort: Submitted first, then In Progress, then Pending
         submissions.sort((a, b) => {
             const order = { 'SUBMITTED': 0, 'LOCKED': 0, 'IN_PROGRESS': 1, 'PENDING': 2 };
             return (order[a.status] ?? 3) - (order[b.status] ?? 3);
