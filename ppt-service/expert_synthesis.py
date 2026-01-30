@@ -18,6 +18,7 @@ LINE_COLOR = RGBColor(203, 213, 225)  # Slate-300
 ERROR_ZONE = RGBColor(239, 68, 68)  # Red-500
 SUCCESS_ZONE = RGBColor(34, 197, 94)  # Green-500
 WARNING_ZONE = RGBColor(234, 179, 8)  # Amber-500
+ORANGE_MARGIN = RGBColor(249, 115, 22) # Orange-500
 
 # --- TEXT CONSTRAINTS & CLEANING ---
 def clean_text(text, limit=30):
@@ -61,10 +62,10 @@ def set_slide_bg(slide):
     fill.fore_color.rgb = WHITE
 
 def add_header(slide, title="SLIDE TITLE"):
-    # SLIDE FRAME (Institutional Safety Margin Definition)
+    # SLIDE FRAME (Institutional Safety Margin Definition with Orange Accent)
     m = 0.2
     frame = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(m), Inches(m), Inches(10-2*m), Inches(7.5-2*m))
-    frame.fill.background(); frame.line.color.rgb = LINE_COLOR; frame.line.width = Pt(0.5)
+    frame.fill.background(); frame.line.color.rgb = ORANGE_MARGIN; frame.line.width = Pt(1.5)
 
     # TITANIC LOGO (Top-Right Positioning)
     if os.path.exists("hackathon_logo.png"):
