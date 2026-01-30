@@ -167,7 +167,8 @@ export default function PitchGenerator() {
       console.error("Submit fail", err);
       if (err.response?.status === 401 || err.response?.status === 403) {
         localStorage.clear();
-        router.push('/login');
+        router.push('/login?error=session_expired');
+        return;
       }
       const msg = err.response?.data?.error || err.message || "Unknown error";
       alert(`Synthesis Interrupted: ${msg}`); 

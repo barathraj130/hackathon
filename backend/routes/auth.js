@@ -17,7 +17,7 @@ router.post('/login', async (req, res) => {
       console.log(`[Auth] Master Admin login success (PRIORITY OVERRIDE): ${username}`);
       const token = jwt.sign(
         { id: 'MASTER_ADMIN_ID', role: 'ADMIN' }, 
-        process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
+        'INSTITUTIONAL_SYNTHESIS_SECRET_2026_MASTER', 
         { expiresIn: '24h' }
       );
       return res.json({ token, role: 'ADMIN' });
@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
       console.log(`[Auth] Team login success: ${username}`);
       const token = jwt.sign(
         { id: targetTeam.id, role: 'TEAM', teamName: targetTeam.teamName }, 
-        process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
+        'INSTITUTIONAL_SYNTHESIS_SECRET_2026_MASTER', 
         { expiresIn: '24h' }
       );
       return res.json({ token, role: 'TEAM' });
@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
       console.log(`[Auth] Admin login success: ${username}`);
       const token = jwt.sign(
         { id: admin.id, role: 'ADMIN' }, 
-        process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
+        'INSTITUTIONAL_SYNTHESIS_SECRET_2026_MASTER', 
         { expiresIn: '24h' }
       );
       return res.json({ token, role: 'ADMIN' });
