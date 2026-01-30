@@ -58,12 +58,12 @@ export default function HomePage() {
           </div>
 
           <div className="relative">
-            <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-50">
+            <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white flex items-center justify-center">
               <Image 
-                src="/images/hero_bg.png" 
-                alt="Interface Preview" 
+                src="/images/bulb.png" 
+                alt="Bulb Icon" 
                 fill 
-                className="object-cover"
+                className="object-contain p-12"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
               

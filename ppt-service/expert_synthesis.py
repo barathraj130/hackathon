@@ -50,7 +50,7 @@ def add_header(slide, title="SLIDE TITLE"):
     disable_shadow(header_box)
     p = header_box.text_frame.paragraphs[0]
     p.text = title
-    p.font.size = Pt(18); p.font.bold = True; p.font.name = 'Arial Black'
+    p.font.size = Pt(18); p.font.bold = True; p.font.name = 'Poppins'
     p.font.color.rgb = TEXT_MAIN
     p.alignment = PP_ALIGN.LEFT
 
@@ -102,7 +102,7 @@ def create_expert_deck(team_name, college, data):
     tx_title = slide.shapes.add_textbox(Inches(0.5), Inches(1.8), Inches(9), Inches(1.8))
     p_title = tx_title.text_frame.paragraphs[0]
     p_title.text = data.get('projectName', 'VENTURE PROTOTYPE').upper()
-    p_title.font.size = Pt(38); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
+    p_title.font.size = Pt(38); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER; p_title.font.name = 'Poppins'
     p_title.line_spacing = 1.0
     
     # Elegant Underline on cover - ADJUSTED POSITION
@@ -122,30 +122,30 @@ def create_expert_deck(team_name, college, data):
     p2.space_after = Pt(12)
     
     p3 = tf_d.add_paragraph(); p3.alignment = PP_ALIGN.CENTER
-    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(18); p3.font.bold = True; p3.font.color.rgb = TEXT_MAIN
+    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(18); p3.font.bold = True; p3.font.color.rgb = TEXT_MAIN; p3.font.name = 'Poppins'
     p3.space_after = Pt(8)
     
     p4 = tf_d.add_paragraph(); p4.alignment = PP_ALIGN.CENTER
-    p4.text = f"TEAM MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(11); p4.font.bold = False; p4.font.color.rgb = TEXT_MAIN; p4.font.name = 'Arial Narrow'
+    p4.text = f"MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(11); p4.font.bold = False; p4.font.color.rgb = TEXT_MAIN; p4.font.name = 'Inter'
     
     add_footer(slide)
 
     modules = [
-        ("02 // STRATEGIC CONTEXT", lambda s: draw_strategic(s, data)),
-        ("03 // PROBLEM STATEMENT", lambda s: draw_problem(s, data)),
-        ("04 // IMPACT MATRIX", lambda s: draw_impact(s, data)),
-        ("05 // SYSTEMIC STAKEHOLDERS", lambda s: draw_stakeholders(s, data)),
-        ("06 // TARGET PERSONA", lambda s: draw_persona(s, data)),
-        ("07 // GAP ANALYSIS", lambda s: draw_gap(s, data)),
-        ("08 // PROPOSED SOLUTION", lambda s: draw_solution_statement(s, data)),
-        ("09 // SOLUTION ARCHITECTURE", lambda s: draw_solution_flow(s, data)),
-        ("10 // LEAN OPERATIONAL LOGIC", lambda s: draw_lean(s, data)),
-        ("11 // ALTITUDE METRICS", lambda s: draw_balloon(s, data)),
-        ("12 // MARKET POSITIONING", lambda s: draw_market_matrix(s, data)),
-        ("13 // MARKET SIZING (TAM SAM SOM)", lambda s: draw_market_sizing(s, data)),
-        ("14 // REVENUE ARCHITECTURE", lambda s: draw_revenue(s, data)),
-        ("15 // FISCAL ALLOCATION", lambda s: draw_fiscal(s, data)),
-        ("16 // FUTURE TRAJECTORY", lambda s: draw_vision(s, data))
+        ("Background", lambda s: draw_strategic(s, data)),
+        ("The Problem", lambda s: draw_problem(s, data)),
+        ("Impact", lambda s: draw_impact(s, data)),
+        ("People Involved", lambda s: draw_stakeholders(s, data)),
+        ("Our User", lambda s: draw_persona(s, data)),
+        ("What's Missing?", lambda s: draw_gap(s, data)),
+        ("Our Solution", lambda s: draw_solution_statement(s, data)),
+        ("How it Works", lambda s: draw_solution_flow(s, data)),
+        ("The Plan", lambda s: draw_lean(s, data)),
+        ("Growth", lambda s: draw_balloon(s, data)),
+        ("Competition", lambda s: draw_market_matrix(s, data)),
+        ("Market Size", lambda s: draw_market_sizing(s, data)),
+        ("Business Model", lambda s: draw_revenue(s, data)),
+        ("Budget", lambda s: draw_fiscal(s, data)),
+        ("The Future", lambda s: draw_vision(s, data))
     ]
 
     for title, fn in modules:
@@ -173,30 +173,30 @@ def create_expert_deck(team_name, college, data):
 # --- DRAWERS ---
 
 def draw_strategic(slide, data):
-    add_clean_box(slide, "DOMAIN", Inches(0.5), Inches(1.8), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, "Category", Inches(0.5), Inches(1.8), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
     add_clean_box(slide, data.get('s2_domain', 'N/A'), Inches(0.5), Inches(2.2), Inches(9), Inches(0.8), 14)
-    add_clean_box(slide, "OPERATIONAL CONTEXT", Inches(0.5), Inches(3.2), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, "The Situation", Inches(0.5), Inches(3.2), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
     add_clean_box(slide, data.get('s2_context', 'N/A'), Inches(0.5), Inches(3.6), Inches(9), Inches(1.8), 12)
-    add_clean_box(slide, "ROOT CATALYST", Inches(0.5), Inches(5.6), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, "Main Reason", Inches(0.5), Inches(5.6), Inches(9), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
     add_clean_box(slide, data.get('s2_rootReason', 'N/A'), Inches(0.5), Inches(6.0), Inches(9), Inches(0.9), 12)
 
 def draw_problem(slide, data):
-    add_clean_box(slide, "CORE PROBLEM", Inches(0.5), Inches(1.8), Inches(9), Inches(0.4), 12, True, ERROR_ZONE, None, BG_LIGHT)
+    add_clean_box(slide, "The Problem", Inches(0.5), Inches(1.8), Inches(9), Inches(0.4), 12, True, ERROR_ZONE, None, BG_LIGHT)
     add_clean_box(slide, data.get('s3_coreProblem', 'N/A'), Inches(0.5), Inches(2.3), Inches(9), Inches(2.0), 16, False, TEXT_MAIN, LINE_COLOR, WHITE)
-    add_clean_box(slide, "AFFECTED PERSONNEL", Inches(0.5), Inches(4.5), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, "Who is affected?", Inches(0.5), Inches(4.5), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
     add_clean_box(slide, data.get('s3_affected', 'N/A'), Inches(0.5), Inches(4.9), Inches(4.4), Inches(1.8), 12)
-    add_clean_box(slide, "CRITICAL GRAVITY", Inches(5.1), Inches(4.5), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, "Why it matters", Inches(5.1), Inches(4.5), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
     add_clean_box(slide, data.get('s3_whyItMatters', 'N/A'), Inches(5.1), Inches(4.9), Inches(4.4), Inches(1.8), 12)
 
 def draw_stakeholders(slide, data):
-    for i, (label, key) in enumerate([("PRIMARY SEGMENT", 's5_primaryUsers'), ("SECONDARY SEGMENT", 's5_secondaryUsers')]):
+    for i, (label, key) in enumerate([("Main Users", 's5_primaryUsers'), ("Other People Involved", 's5_secondaryUsers')]):
         y_pos = 1.8 + i * 2.6
         add_clean_box(slide, label, Inches(0.5), Inches(y_pos), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
         add_clean_box(slide, data.get(key, 'N/A'), Inches(0.5), Inches(y_pos + 0.4), Inches(9), Inches(1.8), 14)
 
 def draw_persona(slide, data):
     coords = [(0.5, 1.8), (5.1, 1.8), (0.5, 4.4), (5.1, 4.4)]
-    titles = ["PERSONAL INFO", "CHALLENGES", "PROFESSIONAL GOALS", "SUCCESS FACTORS"]
+    titles = ["About User", "Challenges", "Goals", "How we help"]
     vals = [
         f"Name: {data.get('s6_customerName','X')}\nAge: {data.get('s6_customerAge', 'X')}\nLoc: {data.get('s6_customerLocation','X')}",
         data.get('s6_pains', 'N/A'),
@@ -319,17 +319,17 @@ def add_footer(slide, text=""):
     pass
 
 def draw_gap(slide, data):
-    pts = [((0.5, 1.8), "STATUS QUO", 's7_alternatives'), ((5.1, 1.8), "SYSTEMIC GAPS", 's7_limitations'), ((0.5, 4.4), "VALUE GAINS", 's7_gainCreators'), ((5.1, 4.4), "PAIN RELIEF", 's7_painKillers')]
+    pts = [((0.5, 1.8), "Current Methods", 's7_alternatives'), ((5.1, 1.8), "What's Missing?", 's7_limitations'), ((0.5, 4.4), "Benefits", 's7_gainCreators'), ((5.1, 4.4), "Fixes", 's7_painKillers')]
     for (x,y), t, k in pts:
         add_clean_box(slide, t, Inches(x), Inches(y), Inches(4.4), Inches(0.35), 11, True, PRIMARY_COLOR, None, BG_LIGHT)
         add_clean_box(slide, data.get(k, 'N/A'), Inches(x), Inches(y+0.4), Inches(4.4), Inches(2.0), 11)
 
 def draw_solution_statement(slide, data):
-    add_clean_box(slide, "THE VENTURE UNVEILED", Inches(0.5), Inches(1.6), Inches(9), Inches(0.4), 12, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
+    add_clean_box(slide, "Our Idea", Inches(0.5), Inches(1.6), Inches(9), Inches(0.4), 12, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
     h_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(2.1), Inches(9), Inches(2.8))
     h_box.fill.solid(); h_box.fill.fore_color.rgb = WHITE; h_box.line.color.rgb = PRIMARY_COLOR; h_box.line.width = Pt(2)
-    p = h_box.text_frame.paragraphs[0]; p.text = data.get('s8_solution', 'N/A'); p.font.size = Pt(22); p.font.bold = True; p.font.color.rgb = TEXT_MAIN; p.alignment = PP_ALIGN.CENTER
-    add_clean_box(slide, "CORE TECHNOLOGY ARCHITECTURE", Inches(0.5), Inches(5.1), Inches(9), Inches(0.4), 12, True, SECONDARY_COLOR, BG_LIGHT, BG_LIGHT)
+    p = h_box.text_frame.paragraphs[0]; p.text = data.get('s8_solution', 'N/A'); p.font.size = Pt(22); p.font.bold = True; p.font.color.rgb = TEXT_MAIN; p.alignment = PP_ALIGN.CENTER; p.font.name = 'Poppins'
+    add_clean_box(slide, "How it's built", Inches(0.5), Inches(5.1), Inches(9), Inches(0.4), 12, True, SECONDARY_COLOR, BG_LIGHT, BG_LIGHT)
     add_clean_box(slide, data.get('s8_coreTech', 'N/A'), Inches(0.5), Inches(5.6), Inches(9), Inches(1.1), 16, False, PRIMARY_COLOR)
 
 def draw_solution_flow(slide, data):
@@ -354,7 +354,7 @@ def draw_lean(slide, data):
 def draw_balloon(slide, data):
     env = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(3.2), Inches(1.5), Inches(3.6), Inches(3.6))
     env.fill.solid(); env.fill.fore_color.rgb = PRIMARY_COLOR; env.line.color.rgb = SECONDARY_COLOR; env.line.width = Pt(1)
-    add_text_box_centered(slide, "LIFTS (DRIVERS)", 3.4, 2.0, 3.2, 0.4, 12, True, WHITE)
+    add_text_box_centered(slide, "What helps?", 3.4, 2.0, 3.2, 0.4, 12, True, WHITE)
     ls = "\n".join([f"• {x}" for x in data.get('s11_lifts', []) if x.strip()][:4])
     add_text_box_centered(slide, ls, 3.4, 2.4, 3.2, 1.5, 10, False, WHITE)
     bk = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(4.2), Inches(5.6), Inches(1.6), Inches(1.0))
@@ -362,22 +362,22 @@ def draw_balloon(slide, data):
     add_text_box_centered(slide, "VENTURE CORE", 4.2, 5.8, 1.6, 0.4, 11, True, WHITE)
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.7), Inches(4.8), Inches(4.2), Inches(5.6)).line.color.rgb=SECONDARY_COLOR
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(6.3), Inches(4.8), Inches(5.8), Inches(5.6)).line.color.rgb=SECONDARY_COLOR
-    add_clean_box(slide, "PULLS (ANCHORS)", Inches(0.4), Inches(4.0), Inches(2.7), Inches(0.35), 11, True, ERROR_ZONE, BG_LIGHT, BG_LIGHT)
+    add_clean_box(slide, "What stops us?", Inches(0.4), Inches(4.0), Inches(2.7), Inches(0.35), 11, True, ERROR_ZONE, BG_LIGHT, BG_LIGHT)
     pl = "\n".join([f"• {x}" for x in data.get('s11_pulls', []) if x.strip()][:4])
     add_clean_box(slide, pl, Inches(0.4), Inches(4.4), Inches(2.7), Inches(1.8), 10)
-    add_clean_box(slide, "OUTCOMES (ALTITUDE)", Inches(6.9), Inches(4.0), Inches(2.7), Inches(0.35), 11, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
+    add_clean_box(slide, "Results", Inches(6.9), Inches(4.0), Inches(2.7), Inches(0.35), 11, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
     os = "\n".join([f"• {x}" for x in data.get('s11_outcomes', []) if x.strip()][:4])
     add_clean_box(slide, os, Inches(6.9), Inches(4.4), Inches(2.7), Inches(1.8), 10)
 
 def draw_market_matrix(slide, data):
     rows = 4; cols = 4
     t = slide.shapes.add_table(rows, cols, Inches(0.5), Inches(1.8), Inches(9), Inches(5)).table
-    hdrs = ["FEATURE / METRIC", "COMPETITOR 1", "COMPETITOR 2", "OUR VENTURE"]
+    hdrs = ["Details", "Competitor 1", "Competitor 2", "Our Idea"]
     for i, h in enumerate(hdrs):
         c = t.cell(0, i); c.text = h; c.fill.solid(); c.fill.fore_color.rgb = PRIMARY_COLOR
-        p = c.text_frame.paragraphs[0]; p.font.size=Pt(11); p.font.bold=True; p.font.color.rgb=WHITE
+        p = c.text_frame.paragraphs[0]; p.font.size=Pt(11); p.font.bold=True; p.font.color.rgb=WHITE; p.font.name = 'Poppins'
     
-    f_rows = ["Market Depth", "Pricing Model", "Feature Richness", "Future Readiness"]
+    f_rows = ["Market Reach", "Price Plans", "Features", "Future Plans"]
     comps = data.get('s12_competitors', [])
     our = data.get('s12_ourVenture', {})
     
@@ -441,7 +441,7 @@ def draw_market_sizing(slide, data):
     add_clean_box(slide, data.get('s13_marketLogic', 'N/A'), Inches(0.5), Inches(6.45), Inches(9), Inches(0.65), 10)
 
 def draw_revenue(slide, data):
-    m = [("PRIMARY STREAM", 's14_primaryStream', 0.5, 1.8), ("SECONDARY STREAM", 's14_secondaryStream', 5.1, 1.8), ("PRICING LOGIC", 's14_pricingStrategy', 0.5, 4.4), ("ECONOMIC LOGIC", 's14_revenueLogic', 5.1, 4.4)]
+    m = [("Main Income", 's14_primaryStream', 0.5, 1.8), ("Other Income", 's14_secondaryStream', 5.1, 1.8), ("Price Plan", 's14_pricingStrategy', 0.5, 4.4), ("Financial Plan", 's14_revenueLogic', 5.1, 4.4)]
     for lb, k, x, y in m:
         add_clean_box(slide, lb, Inches(x), Inches(y), Inches(4.4), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
         add_clean_box(slide, data.get(k, 'N/A'), Inches(x), Inches(y+0.4), Inches(4.4), Inches(2.0), 11)
@@ -459,7 +459,7 @@ def draw_fiscal(slide, data):
 
     rows = len(als) + 2 # Header + Data + Total
     t = slide.shapes.add_table(rows, 2, Inches(1), Inches(2.0), Inches(8), Inches(min(5, rows*0.6))).table
-    t.cell(0,0).text = "ALLOCATION NODE"; t.cell(0,1).text = "VALUATION / PURPOSE (₹)"
+    t.cell(0,0).text = "Item"; t.cell(0,1).text = "Cost"
     
     for r in range(rows):
         for c in range(2):
@@ -484,10 +484,10 @@ def draw_fiscal(slide, data):
                 idx = r - 1
                 cell.text = als[idx]['category'].upper() if c == 0 else f"₹ {als[idx]['amount']}"
             elif is_total:
-                cell.text = "TOTAL FISCAL ALLOCATION" if c == 0 else f"₹ {total:,.2f}"
+                cell.text = "Total Budget" if c == 0 else f"₹ {total:,.2f}"
 
 def draw_vision(slide, data):
-    add_clean_box(slide, "MACRO IMPACT", Inches(0.5), Inches(1.8), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, "Overall Impact", Inches(0.5), Inches(1.8), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
     add_clean_box(slide, data.get('s16_socialEconomic', 'N/A'), Inches(0.5), Inches(2.2), Inches(9), Inches(2.3), 12)
-    add_clean_box(slide, "FUTURE TRAJECTORY", Inches(0.5), Inches(4.8), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
+    add_clean_box(slide, "Our Vision", Inches(0.5), Inches(4.8), Inches(9), Inches(0.35), 12, True, PRIMARY_COLOR, None, BG_LIGHT)
     add_clean_box(slide, data.get('s16_vision', 'N/A'), Inches(0.5), Inches(5.2), Inches(9), Inches(1.5), 12)
