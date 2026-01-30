@@ -86,7 +86,10 @@ export default function PitchGenerator() {
     async function init() {
       setLoading(true);
       try {
-        if (!token) return;
+        if (!token) {
+          router.push('/login');
+          return;
+        }
         const res = await axios.get(`${apiUrl}/team/profile`, { headers: { Authorization: `Bearer ${token}` } });
         
         // Redirect if they have multiple questions but haven't picked one yet
@@ -116,7 +119,11 @@ export default function PitchGenerator() {
         setIsPaused(res.data.config?.isPaused || false);
       } catch (err) { 
         console.error("Init failed", err);
-        if (err.response?.status === 404) alert("Team identity not found. Please logout and login again.");
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          router.push('/login');
+        } else if (err.response?.status === 404) {
+          alert("Team identity not found. Please logout and login again.");
+        }
       } finally {
         setLoading(false);
       }
@@ -158,6 +165,10 @@ export default function PitchGenerator() {
       }
     } catch (err) { 
       console.error("Submit fail", err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        localStorage.clear();
+        router.push('/login');
+      }
       const msg = err.response?.data?.error || err.message || "Unknown error";
       alert(`Synthesis Interrupted: ${msg}`); 
     } finally { 
