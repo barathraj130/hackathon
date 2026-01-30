@@ -8,6 +8,7 @@ export default function PitchGenerator() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const router = useRouter();
@@ -71,12 +72,12 @@ export default function PitchGenerator() {
   });
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !hasFetched) return;
     const saveTimer = setTimeout(() => {
       if (Object.keys(data).length > 0) handleSaveDraft(true);
     }, 5000); 
     return () => clearTimeout(saveTimer);
-  }, [data, mounted]);
+  }, [data, mounted, hasFetched]);
   
   useEffect(() => {
     setMounted(true);
@@ -110,13 +111,23 @@ export default function PitchGenerator() {
               s10_leanProblem: coreProblem
            };
 
-           if (res.data.submission?.content && Object.keys(res.data.submission.content).length > 0) {
-              setData(prev => ({ ...prev, ...profileData, ...res.data.submission.content }));
+           if (res.data.submission?.content) {
+              const savedContent = typeof res.data.submission.content === 'string' 
+                ? JSON.parse(res.data.submission.content) 
+                : res.data.submission.content;
+              
+              if (savedContent && Object.keys(savedContent).length > 0) {
+                 setData(prev => ({ ...prev, ...profileData, ...savedContent }));
+                 console.log(`[INIT] Hydrated mission state with ${Object.keys(savedContent).length} data points.`);
+              } else {
+                 setData(prev => ({ ...prev, ...profileData }));
+              }
            } else {
               setData(prev => ({ ...prev, ...profileData }));
            }
         }
         setIsPaused(res.data.config?.isPaused || false);
+        setHasFetched(true);
       } catch (err) { 
         console.error("Init failed", err);
         if (err.response?.status === 401 || err.response?.status === 403) {
@@ -133,12 +144,17 @@ export default function PitchGenerator() {
 
   async function handleSaveDraft(silent = false) {
     if (!silent) setSaving(true);
+    if (!hasFetched) {
+      console.warn("[DRAFT-SYNC] Safe-guard active. Skipping save because initial data hasn't been verified.");
+      if (!silent) setSaving(false);
+      return;
+    }
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${apiUrl}/team/save-draft`, data, { headers: { Authorization: `Bearer ${token}` } });
       if (!silent) router.push('/team/dashboard');
-    } catch (err) { console.error("Save failed"); } finally { if (!silent) setSaving(false); }
+    } catch (err) { console.error("Save failed", err); } finally { if (!silent) setSaving(false); }
   }
 
   const limitWords = (text, limit) => {

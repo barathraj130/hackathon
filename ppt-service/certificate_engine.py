@@ -57,11 +57,12 @@ def create_certificate(name, college, year, dept, role, event_name="BHARAT BRILL
     p_d.text = f"of {year} Year, Department of {dept}, {college}"
     p_d.font.size = Pt(16); p_d.font.color.rgb = TEXT_MAIN
 
-    tx_event = slide.shapes.add_textbox(Inches(1.66), Inches(5.3), prs.slide_width - Inches(3.32), Inches(1.2))
+    # Institutional Margin Compliance: Compact text block centered with padding
+    tx_event = slide.shapes.add_textbox(Inches(2.16), Inches(5.3), prs.slide_width - Inches(4.32), Inches(1.2))
     tf_e = tx_event.text_frame; tf_e.word_wrap = True
     p_e = tf_e.paragraphs[0]; p_e.alignment = PP_ALIGN.CENTER
     p_e.text = f"Has successfully completed the Innovation Mission by participating in the {event_name.upper()}, an official institutional hackathon, with the final submission made on {submission_date}."
-    p_e.font.size = Pt(13); p_e.font.color.rgb = RGBColor(71, 85, 105)
+    p_e.font.size = Pt(12.5); p_e.font.color.rgb = RGBColor(71, 85, 105)
 
     # 5. Bottom Signatures
     tx_sig1 = slide.shapes.add_textbox(Inches(1.5), Inches(6.4), Inches(3), Inches(0.4))

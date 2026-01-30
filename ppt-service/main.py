@@ -50,7 +50,9 @@ def certificate_handler(data: dict = Body(...)):
         p_year = data.get('year', 'N/A')
         p_dept = data.get('dept', 'N/A')
         p_role = data.get('role', 'MEMBER')
-        p_date = data.get('submission_date', '[Submission Date]')
+        p_date = data.get('submission_date')
+        if not p_date or p_date == "None" or p_date == "null":
+            p_date = "[Submission Date]"
         
         safe_name = p_name.lower().replace(' ', '_')
         out_filename = f"certificate_{safe_name}.pptx"

@@ -297,9 +297,18 @@ router.post('/save-draft', async (req, res) => {
         const teamId = req.user.id;
         const projectData = req.body;
         
+        // Institutional Guard: Verify team exists before persisting mission state
+        const team = await prisma.team.findUnique({ where: { id: teamId } });
+        if (!team) {
+            console.error(`[DRAFT-SYNC] Identity Reject: Team ${teamId} not found in repository.`);
+            return res.status(404).json({ error: "Identity not recognized for draft synchronization." });
+        }
+
+        console.log(`[DRAFT-SYNC] Securing draft for team: ${team.teamName} [${teamId}] (Payload: ${Object.keys(projectData || {}).length} keys)`);
+        
         await prisma.submission.upsert({
             where: { teamId },
-            update: { content: projectData },
+            update: { content: projectData, updatedAt: new Date() },
             create: { 
                 teamId, 
                 content: projectData,
