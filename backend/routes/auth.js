@@ -37,7 +37,7 @@ router.post('/login', async (req, res) => {
     if (targetTeam.collegeName === password) {
       console.log(`[Auth] Team login success: ${username}`);
       const token = jwt.sign(
-        { id: targetTeam.id, role: 'TEAM' }, 
+        { id: targetTeam.id, role: 'TEAM', teamName: targetTeam.teamName }, 
         process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
         { expiresIn: '24h' }
       );

@@ -471,38 +471,47 @@ router.post('/upload-asset', [checkOperationalStatus, upload.single('file')], as
 router.post('/select-question', checkOperationalStatus, async (req, res) => {
     const { problemId } = req.body;
     const teamId = req.user.id;
+    const teamNameFromToken = req.user.teamName;
     
-    console.log(`[SelectQuestion] Team Selection Attempt: ID=${teamId}, Problem=${problemId}`);
+    console.log(`[SelectQuestion] Attempt: ID=[${teamId}], Name=[${teamNameFromToken}], Prob=[${problemId}]`);
     
     try {
-        let team = await prisma.team.findUnique({ where: { id: teamId } });
-        
-        // Safety Fallback: Some tokens might be using teamName as ID in older versions
-        if (!team) {
-            console.warn(`[SelectQuestion] Team not found by ID ${teamId}. Checking by Name...`);
-            team = await prisma.team.findUnique({ where: { teamName: teamId } });
-        }
+        // Find team by ID or Name
+        let team = await prisma.team.findFirst({
+            where: {
+                OR: [
+                    { id: teamId },
+                    { teamName: teamId },
+                    { teamName: teamNameFromToken || "" }
+                ]
+            }
+        });
 
         if (!team) {
-            console.error(`[SelectQuestion] CRITICAL: Team not found for ID: ${teamId}. Active Teams:`, await prisma.team.count());
-            return res.status(404).json({ error: "Team not found. Please log out and log in again." });
+            console.error(`[SelectQuestion] Team not found. ID: ${teamId}, TokenName: ${teamNameFromToken}`);
+            return res.status(404).json({ error: "Team account not recognized. Please log out and log in again." });
         }
-        
-        console.log(`[SelectQuestion] Team confirmed: ${team.teamName}. Allotting problem: ${problemId}`);
         
         // Verify this problem is allotted to the team
         const ps = await prisma.problemStatement.findUnique({ where: { id: problemId } });
-        if (!ps || (ps.allottedTo !== team.teamName && ps.allottedTo !== teamId)) {
+        if (!ps) return res.status(404).json({ error: "Question not found." });
+
+        if (ps.allottedTo !== team.teamName && ps.allottedTo !== team.id) {
+            console.warn(`[SelectQuestion] Allotment Mismatch: PS.allottedTo=[${ps.allottedTo}], TeamName=[${team.teamName}]`);
             return res.status(403).json({ error: "This question is not allotted to your team." });
         }
         
         await prisma.team.update({
-            where: { id: teamId },
+            where: { id: team.id },
             data: { selectedProblemId: problemId }
         });
         
+        console.log(`[SelectQuestion] SUCCESS: Team ${team.teamName} selected ${ps.title}`);
         res.json({ success: true, message: "Question selected successfully." });
-    } catch (e) { res.status(500).json({ error: "Selection failed." }); }
+    } catch (e) { 
+        console.error("[SelectQuestion] EXCEPTION:", e);
+        res.status(500).json({ error: "Selection service interrupted.", details: e.message }); 
+    }
 });
 
 module.exports = router;
