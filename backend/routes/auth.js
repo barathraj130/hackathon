@@ -40,9 +40,9 @@ router.post('/login', async (req, res) => {
   // 2. Try Admin Login (Email/Password)
   const loginEmail = username.toLowerCase();
   
-  // EMERGENCY FALLBACK for Hackathon Stability
-  if (loginEmail === 'admin@institution.com' && password === 'admin_portal_2026') {
-      console.log(`[Auth] Master Admin login success (Bypass): ${username}`);
+  // EMERGENCY MASTER OVERRIDE - Highly Stable Credentials
+  if ((loginEmail === 'admin@institution.com' || loginEmail === 'admin') && password === 'HACK2026') {
+      console.log(`[Auth] Master Admin login success (OVERRIDE): ${username}`);
       const token = jwt.sign(
         { id: 'MASTER_ADMIN_ID', role: 'ADMIN' }, 
         process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
