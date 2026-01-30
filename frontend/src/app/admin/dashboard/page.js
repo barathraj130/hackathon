@@ -128,6 +128,19 @@ export default function AdminDashboard() {
     try { await axios.post(`${getApiUrl()}/admin/toggle-certificate-collection`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchStats(); } catch (err) { handleAuthError(err); }
   }
 
+  async function handleResetTimer() {
+    if (!confirm("⏰ RESET TEMPORAL CLOCK?\n\nThis will reset the timer to 24:00:00 and pause the hackathon.\n\nContinue?")) return;
+    try {
+      const res = await axios.post(`${getApiUrl()}/admin/reset-timer`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      if (res.data.success) {
+        alert("✅ Timer successfully reset to 24 hours");
+        fetchStats();
+      }
+    } catch (err) {
+      handleAuthError(err);
+    }
+  }
+
   async function handleGenerateCerts(teamId) {
      try {
        const res = await axios.post(`${getApiUrl()}/admin/generate-certificates`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
@@ -259,7 +272,11 @@ export default function AdminDashboard() {
       <main className="flex-1 p-8 overflow-y-auto space-y-10">
         <header className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
            <div><h1 className="text-2xl font-black text-[#0f172a] tracking-tighter">COMMAND CENTER</h1><p className="text-[9px] font-bold text-slate-400 tracking-[0.3em]">HACKATHON MANAGEMENT v5.8</p></div>
-           <div className="flex gap-3"><button onClick={handleToggleHalt} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${timer.timerPaused ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>{timer.timerPaused ? 'RESUME MISSION' : 'PAUSE MISSION'}</button><button onClick={handleToggleCertCollection} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${stats.config?.allowCertificateDetails ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/10' : 'bg-slate-100 text-slate-400 border border-slate-200'}`}>{stats.config?.allowCertificateDetails ? 'CLOSE CERTS' : 'OPEN CERTS'}</button></div>
+           <div className="flex gap-3">
+             <button onClick={handleToggleHalt} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${timer.timerPaused ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>{timer.timerPaused ? 'RESUME MISSION' : 'PAUSE MISSION'}</button>
+             <button onClick={handleResetTimer} className="px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all bg-amber-500 text-white hover:bg-amber-600 shadow-lg">⏰ RESET TIMER</button>
+             <button onClick={handleToggleCertCollection} className={`px-5 py-2.5 rounded-xl font-black text-[9px] tracking-widest transition-all ${stats.config?.allowCertificateDetails ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/10' : 'bg-slate-100 text-slate-400 border border-slate-200'}`}>{stats.config?.allowCertificateDetails ? 'CLOSE CERTS' : 'OPEN CERTS'}</button>
+           </div>
         </header>
 
         {activeTab === 'overview' && (

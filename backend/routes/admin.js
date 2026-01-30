@@ -51,6 +51,51 @@ router.post('/test-config', async (req, res) => {
 });
 
 /**
+ * TEMPORAL RESET PROTOCOL
+ * Resets the hackathon timer to 24 hours
+ */
+router.post('/reset-timer', async (req, res) => {
+    try {
+        const TWENTY_FOUR_HOURS = 1440; // 24 hours in minutes
+        
+        // Update database configuration
+        await prisma.hackathonConfig.update({ 
+            where: { id: 1 }, 
+            data: { durationMinutes: TWENTY_FOUR_HOURS, isPaused: true } 
+        });
+        
+        // Update in-memory timer state
+        const timerState = req.app.get('timerState');
+        if (timerState) {
+            timerState.setTimeRemaining(TWENTY_FOUR_HOURS * 60); // Convert to seconds
+            timerState.setTimerPaused(true);
+        }
+
+        // Broadcast timer update to all connected clients
+        const io = req.app.get('socketio');
+        if (io) {
+            const formatDuration = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
+            };
+            
+            io.emit('timerUpdate', { 
+                timeRemaining: TWENTY_FOUR_HOURS * 60, 
+                timerPaused: true,
+                formattedTime: formatDuration(TWENTY_FOUR_HOURS * 60)
+            });
+        }
+        
+        res.json({ success: true, message: "Timer reset to 24 hours" });
+    } catch (e) { 
+        console.error("Timer reset error:", e);
+        res.status(500).json({ error: "Timer reset failed" }); 
+    }
+});
+
+/**
  * MISSION ARTIFACT RECONSTRUCTION
  * Institutional Manual Override for High-Fidelity Deliverables
  */
