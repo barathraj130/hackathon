@@ -114,22 +114,22 @@ export default function TeamDashboard() {
       {isPaused ? (
         <div className="min-h-screen bg-[#020617] flex items-center justify-center p-10 text-center font-sans tracking-tight">
           <div className="max-w-2xl animate-fade-in text-white">
-             <h2 className="text-5xl font-black uppercase tracking-tighter mb-4">Hackathon Paused</h2>
-             <p className="text-teal-400 font-bold uppercase tracking-widest mb-12">Standby for Authorization</p>
-             <button onClick={handleLogout} className="px-8 py-4 bg-white/10 rounded-xl font-black uppercase tracking-widest hover:bg-white/20 transition-all">Terminate session</button>
+             <h2 className="text-5xl font-black uppercase tracking-tighter mb-4 text-slate-800">Hackathon Paused</h2>
+             <p className="text-teal-600 font-bold uppercase tracking-widest mb-12">Standby for Authorization</p>
+             <button onClick={handleLogout} className="px-8 py-4 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl font-black uppercase tracking-widest hover:bg-slate-200 transition-all">Terminate session</button>
           </div>
         </div>
       ) : (
         <div className="min-h-screen bg-[#f1f5f9] font-sans text-slate-800">
           <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 flex justify-between items-center px-8 py-4 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-[#020617] rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg">B</div>
-              <div><h1 className="text-sm font-black uppercase tracking-tight text-[#020617] leading-none">BRILLIANT BHARAT</h1><p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest mt-1">Institutional Node</p></div>
+              <div className="w-9 h-9 bg-teal-500 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-teal-500/20">B</div>
+              <div><h1 className="text-sm font-black uppercase tracking-tight text-slate-800 leading-none">BRILLIANT BHARAT</h1><p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest mt-1">Institutional Node</p></div>
             </div>
             <div className="flex items-center gap-6">
-              <div className="text-right"><p className="text-[8px] uppercase font-black text-slate-400 tracking-widest leading-none mb-1">Temporal Clock</p><p className={`text-xl font-mono font-black tabular-nums ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-[#020617]'}`}>{formattedTime}</p></div>
+              <div className="text-right"><p className="text-[8px] uppercase font-black text-slate-400 tracking-widest leading-none mb-1">Temporal Clock</p><p className={`text-xl font-mono font-black tabular-nums ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-slate-800'}`}>{formattedTime}</p></div>
               <div className="w-9 h-9"><img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" /></div>
-              <button onClick={handleLogout} className="px-5 py-2 rounded-lg border-2 border-slate-100 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-[#020617] hover:text-[#020617] transition-all">Logout</button>
+              <button onClick={handleLogout} className="px-5 py-2 rounded-lg border-2 border-slate-100 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-teal-600 hover:text-teal-600 transition-all">Logout</button>
             </div>
           </nav>
 
@@ -146,11 +146,11 @@ export default function TeamDashboard() {
                <div className="bg-white p-12 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden">
                 <div className="max-w-xl relative z-10 space-y-6">
                   <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest">Operation Protocol</span>
-                  <h2 className="text-4xl font-black text-[#020617] tracking-tighter uppercase leading-tight italic">Engineering the Future</h2>
+                  <h2 className="text-4xl font-black text-slate-800 tracking-tighter uppercase leading-tight italic">Engineering the Future</h2>
                   <p className="text-slate-500 font-bold text-base leading-relaxed opacity-80 uppercase tracking-tight">Construct professional pitch decks through modular intelligence synthesis. Our engine transforms your code and logic into investor-ready artifacts.</p>
                   <Link 
                     href={submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? '#' : "/team/pitch-generator"} 
-                    className={`inline-flex items-center gap-6 px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-[#020617] text-white hover:bg-teal-500 hover:shadow-2xl active:scale-95'}`}
+                    className={`inline-flex items-center gap-6 px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100' : 'bg-teal-500 text-white hover:bg-teal-600 hover:shadow-2xl hover:shadow-teal-500/30 active:scale-95'}`}
                   >
                     <span>{submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'System Locked' : 'Initialize Synthesis Engine →'}</span>
                   </Link>
@@ -175,7 +175,7 @@ export default function TeamDashboard() {
                 {submission?.pptUrl ? (
                   <div className="space-y-4">
                      <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-4"><div className="w-10 h-10 bg-emerald-500 text-white flex items-center justify-center rounded-xl text-lg">✓</div><div className="flex-1"><p className="text-[10px] font-black uppercase text-emerald-700">Deck Secured</p><p className="text-[8px] font-bold text-slate-400 uppercase">ARTIFACT_V17_FINAL</p></div></div>
-                     <a href={submission.pptUrl} target="_blank" rel="noopener noreferrer" className="w-full py-4 bg-[#020617] text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-500 transition-all text-center block shadow-lg">Download Deck ↓</a>
+                     <a href={submission.pptUrl} target="_blank" rel="noopener noreferrer" className="w-full py-4 bg-teal-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-700 transition-all text-center block shadow-lg shadow-teal-600/10">Download Deck ↓</a>
                   </div>
                 ) : <div className="text-center py-10 opacity-20"><div className="text-4xl mb-2">📂</div><p className="text-[10px] font-black uppercase tracking-widest">Vault Empty</p></div>}
               </div>

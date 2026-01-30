@@ -247,23 +247,23 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen bg-[#f1f5f9] font-sans text-slate-800 uppercase tracking-tight overflow-hidden">
       {/* SIDEBAR */}
-      <aside className="w-64 bg-[#020617] text-white flex flex-col h-screen sticky top-0 p-5 space-y-8 border-r border-white/5 shadow-2xl">
+      <aside className="w-64 bg-white text-slate-600 flex flex-col h-screen sticky top-0 p-5 space-y-8 border-r border-slate-200 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center font-black text-sm border border-white/10">B</div>
-          <div><p className="font-black text-lg tracking-tighter leading-none text-white italic">BRILLIANT BHARAT</p><p className="text-[8px] text-slate-500 font-bold tracking-[0.2em] mt-1">ADMIN AUTHORITY</p></div>
+          <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center font-black text-sm text-white shadow-lg shadow-teal-500/20">B</div>
+          <div><p className="font-black text-lg tracking-tighter leading-none text-slate-800 italic">BRILLIANT BHARAT</p><p className="text-[8px] text-slate-400 font-bold tracking-[0.2em] mt-1">ADMIN AUTHORITY</p></div>
         </div>
         <nav className="flex-1 space-y-1">
            {['OVERVIEW', 'SUBMISSIONS', 'PROBLEMS', 'TEAMS', 'CONFIGURATION'].map(tab => (
-             <button key={tab} onClick={() => setActiveTab(tab.toLowerCase())} className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black tracking-widest transition-all flex items-center justify-between group ${activeTab === tab.toLowerCase() ? 'bg-white/10 text-white shadow-lg border border-white/5' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}>
-               {tab} <div className={`w-1 h-1 rounded-full ${activeTab === tab.toLowerCase() ? 'bg-emerald-500 scale-100' : 'scale-0'}`}></div>
+             <button key={tab} onClick={() => setActiveTab(tab.toLowerCase())} className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black tracking-widest transition-all flex items-center justify-between group ${activeTab === tab.toLowerCase() ? 'bg-teal-50 text-teal-600 shadow-sm border border-teal-100' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}>
+               {tab} <div className={`w-1 h-1 rounded-full ${activeTab === tab.toLowerCase() ? 'bg-teal-500 scale-100' : 'scale-0'}`}></div>
              </button>
            ))}
         </nav>
         {/* TEMPORAL MONITOR */}
-        <div className="p-4 bg-white/10 rounded-2xl border border-white/10 text-center shadow-inner relative overflow-hidden group">
-            <div className={`absolute inset-0 opacity-10 blur-xl transition-all ${timer.timerPaused ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
+        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center shadow-inner relative overflow-hidden group">
+            <div className={`absolute inset-0 opacity-5 blur-xl transition-all ${timer.timerPaused ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
             <p className="text-[8px] text-slate-400 font-black mb-1 tracking-[0.3em] relative z-10">TEMPORAL MONITOR</p>
-            <p className={`text-2xl font-mono font-bold tracking-widest relative z-10 transition-colors drop-shadow-[0_0_8px_rgba(255,255,255,0.2)] ${timer.timerPaused ? 'text-amber-400' : 'text-emerald-400'}`}>
+            <p className={`text-2xl font-mono font-bold tracking-widest relative z-10 transition-colors ${timer.timerPaused ? 'text-amber-500' : 'text-emerald-500'}`}>
               {timer.formattedTime || '24:00:00'}
             </p>
         </div>
@@ -299,8 +299,8 @@ export default function AdminDashboard() {
                  <thead className="bg-slate-50/50 text-[8px] font-black text-slate-400 uppercase"><tr><th className="px-5 py-4 min-w-[150px]">TEAM / CHALLENGE</th><th className="px-5 py-4">STATUS</th><th className="px-5 py-4">LINKS</th><th className="px-5 py-4 min-w-[200px]">AWARDS 🏅</th><th className="px-5 py-4 text-right">ACTION</th></tr></thead>
                  <tbody className="divide-y divide-slate-50">
                     {filteredSubmissions.map(s => (
-                      <tr key={s.id} className="text-[11px] font-bold hover:bg-slate-50 transition-all">
-                        <td className="px-5 py-3"><div className="flex items-center gap-3"><span className="px-2 py-0.5 bg-teal-500 text-white rounded font-black text-[9px] min-w-[32px] text-center shadow-sm text-white">{s.allottedQuestion}</span><div><p className="font-black text-sm text-[#020617] tracking-tight">{s.team?.teamName}</p><p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{s.team?.collegeName}</p></div></div></td>
+                       <tr key={s.id} className="text-[11px] font-bold hover:bg-slate-50 transition-all">
+                        <td className="px-5 py-3"><div className="flex items-center gap-3"><span className="px-2 py-0.5 bg-teal-500 text-white rounded font-black text-[9px] min-w-[32px] text-center shadow-sm">{s.allottedQuestion}</span><div><p className="font-black text-sm text-slate-800 tracking-tight">{s.team?.teamName}</p><p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{s.team?.collegeName}</p></div></div></td>
                         <td className="px-5 py-3"><span className={`px-2 py-0.5 rounded-full text-[8px] font-black border ${s.status === 'SUBMITTED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>{s.status}</span></td>
                         <td className="px-5 py-3"><div className="flex gap-2">{s.pptUrl && <a href={s.pptUrl} target="_blank" className="text-indigo-600 border border-indigo-100 px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-600 hover:text-white">PPT ↓</a>}{s.prototypeUrl && <a href={s.prototypeUrl} target="_blank" className="text-teal-600 border border-teal-100 px-2 py-1 rounded bg-teal-50 hover:bg-teal-600 hover:text-white">DEMO ↗</a>}</div></td>
                         <td className="px-5 py-3">
@@ -332,12 +332,12 @@ export default function AdminDashboard() {
         {activeTab === 'problems' && (
            <div className="grid grid-cols-12 gap-8 animate-fade-in">
               <div className="col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm h-fit space-y-6">
-                 <h2 className="text-[10px] font-black tracking-widest text-[#020617] uppercase">Add Challenge</h2>
+                 <h2 className="text-[10px] font-black tracking-widest text-slate-800 uppercase">Add Challenge</h2>
                  <form onSubmit={handleCreateStatement} className="space-y-3">
-                    <div className="grid grid-cols-2 gap-2"><input className="input-sm text-[#020617]" placeholder="Q.ID" value={newStatement.questionNo} onChange={e => setNewStatement({...newStatement, questionNo: e.target.value})} required /><input className="input-sm text-[#020617]" placeholder="Div" value={newStatement.subDivisions} onChange={e => setNewStatement({...newStatement, subDivisions: e.target.value})} /></div>
-                    <input className="input-sm text-[#020617]" placeholder="Title" value={newStatement.title} onChange={e => setNewStatement({...newStatement, title: e.target.value})} required />
-                    <textarea className="input-sm min-h-[100px] text-[#020617]" placeholder="Technical requirements..." value={newStatement.description} onChange={e => setNewStatement({...newStatement, description: e.target.value})} required />
-                    <button className="w-full py-3 bg-[#020617] text-white font-black text-[9px] tracking-widest rounded-xl hover:bg-teal-500 transition-all uppercase">Deploy Mission</button>
+                    <div className="grid grid-cols-2 gap-2"><input className="input-sm text-slate-800" placeholder="Q.ID" value={newStatement.questionNo} onChange={e => setNewStatement({...newStatement, questionNo: e.target.value})} required /><input className="input-sm text-slate-800" placeholder="Div" value={newStatement.subDivisions} onChange={e => setNewStatement({...newStatement, subDivisions: e.target.value})} /></div>
+                    <input className="input-sm text-slate-800" placeholder="Title" value={newStatement.title} onChange={e => setNewStatement({...newStatement, title: e.target.value})} required />
+                    <textarea className="input-sm min-h-[100px] text-slate-800" placeholder="Technical requirements..." value={newStatement.description} onChange={e => setNewStatement({...newStatement, description: e.target.value})} required />
+                    <button className="w-full py-3 bg-teal-500 text-white font-black text-[9px] tracking-widest rounded-xl hover:bg-teal-600 transition-all uppercase shadow-lg shadow-teal-500/10">Deploy Mission</button>
                  </form>
               </div>
               <div className="col-span-8 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-fit">
@@ -346,8 +346,8 @@ export default function AdminDashboard() {
                     {problemStatements.map(ps => (
                       <div key={ps.id} className="p-4 hover:bg-slate-50 transition-all flex justify-between items-center group">
                          <div className="flex items-center gap-4 flex-1">
-                            <div className="w-10 h-10 bg-[#020617] text-white rounded-xl flex items-center justify-center font-black text-[11px]">Q.{ps.questionNo}</div>
-                            <div className="truncate"><h4 className="text-[13px] font-black text-navy uppercase truncate">{ps.title}</h4><p className={`text-[8px] font-black uppercase ${ps.allottedTo ? 'text-teal-600' : 'text-amber-500'}`}>{ps.allottedTo ? `Link: ${ps.allottedTo}` : 'Active Node'}</p></div>
+                            <div className="w-10 h-10 bg-slate-100 text-teal-600 rounded-xl flex items-center justify-center font-black text-[11px] border border-slate-200">Q.{ps.questionNo}</div>
+                            <div className="truncate"><h4 className="text-[13px] font-black text-slate-800 uppercase truncate">{ps.title}</h4><p className={`text-[8px] font-black uppercase ${ps.allottedTo ? 'text-teal-600' : 'text-amber-500'}`}>{ps.allottedTo ? `Link: ${ps.allottedTo}` : 'Active Node'}</p></div>
                          </div>
                          <button onClick={() => handleDeleteStatement(ps.id)} className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                       </div>
@@ -360,12 +360,12 @@ export default function AdminDashboard() {
         {activeTab === 'teams' && (
            <div className="grid grid-cols-12 gap-8 animate-fade-in">
               <div className="col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm h-fit space-y-6">
-                 <h2 className="text-[10px] font-black mr-2 text-[#020617] uppercase tracking-widest">Enroll Entity</h2>
+                 <h2 className="text-[10px] font-black mr-2 text-slate-800 uppercase tracking-widest">Enroll Entity</h2>
                  <form onSubmit={handleCreateTeam} className="space-y-3">
-                    <input className="input-sm text-[#020617]" placeholder="Identifier (Name)" value={newTeam.teamName} onChange={e => setNewTeam({...newTeam, teamName: e.target.value})} />
-                    <input className="input-sm text-[#020617]" placeholder="Auth Key (College)" value={newTeam.collegeName} onChange={e => setNewTeam({...newTeam, collegeName: e.target.value})} />
-                    <select className="input-sm font-black text-[9px] text-[#020617]" value={newTeam.problemStatementId} onChange={e => setNewTeam({...newTeam, problemStatementId: e.target.value})}><option value="">-- No Mission --</option>{problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo}>{ps.questionNo}: {ps.title}</option>)}</select>
-                    <button className="w-full py-3 bg-[#020617] text-white font-black text-[9px] tracking-widest rounded-xl hover:bg-teal-500 transition-all uppercase shadow-lg">Instantiate Enrollment</button>
+                    <input className="input-sm text-slate-800" placeholder="Identifier (Name)" value={newTeam.teamName} onChange={e => setNewTeam({...newTeam, teamName: e.target.value})} />
+                    <input className="input-sm text-slate-800" placeholder="Auth Key (College)" value={newTeam.collegeName} onChange={e => setNewTeam({...newTeam, collegeName: e.target.value})} />
+                    <select className="input-sm font-black text-[9px] text-slate-800" value={newTeam.problemStatementId} onChange={e => setNewTeam({...newTeam, problemStatementId: e.target.value})}><option value="">-- No Mission --</option>{problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo}>{ps.questionNo}: {ps.title}</option>)}</select>
+                    <button className="w-full py-3 bg-teal-500 text-white font-black text-[9px] tracking-widest rounded-xl hover:bg-teal-600 transition-all uppercase shadow-lg shadow-teal-500/10">Instantiate Enrollment</button>
                  </form>
               </div>
               <div className="col-span-8 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-fit">
@@ -374,7 +374,7 @@ export default function AdminDashboard() {
                     <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100"><tr><th className="px-6 py-4">IDENTIFIER / RE-ALLOT</th><th className="px-6 py-4">AUTH KEY</th><th className="px-6 py-4 text-right">ACTION</th></tr></thead>
                     <tbody className="divide-y divide-slate-50">
                        {teams.map(t => (
-                         <tr key={t.id} className="text-[11px] font-black text-[#020617] hover:bg-slate-50 transition-all">
+                         <tr key={t.id} className="text-[11px] font-black text-slate-800 hover:bg-slate-50 transition-all">
                            <td className="px-6 py-3">
                               <div className="flex items-center gap-3">
                                  <select 
@@ -385,7 +385,7 @@ export default function AdminDashboard() {
                                     <option value="">NONE</option>
                                     {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={ps.allottedTo && ps.allottedTo !== t.teamName}>{ps.questionNo}</option>)}
                                  </select>
-                                 <span className="uppercase text-[#020617]">{t.teamName}</span>
+                                 <span className="uppercase text-slate-800">{t.teamName}</span>
                               </div>
                            </td>
                            <td className="px-6 py-3 text-slate-400 uppercase">{t.collegeName}</td>
@@ -402,7 +402,7 @@ export default function AdminDashboard() {
            <div className="grid grid-cols-2 gap-8 animate-fade-in">
               <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
                  <h2 className="text-[10px] font-black tracking-widest text-slate-400 uppercase">System Parameters</h2>
-                 <div className="space-y-4"><label className="text-[9px] font-black text-[#020617] tracking-widest">MISSION TIMER (MIN)</label><input type="number" className="w-full text-4xl font-black p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 outline-none focus:border-teal-500" value={stats.config?.durationMinutes || 1440} onChange={async (e) => { const val = parseInt(e.target.value); await axios.post(`${getApiUrl()}/admin/test-config`, { durationMinutes: val }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchStats(); }} /></div>
+                 <div className="space-y-4"><label className="text-[9px] font-black text-slate-800 tracking-widest">MISSION TIMER (MIN)</label><input type="number" className="w-full text-4xl font-black p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 outline-none focus:border-teal-500" value={stats.config?.durationMinutes || 1440} onChange={async (e) => { const val = parseInt(e.target.value); await axios.post(`${getApiUrl()}/admin/test-config`, { durationMinutes: val }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchStats(); }} /></div>
                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4"><div className="flex items-center gap-3"><span className="text-lg">🎓</span><p className="text-[9px] font-black text-indigo-700 tracking-widest uppercase">Certification</p></div><p className="text-[10px] font-medium text-slate-500 italic">Configure post-event award data phase.</p><button onClick={handleToggleCertCollection} className={`w-full py-4 rounded-xl font-black text-[10px] tracking-widest transition-all uppercase shadow-md ${stats.config?.allowCertificateDetails ? 'bg-indigo-600 text-white shadow-indigo-600/10' : 'bg-white text-slate-400 border-2 border-slate-200'}`}>{stats.config?.allowCertificateDetails ? 'Terminate Phase' : 'Initialize Phase'}</button></div>
               </div>
               <div className="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col justify-between group overflow-hidden relative">
@@ -417,7 +417,7 @@ export default function AdminDashboard() {
                 <a 
                   href={`${getApiUrl().replace('/v1', '')}/setup-db`} 
                   target="_blank" 
-                  className="w-full py-4 bg-[#020617] text-white text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-teal-500 hover:text-white transition-all text-center relative z-10 shadow-lg"
+                  className="w-full py-4 bg-teal-600 text-white text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-teal-700 hover:text-white transition-all text-center relative z-10 shadow-lg shadow-teal-600/10"
                 >
                   Restructure Mission Registry
                 </a>

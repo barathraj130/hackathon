@@ -40,9 +40,9 @@ def set_slide_bg(slide):
     fill.fore_color.rgb = WHITE
 
 def add_header(slide, title="SLIDE TITLE"):
-    # VIKSIT BHARAT GLOBAL LOGO (Top Left)
-    if os.path.exists("viksit_bharat_global.png"):
-        vb_logo = slide.shapes.add_picture("viksit_bharat_global.png", Inches(0.2), Inches(0.2), height=Inches(0.6))
+    # DIGITAL IDENTITY LOGO (Top Left)
+    if os.path.exists("digital_identity.png"):
+        vb_logo = slide.shapes.add_picture("digital_identity.png", Inches(0.2), Inches(0.2), height=Inches(0.6))
         disable_shadow(vb_logo)
 
     # SLIDE TITLE (Shifted right for logo)
@@ -88,14 +88,14 @@ def create_expert_deck(team_name, college, data):
     if os.path.exists("institution_logo.png"):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
 
-    # Viksit Bharat Branding - Top Left
-    if os.path.exists("viksit_bharat_global.png"):
-        vb_img = slide.shapes.add_picture("viksit_bharat_global.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
+    # Digital Identity Branding - Top Left
+    if os.path.exists("digital_identity.png"):
+        vb_img = slide.shapes.add_picture("digital_identity.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
         disable_shadow(vb_img)
-        # Optional text label for Viksit Bharat
+        # Optional text label for Digital Identity
         tx_vb = slide.shapes.add_textbox(Inches(0.4), Inches(1.2), Inches(2), Inches(0.3))
         p_vb = tx_vb.text_frame.paragraphs[0]
-        p_vb.text = "VIKSIT BHARAT @ 2047"; p_vb.font.size = Pt(8); p_vb.font.bold = True; p_vb.font.color.rgb = PRIMARY_COLOR
+        p_vb.text = "DIGITAL IDENTITY"; p_vb.font.size = Pt(8); p_vb.font.bold = True; p_vb.font.color.rgb = PRIMARY_COLOR
         p_vb.alignment = PP_ALIGN.LEFT
 
     # High-impact Project Title - REDUCED FONT TO PREVENT OVERLAP
@@ -157,9 +157,9 @@ def create_expert_deck(team_name, college, data):
     if os.path.exists("institution_logo.png"):
         slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
     
-    # Viksit Bharat branding on closure
-    if os.path.exists("viksit_bharat_global.png"):
-        vb_close = slide.shapes.add_picture("viksit_bharat_global.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
+    # Digital Identity branding on closure
+    if os.path.exists("digital_identity.png"):
+        vb_close = slide.shapes.add_picture("digital_identity.png", Inches(0.5), Inches(0.4), height=Inches(0.8))
         disable_shadow(vb_close)
 
     tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
