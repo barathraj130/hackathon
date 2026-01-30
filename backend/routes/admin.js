@@ -132,7 +132,14 @@ router.post('/force-regenerate', async (req, res) => {
 
                 if (r.data.success) {
                     const publicUrl = mapInternalToPublic(`${pyUrl.replace(/\/$/, "")}/outputs/${r.data.file_url}`);
-                    await prisma.submission.update({ where: { teamId }, data: { pptUrl: publicUrl, status: 'SUBMITTED' } });
+                    await prisma.submission.update({ 
+                        where: { teamId }, 
+                        data: { 
+                            pptUrl: publicUrl, 
+                            status: 'SUBMITTED',
+                            submittedAt: sub.submittedAt || new Date()
+                        } 
+                    });
                     return res.json({ success: true, message: "Reconstructed ✓" });
                 }
             } catch (e) {
@@ -215,9 +222,8 @@ const handleGenerateCertificates = async (req, res) => {
             'https://endearing-liberation-production.up.railway.app'
         ].filter(Boolean);
 
-        const dateStr = sub.submittedAt 
-            ? new Date(sub.submittedAt).toLocaleDateString('en-GB').split('/').join('-') 
-            : '[Submission Date]';
+        const validDate = sub.submittedAt || sub.updatedAt || new Date();
+        const dateStr = new Date(validDate).toLocaleDateString('en-GB').split('/').join('-');
 
         let successCount = 0;
         for (const p of sub.certificates) {

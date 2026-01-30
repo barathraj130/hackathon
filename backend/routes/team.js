@@ -530,9 +530,8 @@ router.post('/generate-certificates', async (req, res) => {
             'https://endearing-liberation-production.up.railway.app'
         ].filter(Boolean);
 
-        const dateStr = submission.submittedAt 
-            ? new Date(submission.submittedAt).toLocaleDateString('en-GB').split('/').join('-') 
-            : '[Submission Date]';
+        const validDate = submission.submittedAt || submission.updatedAt || new Date();
+        const dateStr = new Date(validDate).toLocaleDateString('en-GB').split('/').join('-');
 
         let successCount = 0;
         for (const p of submission.certificates) {
