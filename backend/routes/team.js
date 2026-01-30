@@ -472,9 +472,23 @@ router.post('/select-question', checkOperationalStatus, async (req, res) => {
     const { problemId } = req.body;
     const teamId = req.user.id;
     
+    console.log(`[SelectQuestion] Team Selection Attempt: ID=${teamId}, Problem=${problemId}`);
+    
     try {
-        const team = await prisma.team.findUnique({ where: { id: teamId } });
-        if (!team) return res.status(404).json({ error: "Team not found." });
+        let team = await prisma.team.findUnique({ where: { id: teamId } });
+        
+        // Safety Fallback: Some tokens might be using teamName as ID in older versions
+        if (!team) {
+            console.warn(`[SelectQuestion] Team not found by ID ${teamId}. Checking by Name...`);
+            team = await prisma.team.findUnique({ where: { teamName: teamId } });
+        }
+
+        if (!team) {
+            console.error(`[SelectQuestion] CRITICAL: Team not found for ID: ${teamId}. Active Teams:`, await prisma.team.count());
+            return res.status(404).json({ error: "Team not found. Please log out and log in again." });
+        }
+        
+        console.log(`[SelectQuestion] Team confirmed: ${team.teamName}. Allotting problem: ${problemId}`);
         
         // Verify this problem is allotted to the team
         const ps = await prisma.problemStatement.findUnique({ where: { id: problemId } });
