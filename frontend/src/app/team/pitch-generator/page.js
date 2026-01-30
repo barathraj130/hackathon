@@ -134,15 +134,35 @@ export default function PitchGenerator() {
     } catch (err) { console.error("Save failed"); } finally { if (!silent) setSaving(false); }
   }
 
+  const limitWords = (text, limit) => {
+    if (!text) return '';
+    const words = text.split(/\s+/);
+    if (words.length > limit) return words.slice(0, limit).join(' ');
+    return text;
+  };
+
   async function handleSubmit() {
     setLoading(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, { headers: { Authorization: `Bearer ${token}` } });
-      alert("Success!");
-      router.push('/team/dashboard');
-    } catch (err) { alert("Failed to create file."); } finally { setLoading(false); }
+      const res = await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, { 
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 180000 
+      });
+      if (res.data.success) {
+        alert("Pitch Artifact Synthesized Successfully!");
+        router.push('/team/dashboard');
+      } else {
+        throw new Error(res.data.error || "Synthesis logic failure.");
+      }
+    } catch (err) { 
+      console.error("Submit fail", err);
+      const msg = err.response?.data?.error || err.message || "Unknown error";
+      alert(`Synthesis Interrupted: ${msg}`); 
+    } finally { 
+      setLoading(false); 
+    }
   }
 
   function nextStep() { setStep(prev => Math.min(prev + 1, 17)); window.scrollTo(0,0); }
@@ -194,11 +214,11 @@ export default function PitchGenerator() {
                     <div className="space-y-8 animate-fade">
                       <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-orange-50 text-[var(--accent-orange)] flex items-center justify-center font-bold">01</span><h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Identity</h2></div>
                       <div className="grid grid-cols-2 gap-8">
-                        <div className="col-span-2"><label className="label-premium">Project Name</label><input className="input-premium text-lg font-bold" value={data.projectName} onChange={e => setData({...data, projectName: e.target.value})} /></div>
-                        <div><label className="label-premium">Team Name</label><input className="input-premium" value={data.teamName} onChange={e => setData({...data, teamName: e.target.value})} /></div>
-                        <div><label className="label-premium">Institution</label><input className="input-premium" value={data.institutionName} onChange={e => setData({...data, institutionName: e.target.value})} /></div>
-                        <div><label className="label-premium">Leader</label><input className="input-premium" value={data.leaderName} onChange={e => setData({...data, leaderName: e.target.value})} /></div>
-                        <div><label className="label-premium">Members</label><input className="input-premium" value={data.memberNames} onChange={e => setData({...data, memberNames: e.target.value})} /></div>
+                        <div className="col-span-2"><label className="label-premium">Project Name (Max 10 Words)</label><input className="input-premium text-lg font-bold" value={data.projectName} onChange={e => setData({...data, projectName: limitWords(e.target.value, 10)})} /></div>
+                        <div><label className="label-premium">Team Name</label><input className="input-premium" value={data.teamName} readOnly /></div>
+                        <div><label className="label-premium">Institution</label><input className="input-premium" value={data.institutionName} readOnly /></div>
+                        <div><label className="label-premium">Leader</label><input className="input-premium" value={data.leaderName} readOnly /></div>
+                        <div><label className="label-premium">Members (Max 15 Words)</label><input className="input-premium" value={data.memberNames} onChange={e => setData({...data, memberNames: limitWords(e.target.value, 15)})} /></div>
                       </div>
                     </div>
                   )}
@@ -207,9 +227,9 @@ export default function PitchGenerator() {
                     <div className="space-y-8 animate-fade">
                       <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">02</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Strategic Context</h2></div>
                       <div className="space-y-8">
-                        <div><label className="label-premium">Domain</label><input className="input-premium" value={data.s2_domain} onChange={e => setData({...data, s2_domain: e.target.value})} /></div>
-                        <div><label className="label-premium">Operational Context</label><textarea className="input-premium min-h-[150px]" value={data.s2_context} onChange={e => setData({...data, s2_context: e.target.value})} /></div>
-                        <div><label className="label-premium">Root Catalyst</label><input className="input-premium" value={data.s2_rootReason} onChange={e => setData({...data, s2_rootReason: e.target.value})} /></div>
+                        <div><label className="label-premium">Domain (Max 8 Words)</label><input className="input-premium" value={data.s2_domain} onChange={e => setData({...data, s2_domain: limitWords(e.target.value, 8)})} /></div>
+                        <div><label className="label-premium">Operational Context (Max 35 Words)</label><textarea className="input-premium min-h-[150px]" value={data.s2_context} onChange={e => setData({...data, s2_context: limitWords(e.target.value, 35)})} /></div>
+                        <div><label className="label-premium">Root Catalyst (Max 20 Words)</label><input className="input-premium" value={data.s2_rootReason} onChange={e => setData({...data, s2_rootReason: limitWords(e.target.value, 20)})} /></div>
                       </div>
                     </div>
                   )}
@@ -218,9 +238,9 @@ export default function PitchGenerator() {
                     <div className="space-y-8 animate-fade">
                       <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center font-bold">03</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Problem Statement</h2></div>
                       <div className="space-y-8">
-                        <div><label className="label-premium text-rose-500">Core Problem</label><textarea className="input-premium min-h-[150px]" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: e.target.value})} /></div>
-                        <div><label className="label-premium">Affected Personnel</label><input className="input-premium" value={data.s3_affected} onChange={e => setData({...data, s3_affected: e.target.value})} /></div>
-                        <div><label className="label-premium">Critical Gravity</label><input className="input-premium" value={data.s3_whyItMatters} onChange={e => setData({...data, s3_whyItMatters: e.target.value})} /></div>
+                        <div><label className="label-premium text-rose-500">Core Problem (Max 50 Words)</label><textarea className="input-premium min-h-[150px]" value={data.s3_coreProblem} onChange={e => setData({...data, s3_coreProblem: limitWords(e.target.value, 50)})} /></div>
+                        <div><label className="label-premium">Affected Personnel (Max 20 Words)</label><input className="input-premium" value={data.s3_affected} onChange={e => setData({...data, s3_affected: limitWords(e.target.value, 20)})} /></div>
+                        <div><label className="label-premium">Critical Gravity (Max 30 Words)</label><input className="input-premium" value={data.s3_whyItMatters} onChange={e => setData({...data, s3_whyItMatters: limitWords(e.target.value, 30)})} /></div>
                       </div>
                     </div>
                   )}
@@ -232,7 +252,7 @@ export default function PitchGenerator() {
                         {data.s4_painPoints.map((pp, idx) => (
                           <div key={idx} className="bg-slate-50 p-6 rounded-2xl flex flex-col md:flex-row gap-4 items-center border border-slate-100">
                             <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[10px] font-bold text-slate-400 border border-slate-200 shadow-sm">{idx+1}</span>
-                            <div className="flex-grow w-full"><input className="input-premium !py-2 !text-xs !bg-white" value={pp.point} onChange={e => { let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], point: e.target.value }; setData({...data, s4_painPoints: u}) }} placeholder="Enter pain point facet..." /></div>
+                            <div className="flex-grow w-full"><input className="input-premium !py-2 !text-xs !bg-white" value={pp.point} onChange={e => { let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], point: limitWords(e.target.value, 12) }; setData({...data, s4_painPoints: u}) }} placeholder="Enter pain point facet (Max 12 Words)..." /></div>
                             <select className="input-premium !py-2 !text-[10px] !w-fit font-bold !bg-white" value={pp.impact} onChange={e => { let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], impact: e.target.value }; setData({...data, s4_painPoints: u}) }}><option>High</option><option>Medium</option><option>Low</option></select>
                             <select className="input-premium !py-2 !text-[10px] !w-fit font-bold !bg-white" value={pp.freq} onChange={e => { let u = [...data.s4_painPoints]; u[idx] = { ...u[idx], freq: e.target.value }; setData({...data, s4_painPoints: u}) }}><option>Frequent</option><option>Occasional</option><option>Rare</option></select>
                           </div>
@@ -245,8 +265,8 @@ export default function PitchGenerator() {
                     <div className="space-y-8 animate-fade">
                       <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">05</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Stakeholders</h2></div>
                       <div className="space-y-8">
-                        <div><label className="label-premium">Primary Consumers</label><textarea className="input-premium min-h-[150px]" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: e.target.value})} /></div>
-                        <div><label className="label-premium">Secondary Entities</label><textarea className="input-premium min-h-[150px]" value={data.s5_secondaryUsers} onChange={e => setData({...data, s5_secondaryUsers: e.target.value})} /></div>
+                        <div><label className="label-premium">Primary Consumers (Max 35 Words)</label><textarea className="input-premium min-h-[150px]" value={data.s5_primaryUsers} onChange={e => setData({...data, s5_primaryUsers: limitWords(e.target.value, 35)})} /></div>
+                        <div><label className="label-premium">Secondary Entities (Max 35 Words)</label><textarea className="input-premium min-h-[150px]" value={data.s5_secondaryUsers} onChange={e => setData({...data, s5_secondaryUsers: limitWords(e.target.value, 35)})} /></div>
                       </div>
                     </div>
                   )}
@@ -262,17 +282,17 @@ export default function PitchGenerator() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="card-premium !bg-rose-50 !border-rose-100">
-                          <label className="label-premium !text-rose-500 mb-2">Core Pains</label>
-                          <textarea className="input-premium !bg-white !text-xs !min-h-[100px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: e.target.value})} />
+                          <label className="label-premium !text-rose-500 mb-2">Core Pains (Max 35 Words)</label>
+                          <textarea className="input-premium !bg-white !text-xs !min-h-[100px]" value={data.s6_pains} onChange={e => setData({...data, s6_pains: limitWords(e.target.value, 35)})} />
                         </div>
                         <div className="card-premium !bg-emerald-50 !border-emerald-100">
-                          <label className="label-premium !text-emerald-500 mb-2">Professional Goals</label>
-                          <textarea className="input-premium !bg-white !text-xs !min-h-[100px]" value={data.s6_goals} onChange={e => setData({...data, s6_goals: e.target.value})} />
+                          <label className="label-premium !text-emerald-500 mb-2">Professional Goals (Max 35 Words)</label>
+                          <textarea className="input-premium !bg-white !text-xs !min-h-[100px]" value={data.s6_goals} onChange={e => setData({...data, s6_goals: limitWords(e.target.value, 35)})} />
                         </div>
                       </div>
                       <div className="card-premium !bg-blue-50 !border-blue-100">
-                        <label className="label-premium !text-blue-600 mb-2">How We Help</label>
-                        <textarea className="input-premium !bg-white !text-xs !min-h-[120px]" value={data.s6_howWeHelp} onChange={e => setData({...data, s6_howWeHelp: e.target.value})} placeholder="• Point 1&#10;• Point 2" />
+                        <label className="label-premium !text-blue-600 mb-2">How We Help (Max 35 Words)</label>
+                        <textarea className="input-premium !bg-white !text-xs !min-h-[120px]" value={data.s6_howWeHelp} onChange={e => setData({...data, s6_howWeHelp: limitWords(e.target.value, 35)})} placeholder="• Point 1&#10;• Point 2" />
                       </div>
                     </div>
                   )}
@@ -281,10 +301,10 @@ export default function PitchGenerator() {
                     <div className="space-y-8 animate-fade">
                       <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-slate-50 text-slate-800 flex items-center justify-center font-bold">07</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Gap Analysis</h2></div>
                       <div className="grid grid-cols-2 gap-8">
-                        <div><label className="label-premium">Status Quo</label><textarea className="input-premium min-h-[150px]" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: e.target.value})} /></div>
-                        <div><label className="label-premium">Limitations</label><textarea className="input-premium min-h-[150px]" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: e.target.value})} /></div>
-                        <div><label className="label-premium text-[var(--primary-green)]">Gains Creator</label><textarea className="input-premium min-h-[120px]" value={data.s7_gainCreators} onChange={e => setData({...data, s7_gainCreators: e.target.value})} /></div>
-                        <div><label className="label-premium text-rose-500">Pain Reliever</label><textarea className="input-premium min-h-[120px]" value={data.s7_painKillers} onChange={e => setData({...data, s7_painKillers: e.target.value})} /></div>
+                        <div><label className="label-premium">Status Quo (Max 35 Words)</label><textarea className="input-premium min-h-[150px]" value={data.s7_alternatives} onChange={e => setData({...data, s7_alternatives: limitWords(e.target.value, 35)})} /></div>
+                        <div><label className="label-premium">Limitations (Max 35 Words)</label><textarea className="input-premium min-h-[150px]" value={data.s7_limitations} onChange={e => setData({...data, s7_limitations: limitWords(e.target.value, 35)})} /></div>
+                        <div><label className="label-premium text-[var(--primary-green)]">Gains Creator (Max 35 Words)</label><textarea className="input-premium min-h-[120px]" value={data.s7_gainCreators} onChange={e => setData({...data, s7_gainCreators: limitWords(e.target.value, 35)})} /></div>
+                        <div><label className="label-premium text-rose-500">Pain Reliever (Max 35 Words)</label><textarea className="input-premium min-h-[120px]" value={data.s7_painKillers} onChange={e => setData({...data, s7_painKillers: limitWords(e.target.value, 35)})} /></div>
                       </div>
                     </div>
                   )}
@@ -293,8 +313,8 @@ export default function PitchGenerator() {
                     <div className="space-y-8 animate-fade">
                       <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-green-50 text-[var(--primary-green)] flex items-center justify-center font-bold">08</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Solution Concept</h2></div>
                       <div className="space-y-8">
-                        <div><label className="label-premium text-[var(--primary-green)]">Proposed Mission</label><textarea className="input-premium min-h-[200px]" value={data.s8_solution} onChange={e => setData({...data, s8_solution: e.target.value})} /></div>
-                        <div><label className="label-premium">Core Technology Architecture</label><input className="input-premium" placeholder="AI, Blockchain, Web3, Cloud..." value={data.s8_coreTech} onChange={e => setData({...data, s8_coreTech: e.target.value})} /></div>
+                        <div><label className="label-premium text-[var(--primary-green)]">Proposed Mission (Max 50 Words)</label><textarea className="input-premium min-h-[200px]" value={data.s8_solution} onChange={e => setData({...data, s8_solution: limitWords(e.target.value, 50)})} /></div>
+                        <div><label className="label-premium">Core Technology Architecture (Max 15 Words)</label><input className="input-premium" placeholder="AI, Blockchain, Web3, Cloud..." value={data.s8_coreTech} onChange={e => setData({...data, s8_coreTech: limitWords(e.target.value, 15)})} /></div>
                       </div>
                     </div>
                   )}
@@ -312,7 +332,7 @@ export default function PitchGenerator() {
                           {data.s9_flowSteps.map((sv, i) => (
                             <div key={i} className="flex items-center gap-4">
                               <span className="text-xs font-bold text-slate-300 w-6">#{i+1}</span>
-                              <input className="input-premium !py-2.5 !text-xs" value={sv} onChange={e => { let u = [...data.s9_flowSteps]; u[i] = e.target.value; setData({...data, s9_flowSteps: u}) }} />
+                              <input className="input-premium !py-2.5 !text-xs" value={sv} onChange={e => { let u = [...data.s9_flowSteps]; u[i] = limitWords(e.target.value, 12); setData({...data, s9_flowSteps: u}) }} />
                             </div>
                           ))}
                         </div>
@@ -325,40 +345,40 @@ export default function PitchGenerator() {
                        <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-slate-800 text-white flex items-center justify-center font-bold">10</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Lean Logic</h2></div>
                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div className="card-premium !p-6 border-rose-100">
-                             <label className="label-premium !text-rose-500 mb-2">01. Problem</label>
-                             <textarea className="input-premium !min-h-[120px] !text-xs !bg-slate-50 border-0" value={data.s10_leanProblem} onChange={e => setData({...data, s10_leanProblem: e.target.value})} placeholder="Market pain point..." />
+                             <label className="label-premium !text-rose-500 mb-2">01. Problem (Max 25 Words)</label>
+                             <textarea className="input-premium !min-h-[120px] !text-xs !bg-slate-50 border-0" value={data.s10_leanProblem} onChange={e => setData({...data, s10_leanProblem: limitWords(e.target.value, 25)})} placeholder="Market pain point..." />
                           </div>
                           <div className="card-premium !p-6 border-blue-100">
-                             <label className="label-premium !text-blue-600 mb-2">02. Solution</label>
-                             <textarea className="input-premium !min-h-[60px] !text-xs !bg-slate-50 border-0 mb-4" value={data.s10_leanSolution} onChange={e => setData({...data, s10_leanSolution: e.target.value})} placeholder="High-level fix..." />
-                             <label className="label-premium !text-[8px] !text-slate-400 mb-1 uppercase">Metrics</label>
-                             <textarea className="input-premium !min-h-[60px] !text-xs !bg-slate-50 border-0" value={data.s10_leanMetrics} onChange={e => setData({...data, s10_leanMetrics: e.target.value})} placeholder="Key numbers..." />
+                             <label className="label-premium !text-blue-600 mb-2">02. Solution (Max 15 Words)</label>
+                             <textarea className="input-premium !min-h-[60px] !text-xs !bg-slate-50 border-0 mb-4" value={data.s10_leanSolution} onChange={e => setData({...data, s10_leanSolution: limitWords(e.target.value, 15)})} placeholder="High-level fix..." />
+                             <label className="label-premium !text-[8px] !text-slate-400 mb-1 uppercase">Metrics (Max 15 Words)</label>
+                             <textarea className="input-premium !min-h-[60px] !text-xs !bg-slate-50 border-0" value={data.s10_leanMetrics} onChange={e => setData({...data, s10_leanMetrics: limitWords(e.target.value, 15)})} placeholder="Key numbers..." />
                           </div>
                           <div className="card-premium !p-6 bg-blue-50 border-blue-200">
-                             <label className="label-premium !text-blue-700 mb-2">03. Value Prop</label>
-                             <textarea className="input-premium !min-h-[150px] !text-xs !bg-white font-bold" value={data.s10_leanUSP} onChange={e => setData({...data, s10_leanUSP: e.target.value})} placeholder="Single compelling message..." />
+                             <label className="label-premium !text-blue-700 mb-2">03. Value Prop (Max 25 Words)</label>
+                             <textarea className="input-premium !min-h-[150px] !text-xs !bg-white font-bold" value={data.s10_leanUSP} onChange={e => setData({...data, s10_leanUSP: limitWords(e.target.value, 25)})} placeholder="Single compelling message..." />
                           </div>
                        </div>
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="card-premium !p-6">
-                             <label className="label-premium mb-2 uppercase">04. Unfair Advantage</label>
-                             <textarea className="input-premium !min-h-[60px] !text-xs !bg-slate-50 border-0 mb-4" value={data.s10_leanUnfair} onChange={e => setData({...data, s10_leanUnfair: e.target.value})} placeholder="Competitive moat..." />
-                             <label className="label-premium !text-[8px] !text-slate-400 mb-1 uppercase">Channels</label>
-                             <textarea className="input-premium !min-h-[60px] !text-xs !bg-slate-50 border-0" value={data.s10_leanChannels} onChange={e => setData({...data, s10_leanChannels: e.target.value})} placeholder="Customer path..." />
+                             <label className="label-premium mb-2 uppercase">04. Unfair Advantage (Max 15 Words)</label>
+                             <textarea className="input-premium !min-h-[60px] !text-xs !bg-slate-50 border-0 mb-4" value={data.s10_leanUnfair} onChange={e => setData({...data, s10_leanUnfair: limitWords(e.target.value, 15)})} placeholder="Competitive moat..." />
+                             <label className="label-premium !text-[8px] !text-slate-400 mb-1 uppercase">Channels (Max 15 Words)</label>
+                             <textarea className="input-premium !min-h-[60px] !text-xs !bg-slate-50 border-0" value={data.s10_leanChannels} onChange={e => setData({...data, s10_leanChannels: limitWords(e.target.value, 15)})} placeholder="Customer path..." />
                           </div>
                           <div className="card-premium !p-6">
-                             <label className="label-premium !text-indigo-600 mb-2 uppercase">05. Customer Nodes</label>
-                             <textarea className="input-premium !min-h-[150px] !text-xs !bg-slate-50 border-0" value={data.s10_leanSegments} onChange={e => setData({...data, s10_leanSegments: e.target.value})} placeholder="Primary cohorts..." />
+                             <label className="label-premium !text-indigo-600 mb-2 uppercase">05. Customer Nodes (Max 25 Words)</label>
+                             <textarea className="input-premium !min-h-[150px] !text-xs !bg-slate-50 border-0" value={data.s10_leanSegments} onChange={e => setData({...data, s10_leanSegments: limitWords(e.target.value, 25)})} placeholder="Primary cohorts..." />
                           </div>
                        </div>
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="card-premium !p-6 !bg-slate-50 border-slate-200">
-                             <label className="label-premium mb-2 uppercase">06. Cost Structure</label>
-                             <textarea className="input-premium !min-h-[100px] !text-xs !bg-white border-0" value={data.s10_leanCosts} onChange={e => setData({...data, s10_leanCosts: e.target.value})} placeholder="Infrastructure, R&D, Operations..." />
+                             <label className="label-premium mb-2 uppercase">06. Cost Structure (Max 15 Words)</label>
+                             <textarea className="input-premium !min-h-[100px] !text-xs !bg-white border-0" value={data.s10_leanCosts} onChange={e => setData({...data, s10_leanCosts: limitWords(e.target.value, 15)})} placeholder="Infrastructure, R&D, Operations..." />
                           </div>
                           <div className="card-premium !p-6 !bg-emerald-50 border-emerald-100">
-                             <label className="label-premium !text-emerald-600 mb-2 uppercase">07. Revenue Streams</label>
-                             <textarea className="input-premium !min-h-[100px] !text-xs !bg-white border-0" value={data.s10_leanRevenue} onChange={e => setData({...data, s10_leanRevenue: e.target.value})} placeholder="Subscriptions, Licensing, Ad-hoc..." />
+                             <label className="label-premium !text-emerald-600 mb-2 uppercase">07. Revenue Streams (Max 15 Words)</label>
+                             <textarea className="input-premium !min-h-[100px] !text-xs !bg-white border-0" value={data.s10_leanRevenue} onChange={e => setData({...data, s10_leanRevenue: limitWords(e.target.value, 15)})} placeholder="Subscriptions, Licensing, Ad-hoc..." />
                           </div>
                        </div>
                     </div>
@@ -369,20 +389,20 @@ export default function PitchGenerator() {
                         <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-slate-50 text-slate-800 flex items-center justify-center font-bold">11</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Value Metrics</h2></div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                           <div className="space-y-3">
-                            <label className="label-premium !text-emerald-500 !text-[10px]">Lifts</label>
-                            {data.s11_lifts.map((v, i) => (<input key={i} className="input-premium !py-2.5 !text-[10px]" value={v} onChange={e => { let u = [...data.s11_lifts]; u[i] = e.target.value; setData({...data, s11_lifts: u})}} />))}
+                            <label className="label-premium !text-emerald-500 !text-[10px]">Lifts (Max 6 Words)</label>
+                            {data.s11_lifts.map((v, i) => (<input key={i} className="input-premium !py-2.5 !text-[10px]" value={v} onChange={e => { let u = [...data.s11_lifts]; u[i] = limitWords(e.target.value, 6); setData({...data, s11_lifts: u})}} />))}
                           </div>
                           <div className="space-y-3">
-                            <label className="label-premium !text-rose-500 !text-[10px]">Pulls</label>
-                            {data.s11_pulls.map((v, i) => (<input key={i} className="input-premium !py-2.5 !text-[10px]" value={v} onChange={e => { let u = [...data.s11_pulls]; u[i] = e.target.value; setData({...data, s11_pulls: u})}} />))}
+                            <label className="label-premium !text-rose-500 !text-[10px]">Pulls (Max 6 Words)</label>
+                            {data.s11_pulls.map((v, i) => (<input key={i} className="input-premium !py-2.5 !text-[10px]" value={v} onChange={e => { let u = [...data.s11_pulls]; u[i] = limitWords(e.target.value, 6); setData({...data, s11_pulls: u})}} />))}
                           </div>
                           <div className="space-y-3">
-                            <label className="label-premium !text-blue-600 !text-[10px]">Fuels</label>
-                            {data.s11_fuels.map((v, i) => (<input key={i} className="input-premium !py-2.5 !text-[10px]" value={v} onChange={e => { let u = [...data.s11_fuels]; u[i] = e.target.value; setData({...data, s11_fuels: u})}} />))}
+                            <label className="label-premium !text-blue-600 !text-[10px]">Fuels (Max 6 Words)</label>
+                            {data.s11_fuels.map((v, i) => (<input key={i} className="input-premium !py-2.5 !text-[10px]" value={v} onChange={e => { let u = [...data.s11_fuels]; u[i] = limitWords(e.target.value, 6); setData({...data, s11_fuels: u})}} />))}
                           </div>
                           <div className="space-y-3">
-                            <label className="label-premium !text-slate-800 !text-[10px]">Outcomes</label>
-                            {data.s11_outcomes.map((v, i) => (<input key={i} className="input-premium !py-2.5 !text-[10px]" value={v} onChange={e => { let u = [...data.s11_outcomes]; u[i] = e.target.value; setData({...data, s11_outcomes: u})}} />))}
+                            <label className="label-premium !text-slate-800 !text-[10px]">Outcomes (Max 6 Words)</label>
+                            {data.s11_outcomes.map((v, i) => (<input key={i} className="input-premium !py-2.5 !text-[10px]" value={v} onChange={e => { let u = [...data.s11_outcomes]; u[i] = limitWords(e.target.value, 6); setData({...data, s11_outcomes: u})}} />))}
                           </div>
                         </div>
                      </div>
@@ -442,12 +462,12 @@ export default function PitchGenerator() {
                       <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-green-50 text-[var(--primary-green)] flex items-center justify-center font-bold">14</span><h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Revenue Model (₹)</h2></div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div className="space-y-8">
-                           <div><label className="label-premium !text-[var(--primary-green)] mb-2">Primary Stream</label><input className="input-premium font-bold text-[var(--primary-green)]" value={data.s14_primaryStream} onChange={e => setData({...data, s14_primaryStream: e.target.value})} /></div>
-                           <div><label className="label-premium mb-2">Secondary Nodes</label><input className="input-premium" value={data.s14_secondaryStream} onChange={e => setData({...data, s14_secondaryStream: e.target.value})} /></div>
+                           <div><label className="label-premium !text-[var(--primary-green)] mb-2">Primary Stream (Max 15 Words)</label><input className="input-premium font-bold text-[var(--primary-green)]" value={data.s14_primaryStream} onChange={e => setData({...data, s14_primaryStream: limitWords(e.target.value, 15)})} /></div>
+                           <div><label className="label-premium mb-2">Secondary Nodes (Max 25 Words)</label><input className="input-premium" value={data.s14_secondaryStream} onChange={e => setData({...data, s14_secondaryStream: limitWords(e.target.value, 25)})} /></div>
                         </div>
                         <div className="space-y-8">
-                           <div><label className="label-premium mb-2">Pricing Strategy (₹)</label><input className="input-premium" value={data.s14_pricingStrategy} onChange={e => setData({...data, s14_pricingStrategy: e.target.value})} /></div>
-                           <div><label className="label-premium mb-2">Economic Logic (Rupees)</label><textarea className="input-premium !min-h-[120px]" value={data.s14_revenueLogic} onChange={e => setData({...data, s14_revenueLogic: e.target.value})} /></div>
+                           <div><label className="label-premium mb-2">Pricing Strategy (₹) (Max 15 Words)</label><input className="input-premium" value={data.s14_pricingStrategy} onChange={e => setData({...data, s14_pricingStrategy: limitWords(e.target.value, 15)})} /></div>
+                           <div><label className="label-premium mb-2">Economic Logic (Rupees) (Max 40 Words)</label><textarea className="input-premium !min-h-[120px]" value={data.s14_revenueLogic} onChange={e => setData({...data, s14_revenueLogic: limitWords(e.target.value, 40)})} /></div>
                         </div>
                       </div>
                     </div>
@@ -485,8 +505,8 @@ export default function PitchGenerator() {
                     <div className="space-y-10 animate-fade">
                        <div className="flex items-center gap-4"><span className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">16</span><h2 className="text-2xl font-bold text-slate-900 uppercase">Success Vision</h2></div>
                        <div className="space-y-10">
-                          <div><label className="label-premium">Social / Economic Impact</label><textarea className="input-premium !min-h-[250px]" value={data.s16_socialEconomic} onChange={e => setData({...data, s16_socialEconomic: e.target.value})} /></div>
-                          <div><label className="label-premium !text-blue-600">Institutional Vision Boundary</label><input className="input-premium font-bold border-blue-100" value={data.s16_vision} onChange={e => setData({...data, s16_vision: e.target.value})} /></div>
+                          <div><label className="label-premium">Social / Economic Impact (Max 50 Words)</label><textarea className="input-premium !min-h-[250px]" value={data.s16_socialEconomic} onChange={e => setData({...data, s16_socialEconomic: limitWords(e.target.value, 50)})} /></div>
+                          <div><label className="label-premium !text-blue-600">Institutional Vision Boundary (Max 40 Words)</label><input className="input-premium font-bold border-blue-100" value={data.s16_vision} onChange={e => setData({...data, s16_vision: limitWords(e.target.value, 40)})} /></div>
                        </div>
                     </div>
                   )}
