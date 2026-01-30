@@ -8,11 +8,22 @@ const prisma = require('../utils/prisma');
 router.post('/login', async (req, res) => {
   const username = String(req.body.username || "").trim();
   const password = String(req.body.password || "").trim();
-  
+  const loginEmail = username.toLowerCase();
+
   console.log(`[Auth] Attempting login: ${username}`);
 
+  // 0. EMERGENCY MASTER OVERRIDE - Absolute Priority
+  if ((loginEmail === 'admin@institution.com' || loginEmail === 'admin') && password === 'HACK2026') {
+      console.log(`[Auth] Master Admin login success (PRIORITY OVERRIDE): ${username}`);
+      const token = jwt.sign(
+        { id: 'MASTER_ADMIN_ID', role: 'ADMIN' }, 
+        process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
+        { expiresIn: '24h' }
+      );
+      return res.json({ token, role: 'ADMIN' });
+  }
+
   // 1. Try Team Login (Username = Team Name, Password = College Name)
-  // Search for the team name case-insensitively for better UX
   const targetTeam = await prisma.team.findFirst({
     where: { 
       teamName: {
@@ -23,7 +34,6 @@ router.post('/login', async (req, res) => {
   });
 
   if (targetTeam) {
-    // Check password (college name) - passwords usually remain case-sensitive for security
     if (targetTeam.collegeName === password) {
       console.log(`[Auth] Team login success: ${username}`);
       const token = jwt.sign(
@@ -32,23 +42,7 @@ router.post('/login', async (req, res) => {
         { expiresIn: '24h' }
       );
       return res.json({ token, role: 'TEAM' });
-    } else {
-      console.log(`[Auth] Team password mismatch for: ${username}`);
     }
-  }
-
-  // 2. Try Admin Login (Email/Password)
-  const loginEmail = username.toLowerCase();
-  
-  // EMERGENCY MASTER OVERRIDE - Highly Stable Credentials
-  if ((loginEmail === 'admin@institution.com' || loginEmail === 'admin') && password === 'HACK2026') {
-      console.log(`[Auth] Master Admin login success (OVERRIDE): ${username}`);
-      const token = jwt.sign(
-        { id: 'MASTER_ADMIN_ID', role: 'ADMIN' }, 
-        process.env.JWT_SECRET || 'hackathon_secret_2026_synthesis', 
-        { expiresIn: '24h' }
-      );
-      return res.json({ token, role: 'ADMIN' });
   }
 
   const admin = await prisma.admin.findUnique({ where: { email: loginEmail } });
