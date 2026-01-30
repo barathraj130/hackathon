@@ -6,116 +6,97 @@ export default function HomePage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-bg-light overflow-x-hidden">
-      {/* Dynamic Background Ornament */}
-      <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-teal/5 blur-[120px] rounded-full z-0"></div>
-      <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-royal/5 blur-[100px] rounded-full z-0"></div>
-
+    <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass-pane border-b border-gray-100 px-10 py-5 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-navy/20">B</div>
-          <div>
-            <span className="text-xl font-black text-navy tracking-tighter uppercase leading-none block">BRILLIANT</span>
-            <span className="text-[10px] font-bold text-teal tracking-[0.2em] uppercase leading-none">BHARAT</span>
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-[var(--primary-green)] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm">H</div>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold text-slate-900 tracking-tight leading-none uppercase">HACKATHON</span>
+            <span className="text-[10px] font-bold text-[var(--accent-orange)] tracking-widest uppercase leading-none">PORTAL</span>
           </div>
         </div>
         
-        <div className="flex items-center gap-4 md:gap-8">
-          <div className="hidden sm:flex items-center gap-6">
-            <button onClick={() => router.push('/login')} className="text-xs font-bold text-slate-500 hover:text-navy transition-colors uppercase tracking-widest">Support</button>
-            <button onClick={() => router.push('/login')} className="btn-primary !py-3">Launch Interface</button>
-          </div>
-          {/* Institutional Logo - Right Corner */}
-          <div className="w-12 h-12 md:w-16 md:h-16 relative">
-            <Image src="/images/institution_logo.png" alt="Institutional Logo" fill className="object-contain" />
+        <div className="flex items-center gap-6">
+          <button onClick={() => router.push('/login')} className="text-sm font-semibold text-slate-500 hover:text-[var(--secondary-blue)] transition-colors">Support</button>
+          <button onClick={() => router.push('/login')} className="btn-blue py-2.5 px-6 !rounded-xl text-sm">Login</button>
+          <div className="w-10 h-10 relative hidden sm:block">
+            <Image src="/images/institution_logo.png" alt="Logo" fill className="object-contain" />
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <main className="relative z-10 max-w-7xl mx-auto pt-32 md:pt-48 pb-20 md:pb-32 px-6 md:px-10">
-        <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
-          <div className="animate-fade-in text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-royal/5 border border-royal/10 rounded-full mb-8">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-royal opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-royal"></span>
-              </span>
-              <span className="text-[10px] font-extrabold text-royal uppercase tracking-widest">JIT Institutional Standard v4.0</span>
+      <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="text-center lg:text-left">
+            <div className="inline-block px-4 py-1.5 bg-green-50 text-[var(--primary-green)] rounded-full text-xs font-bold uppercase tracking-wider mb-8 border border-green-100">
+              Simplify Your Pitch
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-black text-navy leading-[0.95] tracking-tighter mb-8">
-              Engineering <br className="hidden md:block"/> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-royal to-teal">the Future</span>
+            <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 leading-[1.1] tracking-tight mb-8">
+              Build Your <br/> 
+              <span className="text-[var(--secondary-blue)]">Winning</span> Pitch
             </h1>
             
-            <p className="text-base md:text-lg text-slate-500 max-w-lg mx-auto lg:mx-0 leading-relaxed mb-12">
-              From concept to deployment — faster, smarter, stronger. 
-              JIT’s official innovation engine enabling teams to build, validate, and launch production-ready solutions.
+            <p className="text-lg text-slate-500 max-w-lg mx-auto lg:mx-0 mb-10 leading-relaxed">
+              Create professional presentations for your hackathon projects in minutes. 
+              Our tool helps teams organize ideas and generate ready-to-use decks.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
               <button 
                 onClick={() => router.push('/login')} 
-                className="w-full sm:w-auto bg-navy text-white px-10 py-5 rounded-2xl font-black uppercase text-[11px] tracking-[0.3em] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-navy/30"
+                className="w-full sm:w-auto btn-green !py-4 !px-10 !rounded-2xl text-base shadow-xl shadow-green-200"
               >
-                Start Processing
+                Get Started
               </button>
               <div className="flex flex-col items-center lg:items-start">
-                <span className="text-2xl font-black text-navy leading-none uppercase">Brilliant Bharat</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Official Portal</span>
+                <span className="text-xl font-bold text-slate-800 uppercase">Universal System</span>
+                <span className="text-sm font-semibold text-slate-400">All Project Categories</span>
               </div>
             </div>
           </div>
 
-          <div className="relative animate-fade-in delay-200">
-            <div className="relative aspect-square rounded-[40px] overflow-hidden shadow-2xl shadow-navy/20 border-8 border-white">
+          <div className="relative">
+            <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-50">
               <Image 
                 src="/images/hero_bg.png" 
-                alt="Synthesis Engine" 
+                alt="Interface Preview" 
                 fill 
-                className="object-cover transition-transform duration-700 hover:scale-110"
+                className="object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
               
-              {/* Floating Status UI */}
-              <div className="absolute bottom-8 left-8 right-8 glass-pane p-6 rounded-2xl border-white/20">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-[10px] font-bold text-white uppercase tracking-widest">Synthesis Pipeline</span>
-                  <span className="text-[10px] font-black text-teal uppercase px-2 py-1 bg-teal/20 rounded">Active</span>
+              <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-sm p-4 rounded-2xl border border-white/50 shadow-lg">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-xs font-bold text-slate-800 uppercase">Project Status</span>
+                  <span className="text-[10px] font-bold text-white uppercase px-2 py-0.5 bg-[var(--primary-green)] rounded">In Progress</span>
                 </div>
-                <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-teal h-full w-[75%] animate-pulse"></div>
+                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div className="bg-[var(--primary-green)] h-full w-[65%]"></div>
                 </div>
               </div>
             </div>
-            
-            {/* Background elements for depth */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal/20 rounded-full blur-3xl"></div>
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-royal/20 rounded-full blur-3xl"></div>
           </div>
         </div>
 
-        {/* Technical Grid */}
         <div className="grid md:grid-cols-3 gap-8 mt-40">
           {[
-            { icon: '💎', title: 'Logic Automation', desc: 'Standardizes complex technical project flows into structured slide hierarchies.' },
-            { icon: '⚡', title: 'Stateless Sync', desc: 'Unified server-side timestamps for synchronized team submissions.' },
-            { icon: '🏆', title: 'Expert Pitch', desc: 'Auto-generation of comparative market analytics and system architecture visuals.' }
+            { icon: '📝', title: 'Easy Formatting', desc: 'Automatically organizes your technical details into beautiful slides.' },
+            { icon: '☁️', title: 'Real-time Saving', desc: 'Your progress is saved as you type, so you never lose your work.' },
+            { icon: '🎬', title: 'Professional Design', desc: 'Expertly designed layouts that impress judges and mentors.' }
           ].map((feature, i) => (
-            <div key={i} className="dashboard-card group">
-              <div className="text-4xl mb-6 grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-110 origin-left">{feature.icon}</div>
-              <h3 className="font-extrabold text-xl text-navy mb-3 tracking-tight">{feature.title}</h3>
+            <div key={i} className="card-premium hover:-translate-y-2 transition-transform duration-300">
+              <div className="text-4xl mb-6">{feature.icon}</div>
+              <h3 className="font-bold text-xl text-slate-900 mb-2">{feature.title}</h3>
               <p className="text-slate-500 text-sm leading-relaxed">{feature.desc}</p>
             </div>
           ))}
         </div>
       </main>
 
-      {/* Footer-ish */}
-      <footer className="px-10 py-20 border-t border-gray-100 text-center">
-        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">Restricted Institutional Property // System Synthesis 2026</p>
+      <footer className="px-6 py-16 border-t border-slate-100 text-center">
+        <p className="text-sm font-semibold text-slate-400">HACKATHON PORTAL // 2026 Edition</p>
       </footer>
     </div>
   );
