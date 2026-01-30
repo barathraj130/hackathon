@@ -105,8 +105,7 @@ router.get('/profile', async (req, res) => {
                 allowCertificateDetails: config?.allowCertificateDetails || false,
                 eventEnded: config?.eventEnded || false,
                 isPaused: config?.isPaused || false
-            },
-            problemStatement
+            }
         });
     } catch (error) {
         res.status(500).json({ error: "Failed to sync with repository." });
