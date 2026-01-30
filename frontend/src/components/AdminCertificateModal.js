@@ -9,14 +9,21 @@ export default function AdminCertificateModal({ isOpen, onClose, teamId, teamNam
   const [participants, setParticipants] = useState([]);
 
   useEffect(() => {
+    let initialParticipants = [];
     if (certificates && certificates.length > 0) {
-      setParticipants(certificates);
+      initialParticipants = [...certificates];
     } else {
-      setParticipants([
+      initialParticipants = [
         { name: '', role: 'LEADER', college: '', year: '1', dept: '' },
         { name: '', role: 'MEMBER', college: '', year: '1', dept: '' }
-      ]);
+      ];
     }
+
+    if (initialParticipants.length < 2) {
+       initialParticipants.push({ name: '', role: 'MEMBER', college: '', year: '1', dept: '' });
+    }
+
+    setParticipants(initialParticipants);
   }, [certificates, isOpen]);
 
   if (!isOpen) return null;

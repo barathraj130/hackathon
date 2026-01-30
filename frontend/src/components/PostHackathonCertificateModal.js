@@ -12,17 +12,25 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
+    let initialParticipants = [];
     if (teamData?.submission?.certificates && teamData.submission.certificates.length > 0) {
-      setParticipants(teamData.submission.certificates.map(c => ({
+      initialParticipants = teamData.submission.certificates.map(c => ({
         ...c,
         year: c.year || '1'
-      })));
+      }));
     } else {
-        setParticipants([
+        initialParticipants = [
             { name: '', role: 'Leader', college: teamData?.collegeName || '', year: '1', dept: 'N/A' },
             { name: '', role: 'Member', college: teamData?.collegeName || '', year: '1', dept: 'N/A' }
-        ]);
+        ];
     }
+
+    // Force at least 2 slots
+    if (initialParticipants.length < 2) {
+      initialParticipants.push({ name: '', role: 'Member', college: teamData?.collegeName || '', year: '1', dept: 'N/A' });
+    }
+
+    setParticipants(initialParticipants);
   }, [teamData, isOpen]);
 
   if (!isOpen) return null;
