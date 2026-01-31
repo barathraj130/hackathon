@@ -229,20 +229,19 @@ export default function PitchGenerator() {
       <main className="max-w-7xl mx-auto py-10 px-6 relative z-10">
         <div className="grid grid-cols-12 gap-10">
           <aside className="col-span-3 hidden lg:block sticky top-28 h-fit">
-             <div className="bg-slate-900/95 backdrop-blur-2xl p-6 rounded-[2rem] border border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden relative group">
+             <div className="bg-[#1a0b3b]/95 backdrop-blur-2xl p-6 rounded-[2rem] border border-[#2d1b5a] shadow-[0_20px_50px_rgba(26,11,59,0.3)] overflow-hidden relative group">
                 {/* Visual Accent Glows */}
-                <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-blue-600/20 blur-[60px] rounded-full pointer-events-none"></div>
-                <div className="absolute bottom-[-10%] left-[-10%] w-32 h-32 bg-emerald-600/10 blur-[60px] rounded-full pointer-events-none"></div>
+                <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-purple-600/20 blur-[60px] rounded-full pointer-events-none"></div>
+                <div className="absolute bottom-[-10%] left-[-10%] w-32 h-32 bg-pink-600/10 blur-[60px] rounded-full pointer-events-none"></div>
                 
                 <div className="relative z-10 space-y-4">
-                  <div className="px-4 pb-2 border-b border-slate-800">
-                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Flow Pipeline</h3>
+                  <div className="px-4 pb-2 border-b border-purple-500/20">
+                    <h3 className="text-[10px] font-black text-purple-300/40 uppercase tracking-[0.2em]">Flow Pipeline</h3>
                   </div>
                   <nav className="space-y-1.5 max-h-[calc(100vh-320px)] pr-2 overflow-y-auto custom-scrollbar">
                      {stepsList.map((label, i) => {
                        const isActive = step === (i + 1);
                        const isCompleted = (i + 1) < step;
-                       const isLocked = (i + 1) > step;
                        
                        return (
                          <button 
@@ -250,10 +249,10 @@ export default function PitchGenerator() {
                            onClick={() => (i+1) <= step && setStep(i+1)} 
                            className={`w-full text-left px-5 py-3.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-between group/btn
                            ${isActive 
-                             ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_10px_20px_rgba(37,99,235,0.25)] scale-[1.02] border border-blue-400/20' 
+                             ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-[0_10px_20px_rgba(147,51,234,0.3)] scale-[1.02] border border-purple-400/30' 
                              : isCompleted 
-                               ? 'text-emerald-400 hover:bg-emerald-400/5' 
-                               : 'text-slate-600 opacity-50 cursor-not-allowed hover:bg-white/5'}`}
+                               ? 'text-pink-400 hover:bg-white/5' 
+                               : 'text-purple-300/30 cursor-not-allowed hover:bg-white/5'}`}
                          >
                             <span className="truncate">{label}</span>
                             {isCompleted ? (
@@ -261,7 +260,7 @@ export default function PitchGenerator() {
                             ) : isActive ? (
                               <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
                             ) : (
-                              <div className="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+                              <div className="w-1.5 h-1.5 rounded-full bg-purple-900/50"></div>
                             )}
                          </button>
                        );
