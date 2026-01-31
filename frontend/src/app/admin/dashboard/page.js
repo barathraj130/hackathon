@@ -252,15 +252,15 @@ export default function AdminDashboard() {
       <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
       <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-green-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
 
-      {/* SIDEBAR - 3D HIGH READABILITY PANEL */}
-      <aside className="w-72 bg-[#0f172a] flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-slate-800 shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-20">
+      {/* SIDEBAR - 3D HIGH READABILITY PANEL (MIDNIGHT AMBER) */}
+      <aside className="w-72 bg-[#0c0a09] flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-[#1c1917] shadow-[10px_0_30px_rgba(0,0,0,0.6)] z-20">
         
         {/* Brand Identity Card */}
-        <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 shadow-[0_4px_10px_rgba(0,0,0,0.3)] flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center font-black text-white text-xl shadow-[0_4px_15px_rgba(37,99,235,0.4)]">C</div>
+        <div className="bg-[#1c1917] p-4 rounded-2xl border border-orange-900/30 shadow-[0_4px_10px_rgba(0,0,0,0.5)] flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-700 rounded-xl flex items-center justify-center font-black text-white text-xl shadow-[0_4px_15px_rgba(249,115,22,0.3)]">C</div>
           <div>
             <p className="font-black text-xl text-white leading-none tracking-tight">COMMAND</p>
-            <p className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.2em] mt-1">HACKATHON OS</p>
+            <p className="text-[10px] text-orange-500 font-black uppercase tracking-[0.2em] mt-1">HACKATHON OS</p>
           </div>
         </div>
 
@@ -278,12 +278,12 @@ export default function AdminDashboard() {
                <button 
                  key={item.name} 
                  onClick={() => setActiveTab(item.key)} 
-                 className={`w-full px-6 py-4 rounded-2xl text-xs font-black tracking-widest uppercase transition-all duration-300 flex items-center gap-4 group
+                 className={`w-full px-6 py-4 rounded-2xl text-xs font-black tracking-widest uppercase transition-all duration-300 flex items-center gap-4 border-b-4
                  ${isActive 
-                   ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-[0_8px_20px_rgba(37,99,235,0.4)] translate-x-2 border-b-4 border-indigo-900' 
-                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white hover:translate-x-1 border-b-4 border-slate-900 shadow-[0_4px_0_rgba(0,0,0,0.5)]'}`}
+                   ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-[0_8px_20px_rgba(249,115,22,0.3)] translate-x-2 border-orange-900' 
+                   : 'bg-[#1c1917] text-stone-400 hover:bg-[#292524] hover:text-white hover:translate-x-1 border-stone-900 shadow-[0_4px_0_rgba(0,0,0,0.5)]'}`}
                >
-                 <span className={`${isActive ? 'text-white' : 'text-blue-400 group-hover:text-blue-300'}`}>{item.icon}</span>
+                 <span className={`${isActive ? 'text-white' : 'text-orange-500 group-hover:text-orange-400'}`}>{item.icon}</span>
                  <span>{item.name}</span>
                  {isActive && <div className="ml-auto w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]"></div>}
                </button>
@@ -292,17 +292,17 @@ export default function AdminDashboard() {
         </nav>
 
         {/* 3D Mission Clock Card */}
-        <div className="p-6 bg-[#1a2233] rounded-[2rem] border-2 border-slate-700 shadow-[0_8px_25px_rgba(0,0,0,0.4)] text-center relative overflow-hidden group/timer">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
-            <p className="text-[10px] text-slate-400 font-black mb-3 tracking-[0.2em] uppercase">SYSTEM MISSION CLOCK</p>
+        <div className="p-6 bg-[#141414] rounded-[2rem] border-2 border-stone-800 shadow-[0_8px_25px_rgba(0,0,0,0.5)] text-center relative overflow-hidden group/timer">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
+            <p className="text-[10px] text-stone-500 font-black mb-3 tracking-[0.2em] uppercase">SYSTEM MISSION CLOCK</p>
             <div className="bg-black/40 py-3 rounded-xl border border-white/5">
-              <p className={`text-3xl font-black tabular-nums tracking-tighter ${timer.timerPaused ? 'text-rose-500' : 'text-emerald-400'} drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]`}>
+              <p className={`text-3xl font-black tabular-nums tracking-tighter ${timer.timerPaused ? 'text-rose-500' : 'text-orange-500'} drop-shadow-[0_0_10px_rgba(249,115,22,0.4)]`}>
                 {timer.formattedTime || '24:00:00'}
               </p>
             </div>
         </div>
         
-        <button onClick={() => { localStorage.clear(); window.location.href='/'; }} className="w-full py-4 bg-rose-900/20 text-xs font-black text-rose-500 hover:bg-rose-500 hover:text-white rounded-2xl border-2 border-rose-900/30 transition-all uppercase tracking-widest shadow-lg">
+        <button onClick={() => { localStorage.clear(); window.location.href='/'; }} className="w-full py-4 bg-orange-900/10 text-xs font-black text-stone-600 hover:bg-orange-600 hover:text-white rounded-2xl border-2 border-stone-800 transition-all uppercase tracking-widest">
           Terminate Session
         </button>
       </aside>
