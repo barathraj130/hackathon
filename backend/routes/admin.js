@@ -371,10 +371,38 @@ router.post('/reallot-team', async (req, res) => {
 
 router.delete('/teams/:id', async (req, res) => {
     try {
-        await prisma.submission.deleteMany({ where: { teamId: req.params.id } });
-        await prisma.team.delete({ where: { id: req.params.id } });
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+        const teamId = req.params.id;
+        
+        // First, fetch the team to get its teamName
+        const team = await prisma.team.findUnique({ where: { id: teamId } });
+        
+        if (!team) {
+            return res.status(404).json({ error: "Team not found" });
+        }
+        
+        // Reset all problem statements allotted to this team
+        // This makes them available again for reassignment
+        await prisma.problemStatement.updateMany({
+            where: {
+                OR: [
+                    { allottedTo: team.teamName },
+                    { allottedTo: teamId }
+                ]
+            },
+            data: { allottedTo: null }
+        });
+        
+        console.log(`[TeamDelete] Reset questions for team: ${team.teamName}`);
+        
+        // Delete team submissions and the team itself
+        await prisma.submission.deleteMany({ where: { teamId: teamId } });
+        await prisma.team.delete({ where: { id: teamId } });
+        
+        res.json({ success: true, message: `Team deleted and ${team.teamName}'s questions reset` });
+    } catch (e) { 
+        console.error('[TeamDelete] Error:', e);
+        res.status(500).json({ error: "Failed to delete team" }); 
+    }
 });
 
 router.get('/problem-statements', async (req, res) => {

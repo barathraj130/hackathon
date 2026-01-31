@@ -152,7 +152,14 @@ export default function AdminDashboard() {
 
   async function handleDeleteTeam(id) {
     if(!confirm("Remove this group?")) return;
-    try { await axios.delete(`${getApiUrl()}/admin/teams/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); fetchTeams(); fetchStats(); } catch(e) {}
+    try { 
+      await axios.delete(`${getApiUrl()}/admin/teams/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); 
+      fetchTeams(); 
+      fetchProblemStatements(); // Refresh questions to show freed-up assignments
+      fetchStats(); 
+    } catch(e) {
+      alert("Failed to delete team");
+    }
   }
 
   async function handleForceRegenerate(teamId) {
