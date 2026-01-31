@@ -253,31 +253,41 @@ export default function AdminDashboard() {
       <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-green-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
 
       {/* SIDEBAR */}
-      <aside className="w-64 bg-white/70 backdrop-blur-xl flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-white/50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-[var(--secondary-blue)] to-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-200">C</div>
-          <div><p className="font-extrabold text-lg text-slate-800 leading-none tracking-tight">COMMAND</p><p className="text-[9px] text-[var(--primary-green)] font-black uppercase tracking-[0.2em] mt-1">CENTER</p></div>
+      <aside className="w-64 bg-slate-900/95 backdrop-blur-2xl flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-slate-800 shadow-[20px_0_50px_rgba(0,0,0,0.2)] z-20 relative overflow-hidden">
+        {/* Background Accents */}
+        <div className="absolute top-[-10%] left-[-10%] w-32 h-32 bg-blue-600/10 blur-[60px] rounded-full pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-32 h-32 bg-emerald-600/10 blur-[60px] rounded-full pointer-events-none"></div>
+
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">C</div>
+          <div><p className="font-extrabold text-lg text-white leading-none tracking-tight">COMMAND</p><p className="text-[9px] text-emerald-400 font-black uppercase tracking-[0.2em] mt-1">CENTER</p></div>
         </div>
-        <nav className="flex-1 space-y-2">
+
+        <nav className="relative z-10 flex-1 space-y-2">
            {['STATS', 'WORK', 'TASKS', 'GROUPS', 'SETUP'].map(tab => {
              const tabKey = tab === 'STATS' ? 'overview' : tab === 'WORK' ? 'submissions' : tab === 'TASKS' ? 'problems' : tab === 'GROUPS' ? 'teams' : 'configuration';
              const isActive = activeTab === tabKey;
              return (
                <button key={tab} onClick={() => setActiveTab(tabKey)} 
-                 className={`w-full text-left px-5 py-3.5 rounded-xl text-[11px] font-bold transition-all flex items-center justify-between group
-                 ${isActive ? 'bg-gradient-to-r from-blue-50 to-white text-[var(--secondary-blue)] shadow-sm border border-blue-100' : 'text-slate-500 hover:bg-white/50 hover:text-slate-700'}`}>
+                 className={`w-full text-left px-5 py-3.5 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all duration-300 flex items-center justify-between group
+                 ${isActive ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/10 text-white shadow-sm border border-blue-500/30 scale-[1.02]' : 'text-slate-500 hover:bg-white/5 hover:text-slate-300'}`}>
                  {tab}
-                 {isActive && <div className="w-1.5 h-1.5 rounded-full bg-[var(--secondary-blue)] shadow-sm"></div>}
+                 {isActive && <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.8)] animate-pulse"></div>}
                </button>
              )
            })}
         </nav>
-        <div className="p-5 bg-white/50 rounded-2xl border border-white/60 text-center shadow-inner">
-            <p className="text-[9px] text-slate-400 font-black mb-2 tracking-[0.2em] uppercase">MISSION TIMER</p>
-            <p className={`text-2xl font-black tabular-nums tracking-tight ${timer.timerPaused ? 'text-[var(--accent-orange)]' : 'text-[var(--primary-green)]'}`}>
+
+        <div className="relative z-10 p-5 bg-slate-800/50 rounded-2xl border border-slate-700/50 text-center shadow-inner group/timer">
+            <p className="text-[9px] text-slate-500 font-black mb-2 tracking-[0.2em] uppercase transition-colors group-hover/timer:text-slate-400">MISSION TIMER</p>
+            <p className={`text-2xl font-black tabular-nums tracking-tighter ${timer.timerPaused ? 'text-rose-500' : 'text-emerald-400'} drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]`}>
               {timer.formattedTime || '24:00:00'}
             </p>
         </div>
+        
+        <button onClick={() => { localStorage.clear(); window.location.href='/'; }} className="relative z-10 w-full py-3 text-[10px] font-bold text-slate-600 hover:text-rose-400 transition-colors uppercase tracking-[0.2em] border-t border-slate-800 pt-6">
+          Terminate Session
+        </button>
       </aside>
 
       <main className="flex-1 p-10 overflow-y-auto space-y-10 relative z-10 scroll-smooth">

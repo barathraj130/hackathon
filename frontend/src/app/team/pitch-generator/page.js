@@ -229,14 +229,45 @@ export default function PitchGenerator() {
       <main className="max-w-7xl mx-auto py-10 px-6 relative z-10">
         <div className="grid grid-cols-12 gap-10">
           <aside className="col-span-3 hidden lg:block sticky top-28 h-fit">
-             <div className="bg-white/70 backdrop-blur-xl p-4 rounded-3xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-                <nav className="space-y-1 max-h-[calc(100vh-200px)] overflow-y-auto">
-                   {stepsList.map((label, i) => (
-                     <button key={i} onClick={() => (i+1) <= step && setStep(i+1)} className={`w-full text-left px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-between ${step === (i+1) ? 'bg-gradient-to-r from-blue-50 to-white text-[var(--secondary-blue)] shadow-sm border border-blue-50' : i+1 < step ? 'text-[var(--primary-green)] hover:bg-white/50' : 'text-slate-300 pointer-events-none'}`}>
-                        <span className="truncate">{label}</span>{i+1 < step && <span>✓</span>}
-                     </button>
-                   ))}
-                </nav>
+             <div className="bg-slate-900/95 backdrop-blur-2xl p-6 rounded-[2rem] border border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden relative group">
+                {/* Visual Accent Glows */}
+                <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-blue-600/20 blur-[60px] rounded-full pointer-events-none"></div>
+                <div className="absolute bottom-[-10%] left-[-10%] w-32 h-32 bg-emerald-600/10 blur-[60px] rounded-full pointer-events-none"></div>
+                
+                <div className="relative z-10 space-y-4">
+                  <div className="px-4 pb-2 border-b border-slate-800">
+                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Flow Pipeline</h3>
+                  </div>
+                  <nav className="space-y-1.5 max-h-[calc(100vh-320px)] pr-2 overflow-y-auto custom-scrollbar">
+                     {stepsList.map((label, i) => {
+                       const isActive = step === (i + 1);
+                       const isCompleted = (i + 1) < step;
+                       const isLocked = (i + 1) > step;
+                       
+                       return (
+                         <button 
+                           key={i} 
+                           onClick={() => (i+1) <= step && setStep(i+1)} 
+                           className={`w-full text-left px-5 py-3.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-between group/btn
+                           ${isActive 
+                             ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_10px_20px_rgba(37,99,235,0.25)] scale-[1.02] border border-blue-400/20' 
+                             : isCompleted 
+                               ? 'text-emerald-400 hover:bg-emerald-400/5' 
+                               : 'text-slate-600 opacity-50 cursor-not-allowed hover:bg-white/5'}`}
+                         >
+                            <span className="truncate">{label}</span>
+                            {isCompleted ? (
+                              <svg className="w-3" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                            ) : isActive ? (
+                              <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                            ) : (
+                              <div className="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+                            )}
+                         </button>
+                       );
+                     })}
+                  </nav>
+                </div>
              </div>
           </aside>
 
