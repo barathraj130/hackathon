@@ -50,9 +50,8 @@ export default function TeamDashboard() {
         setProblemStatement(res.data.problemStatements[0]);
       }
       
-      if (res.data?.config?.allowCertificateDetails && (!res.data.submission?.certificates || res.data.submission.certificates.length === 0)) {
-         setShowCertModal(true);
-      }
+      // Removed automatic modal popup to prevent interruption during task selection
+      // Teams can fill details via the button in the 'Submission Status' section
     } catch (err) { console.error(err); }
   }, []);
 
@@ -285,12 +284,15 @@ export default function TeamDashboard() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                        <div className="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-white text-sm text-[10px]">○</div>
-                        <div className="flex-1">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Certificate Pending</p>
-                          <p className="text-[8px] text-slate-400 uppercase mt-0.5 font-bold">Complete prototype first</p>
+                      <div className="flex flex-col gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl relative group/cert">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-white text-sm text-[10px]">○</div>
+                          <div className="flex-1">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Certificate Pending</p>
+                            <p className="text-[8px] text-slate-400 uppercase mt-0.5 font-bold">Details required for generation</p>
+                          </div>
                         </div>
+                        <button onClick={() => setShowCertModal(true)} className="w-full py-2 bg-white border border-slate-200 rounded-xl text-[9px] font-bold uppercase tracking-wider text-slate-600 hover:bg-slate-100 transition-all">Fill Member Details</button>
                       </div>
                     )}
 
