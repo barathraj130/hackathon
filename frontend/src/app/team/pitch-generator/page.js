@@ -229,13 +229,13 @@ export default function PitchGenerator() {
       <main className="max-w-7xl mx-auto py-10 px-6 relative z-10">
         <div className="grid grid-cols-12 gap-10">
           <aside className="col-span-3 hidden lg:block sticky top-28 h-fit">
-             <div className="bg-[#0a0a0a] p-6 rounded-[2.5rem] border-2 border-[#1a1a1a] shadow-[20px_20px_60px_rgba(0,0,0,0.7)] overflow-hidden relative">
+             <div className="bg-[#0f172a] p-6 rounded-[2.5rem] border-2 border-[#1e293b] shadow-[20px_20px_60px_rgba(0,0,0,0.7)] overflow-hidden relative">
                 
                 <div className="relative z-10 space-y-6">
-                  <div className="px-4 pb-4 border-b-2 border-rose-900/20 flex items-center justify-between">
-                    <h3 className="text-[11px] font-black text-rose-500 uppercase tracking-[0.2em]">Flow Pipeline</h3>
-                    <div className="w-8 h-8 rounded-lg bg-rose-600/10 flex items-center justify-center border border-rose-500/20">
-                      <span className="text-[10px] font-black text-rose-500">17</span>
+                  <div className="px-4 pb-4 border-b-2 border-blue-900/20 flex items-center justify-between">
+                    <h3 className="text-[11px] font-black text-blue-400 uppercase tracking-[0.2em]">Flow Pipeline</h3>
+                    <div className="w-8 h-8 rounded-lg bg-blue-600/10 flex items-center justify-center border border-blue-500/20">
+                      <span className="text-[10px] font-black text-blue-400">17</span>
                     </div>
                   </div>
                   
@@ -250,13 +250,13 @@ export default function PitchGenerator() {
                            onClick={() => (i+1) <= step && setStep(i+1)} 
                            className={`w-full text-left px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-4 border-b-4
                            ${isActive 
-                             ? 'bg-gradient-to-br from-rose-600 to-red-800 text-white shadow-[0_10px_20px_rgba(225,29,72,0.3)] translate-x-2 border-red-950' 
+                             ? 'bg-gradient-to-br from-blue-600 to-indigo-800 text-white shadow-[0_10px_20px_rgba(37,99,235,0.3)] translate-x-2 border-indigo-950' 
                              : isCompleted 
-                               ? 'bg-[#141414] text-rose-400 border-rose-950/50 hover:bg-[#1a1a1a]' 
-                               : 'bg-[#0f0f0f]/50 text-stone-600 border-transparent opacity-60 pointer-events-none'}`}
+                               ? 'bg-[#1e293b] text-emerald-400 border-[#0f172a] hover:bg-[#334155]' 
+                               : 'bg-[#0f172a]/50 text-slate-500 border-transparent opacity-60 pointer-events-none'}`}
                          >
                             <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[8px] font-black border
-                              ${isActive ? 'bg-white text-rose-600 border-white' : isCompleted ? 'bg-rose-500/10 border-rose-500/30' : 'bg-[#1a1a1a] border-stone-800'}`}>
+                              ${isActive ? 'bg-white text-blue-600 border-white' : isCompleted ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-[#1e293b] border-slate-700'}`}>
                               {isCompleted ? '✓' : i + 1}
                             </div>
                             <span className="truncate">{label}</span>
