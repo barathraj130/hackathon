@@ -372,17 +372,42 @@ router.post('/reallot-team', async (req, res) => {
 router.delete('/teams/:id', async (req, res) => {
     try {
         const teamId = req.params.id;
+        console.log(`[TeamDelete] Starting deletion for team ID: ${teamId}`);
         
         // First, fetch the team to get its teamName
         const team = await prisma.team.findUnique({ where: { id: teamId } });
         
         if (!team) {
+            console.log(`[TeamDelete] Team not found: ${teamId}`);
             return res.status(404).json({ error: "Team not found" });
         }
         
-        // Reset all problem statements allotted to this team
-        // This makes them available again for reassignment
-        await prisma.problemStatement.updateMany({
+        console.log(`[TeamDelete] Found team: ${team.teamName}`);
+        
+        // Step 1: Find submission to delete certificates
+        const submission = await prisma.submission.findUnique({ 
+            where: { teamId: teamId },
+            include: { certificates: true }
+        });
+        
+        if (submission) {
+            console.log(`[TeamDelete] Deleting ${submission.certificates.length} certificates`);
+            // Delete certificates first (they reference submission)
+            await prisma.participantCertificate.deleteMany({ 
+                where: { submissionId: submission.id } 
+            });
+        }
+        
+        // Step 2: Delete submission (references team)
+        console.log(`[TeamDelete] Deleting submissions for team: ${teamId}`);
+        const deletedSubmissions = await prisma.submission.deleteMany({ 
+            where: { teamId: teamId } 
+        });
+        console.log(`[TeamDelete] Deleted ${deletedSubmissions.count} submissions`);
+        
+        // Step 3: Reset all problem statements allotted to this team
+        console.log(`[TeamDelete] Resetting questions for team: ${team.teamName}`);
+        const resetResult = await prisma.problemStatement.updateMany({
             where: {
                 OR: [
                     { allottedTo: team.teamName },
@@ -391,17 +416,26 @@ router.delete('/teams/:id', async (req, res) => {
             },
             data: { allottedTo: null }
         });
+        console.log(`[TeamDelete] Reset ${resetResult.count} questions`);
         
-        console.log(`[TeamDelete] Reset questions for team: ${team.teamName}`);
-        
-        // Delete team submissions and the team itself
-        await prisma.submission.deleteMany({ where: { teamId: teamId } });
+        // Step 4: Finally delete the team
+        console.log(`[TeamDelete] Deleting team: ${team.teamName}`);
         await prisma.team.delete({ where: { id: teamId } });
         
-        res.json({ success: true, message: `Team deleted and ${team.teamName}'s questions reset` });
+        console.log(`[TeamDelete] ✅ Successfully deleted team ${team.teamName} and reset ${resetResult.count} questions`);
+        
+        res.json({ 
+            success: true, 
+            message: `Team "${team.teamName}" deleted and ${resetResult.count} question(s) freed`,
+            questionsReset: resetResult.count
+        });
     } catch (e) { 
-        console.error('[TeamDelete] Error:', e);
-        res.status(500).json({ error: "Failed to delete team" }); 
+        console.error('[TeamDelete] ❌ Error:', e);
+        console.error('[TeamDelete] Stack:', e.stack);
+        res.status(500).json({ 
+            error: "Failed to delete team", 
+            detail: e.message 
+        }); 
     }
 });
 
