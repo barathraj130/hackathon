@@ -53,12 +53,16 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
               <button 
                 onClick={() => router.push('/login')} 
-                className="w-full sm:w-auto btn-green !py-4 !px-10 !rounded-2xl text-base shadow-2xl shadow-green-200 hover:-translate-y-1 transition-transform"
+                className="w-full sm:w-auto btn-green !py-4 !px-10 !rounded-2xl text-base shadow-2xl shadow-green-200 hover:-translate-y-1 transition-transform flex items-center justify-center gap-2"
               >
-                Get Started
+                <span>Get Started</span>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
               </button>
               <div className="flex flex-col items-center lg:items-start">
-                <span className="text-xl font-bold text-slate-800 uppercase tracking-tighter">SYNTHESIS HUB</span>
+                <div className="flex items-center gap-2 text-slate-800 uppercase tracking-tighter">
+                  <svg className="w-5 h-5 text-[var(--primary-green)]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                  <span className="text-xl font-bold">SYNTHESIS HUB</span>
+                </div>
                 <span className="text-sm font-semibold text-slate-400">AI-Powered Flow</span>
               </div>
             </div>
@@ -67,8 +71,8 @@ export default function HomePage() {
           <div className="relative">
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] border-8 border-white bg-slate-100 group">
               <Image 
-                src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm95Zm55bm95Zm55bm95Zm55bm95Zm55bm95Zm55bm95Zm55bm95Zm55/L1R1TVThqWgtW/giphy.gif"
-                alt="Innovation GIF" 
+                src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5/3o7TKSjRrfIPjeiB5C/giphy.gif"
+                alt="Synthesis Engine" 
                 fill 
                 className="object-cover transition-scale duration-700 group-hover:scale-105 opacity-90"
                 unoptimized
@@ -93,9 +97,9 @@ export default function HomePage() {
 
         <div className="grid md:grid-cols-3 gap-8 mt-40">
           {[
-            { icon: 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5/3o7TKSjRrfIPjeiB5C/giphy.gif', title: 'Seamless Flow', desc: 'Watch your mission data transform into structured artifacts in real-time.' },
-            { icon: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5/3oKIPEqDGUULpEU0aQ/giphy.gif', title: 'Asset Logic', desc: 'Intelligent persistence ensures your vision is never lost during the mission.' },
-            { icon: 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5bDV5/xT1R9T8c5gJ0F00K6A/giphy.gif', title: 'Final Delivery', desc: 'Expert-grade PPTX synthesized with precise institutional formatting.' }
+            { icon: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHYzeThtM2I4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/6ozwFj8zeUpq0/giphy.gif', title: 'Seamless Flow', desc: 'Watch your mission data transform into structured artifacts in real-time.' },
+            { icon: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHYzeThtM2I4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/7frPNo8e0m8A8/giphy.gif', title: 'Asset Logic', desc: 'Intelligent persistence ensures your vision is never lost during the mission.' },
+            { icon: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHYzeThtM2I4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3og0IPbUvZH0SEK2wE/giphy.gif', title: 'Final Delivery', desc: 'Expert-grade PPTX synthesized with precise institutional formatting.' }
           ].map((feature, i) => (
             <div key={i} className="bg-white/70 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white hover:-translate-y-2 transition-all duration-300 group cursor-default">
               <div className="w-20 h-20 mb-8 rounded-2xl overflow-hidden shadow-inner bg-slate-50 border border-slate-100 relative">

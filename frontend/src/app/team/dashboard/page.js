@@ -151,7 +151,9 @@ export default function TeamDashboard() {
             </div>
             <div className="flex items-center gap-8">
               <div className="text-right"><p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Time Remaining</p><p className={`text-2xl font-bold tabular-nums ${timeLeft < 3600 ? 'text-rose-500 animate-pulse' : 'text-slate-800'}`}>{formattedTime}</p></div>
-              <div className="w-10 h-10"><img src="/images/institution_logo.png" alt="Logo" className="w-full h-full object-contain" /></div>
+              <div className="w-10 h-10 relative">
+                <Image src="/images/institution_logo.png" alt="Logo" fill className="object-contain" />
+              </div>
               <button onClick={handleLogout} className="text-xs font-bold text-slate-400 hover:text-rose-500 transition-colors uppercase tracking-widest">Logout</button>
             </div>
           </nav>
