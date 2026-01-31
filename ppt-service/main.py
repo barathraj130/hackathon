@@ -98,7 +98,7 @@ def get_credential(filename: str):
                 return FileResponse(os.path.join(CERTS_DIR, f))
     except: pass
 
-    raise HTTPException(status_code=404, detail=f"Credential [{clean_filename}] not found in institutional vault.")
+    raise HTTPException(status_code=404, detail=f"Credential [{clean_filename}] not found. Path: {file_path}. Available: {os.listdir(CERTS_DIR)}")
 
 # --- CORE MISSION SYNTHESIS ---
 @app.post("/generate-artifact")
