@@ -211,6 +211,18 @@ export default function AdminDashboard() {
     } catch (err) { alert("Failed to delete."); }
   }
 
+  async function handleResetAllQuestions() {
+    if (!confirm("EMERGENCY: Reset ALL question allotments? This will make all questions available again. Only use if current allotments appear incorrect.")) return;
+    try {
+      const res = await axios.post(`${getApiUrl()}/admin/reset-all-questions`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      if (res.data.success) {
+        alert(res.data.message);
+        fetchProblemStatements();
+        fetchTeams();
+      }
+    } catch (err) { alert("Reset failed."); }
+  }
+
   if (!mounted) return <div className="min-h-screen bg-innovation relative overflow-hidden" />;
 
   const filteredSubmissions = Array.isArray(submissions) ? submissions.filter(sub => {
@@ -379,7 +391,15 @@ export default function AdminDashboard() {
         {activeTab === 'teams' && (
            <div className="grid grid-cols-12 gap-8">
               <div className="col-span-4 card-premium h-fit space-y-6">
-                 <h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest">Add Group</h2>
+                 <div className="flex justify-between items-center">
+                    <h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest">Add Group</h2>
+                    <button 
+                      onClick={handleResetAllQuestions}
+                      className="text-[8px] font-bold text-rose-500 hover:text-rose-700 uppercase tracking-widest bg-rose-50 px-2 py-1 rounded-md border border-rose-100 transition-colors"
+                    >
+                      Emergency Reset
+                    </button>
+                  </div>
                  <form onSubmit={handleCreateTeam} className="space-y-4">
                     <input className="input-premium py-2" placeholder="Group Name" value={newTeam.teamName} onChange={e => setNewTeam({...newTeam, teamName: e.target.value})} />
                     <input className="input-premium py-2" placeholder="Auth Key" value={newTeam.collegeName} onChange={e => setNewTeam({...newTeam, collegeName: e.target.value})} />

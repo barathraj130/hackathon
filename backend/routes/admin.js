@@ -439,6 +439,22 @@ router.delete('/teams/:id', async (req, res) => {
     }
 });
 
+/**
+ * EMERGENCY RECOVERY PROTOCOL
+ * Resets ALL problem statement allotments in case of desync
+ */
+router.post('/reset-all-questions', async (req, res) => {
+    try {
+        const resetResult = await prisma.problemStatement.updateMany({
+            data: { allottedTo: null }
+        });
+        console.log(`[EmergencyReset] Cleared allotments for ${resetResult.count} questions`);
+        res.json({ success: true, message: `Successfully reset ${resetResult.count} questions` });
+    } catch (e) {
+        res.status(500).json({ error: "Reset failed" });
+    }
+});
+
 router.get('/problem-statements', async (req, res) => {
     try {
         const ps = await prisma.problemStatement.findMany({ orderBy: { questionNo: 'asc' } });
