@@ -392,7 +392,7 @@ export default function AdminDashboard() {
                            setNewTeam({...newTeam, problemStatementIds: ids});
                          }}>
                            <option value="">None</option>
-                           {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={ps.id === newTeam.problemStatementIds[1]}>{ps.questionNo}</option>)}
+                           {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo || ps.id === newTeam.problemStatementIds[1]}>{ps.questionNo}</option>)}
                          </select>
                        </div>
                        <div className="space-y-1">
@@ -403,7 +403,7 @@ export default function AdminDashboard() {
                            setNewTeam({...newTeam, problemStatementIds: ids});
                          }}>
                            <option value="">None</option>
-                           {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={ps.id === newTeam.problemStatementIds[0]}>{ps.questionNo}</option>)}
+                           {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo || ps.id === newTeam.problemStatementIds[0]}>{ps.questionNo}</option>)}
                          </select>
                        </div>
                     </div>
