@@ -412,7 +412,7 @@ export default function AdminDashboard() {
                            setNewTeam({...newTeam, problemStatementIds: ids});
                          }}>
                            <option value="">None</option>
-                           {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo || ps.id === newTeam.problemStatementIds[1]}>{ps.questionNo}</option>)}
+                           {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo || ps.id === newTeam.problemStatementIds[1]}>{ps.questionNo} - {ps.subDivisions}</option>)}
                          </select>
                        </div>
                        <div className="space-y-1">
@@ -423,7 +423,7 @@ export default function AdminDashboard() {
                            setNewTeam({...newTeam, problemStatementIds: ids});
                          }}>
                            <option value="">None</option>
-                           {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo || ps.id === newTeam.problemStatementIds[0]}>{ps.questionNo}</option>)}
+                           {problemStatements.map(ps => <option key={ps.id} value={ps.id} disabled={!!ps.allottedTo || ps.id === newTeam.problemStatementIds[0]}>{ps.questionNo} - {ps.subDivisions}</option>)}
                          </select>
                        </div>
                     </div>
@@ -453,7 +453,7 @@ export default function AdminDashboard() {
                                         <option value="">NONE</option>
                                         {problemStatements.map(ps => (
                                           <option key={ps.id} value={ps.id} disabled={ps.allottedTo && ps.allottedTo !== t.teamName}>
-                                            {ps.questionNo}
+                                            {ps.questionNo} - {ps.subDivisions}
                                           </option>
                                         ))}
                                       </select>
@@ -471,7 +471,7 @@ export default function AdminDashboard() {
                                         <option value="">NONE</option>
                                         {problemStatements.map(ps => (
                                           <option key={ps.id} value={ps.id} disabled={ps.allottedTo && ps.allottedTo !== t.teamName}>
-                                            {ps.questionNo}
+                                            {ps.questionNo} - {ps.subDivisions}
                                           </option>
                                         ))}
                                       </select>
