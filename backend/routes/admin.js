@@ -440,6 +440,49 @@ router.delete('/teams/:id', async (req, res) => {
 });
 
 /**
+ * MISSION REVERSAL PROTOCOL
+ * Resets a specific team's question selection and submission state.
+ * Use when a team accidentally selects the wrong core task.
+ */
+router.post('/reset-team-selection/:id', async (req, res) => {
+    try {
+        const teamId = req.params.id;
+        console.log(`[SelectionReset] Resetting state for team: ${teamId}`);
+
+        // 1. Reset Team Selection
+        await prisma.team.update({
+            where: { id: teamId },
+            data: { selectedProblemId: null }
+        });
+
+        // 2. Reset Submission State if it exists
+        const submission = await prisma.submission.findUnique({ where: { teamId } });
+        if (submission) {
+            await prisma.submission.update({
+                where: { teamId },
+                data: {
+                    status: 'IN_PROGRESS',
+                    canRegenerate: true,
+                    pptUrl: null,
+                    prototypeUrl: null
+                }
+            });
+            
+            // Delete associated certificates to ensure a clean slate
+            await prisma.participantCertificate.deleteMany({
+                where: { submissionId: submission.id }
+            });
+        }
+
+        console.log(`[SelectionReset] ✅ SUCCESS: Team ${teamId} has been reverted to selection phase.`);
+        res.json({ success: true, message: "Team selection reset. Group can now re-select their task." });
+    } catch (e) {
+        console.error('[SelectionReset] ❌ Error:', e);
+        res.status(500).json({ error: "Failed to reset team selection", detail: e.message });
+    }
+});
+
+/**
  * EMERGENCY RECOVERY PROTOCOL
  * Resets ALL problem statement allotments in case of desync
  */

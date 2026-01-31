@@ -175,6 +175,19 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleResetSelection(teamId) {
+    if (!confirm("Reset selection for this team? They will be allowed to choose their task again.")) return;
+    try {
+      const res = await axios.post(`${getApiUrl()}/admin/reset-team-selection/${teamId}`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      alert(res.data.message);
+      fetchTeams();
+    } catch (err) {
+      alert("Reset failed: " + (err.response?.data?.error || err.message));
+    }
+  }
+
   async function handleForceRegenerate(teamId) {
     if(!confirm("Recreate file for this group?")) return;
     try {
@@ -481,7 +494,16 @@ export default function AdminDashboard() {
                                    <div className="flex items-center gap-2">
                                      <span className="font-bold text-slate-800">{t.teamName}</span>
                                      {t.selectedQuestion && (
-                                       <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded text-[8px] font-black uppercase tracking-widest border border-blue-200">Picked {t.selectedQuestion}</span>
+                                       <div className="flex items-center gap-1.5">
+                                         <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded text-[8px] font-black uppercase tracking-widest border border-blue-200">Picked {t.selectedQuestion}</span>
+                                         <button 
+                                           onClick={() => handleResetSelection(t.id)}
+                                           className="text-[8px] font-bold text-rose-500 hover:text-rose-700 uppercase tracking-widest bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100 transition-colors"
+                                           title="Reset team's question selection"
+                                         >
+                                           Reset Choice
+                                         </button>
+                                       </div>
                                      )}
                                    </div>
                                  </div>
