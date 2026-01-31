@@ -229,13 +229,13 @@ export default function PitchGenerator() {
       <main className="max-w-7xl mx-auto py-10 px-6 relative z-10">
         <div className="grid grid-cols-12 gap-10">
           <aside className="col-span-3 hidden lg:block sticky top-28 h-fit">
-             <div className="bg-[#0f172a] p-6 rounded-[2.5rem] border-2 border-[#1e293b] shadow-[20px_20px_60px_rgba(0,0,0,0.7)] overflow-hidden relative">
+             <div className="bg-gradient-to-b from-[#2563eb] to-[#1e40af] p-6 rounded-[2.5rem] border-2 border-white/20 shadow-[20px_20px_60px_rgba(37,99,235,0.3)] overflow-hidden relative">
                 
                 <div className="relative z-10 space-y-6">
-                  <div className="px-4 pb-4 border-b-2 border-blue-900/20 flex items-center justify-between">
-                    <h3 className="text-[11px] font-black text-blue-400 uppercase tracking-[0.2em]">Flow Pipeline</h3>
-                    <div className="w-8 h-8 rounded-lg bg-blue-600/10 flex items-center justify-center border border-blue-500/20">
-                      <span className="text-[10px] font-black text-blue-400">17</span>
+                  <div className="px-4 pb-4 border-b-2 border-white/10 flex items-center justify-between">
+                    <h3 className="text-[11px] font-black text-white uppercase tracking-[0.2em]">Flow Pipeline</h3>
+                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center border border-white/20">
+                      <span className="text-[10px] font-black text-white">17</span>
                     </div>
                   </div>
                   
@@ -271,19 +271,20 @@ export default function PitchGenerator() {
                            onClick={() => (i+1) <= step && setStep(i+1)} 
                            className={`w-full text-left px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-4 border-b-4
                            ${isActive 
-                             ? 'bg-gradient-to-br from-blue-600 to-indigo-800 text-white shadow-[0_10px_20px_rgba(37,99,235,0.3)] translate-x-2 border-indigo-950' 
+                             ? 'bg-white text-blue-600 shadow-[0_10px_20px_rgba(255,255,255,0.2)] translate-x-2 border-blue-200' 
                              : isCompleted 
-                               ? 'bg-[#1e293b] text-emerald-400 border-[#0f172a] hover:bg-[#334155]' 
-                               : 'bg-[#0f172a]/50 text-slate-500 border-transparent opacity-60 pointer-events-none'}`}
+                               ? 'bg-emerald-400 text-white border-emerald-600 hover:bg-emerald-500' 
+                               : 'bg-white/10 text-white/40 border-white/5 pointer-events-none'}`}
                          >
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-colors
-                              ${isActive ? 'bg-white text-blue-600 border-white shadow-[0_0_15px_rgba(255,255,255,0.4)]' : isCompleted ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-[#1e293b] border-slate-700 text-slate-600'}`}>
+                              ${isActive ? 'bg-blue-600 text-white border-blue-600 shadow-[0_0_15px_rgba(255,255,255,0.4)]' : isCompleted ? 'bg-white/20 border-white/40 text-white' : 'bg-white/5 border-white/10 text-white/30'}`}>
                               {isCompleted ? <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg> : (icons[i] || i+1)}
                             </div>
                             <span className="truncate">{label}</span>
                          </button>
                        );
                      })}
+                   </nav>
                 </div>
              </div>
           </aside>

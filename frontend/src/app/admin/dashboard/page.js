@@ -252,15 +252,15 @@ export default function AdminDashboard() {
       <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
       <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-green-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
 
-      {/* SIDEBAR - 3D HIGH READABILITY PANEL (MIDNIGHT AMBER) */}
-      <aside className="w-72 bg-[#0c0a09] flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-[#1c1917] shadow-[10px_0_30px_rgba(0,0,0,0.6)] z-20">
+      {/* SIDEBAR - 3D HIGH READABILITY PANEL (ROYAL INTELLIGENCE) */}
+      <aside className="w-72 bg-gradient-to-b from-[#1e3a8a] to-[#172554] flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-blue-400/20 shadow-[10px_0_30px_rgba(30,58,138,0.5)] z-20">
         
         {/* Brand Identity Card */}
-        <div className="bg-[#1c1917] p-4 rounded-2xl border border-orange-900/30 shadow-[0_4px_10px_rgba(0,0,0,0.5)] flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-700 rounded-xl flex items-center justify-center font-black text-white text-xl shadow-[0_4px_15px_rgba(249,115,22,0.3)]">C</div>
+        <div className="bg-[#1d4ed8] p-4 rounded-2xl border border-blue-400/30 shadow-[0_4px_10px_rgba(0,0,0,0.3)] flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center font-black text-white text-xl shadow-[0_4px_15px_rgba(251,191,36,0.4)]">C</div>
           <div>
             <p className="font-black text-xl text-white leading-none tracking-tight">COMMAND</p>
-            <p className="text-[10px] text-orange-500 font-black uppercase tracking-[0.2em] mt-1">HACKATHON OS</p>
+            <p className="text-[10px] text-amber-400 font-black uppercase tracking-[0.2em] mt-1">HACKATHON OS</p>
           </div>
         </div>
 
@@ -280,10 +280,10 @@ export default function AdminDashboard() {
                  onClick={() => setActiveTab(item.key)} 
                  className={`w-full px-6 py-4 rounded-2xl text-xs font-black tracking-widest uppercase transition-all duration-300 flex items-center gap-4 border-b-4
                  ${isActive 
-                   ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-[0_8px_20px_rgba(249,115,22,0.3)] translate-x-2 border-orange-900' 
-                   : 'bg-[#1c1917] text-stone-400 hover:bg-[#292524] hover:text-white hover:translate-x-1 border-stone-900 shadow-[0_4px_0_rgba(0,0,0,0.5)]'}`}
+                   ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_8px_20px_rgba(34,211,238,0.3)] translate-x-2 border-blue-700' 
+                   : 'bg-[#1e40af] text-blue-100 hover:bg-[#2563eb] hover:text-white hover:translate-x-1 border-[#172554] shadow-[0_4px_0_rgba(0,0,0,0.2)]'}`}
                >
-                 <span className={`${isActive ? 'text-white' : 'text-orange-500 group-hover:text-orange-400'}`}>{item.icon}</span>
+                 <span className={`${isActive ? 'text-white' : 'text-cyan-300 group-hover:text-white'}`}>{item.icon}</span>
                  <span>{item.name}</span>
                  {isActive && <div className="ml-auto w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]"></div>}
                </button>
@@ -292,17 +292,17 @@ export default function AdminDashboard() {
         </nav>
 
         {/* 3D Mission Clock Card */}
-        <div className="p-6 bg-[#141414] rounded-[2rem] border-2 border-stone-800 shadow-[0_8px_25px_rgba(0,0,0,0.5)] text-center relative overflow-hidden group/timer">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-            <p className="text-[10px] text-stone-500 font-black mb-3 tracking-[0.2em] uppercase">SYSTEM MISSION CLOCK</p>
-            <div className="bg-black/40 py-3 rounded-xl border border-white/5">
-              <p className={`text-3xl font-black tabular-nums tracking-tighter ${timer.timerPaused ? 'text-rose-500' : 'text-orange-500'} drop-shadow-[0_0_10px_rgba(249,115,22,0.4)]`}>
+        <div className="p-6 bg-[#1e3a8a] rounded-[2rem] border-2 border-blue-400/30 shadow-[0_8px_25px_rgba(30,58,138,0.4)] text-center relative overflow-hidden group/timer">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-blue-400"></div>
+            <p className="text-[10px] text-blue-200 font-black mb-3 tracking-[0.2em] uppercase">SYSTEM MISSION CLOCK</p>
+            <div className="bg-[#172554]/60 py-3 rounded-xl border border-blue-400/20">
+              <p className={`text-3xl font-black tabular-nums tracking-tighter ${timer.timerPaused ? 'text-rose-400' : 'text-cyan-400'} drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]`}>
                 {timer.formattedTime || '24:00:00'}
               </p>
             </div>
         </div>
         
-        <button onClick={() => { localStorage.clear(); window.location.href='/'; }} className="w-full py-4 bg-orange-900/10 text-xs font-black text-stone-600 hover:bg-orange-600 hover:text-white rounded-2xl border-2 border-stone-800 transition-all uppercase tracking-widest">
+        <button onClick={() => { localStorage.clear(); window.location.href='/'; }} className="w-full py-4 bg-white/10 text-xs font-black text-blue-100 hover:bg-white/20 hover:text-white rounded-2xl border-2 border-blue-400/20 transition-all uppercase tracking-widest">
           Terminate Session
         </button>
       </aside>
