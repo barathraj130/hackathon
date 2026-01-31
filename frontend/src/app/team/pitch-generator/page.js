@@ -229,16 +229,17 @@ export default function PitchGenerator() {
       <main className="max-w-7xl mx-auto py-10 px-6 relative z-10">
         <div className="grid grid-cols-12 gap-10">
           <aside className="col-span-3 hidden lg:block sticky top-28 h-fit">
-             <div className="bg-[#1a0b3b]/95 backdrop-blur-2xl p-6 rounded-[2rem] border border-[#2d1b5a] shadow-[0_20px_50px_rgba(26,11,59,0.3)] overflow-hidden relative group">
-                {/* Visual Accent Glows */}
-                <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-purple-600/20 blur-[60px] rounded-full pointer-events-none"></div>
-                <div className="absolute bottom-[-10%] left-[-10%] w-32 h-32 bg-pink-600/10 blur-[60px] rounded-full pointer-events-none"></div>
+             <div className="bg-[#1e1b4b] p-6 rounded-[2.5rem] border-2 border-slate-800 shadow-[20px_20px_60px_rgba(0,0,0,0.5),-5px_-5px_20px_rgba(255,255,255,0.02)] overflow-hidden relative">
                 
-                <div className="relative z-10 space-y-4">
-                  <div className="px-4 pb-2 border-b border-purple-500/20">
-                    <h3 className="text-[10px] font-black text-purple-300/40 uppercase tracking-[0.2em]">Flow Pipeline</h3>
+                <div className="relative z-10 space-y-6">
+                  <div className="px-4 pb-4 border-b-2 border-slate-800/50 flex items-center justify-between">
+                    <h3 className="text-[11px] font-black text-blue-400 uppercase tracking-[0.2em]">Flow Pipeline</h3>
+                    <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center border border-blue-500/30">
+                      <span className="text-[10px] font-black text-blue-400">17</span>
+                    </div>
                   </div>
-                  <nav className="space-y-1.5 max-h-[calc(100vh-320px)] pr-2 overflow-y-auto custom-scrollbar">
+                  
+                  <nav className="space-y-3 max-h-[calc(100vh-320px)] pr-2 overflow-y-auto custom-scrollbar pt-2">
                      {stepsList.map((label, i) => {
                        const isActive = step === (i + 1);
                        const isCompleted = (i + 1) < step;
@@ -247,21 +248,18 @@ export default function PitchGenerator() {
                          <button 
                            key={i} 
                            onClick={() => (i+1) <= step && setStep(i+1)} 
-                           className={`w-full text-left px-5 py-3.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-between group/btn
+                           className={`w-full text-left px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-4 border-b-4
                            ${isActive 
-                             ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-[0_10px_20px_rgba(147,51,234,0.3)] scale-[1.02] border border-purple-400/30' 
+                             ? 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-[0_10px_20px_rgba(37,99,235,0.3)] translate-x-2 border-indigo-900' 
                              : isCompleted 
-                               ? 'text-pink-400 hover:bg-white/5' 
-                               : 'text-purple-300/30 cursor-not-allowed hover:bg-white/5'}`}
+                               ? 'bg-slate-800 text-emerald-400 border-slate-900 hover:bg-slate-700/80' 
+                               : 'bg-slate-900/50 text-slate-500 border-transparent opacity-60 pointer-events-none'}`}
                          >
+                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[8px] font-black border
+                              ${isActive ? 'bg-white text-blue-600 border-white' : isCompleted ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-slate-800 border-slate-700'}`}>
+                              {isCompleted ? '✓' : i + 1}
+                            </div>
                             <span className="truncate">{label}</span>
-                            {isCompleted ? (
-                              <svg className="w-3" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                            ) : isActive ? (
-                              <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
-                            ) : (
-                              <div className="w-1.5 h-1.5 rounded-full bg-purple-900/50"></div>
-                            )}
                          </button>
                        );
                      })}

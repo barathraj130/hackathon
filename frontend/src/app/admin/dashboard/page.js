@@ -252,40 +252,57 @@ export default function AdminDashboard() {
       <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
       <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-green-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
 
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-[#0a1f1c]/95 backdrop-blur-2xl flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-[#163a34] shadow-[20px_0_50px_rgba(10,31,28,0.4)] z-20 relative overflow-hidden">
-        {/* Background Accents */}
-        <div className="absolute top-[-10%] left-[-10%] w-32 h-32 bg-emerald-600/10 blur-[60px] rounded-full pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-32 h-32 bg-teal-600/10 blur-[60px] rounded-full pointer-events-none"></div>
-
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20">C</div>
-          <div><p className="font-extrabold text-lg text-white leading-none tracking-tight">COMMAND</p><p className="text-[9px] text-emerald-400 font-black uppercase tracking-[0.2em] mt-1">CENTER</p></div>
+      {/* SIDEBAR - 3D HIGH READABILITY PANEL */}
+      <aside className="w-72 bg-[#0f172a] flex flex-col h-screen sticky top-0 p-6 space-y-8 border-r border-slate-800 shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-20">
+        
+        {/* Brand Identity Card */}
+        <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 shadow-[0_4px_10px_rgba(0,0,0,0.3)] flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center font-black text-white text-xl shadow-[0_4px_15px_rgba(37,99,235,0.4)]">C</div>
+          <div>
+            <p className="font-black text-xl text-white leading-none tracking-tight">COMMAND</p>
+            <p className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.2em] mt-1">HACKATHON OS</p>
+          </div>
         </div>
 
-        <nav className="relative z-10 flex-1 space-y-2">
-           {['STATS', 'WORK', 'TASKS', 'GROUPS', 'SETUP'].map(tab => {
-             const tabKey = tab === 'STATS' ? 'overview' : tab === 'WORK' ? 'submissions' : tab === 'TASKS' ? 'problems' : tab === 'GROUPS' ? 'teams' : 'configuration';
-             const isActive = activeTab === tabKey;
+        {/* Navigation Layers */}
+        <nav className="flex-1 space-y-3">
+           {[
+             { name: 'STATS', key: 'overview', icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> },
+             { name: 'WORK', key: 'submissions', icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1m-6 10l3 3m0 0l3-3m-3 3V10" /></svg> },
+             { name: 'TASKS', key: 'problems', icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg> },
+             { name: 'GROUPS', key: 'teams', icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg> },
+             { name: 'SETUP', key: 'configuration', icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> }
+           ].map(item => {
+             const isActive = activeTab === item.key;
              return (
-               <button key={tab} onClick={() => setActiveTab(tabKey)} 
-                 className={`w-full text-left px-5 py-3.5 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all duration-300 flex items-center justify-between group
-                 ${isActive ? 'bg-gradient-to-r from-emerald-600/20 to-teal-600/10 text-white shadow-sm border border-emerald-500/30 scale-[1.02]' : 'text-emerald-900/40 hover:bg-white/5 hover:text-emerald-200'}`}>
-                 {tab}
-                 {isActive && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse"></div>}
+               <button 
+                 key={item.name} 
+                 onClick={() => setActiveTab(item.key)} 
+                 className={`w-full px-6 py-4 rounded-2xl text-xs font-black tracking-widest uppercase transition-all duration-300 flex items-center gap-4 group
+                 ${isActive 
+                   ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-[0_8px_20px_rgba(37,99,235,0.4)] translate-x-2 border-b-4 border-indigo-900' 
+                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white hover:translate-x-1 border-b-4 border-slate-900 shadow-[0_4px_0_rgba(0,0,0,0.5)]'}`}
+               >
+                 <span className={`${isActive ? 'text-white' : 'text-blue-400 group-hover:text-blue-300'}`}>{item.icon}</span>
+                 <span>{item.name}</span>
+                 {isActive && <div className="ml-auto w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]"></div>}
                </button>
              )
            })}
         </nav>
 
-        <div className="relative z-10 p-5 bg-emerald-900/20 rounded-2xl border border-emerald-800/30 text-center shadow-inner group/timer">
-            <p className="text-[9px] text-emerald-500/60 font-black mb-2 tracking-[0.2em] uppercase transition-colors group-hover/timer:text-emerald-400">MISSION TIMER</p>
-            <p className={`text-2xl font-black tabular-nums tracking-tighter ${timer.timerPaused ? 'text-rose-500' : 'text-emerald-400'} drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]`}>
-              {timer.formattedTime || '24:00:00'}
-            </p>
+        {/* 3D Mission Clock Card */}
+        <div className="p-6 bg-[#1a2233] rounded-[2rem] border-2 border-slate-700 shadow-[0_8px_25px_rgba(0,0,0,0.4)] text-center relative overflow-hidden group/timer">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+            <p className="text-[10px] text-slate-400 font-black mb-3 tracking-[0.2em] uppercase">SYSTEM MISSION CLOCK</p>
+            <div className="bg-black/40 py-3 rounded-xl border border-white/5">
+              <p className={`text-3xl font-black tabular-nums tracking-tighter ${timer.timerPaused ? 'text-rose-500' : 'text-emerald-400'} drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]`}>
+                {timer.formattedTime || '24:00:00'}
+              </p>
+            </div>
         </div>
         
-        <button onClick={() => { localStorage.clear(); window.location.href='/'; }} className="relative z-10 w-full py-3 text-[10px] font-bold text-emerald-900/40 hover:text-rose-400 transition-colors uppercase tracking-[0.2em] border-t border-emerald-900/30 pt-6">
+        <button onClick={() => { localStorage.clear(); window.location.href='/'; }} className="w-full py-4 bg-rose-900/20 text-xs font-black text-rose-500 hover:bg-rose-500 hover:text-white rounded-2xl border-2 border-rose-900/30 transition-all uppercase tracking-widest shadow-lg">
           Terminate Session
         </button>
       </aside>
