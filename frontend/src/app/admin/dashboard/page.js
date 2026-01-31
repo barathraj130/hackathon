@@ -283,10 +283,31 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-1">
                             {s.pptUrl && <a href={s.pptUrl} target="_blank" className="text-blue-500 font-bold hover:underline text-[10px] uppercase">PPT Artifact</a>}
+                            
+                            {s.prototypeUrl && s.prototypeUrl.split('|').map((part, idx) => {
+                                const trimmed = part.trim();
+                                if (trimmed.startsWith('FILE:')) {
+                                  const filePath = trimmed.replace('FILE:', '').trim();
+                                  // Construct full URL assuming backend serves static files from root
+                                  const downloadUrl = `${getApiUrl().replace('/v1', '')}${filePath}`;
+                                  return (
+                                    <a key={`proto-file-${idx}`} href={downloadUrl} target="_blank" className="text-orange-500 font-bold hover:underline text-[10px] uppercase">
+                                      Prototype File
+                                    </a>
+                                  );
+                                } else {
+                                  return (
+                                    <a key={`proto-link-${idx}`} href={trimmed} target="_blank" className="text-orange-500 font-bold hover:underline text-[10px] uppercase">
+                                      Prototype Link
+                                    </a>
+                                  );
+                                }
+                            })}
+
                             {s.certificates?.map(c => c.certificateUrl && (
                                <a key={c.id} href={c.certificateUrl} target="_blank" className="text-indigo-500 font-bold hover:underline text-[10px] uppercase">Cert: {c.name.split(' ')[0]}</a>
                             ))}
-                            {!s.pptUrl && !s.certificates?.some(c => c.certificateUrl) && <span className="text-[10px] text-slate-300 font-bold uppercase italic tracking-tighter">No files yet</span>}
+                            {!s.pptUrl && !s.prototypeUrl && !s.certificates?.some(c => c.certificateUrl) && <span className="text-[10px] text-slate-300 font-bold uppercase italic tracking-tighter">No files yet</span>}
                           </div>
                         </td>
                         <td className="px-6 py-4">

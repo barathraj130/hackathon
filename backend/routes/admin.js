@@ -403,6 +403,7 @@ router.get('/submissions', async (req, res) => {
                 team: t,
                 status: t.submission?.status || 'PENDING',
                 pptUrl: t.submission?.pptUrl || null,
+                prototypeUrl: t.submission?.prototypeUrl || null,
                 allottedQuestion: allottedQuestion,
                 isPicked: isPicked,
                 certificates: t.submission?.certificates || [],
