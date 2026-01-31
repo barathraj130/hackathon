@@ -86,6 +86,7 @@ export default function AdminDashboard() {
     try {
       const res = await axios.get(`${getApiUrl()}/admin/problem-statements`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       setProblemStatements(res.data || []);
+      console.log('[FetchPS] Problem statements:', res.data?.map(ps => ({ id: ps.id, no: ps.questionNo, allottedTo: ps.allottedTo })));
     } catch (err) { console.error(err); }
   }
 
@@ -153,12 +154,24 @@ export default function AdminDashboard() {
   async function handleDeleteTeam(id) {
     if(!confirm("Remove this group?")) return;
     try { 
-      await axios.delete(`${getApiUrl()}/admin/teams/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }); 
-      fetchTeams(); 
-      fetchProblemStatements(); // Refresh questions to show freed-up assignments
-      fetchStats(); 
+      const res = await axios.delete(`${getApiUrl()}/admin/teams/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      console.log('[DeleteTeam] Response:', res.data);
+      
+      // Sequential refresh to ensure DB changes propagate
+      await fetchTeams(); 
+      
+      // Small delay to ensure backend has completed the question reset
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      await fetchProblemStatements(); // Refresh questions to show freed-up assignments
+      console.log('[DeleteTeam] Problem statements refreshed');
+      
+      await fetchStats(); 
+      
+      alert(res.data.message || 'Team deleted successfully');
     } catch(e) {
-      alert("Failed to delete team");
+      console.error('[DeleteTeam] Error:', e);
+      alert("Failed to delete team: " + (e.response?.data?.error || e.message));
     }
   }
 
