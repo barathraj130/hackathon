@@ -68,7 +68,11 @@ def certificate_handler(data: dict = Body(...)):
         # Verify serialization
         if not os.path.exists(out_path):
             print(f"[CRITICAL] Serialization failed for {out_path}")
+            print(f"[DEBUG] Directory dump: {os.listdir(CERTS_DIR)}")
             raise Exception("Synthesis failed to serialize artifact.")
+        else:
+            print(f"[SUCCESS] Certificate persisted: {out_path} ({os.path.getsize(out_path)} bytes)")
+            print(f"[DEBUG] Vault Contents: {os.listdir(CERTS_DIR)}")
 
         return {
             "success": True,
