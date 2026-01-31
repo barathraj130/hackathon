@@ -317,7 +317,14 @@ export default function TeamDashboard() {
             </div>
           </main>
 
-          <SubmissionWorkflowModal isOpen={showWorkflowModal} onClose={() => setShowWorkflowModal(false)} onComplete={() => { fetchInitialData(); setShowWorkflowModal(false); }} apiUrl={process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1'} />
+          <SubmissionWorkflowModal 
+            isOpen={showWorkflowModal} 
+            onClose={() => setShowWorkflowModal(false)} 
+            onComplete={() => { fetchInitialData(); setShowWorkflowModal(false); }} 
+            apiUrl={process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1'}
+            teamData={teamData}
+            existingSubmission={submission}
+          />
           {teamData && <PostHackathonCertificateModal isOpen={showCertModal} onClose={() => setShowCertModal(false)} teamData={teamData} apiUrl={process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1'} />}
         </div>
       )}

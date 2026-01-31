@@ -2,21 +2,32 @@
 import axios from 'axios';
 import { useState } from 'react';
 
-export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, apiUrl }) {
+export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, apiUrl, teamData, existingSubmission }) {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   
   // Prototype submission data
-  const [prototypeLink, setPrototypeLink] = useState('');
+  const [prototypeLink, setPrototypeLink] = useState(existingSubmission?.prototypeUrl || '');
   const [prototypeFile, setPrototypeFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   
-  // Certificate data
-  const [participants, setParticipants] = useState([
-    { name: '', role: 'Leader', college: '', year: '1', dept: '' },
-    { name: '', role: 'Member', college: '', year: '1', dept: '' }
-  ]);
+  // Certificate data - pre-fill from existing submission if available
+  const [participants, setParticipants] = useState(() => {
+    if (existingSubmission?.certificates && existingSubmission.certificates.length > 0) {
+      return existingSubmission.certificates.map(c => ({
+        name: c.name || '',
+        role: c.role || 'Member',
+        college: c.college || '',
+        year: c.year || '1',
+        dept: c.dept || ''
+      }));
+    }
+    return [
+      { name: '', role: 'Leader', college: teamData?.collegeName || '', year: '1', dept: 'N/A' },
+      { name: '', role: 'Member', college: teamData?.collegeName || '', year: '1', dept: 'N/A' }
+    ];
+  });
 
   if (!isOpen) return null;
 
@@ -27,7 +38,7 @@ export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, a
       const token = localStorage.getItem('token');
       
       // Submit prototype link if provided
-      if (prototypeLink.trim()) {
+      if (prototypeLink.trim() && prototypeLink !== existingSubmission?.prototypeUrl) {
         await axios.post(`${apiUrl}/team/submit-prototype`, 
           { prototypeUrl: prototypeLink },
           { headers: { Authorization: `Bearer ${token}` } }
@@ -51,7 +62,13 @@ export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, a
         });
       }
       
-      setStep(2); // Move to certificate details
+      // SKIP certificate details if already provided (avoids asking twice)
+      const hasCertDetails = existingSubmission?.certificates && existingSubmission.certificates.length > 0;
+      if (hasCertDetails) {
+        setStep(3); // Skip directly to final confirmation
+      } else {
+        setStep(2); // Move to certificate details
+      }
     } catch (err) {
       setError(err.response?.data?.error || "Prototype submission failed. Please try again.");
     } finally {
