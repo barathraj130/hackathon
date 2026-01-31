@@ -65,7 +65,19 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
         headers: { Authorization: `Bearer ${token}` } 
       });
       setStatus({ type: 'success', message: res.data.message || 'Certificates generated!' });
-      setTimeout(onClose, 2000);
+      
+      // Update local state with new URLs so buttons appear immediately
+      if (res.data.success) {
+         // Refresh data to get URLs
+         const refreshed = await axios.get(`${apiUrl}/team/profile`, { headers: { Authorization: `Bearer ${token}` } });
+         if (refreshed.data.submission?.certificates) {
+             const newCerts = refreshed.data.submission.certificates;
+             setParticipants(prev => prev.map(p => {
+                 const match = newCerts.find(c => c.role === p.role);
+                 return match ? { ...p, certificateUrl: match.certificateUrl } : p;
+             }));
+         }
+      }
     } catch (err) {
       setStatus({ type: 'error', message: err.response?.data?.error || 'Generation failed.' });
     } finally {
@@ -127,38 +139,50 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
                       {[1,2,3,4,5].map(y => <option key={y} value={y}>{y} Year</option>)}
                     </select>
                   </div>
-               </div>
-            </div>
-          ))}
-        </div>
-
-        {status && (
-          <div className={`p-4 rounded-xl text-xs font-bold uppercase text-center ${status.type === 'success' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-rose-50 text-rose-600 border border-rose-100'} animate-pulse`}>
-            {status.message}
-          </div>
-        )}
-
-        <div className="flex gap-4 border-t border-slate-200/50 pt-6">
-          <button 
-            onClick={onClose} 
-            className="px-6 py-4 rounded-2xl border-2 border-slate-200 text-xs font-bold text-slate-500 hover:bg-slate-50 transition-all uppercase tracking-widest"
-          >
-            Close
-          </button>
-          <button 
-            disabled={isSubmitting || isGenerating}
-            onClick={handleSubmit}
-            className="flex-1 bg-white/80 border-2 border-[var(--secondary-blue)] text-[var(--secondary-blue)] px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-blue-50 transition-all backdrop-blur-sm"
-          >
-            {isSubmitting ? 'Syncing...' : 'Save Details'}
-          </button>
-          <button 
-            disabled={isSubmitting || isGenerating}
-            onClick={handleGenerate}
-            className="flex-1 btn-blue !py-4 text-xs uppercase font-bold tracking-widest shadow-lg shadow-blue-100 disabled:opacity-50"
-          >
-            {isGenerating ? 'Processing...' : 'Generate Certificates'}
-          </button>
+                   </div>
+                {p.certificateUrl && (
+                    <div className="pt-2 border-t border-slate-200/50 flex justify-end">
+                        <a 
+                          href={p.certificateUrl} 
+                          target="_blank" 
+                          className="flex items-center gap-2 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-colors uppercase tracking-wider"
+                        >
+                          <span>Download Certificate</span>
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        </a>
+                    </div>
+                )}
+             </div>
+           ))}
+         </div>
+ 
+         {status && (
+           <div className={`p-4 rounded-xl text-xs font-bold uppercase text-center ${status.type === 'success' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-rose-50 text-rose-600 border border-rose-100'} animate-pulse`}>
+             {status.message}
+           </div>
+         )}
+ 
+         <div className="flex gap-4 border-t border-slate-200/50 pt-6">
+           <button 
+             onClick={onClose} 
+             className="px-6 py-4 rounded-2xl border-2 border-slate-200 text-xs font-bold text-slate-500 hover:bg-slate-50 transition-all uppercase tracking-widest"
+           >
+             Close
+           </button>
+           <button 
+             disabled={isSubmitting || isGenerating}
+             onClick={handleSubmit}
+             className="flex-1 bg-white/80 border-2 border-[var(--secondary-blue)] text-[var(--secondary-blue)] px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-blue-50 transition-all backdrop-blur-sm"
+           >
+             {isSubmitting ? 'Syncing...' : 'Save Details'}
+           </button>
+           <button 
+             disabled={isSubmitting || isGenerating}
+             onClick={handleGenerate}
+             className="flex-1 btn-blue !py-4 text-xs uppercase font-bold tracking-widest shadow-lg shadow-blue-100 disabled:opacity-50"
+           >
+             {isGenerating ? 'Processing...' : 'Generate Certificates'}
+           </button>
         </div>
       </div>
     </div>
