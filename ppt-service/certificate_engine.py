@@ -65,11 +65,12 @@ def create_certificate(name, college, year, dept, role, event_name="BHARAT BRILL
     p_e.font.size = Pt(12.5); p_e.font.color.rgb = RGBColor(71, 85, 105)
 
     # 5. Bottom Signatures
-    tx_sig1 = slide.shapes.add_textbox(Inches(1.5), Inches(6.4), Inches(3), Inches(0.4))
-    p_s1 = tx_sig1.text_frame.paragraphs[0]; p_s1.text = "EVENT COORDINATOR"; p_s1.font.size = Pt(10); p_s1.font.bold = True; p_s1.font.color.rgb = TEXT_MAIN
+    tx_sig1 = slide.shapes.add_textbox(Inches(1.5), Inches(6.4), Inches(3.5), Inches(0.4))
+    p_s1 = tx_sig1.text_frame.paragraphs[0]; p_s1.text = "STUDENT EVENT COORDINATOR"; p_s1.font.size = Pt(10); p_s1.font.bold = True; p_s1.font.color.rgb = TEXT_MAIN
     
-    tx_sig2 = slide.shapes.add_textbox(prs.slide_width - Inches(4.5), Inches(6.4), Inches(3), Inches(0.4))
-    p_s2 = tx_sig2.text_frame.paragraphs[0]; p_s2.alignment = PP_ALIGN.RIGHT; p_s2.text = "PRINCIPAL / DIRECTOR"; p_s2.font.size = Pt(10); p_s2.font.bold = True; p_s2.font.color.rgb = TEXT_MAIN
+    # Adjusted width and position to accommodate longer HOD title while keeping right-side alignment visual
+    tx_sig2 = slide.shapes.add_textbox(prs.slide_width - Inches(6.0), Inches(6.4), Inches(4.5), Inches(0.4))
+    p_s2 = tx_sig2.text_frame.paragraphs[0]; p_s2.alignment = PP_ALIGN.RIGHT; p_s2.text = "HOD COMPUTER SCIENCE AND ENGINEERING"; p_s2.font.size = Pt(10); p_s2.font.bold = True; p_s2.font.color.rgb = TEXT_MAIN
     
     # Final Secure Output
     if out_path:
