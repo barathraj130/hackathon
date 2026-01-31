@@ -2,6 +2,7 @@
 import PostHackathonCertificateModal from '@/components/PostHackathonCertificateModal';
 import SubmissionWorkflowModal from '@/components/SubmissionWorkflowModal';
 import axios from 'axios';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
