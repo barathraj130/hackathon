@@ -42,18 +42,25 @@ def create_pptx(team_name, college, slides_data):
     p_title.font.color.rgb = RGBColor(0, 0, 0)
     p_title.alignment = PP_ALIGN.CENTER
 
-    # Subtitle Text (Organised by...)
-    tx_subtitle = slide.shapes.add_textbox(Inches(1.0), Inches(2.7), Inches(8.0), Inches(0.6))
-    p_subtitle = tx_subtitle.text_frame.paragraphs[0]
-    college_text = college if college and college != "Institution" else "Jansons Institute of Technology"
-    p_subtitle.text = f"Organised by {college_text}"
-    p_subtitle.font.size = Pt(24); p_subtitle.font.bold = False; p_subtitle.font.name = 'Times New Roman'
-    p_subtitle.font.color.rgb = RGBColor(0, 0, 0)
-    p_subtitle.alignment = PP_ALIGN.CENTER
+    # Subtitle Text (Split into 'Organised by' + College Name)
+    tx_subtitle = slide.shapes.add_textbox(Inches(1.0), Inches(2.6), Inches(8.0), Inches(1.0))
+    tf_s = tx_subtitle.text_frame
+    p_org = tf_s.paragraphs[0]
+    p_org.text = "Organised by"
+    p_org.font.size = Pt(14); p_org.font.bold = False; p_org.font.name = 'Times New Roman'
+    p_org.font.color.rgb = RGBColor(0, 0, 0)
+    p_org.alignment = PP_ALIGN.CENTER
+    
+    p_coll = tf_s.add_paragraph()
+    college_text = college if college and college != "Institution" else "JANSONS INSTITUTE OF TECHNOLOGY"
+    p_coll.text = college_text.upper()
+    p_coll.font.size = Pt(24); p_coll.font.bold = True; p_coll.font.name = 'Times New Roman'
+    p_coll.font.color.rgb = RGBColor(0, 0, 0)
+    p_coll.alignment = PP_ALIGN.CENTER
 
     # Project Name Box
     project_label = slides_data.get('title', {}).get('bullets', ['PROJECT NAME'])[0]
-    tx_project = slide.shapes.add_textbox(Inches(1.0), Inches(3.6), Inches(8.0), Inches(0.8))
+    tx_project = slide.shapes.add_textbox(Inches(1.0), Inches(3.8), Inches(8.0), Inches(0.8))
     p_project = tx_project.text_frame.paragraphs[0]
     p_project.text = str(project_label).upper()
     p_project.font.size = Pt(32); p_project.font.bold = True; p_project.font.name = 'Times New Roman'
@@ -61,11 +68,14 @@ def create_pptx(team_name, college, slides_data):
     p_project.alignment = PP_ALIGN.CENTER
 
     # Team Info (Bottom Centered)
-    tx_team = slide.shapes.add_textbox(Inches(1.5), Inches(5.0), Inches(7.0), Inches(2.0))
+    tx_team = slide.shapes.add_textbox(Inches(1.5), Inches(5.0), Inches(7.0), Inches(2.5))
     tf_t = tx_team.text_frame; tf_t.word_wrap = True
     
     p_team = tf_t.paragraphs[0]; p_team.alignment = PP_ALIGN.CENTER
     p_team.text = f"TEAM {team_name.upper()}"; p_team.font.size = Pt(20); p_team.font.bold = True; p_team.font.name = 'Times New Roman'
+    
+    p_from = tf_t.add_paragraph(); p_from.alignment = PP_ALIGN.CENTER
+    p_from.text = f"from {college_text.upper()}"; p_from.font.size = Pt(14); p_from.font.italic = True; p_from.font.name = 'Times New Roman'
     
     p_leader = tf_t.add_paragraph(); p_leader.alignment = PP_ALIGN.CENTER
     p_leader.text = f"Team Leader: {slides_data.get('leaderName', 'N/A').upper()}"; p_leader.font.size = Pt(16); p_leader.font.bold = True; p_leader.font.name = 'Times New Roman'
