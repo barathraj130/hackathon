@@ -2,6 +2,7 @@
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
+from pptx.dml.color import RGBColor
 import os
 
 def create_pptx(team_name, college, slides_data):
@@ -26,54 +27,37 @@ def create_pptx(team_name, college, slides_data):
         fill.solid()
         fill.fore_color.rgb = RGBColor(15, 23, 42) # Premium Navy/Black
 
-    # 1. Title Slide (Idea and team identification)
+    # 1. Title Slide (Redesigned)
     slide = prs.slides.add_slide(prs.slide_layouts[6]) # Blank layout
-    add_branding(slide)
     
-    # Title Text
-    left, top, width, height = Inches(0.5), Inches(0.5), Inches(9), Inches(1)
-    tx_title = slide.shapes.add_textbox(left, top, width, height)
-    tf_title = tx_title.text_frame
-    tf_title.text = "BHARAT BRILLIANT HACKATHON"
-    p = tf_title.paragraphs[0]
-    p.font.size = Pt(40); p.font.bold = True; p.font.name = 'Times New Roman'
-    p.font.color.rgb = RGBColor(0, 0, 0)
-    p.alignment = PP_ALIGN.CENTER
+    # Title Text (Large, Bold, Centered)
+    tx_title = slide.shapes.add_textbox(Inches(1.0), Inches(2.0), Inches(8.0), Inches(1.2))
+    p_title = tx_title.text_frame.paragraphs[0]
+    p_title.text = "BRILLIANT BHARAT HACKATHON"
+    p_title.font.size = Pt(44); p_title.font.bold = True; p_title.font.name = 'Times New Roman'
+    p_title.font.color.rgb = RGBColor(0, 0, 0)
+    p_title.alignment = PP_ALIGN.CENTER
 
-    # Subtitle Text (Actual Task)
-    p2 = tf_title.add_paragraph()
-    p2.text = slides_data.get('title', {}).get('bullets', ['Idea Formulation'])[0].upper()
-    p2.font.size = Pt(24); p2.font.bold = False; p2.font.color.rgb = RGBColor(13, 148, 136)
-    p2.alignment = PP_ALIGN.CENTER
+    # Subtitle Text (Organised by...)
+    tx_subtitle = slide.shapes.add_textbox(Inches(1.0), Inches(3.2), Inches(8.0), Inches(0.8))
+    p_subtitle = tx_subtitle.text_frame.paragraphs[0]
+    college_text = college if college and college != "Institution" else "Jansons Institute of Technology"
+    p_subtitle.text = f"Organised by {college_text}"
+    p_subtitle.font.size = Pt(24); p_subtitle.font.bold = False; p_subtitle.font.name = 'Times New Roman'
+    p_subtitle.font.color.rgb = RGBColor(0, 0, 0)
+    p_subtitle.alignment = PP_ALIGN.CENTER
 
-    # Details Text - BOTTOM RIGHT
-    left, top, width, height = Inches(5.0), Inches(5.0), Inches(4.5), Inches(3.5)
-    tx_details = slide.shapes.add_textbox(left, top, width, height)
-    tf_details = tx_details.text_frame
-    tf_details.word_wrap = True
-    
-    details = [
-        ("S. No.", "100"),
-        ("Name of the Institution", college),
-        ("Faculty Name", slides_data.get('facultyName', 'P. Eswari')),
-        ("Idea Description", slides_data.get('title', {}).get('bullets', ['Weather Adaptive System'])[0]),
-        ("Team Name", team_name),
-        ("Team Leader", slides_data.get('leaderName', 'N/A')),
-        ("Team Members", slides_data.get('memberNames', 'N/A'))
-    ]
-
-    for label, value in details:
-        p = tf_details.add_paragraph()
-        p.text = f"{label} : {value}"
-        p.font.size = Pt(16)
-        p.font.name = 'Times New Roman'
-        p.font.color.rgb = RGBColor(0, 0, 0)
-        p.alignment = PP_ALIGN.RIGHT
-        p.space_after = Pt(6)
+    # Project Name Box
+    project_label = slides_data.get('title', {}).get('bullets', ['PROJECT NAME'])[0]
+    tx_project = slide.shapes.add_textbox(Inches(1.0), Inches(4.5), Inches(8.0), Inches(0.8))
+    p_project = tx_project.text_frame.paragraphs[0]
+    p_project.text = str(project_label).upper()
+    p_project.font.size = Pt(28); p_project.font.bold = True; p_project.font.name = 'Times New Roman'
+    p_project.font.color.rgb = RGBColor(13, 148, 136) # Teal
+    p_project.alignment = PP_ALIGN.CENTER
 
     # 2. Add Content Slides
     from pptx.enum.shapes import MSO_SHAPE
-    from pptx.dml.color import RGBColor
     
     for key, data in slides_data.items():
         if key == 'title': continue

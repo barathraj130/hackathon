@@ -106,45 +106,29 @@ def create_expert_deck(team_name, college, data):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_slide_bg(slide)
     
-    # Large centered Logo on cover
-    if os.path.exists("hackathon_logo.png"):
-        slide.shapes.add_picture("hackathon_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
-
-    # High-impact Project Title (Locked to 1.0" Margin)
-    tx_title = slide.shapes.add_textbox(Inches(1.0), Inches(1.8), Inches(8.0), Inches(1.8))
+    # Title (Large, Bold, Centered)
+    tx_title = slide.shapes.add_textbox(Inches(1.0), Inches(2.0), Inches(8.0), Inches(1.2))
     p_title = tx_title.text_frame.paragraphs[0]
-    p_title.text = "BHARAT BRILLIANT HACKATHON"
-    p_title.font.size = Pt(38); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
+    p_title.text = "BRILLIANT BHARAT HACKATHON"
+    p_title.font.size = Pt(44); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
     
-    # Sub-title (Actual Project Name)
-    p_subtitle = tx_title.text_frame.add_paragraph()
-    p_subtitle.text = data.get('projectName', 'VENTURE PROTOTYPE').upper()
-    p_subtitle.font.size = Pt(24); p_subtitle.font.bold = False; p_subtitle.font.color.rgb = PRIMARY_COLOR; p_subtitle.alignment = PP_ALIGN.CENTER
+    # Subtitle (Medium, Centered)
+    tx_subtitle = slide.shapes.add_textbox(Inches(1.0), Inches(3.2), Inches(8.0), Inches(0.8))
+    p_subtitle = tx_subtitle.text_frame.paragraphs[0]
+    # Use provided college or literal fallback
+    college_text = college if college and college != "Institution" else "Jansons Institute of Technology"
+    p_subtitle.text = f"Organised by {college_text}"
+    p_subtitle.font.size = Pt(24); p_subtitle.font.bold = False; p_subtitle.font.color.rgb = TEXT_MAIN; p_subtitle.alignment = PP_ALIGN.CENTER
     
-    # Elegant Underline on cover
-    line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.5), Inches(3.7), Inches(6.5), Inches(3.7))
-    line.line.color.rgb = TEXT_MAIN; line.line.width = Pt(2)
+    # Project Name Box (Separate, below subtitle)
+    project_display = data.get('projectName') or data.get('project_data', {}).get('projectName', 'PROJECT NAME')
+    tx_project = slide.shapes.add_textbox(Inches(1.0), Inches(4.5), Inches(8.0), Inches(0.8))
+    p_project = tx_project.text_frame.paragraphs[0]
+    p_project.text = str(project_display).upper()
+    p_project.font.size = Pt(28); p_project.font.bold = True; p_project.font.color.rgb = PRIMARY_COLOR; p_project.alignment = PP_ALIGN.CENTER
 
-    # Detailed Personnel Info (Safe Centering with 1.5" Side Padding)
-    tx_id = slide.shapes.add_textbox(Inches(1.5), Inches(4.5), Inches(7.0), Inches(2.5))
-    tf_d = tx_id.text_frame; tf_d.word_wrap = True
-    
-    p1 = tf_d.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
-    p1.text = f"TEAM {team_name.upper()}"; p1.font.size = Pt(24); p1.font.bold = True; p1.font.color.rgb = TEXT_MAIN
-    p1.space_after = Pt(8)
-    
-    p2 = tf_d.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
-    p2.text = f"from {college.upper()}"; p2.font.size = Pt(14); p2.font.italic = True; p2.font.color.rgb = TEXT_MAIN
-    p2.space_after = Pt(12)
-    
-    p3 = tf_d.add_paragraph(); p3.alignment = PP_ALIGN.CENTER
-    p3.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p3.font.size = Pt(18); p3.font.bold = True; p3.font.color.rgb = TEXT_MAIN
-    p3.space_after = Pt(8)
-    
-    p4 = tf_d.add_paragraph(); p4.alignment = PP_ALIGN.CENTER
-    p4.text = f"MEMBERS: {data.get('memberNames', 'N/A').upper()}"; p4.font.size = Pt(11); p4.font.bold = False; p4.font.color.rgb = TEXT_MAIN
-    
-    add_footer(slide)
+    # Note: Clean layout, no additional elements (logo, line, personnel info) as requested.
+
 
     modules = [
         ("Background", lambda s: draw_strategic(s, data)),
