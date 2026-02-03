@@ -267,11 +267,27 @@ export default function TeamDashboard() {
 
                     {/* Prototype Submitted */}
                     {submission.prototypeUrl ? (
-                      <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
-                        <div className="w-8 h-8 bg-[var(--primary-green)] rounded-lg flex items-center justify-center text-white text-sm">✓</div>
-                        <div className="flex-1">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-green-700">Prototype Submitted</p>
-                          <p className="text-[8px] text-green-600/60 uppercase mt-0.5 font-bold truncate">{submission.prototypeUrl}</p>
+                      <div className="flex flex-col gap-2 p-4 bg-green-50 border border-green-100 rounded-2xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-[var(--primary-green)] rounded-lg flex items-center justify-center text-white text-sm">✓</div>
+                          <div className="flex-1">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-green-700">Prototype Submitted</p>
+                          </div>
+                        </div>
+                        <div className="pl-11 space-y-1">
+                          {submission.prototypeUrl.split('|').map((part, idx) => {
+                            const trimmed = part.trim();
+                            if (trimmed.startsWith('FILE:')) {
+                              return <p key={idx} className="text-[8px] text-green-600/60 uppercase font-black tracking-tight flex items-center gap-1">
+                                <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                                ATTACHMENT SYNCED
+                              </p>;
+                            }
+                            return <p key={idx} className="text-[8px] text-green-600/60 uppercase font-black tracking-tight truncate flex items-center gap-1">
+                              <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10.172 13.828a4 4 0 015.656 0l4 4a4 4 0 01-5.656 5.656l-1.102-1.101" /></svg>
+                              LINK: {trimmed.length > 30 ? trimmed.substring(0, 30) + '...' : trimmed}
+                            </p>;
+                          })}
                         </div>
                       </div>
                     ) : (

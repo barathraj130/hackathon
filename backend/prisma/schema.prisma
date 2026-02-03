@@ -1,5 +1,3 @@
-// backend/prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,70 +8,73 @@ datasource db {
 }
 
 model Team {
-  id           String      @id @default(uuid())
-  teamName     String      @unique // Used as Username
-  collegeName  String      // Used as Password
-  member1      String
-  member2      String
-  dept         String
-  year         Int
-  isActive     Boolean     @default(true)
+  id                String      @id @default(uuid())
+  teamName          String      @unique
+  collegeName       String
+  member1           String
+  member2           String
+  dept              String
+  year              Int
+  isActive          Boolean     @default(true)
   selectedProblemId String?
-  submission   Submission?
+  submission        Submission?
 }
 
 model Submission {
-  id                   String    @id @default(uuid())
-  teamId               String    @unique
-  team                 Team      @relation(fields: [teamId], references: [id])
-  content              Json      // Stores the high-fidelity synthesis data
-  status               String    @default("IN_PROGRESS") // IN_PROGRESS, SUBMITTED, LOCKED
-  pptUrl               String?
-  canRegenerate        Boolean   @default(true) 
-  prototypeUrl         String?   
-  certificates         ParticipantCertificate[]
-  submittedAt          DateTime? 
-  updatedAt            DateTime  @updatedAt
+  id                 String                   @id @default(uuid())
+  teamId             String                   @unique
+  content            Json
+  status             String                   @default("IN_PROGRESS")
+  pptUrl             String?
+  updatedAt          DateTime                 @updatedAt
+  canRegenerate      Boolean                  @default(true)
+  prototypeUrl       String?
+  submittedAt        DateTime?
+  certificateName    String?
+  certificateCollege String?
+  certificateYear    Int?
+  certificates       ParticipantCertificate[]
+  team               Team                     @relation(fields: [teamId], references: [id])
 }
 
 model ParticipantCertificate {
-  id           String     @id @default(uuid())
-  submissionId String
-  submission   Submission @relation(fields: [submissionId], references: [id])
-  name         String
-  college      String
-  year         String
-  dept         String
-  role         String     // LEADER, MEMBER
+  id             String     @id @default(uuid())
+  submissionId   String
+  name           String
+  college        String
+  year           String
+  dept           String
+  role           String
   certificateUrl String?
-  createdAt    DateTime   @default(now())
+  createdAt      DateTime   @default(now())
+  submission     Submission @relation(fields: [submissionId], references: [id])
 }
 
 model HackathonConfig {
-  id                    Int      @id @default(1)
-  startTime             DateTime?
-  isPaused              Boolean  @default(true)
-  eventEnded            Boolean  @default(false)
-  allowCertificateDetails Boolean @default(false)
-  durationMinutes       Int      @default(1440)
-  pptConfig             Json?    
-  collegeLogo           String?
-  footerText            String?
-  eventTheme            Json?    
+  id                      Int       @id @default(1)
+  startTime               DateTime?
+  isPaused                Boolean   @default(true)
+  durationMinutes         Int       @default(1440)
+  pptConfig               Json?
+  collegeLogo             String?
+  footerText              String?
+  eventTheme              Json?
+  allowCertificateDetails Boolean   @default(false)
+  eventEnded              Boolean   @default(false)
 }
 
 model ProblemStatement {
-  id          String   @id @default(uuid())
-  questionNo  String
+  id           String   @id @default(uuid())
+  questionNo   String
   subDivisions String?
-  title       String
-  description String
-  allottedTo  String? 
-  createdAt   DateTime @default(now())
+  title        String
+  description  String
+  allottedTo   String?
+  createdAt    DateTime @default(now())
 }
 
 model Admin {
-  id        String @id @default(uuid())
-  email     String @unique
-  password  String
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
 }
