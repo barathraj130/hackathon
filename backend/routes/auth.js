@@ -34,7 +34,8 @@ router.post('/login', async (req, res) => {
   });
 
   if (targetTeam) {
-    if (targetTeam.collegeName === password) {
+    // SECURITY: Use case-insensitive matching for college names to prevent stress-related login failures
+    if (targetTeam.collegeName.toLowerCase() === password.toLowerCase()) {
       console.log(`[Auth] Team login success: ${username}`);
       const token = jwt.sign(
         { id: targetTeam.id, role: 'TEAM', teamName: targetTeam.teamName }, 
@@ -42,6 +43,8 @@ router.post('/login', async (req, res) => {
         { expiresIn: '24h' }
       );
       return res.json({ token, role: 'TEAM' });
+    } else {
+      console.log(`[Auth] Team login FAILED (Password Mismatch): ${username} (Expected: ${targetTeam.collegeName}, Got: ${password})`);
     }
   }
 
