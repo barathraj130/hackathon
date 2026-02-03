@@ -9,7 +9,12 @@ if (!supabaseUrl || !supabaseKey) {
   console.error('[Supabase] Missing credentials in .env');
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+let supabase = null;
+if (supabaseUrl && supabaseKey) {
+  supabase = createClient(supabaseUrl, supabaseKey);
+} else {
+  console.warn('[Supabase] Storage disabled: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+}
 
 /**
  * Downloads a file from a URL and uploads it to Supabase Storage.
@@ -19,6 +24,9 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  * @returns {Promise<string>} - The public URL of the uploaded file.
  */
 async function uploadFileFromUrl(fileUrl, bucket, destinationPath) {
+    if (!supabase) {
+        throw new Error('Supabase storage is not configured. Please add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to environment variables.');
+    }
     try {
         console.log(`[Supabase] Syncing artifact: ${fileUrl} -> ${bucket}/${destinationPath}`);
         const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
