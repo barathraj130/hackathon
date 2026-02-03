@@ -89,15 +89,47 @@ router.post('/upload-prototype-file', uploadPrototype.single('prototypeFile'), a
             return res.status(400).json({ error: "Please generate your presentation first." });
         }
 
-        // Store file path in database
-        const fileUrl = `/prototypes/${req.file.filename}`;
+        // Construction of Perpetual Artifact URL via Supabase Storage
+        const fileName = req.file.filename;
+        const internalPath = req.file.path; // Local path from multer
+        let finalFileUrl;
+
+        try {
+            const fs = require('fs');
+            const fileData = fs.readFileSync(internalPath);
+            const { uploadFileFromUrl } = require('../utils/supabase');
+            
+            // Note: Since multer already saved it, we can upload the buffer or the file. 
+            // I'll keep it simple and use the Supabase helper logic.
+            const { supabase } = require('../utils/supabase');
+            const { data, error } = await supabase.storage
+                .from('artifacts')
+                .upload(`prototypes/${fileName}`, fileData, { upsert: true });
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('artifacts')
+                .getPublicUrl(`prototypes/${fileName}`);
+            
+            finalFileUrl = publicUrl;
+            console.log(`☁️ [Supabase] Prototype Sync Successful: ${finalFileUrl}`);
+            
+            // Clean up local file after sync
+            fs.unlinkSync(internalPath);
+        } catch (syncErr) {
+            console.error("⚠️ [Supabase] Prototype sync failed, falling back to local link:", syncErr.message);
+            const hostname = req.get('host');
+            const protocol = req.protocol;
+            finalFileUrl = `${protocol}://${hostname}/prototypes/${fileName}`;
+        }
         
         await prisma.submission.update({
             where: { teamId },
             data: { 
                 prototypeUrl: submission.prototypeUrl 
-                    ? `${submission.prototypeUrl} | FILE: ${fileUrl}` 
-                    : `FILE: ${fileUrl}`
+                    ? `${submission.prototypeUrl} | FILE: ${finalFileUrl}` 
+                    : `FILE: ${finalFileUrl}`
             }
         });
 

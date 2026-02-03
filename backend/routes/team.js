@@ -580,7 +580,20 @@ router.post('/generate-certificates', async (req, res) => {
                         submission_date: dateStr
                     }, { timeout: 30000 });
                     if (r.data.success) {
-                        const certPublicUrl = mapInternalToPublic(`${url.replace(/\/$/, "")}/certs/${r.data.file_url}`);
+                        const internalDownloadUrl = `${url.replace(/\/$/, "")}/certs/${r.data.file_url}`;
+                        let certPublicUrl;
+
+                        try {
+                            certPublicUrl = await uploadFileFromUrl(
+                                internalDownloadUrl, 
+                                'artifacts', 
+                                `certificates/${p.name.replace(/\s+/g, '_')}_${Date.now()}.pptx`
+                            );
+                        } catch (syncErr) {
+                            console.error("⚠️ [TeamCert] Certificate sync failed:", syncErr.message);
+                            certPublicUrl = mapInternalToPublic(internalDownloadUrl);
+                        }
+
                         await prisma.participantCertificate.update({ 
                             where: { id: p.id }, 
                             data: { certificateUrl: certPublicUrl } 
