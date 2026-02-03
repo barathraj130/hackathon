@@ -136,7 +136,7 @@ router.post('/upload-prototype-file', uploadPrototype.single('prototypeFile'), a
         res.json({ 
             success: true, 
             message: "Prototype file uploaded successfully.",
-            fileUrl: fileUrl,
+            fileUrl: finalFileUrl,
             fileName: req.file.originalname
         });
     } catch (error) {
