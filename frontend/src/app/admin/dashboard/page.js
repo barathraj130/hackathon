@@ -377,8 +377,10 @@ export default function AdminDashboard() {
                                 const trimmed = part.trim();
                                 if (trimmed.startsWith('FILE:')) {
                                   const filePath = trimmed.replace('FILE:', '').trim();
-                                  // Construct full URL assuming backend serves static files from root
-                                  const downloadUrl = `${getApiUrl().replace('/v1', '')}${filePath}`;
+                                  // If the path is already a full URL (Supabase), use it directly
+                                  const downloadUrl = filePath.startsWith('http') 
+                                    ? filePath 
+                                    : `${getApiUrl().replace('/v1', '')}${filePath}`;
                                   return (
                                     <a key={`proto-file-${idx}`} href={downloadUrl} target="_blank" className="text-orange-500 font-bold hover:underline text-[10px] uppercase">
                                       Prototype File
