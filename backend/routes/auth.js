@@ -34,8 +34,8 @@ router.post('/login', async (req, res) => {
   });
 
   if (targetTeam) {
-    // SECURITY: Use case-insensitive matching for college names to prevent stress-related login failures
-    if (targetTeam.collegeName.toLowerCase() === password.toLowerCase()) {
+    // SECURITY: Use case-sensitive matching for college names (team passwords)
+    if (targetTeam.collegeName === password) {
       console.log(`[Auth] Team login success: ${username}`);
       const token = jwt.sign(
         { id: targetTeam.id, role: 'TEAM', teamName: targetTeam.teamName }, 
