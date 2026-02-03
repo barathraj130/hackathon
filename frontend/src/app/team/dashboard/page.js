@@ -86,6 +86,21 @@ export default function TeamDashboard() {
              console.error("Socket error", e);
           }
         });
+
+        socketInstance.on('registrationUpdate', (data) => {
+          if (data && typeof data.allowRegistration === 'boolean') {
+             setTeamData(prev => {
+                if (!prev) return prev;
+                return { 
+                   ...prev, 
+                   config: { 
+                      ...prev.config, 
+                      allowCertificateDetails: data.allowRegistration 
+                   } 
+                };
+             });
+          }
+        });
       } catch (e) {
          console.error("Socket init failed", e);
       }

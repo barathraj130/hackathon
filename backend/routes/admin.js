@@ -577,6 +577,14 @@ router.post('/toggle-certificate-collection', async (req, res) => {
         const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
         const newState = !config.allowCertificateDetails;
         await prisma.hackathonConfig.update({ where: { id: 1 }, data: { allowCertificateDetails: newState } });
+        
+        // Broadcast update to all connected clients
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('registrationUpdate', { allowRegistration: newState });
+            console.log(`📡 Broadcasted registration update: ${newState}`);
+        }
+        
         res.json({ success: true, allowCertificateDetails: newState });
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });
