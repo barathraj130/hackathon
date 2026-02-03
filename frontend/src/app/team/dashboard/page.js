@@ -210,15 +210,15 @@ export default function TeamDashboard() {
                       <h2 className="text-4xl font-bold text-slate-900 leading-tight">Create Your Deck</h2>
                       <p className="text-slate-500 font-medium text-lg leading-relaxed">Fill in the details about your project to build a professional presentation. Use our step-by-step tool organize your information easily.</p>
                       <Link 
-                        href={(submission?.canRegenerate === false && submission?.status === 'SUBMITTED' && submission?.prototypeUrl) ? '#' : (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId ? '#' : "/team/pitch-generator")} 
-                        className={`inline-flex items-center gap-4 px-10 py-4 rounded-xl font-bold uppercase text-sm tracking-wide transition-all ${(submission?.canRegenerate === false && submission?.status === 'SUBMITTED' && submission?.prototypeUrl) || (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId) ? 'bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200' : 'btn-green shadow-xl shadow-green-100 hover:-translate-y-1'}`}
+                        href={(submission?.status === 'SUBMITTED') ? '#' : (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId ? '#' : "/team/pitch-generator")} 
+                        className={`inline-flex items-center gap-4 px-10 py-4 rounded-xl font-bold uppercase text-sm tracking-wide transition-all ${(submission?.status === 'SUBMITTED') || (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId) ? 'bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200' : 'btn-green shadow-xl shadow-green-100 hover:-translate-y-1'}`}
                       >
                         <span>
                           {(teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId) 
                             ? 'Select Question First' 
                             : (submission?.pptUrl && !submission?.prototypeUrl) 
                               ? 'Finish Submission' 
-                              : (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'Locked' : 'Open Generator')}
+                              : (submission?.status === 'SUBMITTED' ? 'Locked' : 'Open Generator')}
                         </span>
                       </Link>
                     </div>
