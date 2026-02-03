@@ -309,7 +309,16 @@ export default function AdminDashboard() {
 
       <main className="flex-1 p-10 overflow-y-auto space-y-10 relative z-10 scroll-smooth">
         <header className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-           <div><h1 className="text-2xl font-bold text-slate-800 tracking-tight">Main Control</h1><p className="text-xs font-semibold text-slate-400">System Tools</p></div>
+           <div>
+             <div className="flex items-center gap-3">
+               <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Main Control</h1>
+               <span className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold border border-emerald-100 shadow-sm">
+                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                 DATABASE LIVE
+               </span>
+             </div>
+             <p className="text-xs font-semibold text-slate-400">System Tools</p>
+           </div>
            <div className="flex gap-4">
              <button onClick={handleToggleHalt} className={`px-6 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all ${timer.timerPaused ? 'btn-green' : 'bg-rose-500 text-white'}`}>{timer.timerPaused ? 'Start Timer' : 'Stop Timer'}</button>
              <button onClick={handleResetTimer} className="btn-orange px-6 py-2.5 rounded-xl text-xs font-bold">Reset</button>
