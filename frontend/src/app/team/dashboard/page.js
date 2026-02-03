@@ -270,16 +270,18 @@ export default function TeamDashboard() {
                   <button onClick={fetchInitialData} className="text-xs font-bold text-[var(--secondary-blue)] hover:text-[var(--accent-orange)] transition-colors">Refresh</button>
                 </div>
 
-                {submission?.pptUrl ? (
+                {submission ? (
                   <div className="space-y-3">
                     {/* PPT Generated */}
-                    <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
-                      <div className="w-8 h-8 bg-[var(--primary-green)] rounded-lg flex items-center justify-center text-white text-sm">✓</div>
-                      <div className="flex-1">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-green-700">PPT Generated</p>
-                        <p className="text-[8px] text-green-600/60 uppercase mt-0.5 font-bold">Presentation Created</p>
+                    {submission.pptUrl && (
+                      <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
+                        <div className="w-8 h-8 bg-[var(--primary-green)] rounded-lg flex items-center justify-center text-white text-sm">✓</div>
+                        <div className="flex-1">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-green-700">PPT Generated</p>
+                          <p className="text-[8px] text-green-600/60 uppercase mt-0.5 font-bold">Presentation Created</p>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Prototype Submitted */}
                     {submission.prototypeUrl ? (
@@ -354,9 +356,11 @@ export default function TeamDashboard() {
                       </div>
                     )}
 
-                    <div className="pt-4">
-                      <a href={submission.pptUrl} target="_blank" rel="noopener noreferrer" className="w-full py-4 btn-green !rounded-2xl text-xs flex items-center justify-center gap-2">Download PPT</a>
-                    </div>
+                    {submission.pptUrl && (
+                      <div className="pt-4">
+                        <a href={submission.pptUrl} target="_blank" rel="noopener noreferrer" className="w-full py-4 btn-green !rounded-2xl text-xs flex items-center justify-center gap-2 font-bold uppercase tracking-widest shadow-lg shadow-green-100">Download PPT</a>
+                      </div>
+                    )}
 
                     {submission.status === 'LOCKED' && (
                       <div className="mt-4 p-4 bg-slate-100 border border-slate-200 rounded-2xl text-center">

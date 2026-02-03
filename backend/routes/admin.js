@@ -192,7 +192,7 @@ router.post('/unlock-team', async (req, res) => {
             where: { teamId }, 
             data: { 
                 status: 'IN_PROGRESS',
-                pptUrl: null, // Revoke artifact to force regeneration
+                // Keep the old pptUrl so they can still see it until they regenerate
                 canRegenerate: true
             } 
         });
