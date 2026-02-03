@@ -279,15 +279,19 @@ export default function TeamDashboard() {
                           {submission.prototypeUrl.split('|').map((part, idx) => {
                             const trimmed = part.trim();
                             if (trimmed.startsWith('FILE:')) {
-                              return <p key={idx} className="text-[8px] text-green-600/60 uppercase font-black tracking-tight flex items-center gap-1">
+                              const filePath = trimmed.replace('FILE:', '').trim();
+                              const downloadUrl = filePath.startsWith('http') 
+                                ? filePath 
+                                : `${axios.defaults.baseURL?.replace('/v1', '')}${filePath}`;
+                              return <a key={idx} href={downloadUrl} target="_blank" className="text-[8px] text-green-600/60 hover:text-green-700 uppercase font-black tracking-tight flex items-center gap-1 transition-colors">
                                 <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                                ATTACHMENT SYNCED
-                              </p>;
+                                DOWNLOAD ATTACHMENT
+                              </a>;
                             }
-                            return <p key={idx} className="text-[8px] text-green-600/60 uppercase font-black tracking-tight truncate flex items-center gap-1">
+                            return <a key={idx} href={trimmed.startsWith('http') ? trimmed : `https://${trimmed}`} target="_blank" className="text-[8px] text-green-600/60 hover:text-green-700 uppercase font-black tracking-tight truncate flex items-center gap-1 transition-colors">
                               <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10.172 13.828a4 4 0 015.656 0l4 4a4 4 0 01-5.656 5.656l-1.102-1.101" /></svg>
                               LINK: {trimmed.length > 30 ? trimmed.substring(0, 30) + '...' : trimmed}
-                            </p>;
+                            </a>;
                           })}
                         </div>
                       </div>
