@@ -13,7 +13,11 @@ export default function PitchGenerator() {
   const [isPaused, setIsPaused] = useState(false);
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const teamIdRef = require('react').useRef(null);
+  const teamNameRef = require('react').useRef(null);
   const [selectedProblem, setSelectedProblem] = useState(null);
+  const [isActive, setIsActive] = useState(true);
+  const [teamId, setTeamId] = useState(null);
 
   const [data, setData] = useState({
     // S1: Identity
@@ -126,6 +130,10 @@ export default function PitchGenerator() {
               setData(prev => ({ ...prev, ...profileData }));
            }
         }
+        setTeamId(res.data.id);
+        teamIdRef.current = res.data.id;
+        teamNameRef.current = res.data.teamName;
+        setIsActive(res.data.isActive !== false);
         setIsPaused(res.data.config?.isPaused || false);
         setHasFetched(true);
       } catch (err) { 
@@ -140,7 +148,36 @@ export default function PitchGenerator() {
       }
     }
     init();
-  }, []);
+
+    let socketInstance = null;
+    const initSocket = async () => {
+      try {
+        const module = await import('socket.io-client');
+        const socketIO = module.default || module.io;
+        if (typeof socketIO !== 'function') return;
+
+        const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/v1', '') || process.env.NEXT_PUBLIC_WS_URL || 'https://hackathon-production-7c99.up.railway.app';
+        socketInstance = socketIO(socketUrl, { transports: ['websocket', 'polling'], reconnectionAttempts: 5 });
+
+        socketInstance.on('timerUpdate', (data) => {
+          if (data && typeof data.timerPaused === 'boolean') setIsPaused(data.timerPaused);
+        });
+
+        socketInstance.on('teamStatusUpdate', (data) => {
+          if (data && typeof data.isActive === 'boolean') {
+             // Use localStorage or a way to verify identity if teamId isn't set yet
+             const currentTeamId = localStorage.getItem('teamId'); // If we store it
+             // Better: we have teamId from profile fetch
+             if (data.teamId === teamIdRef.current || data.teamId === teamNameRef.current) {
+                setIsActive(data.isActive);
+             }
+          }
+        });
+      } catch (e) { console.error("Socket error", e); }
+    };
+    initSocket();
+    return () => { if (socketInstance) socketInstance.disconnect(); };
+  }, [router]);
 
   async function handleSaveDraft(silent = false) {
     if (!silent) setSaving(true);
@@ -632,6 +669,36 @@ export default function PitchGenerator() {
           </section>
         </div>
       </main>
+
+      {/* MALPRACTICE / SUSPENSION OVERLAY */}
+      {isActive === false && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900/95 backdrop-blur-xl flex items-center justify-center p-6 text-center">
+          <div className="max-w-md space-y-8 animate-in fade-in zoom-in duration-500">
+            <div className="w-24 h-24 bg-red-500 rounded-3xl flex items-center justify-center text-white text-5xl mx-auto shadow-2xl shadow-red-500/20">
+              ⚠️
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Access Suspended</h2>
+              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Institutional Protocol: Malpractice Detected</p>
+            </div>
+            <div className="p-6 bg-red-50/5 border border-red-500/20 rounded-2xl backdrop-blur-sm">
+              <p className="text-red-400 text-sm font-medium leading-relaxed">
+                Your team has been flagged for a violation of hackathon guidelines. This node is now locked. Please report to the administration desk immediately.
+              </p>
+            </div>
+            <div className="pt-4 space-y-4">
+              <button 
+                onClick={() => alert("Please report to the main stage / help desk for manual verification.")}
+                className="w-full py-4 bg-red-500 text-white font-bold rounded-xl uppercase text-xs tracking-widest hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20"
+              >
+                Request Resume / Contact Admin
+              </button>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] block opacity-50">System ID: {teamId}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style jsx global>{`
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
