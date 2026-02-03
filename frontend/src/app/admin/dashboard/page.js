@@ -142,10 +142,10 @@ export default function AdminDashboard() {
   }
 
   async function handleToggleTeamStatus(teamId, currentStatus) {
-    const action = currentStatus ? "Suspend" : "Un-suspend";
+    const action = currentStatus ? "Suspend" : "Resume";
     if (!confirm(`${action} this team for malpractice?`)) return;
     try {
-      const res = await axios.post(`${getApiUrl()}/admin/toggle-team-status`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      const res = await axios.post(`${getApiUrl()}/admin/restrict-team`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       if (res.data.success) {
         fetchSubmissions();
         fetchTeams();
@@ -427,7 +427,7 @@ export default function AdminDashboard() {
                                 onClick={() => handleToggleTeamStatus(s.teamId || s.team?.id, s.team?.isActive !== false)} 
                                 className={`text-[10px] font-bold uppercase px-2 py-1 rounded border transition-all ${s.team?.isActive !== false ? 'text-red-500 bg-red-50 border-red-100 hover:bg-red-500 hover:text-white' : 'text-emerald-500 bg-emerald-50 border-emerald-100 hover:bg-emerald-500 hover:text-white'}`}
                               >
-                                {s.team?.isActive !== false ? 'Restrict' : 'Un-Restrict'}
+                                {s.team?.isActive !== false ? 'SUSPEND' : 'RESUME'}
                               </button>
                            </div>
                         </td>

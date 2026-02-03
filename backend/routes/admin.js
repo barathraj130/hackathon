@@ -22,7 +22,9 @@ router.use(isAdmin);
 /**
  * INSTITUTIONAL AUTHORITY: SUSPEND/MALPRACTICE PROTOCOL
  */
-router.post('/toggle-team-status', async (req, res) => {
+router.get('/sys-version', (req, res) => res.json({ version: "1.2.0-restrict-fix" }));
+
+router.post('/restrict-team', async (req, res) => {
     try {
         const { teamId } = req.body;
         if (!teamId) return res.status(400).json({ error: "Team ID required" });
@@ -39,12 +41,13 @@ router.post('/toggle-team-status', async (req, res) => {
         // Broadcast to specific team via Socket.IO
         const io = req.app.get('socketio');
         if (io) {
+            console.log(`[RESTRICT] Emitting teamStatusUpdate for ${teamId}: ${newStatus}`);
             io.emit('teamStatusUpdate', { teamId, isActive: newStatus });
         }
 
         res.json({ success: true, isActive: newStatus });
     } catch (e) { 
-        console.error("[SUSPEND] Error:", e);
+        console.error("[RESTRICT] Error:", e);
         res.status(500).json({ error: "Action failed" }); 
     }
 });

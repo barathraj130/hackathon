@@ -35,9 +35,19 @@ let timeRemaining = 1440 * 60; // 24 Hours in seconds
 let timerPaused = true;
 
 // Export timer state management for admin routes
+// SYSTEM VERSION: 2.1.0-restrict-fix
 const getTimerState = () => ({ timeRemaining, timerPaused });
 const setTimerPaused = (value) => { timerPaused = value; };
 const setTimeRemaining = (value) => { timeRemaining = value; };
+
+// System Authority Routes
+app.get('/v1/sys/status', (req, res) => {
+    res.json({
+        status: 'online',
+        version: '2.1.0-restrict-fix',
+        timestamp: new Date().toISOString()
+    });
+});
 
 // Initialize Timer from Database on start
 async function initEngine() {

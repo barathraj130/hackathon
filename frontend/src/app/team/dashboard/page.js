@@ -414,8 +414,15 @@ export default function TeamDashboard() {
                     Your team has been flagged for a violation of hackathon guidelines. This node is now locked. Please report to the administration desk immediately.
                   </p>
                 </div>
-                <div className="pt-4">
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">System ID: {teamData.id}</p>
+                <div className="pt-4 space-y-4">
+                  <a 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); alert("Please report to the main stage / help desk for manual verification."); }}
+                    className="inline-block px-8 py-3 bg-red-500 text-white font-bold rounded-xl uppercase text-xs tracking-widest hover:bg-red-600 transition-colors"
+                  >
+                    Request Resume / Contact Admin
+                  </a>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] block">System ID: {teamData.id}</p>
                 </div>
               </div>
             </div>
