@@ -101,6 +101,15 @@ export default function TeamDashboard() {
              });
           }
         });
+
+        socketInstance.on('teamStatusUpdate', (data) => {
+          if (data && typeof data.isActive === 'boolean') {
+            setTeamData(prev => {
+              if (!prev || (prev.id !== data.teamId && prev.teamName !== data.teamId)) return prev;
+              return { ...prev, isActive: data.isActive };
+            });
+          }
+        });
       } catch (e) {
          console.error("Socket init failed", e);
       }
@@ -388,6 +397,29 @@ export default function TeamDashboard() {
             existingSubmission={submission}
           />
           {teamData && <PostHackathonCertificateModal isOpen={showCertModal} onClose={() => setShowCertModal(false)} teamData={teamData} apiUrl={process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1'} />}
+
+          {/* MALPRACTICE / SUSPENSION OVERLAY */}
+          {teamData?.isActive === false && (
+            <div className="fixed inset-0 z-[9999] bg-slate-900/95 backdrop-blur-xl flex items-center justify-center p-6 text-center">
+              <div className="max-w-md space-y-8 animate-in fade-in zoom-in duration-500">
+                <div className="w-24 h-24 bg-red-500 rounded-3xl flex items-center justify-center text-white text-5xl mx-auto shadow-2xl shadow-red-500/20">
+                  ⚠️
+                </div>
+                <div className="space-y-4">
+                  <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Access Suspended</h2>
+                  <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Institutional Protocol: Malpractice Detected</p>
+                </div>
+                <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl">
+                  <p className="text-red-400 text-sm font-medium leading-relaxed">
+                    Your team has been flagged for a violation of hackathon guidelines. This node is now locked. Please report to the administration desk immediately.
+                  </p>
+                </div>
+                <div className="pt-4">
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">System ID: {teamData.id}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>

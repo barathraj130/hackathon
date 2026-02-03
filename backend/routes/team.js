@@ -121,6 +121,7 @@ router.get('/profile', async (req, res) => {
             collegeName: team.collegeName,
             leaderName: team.member1, 
             member1: team.member2,    
+            isActive: team.isActive,
             submission: team.submission,
             problemStatements: problemStatements,
             selectedProblem: selectedProblem,

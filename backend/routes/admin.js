@@ -20,6 +20,36 @@ router.use(verifyToken);
 router.use(isAdmin);
 
 /**
+ * INSTITUTIONAL AUTHORITY: SUSPEND/MALPRACTICE PROTOCOL
+ */
+router.post('/toggle-team-status', async (req, res) => {
+    try {
+        const { teamId } = req.body;
+        if (!teamId) return res.status(400).json({ error: "Team ID required" });
+
+        const team = await prisma.team.findUnique({ where: { id: teamId } });
+        if (!team) return res.status(404).json({ error: "Team not found" });
+
+        const newStatus = !team.isActive;
+        await prisma.team.update({ 
+            where: { id: teamId }, 
+            data: { isActive: newStatus } 
+        });
+
+        // Broadcast to specific team via Socket.IO
+        const io = req.app.get('socketio');
+        if (io) {
+            io.emit('teamStatusUpdate', { teamId, isActive: newStatus });
+        }
+
+        res.json({ success: true, isActive: newStatus });
+    } catch (e) { 
+        console.error("[SUSPEND] Error:", e);
+        res.status(500).json({ error: "Action failed" }); 
+    }
+});
+
+/**
  * INSTITUTIONAL AUTHORITY: MISSION HALT/RESUME
  */
 router.post('/toggle-halt', async (req, res) => {

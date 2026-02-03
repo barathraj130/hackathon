@@ -141,6 +141,18 @@ export default function AdminDashboard() {
     } catch (err) { alert("Failed to reassign."); }
   }
 
+  async function handleToggleTeamStatus(teamId, currentStatus) {
+    const action = currentStatus ? "Suspend" : "Un-suspend";
+    if (!confirm(`${action} this team for malpractice?`)) return;
+    try {
+      const res = await axios.post(`${getApiUrl()}/admin/toggle-team-status`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      if (res.data.success) {
+        fetchSubmissions();
+        fetchTeams();
+      }
+    } catch (err) { handleAuthError(err); }
+  }
+
   async function handleCreateTeam(e) {
     e.preventDefault();
     try { 
@@ -411,6 +423,12 @@ export default function AdminDashboard() {
                                 {s.status === 'LOCKED' || s.status === 'SUBMITTED' ? 'Unlock' : 'Open'}
                               </button>
                               <button onClick={() => handleGenerateCerts(s.teamId || s.team?.id)} className="text-[10px] font-bold text-green-500 uppercase px-2 py-1 rounded bg-green-50 border border-green-100 hover:bg-green-500 hover:text-white transition-all">Finish all</button>
+                              <button 
+                                onClick={() => handleToggleTeamStatus(s.teamId || s.team?.id, s.team?.isActive !== false)} 
+                                className={`text-[10px] font-bold uppercase px-2 py-1 rounded border transition-all ${s.team?.isActive !== false ? 'text-red-500 bg-red-50 border-red-100 hover:bg-red-500 hover:text-white' : 'text-emerald-500 bg-emerald-50 border-emerald-100 hover:bg-emerald-500 hover:text-white'}`}
+                              >
+                                {s.team?.isActive !== false ? 'Restrict' : 'Un-Restrict'}
+                              </button>
                            </div>
                         </td>
                         <td className="px-6 py-4 text-right">
