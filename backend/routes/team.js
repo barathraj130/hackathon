@@ -271,8 +271,8 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
                 where: { teamId: teamId },
                 data: { 
                     pptUrl: finalPptUrl, 
-                    status: 'SUBMITTED',
-                    canRegenerate: false,
+                    status: 'IN_PROGRESS', // Keep in progress for prototype submission
+                    canRegenerate: true,    // Allow one re-generation or manual admin reset
                     submittedAt: new Date()
                 }
             });
@@ -434,9 +434,9 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             where: { teamId: teamId },
             update: { 
                 pptUrl: finalExpertUrl, 
-                status: 'SUBMITTED',
+                status: 'IN_PROGRESS',
                 content: projectData,
-                canRegenerate: false,
+                canRegenerate: true,
                 submittedAt: new Date()
             },
             create: {

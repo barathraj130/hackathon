@@ -209,10 +209,16 @@ export default function TeamDashboard() {
                       <h2 className="text-4xl font-bold text-slate-900 leading-tight">Create Your Deck</h2>
                       <p className="text-slate-500 font-medium text-lg leading-relaxed">Fill in the details about your project to build a professional presentation. Use our step-by-step tool organize your information easily.</p>
                       <Link 
-                        href={submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? '#' : (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId ? '#' : "/team/pitch-generator")} 
-                        className={`inline-flex items-center gap-4 px-10 py-4 rounded-xl font-bold uppercase text-sm tracking-wide transition-all ${submission?.canRegenerate === false && submission?.status === 'SUBMITTED' || (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId) ? 'bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200' : 'btn-green shadow-xl shadow-green-100 hover:-translate-y-1'}`}
+                        href={(submission?.canRegenerate === false && submission?.status === 'SUBMITTED' && submission?.prototypeUrl) ? '#' : (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId ? '#' : "/team/pitch-generator")} 
+                        className={`inline-flex items-center gap-4 px-10 py-4 rounded-xl font-bold uppercase text-sm tracking-wide transition-all ${(submission?.canRegenerate === false && submission?.status === 'SUBMITTED' && submission?.prototypeUrl) || (teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId) ? 'bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200' : 'btn-green shadow-xl shadow-green-100 hover:-translate-y-1'}`}
                       >
-                        <span>{(teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId) ? 'Select Question First' : (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'Locked' : 'Open Generator')}</span>
+                        <span>
+                          {(teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId) 
+                            ? 'Select Question First' 
+                            : (submission?.pptUrl && !submission?.prototypeUrl) 
+                              ? 'Finish Submission' 
+                              : (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'Locked' : 'Open Generator')}
+                        </span>
                       </Link>
                     </div>
                   </div>
@@ -224,8 +230,18 @@ export default function TeamDashboard() {
                <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Open Tool</h3>
                 <div className="space-y-4">
-                    <button onClick={handleGenerateStandardPPT} disabled={isGenerating || (submission?.canRegenerate === false && submission?.status === 'SUBMITTED')} className={`w-full py-4 rounded-2xl font-bold uppercase text-xs tracking-wide transition-all flex items-center justify-center gap-3 ${isGenerating || (submission?.canRegenerate === false && submission?.status === 'SUBMITTED') ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100' : 'btn-blue shadow-lg shadow-blue-100 hover:-translate-y-1'}`}>
-                      {isGenerating ? 'Processing...' : (submission?.canRegenerate === false && submission?.status === 'SUBMITTED') ? 'Locked' : 'Create Presentation'}
+                    <button 
+                      onClick={() => {
+                        if (submission?.pptUrl && !submission?.prototypeUrl) {
+                          setShowWorkflowModal(true);
+                        } else {
+                          handleGenerateStandardPPT();
+                        }
+                      }} 
+                      disabled={isGenerating || (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' && submission?.prototypeUrl)} 
+                      className={`w-full py-4 rounded-2xl font-bold uppercase text-xs tracking-wide transition-all flex items-center justify-center gap-3 ${isGenerating || (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' && submission?.prototypeUrl) ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100' : 'btn-blue shadow-lg shadow-blue-100 hover:-translate-y-1'}`}
+                    >
+                      {isGenerating ? 'Processing...' : (submission?.pptUrl && !submission?.prototypeUrl) ? 'Finish Submission' : (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'Locked' : 'Create Presentation')}
                     </button>
                     {teamData?.config?.allowCertificateDetails && (
                        <button onClick={() => setShowCertModal(true)} className="w-full py-4 border-2 border-slate-200 rounded-2xl font-bold uppercase text-xs tracking-wide text-slate-500 hover:bg-slate-50 transition-all">Enter Team Names</button>
@@ -259,12 +275,15 @@ export default function TeamDashboard() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
-                        <div className="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center text-white text-sm">⏳</div>
-                        <div className="flex-1">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700">Prototype Pending</p>
-                          <p className="text-[8px] text-amber-600/60 uppercase mt-0.5 font-bold">Submit your prototype link</p>
+                      <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center text-white text-sm">⏳</div>
+                          <div className="flex-1">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700">Prototype Pending</p>
+                            <p className="text-[8px] text-amber-600/60 uppercase mt-0.5 font-bold">Submit your prototype link</p>
+                          </div>
                         </div>
+                        <button onClick={() => setShowWorkflowModal(true)} className="w-full py-2 bg-white border border-amber-200 rounded-xl text-[9px] font-bold uppercase tracking-wider text-amber-600 hover:bg-amber-100 transition-all">Submit Prototype Now</button>
                       </div>
                     )}
 
