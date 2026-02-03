@@ -127,7 +127,10 @@ export default function AdminDashboard() {
        const res = await axios.post(`${getApiUrl()}/admin/generate-certificates`, { teamId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
        if (res.data.success) alert("Documents created.");
        fetchSubmissions();
-     } catch (err) { alert("Error creating documents."); }
+     } catch (err) { 
+        console.error(err);
+        alert(err.response?.data?.error || "Error creating documents."); 
+     }
   }
 
   async function handleReallot(teamName, ids) {
