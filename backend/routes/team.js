@@ -5,6 +5,7 @@ const { verifyToken } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { uploadFileFromUrl } = require('../utils/supabase');
 
 /**
  * TECHNICAL OVERRIDE: Institutional Host Mapping
@@ -246,10 +247,23 @@ router.post('/generate-ppt', checkOperationalStatus, async (req, res) => {
         const rawPath = response.data.file_url;
         if (!rawPath) throw new Error("Artifact URL missing from engine response.");
 
-        // Construct Absolute verified URL
-        // If engine returns "ppt_outputs/name.pptx", we need to serve it via "/outputs/name.pptx"
+        // Construction of Perpetual Artifact URL via Supabase Storage
         const fileName = rawPath.split('/').pop();
-        const finalPptUrl = mapInternalToPublic(`${successfulHost}/outputs/${fileName}`);
+        const internalDownloadUrl = `${successfulHost}/outputs/${fileName}`;
+        let finalPptUrl;
+
+        try {
+            // SYNC TO PERMANENT CLOUD CABINET
+            finalPptUrl = await uploadFileFromUrl(
+                internalDownloadUrl, 
+                'artifacts', 
+                `presentations/${team.teamName.replace(/\s+/g, '_')}_${Date.now()}.pptx`
+            );
+            console.log(`☁️ [Supabase] Migration Successful: ${finalPptUrl}`);
+        } catch (syncErr) {
+            console.error("⚠️ [Supabase] Cloud sync failed, falling back to local link:", syncErr.message);
+            finalPptUrl = mapInternalToPublic(internalDownloadUrl);
+        }
 
         // Lock the submission after first generation with redundant verification
         try {
@@ -397,8 +411,23 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
         const rawFileName = response.data.file_url;
         if (!rawFileName) throw new Error("Expert artifact URL missing from engine response.");
 
-        // Construct Absolute verified URL
-        const finalExpertUrl = mapInternalToPublic(`${successfulHost}/outputs/${rawFileName.split('/').pop()}`);
+        // Construction of Perpetual Artifact URL via Supabase Storage
+        const fileName = rawFileName.split('/').pop();
+        const internalDownloadUrl = `${successfulHost}/outputs/${fileName}`;
+        let finalExpertUrl;
+
+        try {
+            // SYNC TO PERMANENT CLOUD CABINET
+            finalExpertUrl = await uploadFileFromUrl(
+                internalDownloadUrl, 
+                'artifacts', 
+                `expert_decks/${team.teamName.replace(/\s+/g, '_')}_expert_${Date.now()}.pptx`
+            );
+            console.log(`☁️ [Supabase] Expert Migration Successful: ${finalExpertUrl}`);
+        } catch (syncErr) {
+            console.error("⚠️ [Supabase] Cloud sync failed, falling back to local link:", syncErr.message);
+            finalExpertUrl = mapInternalToPublic(internalDownloadUrl);
+        }
 
         // Lock the submission after synthesis
         await prisma.submission.upsert({
