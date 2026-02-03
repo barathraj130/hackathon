@@ -254,10 +254,10 @@ export default function TeamDashboard() {
                           handleGenerateStandardPPT();
                         }
                       }} 
-                      disabled={isGenerating || (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' && submission?.prototypeUrl)} 
-                      className={`w-full py-4 rounded-2xl font-bold uppercase text-xs tracking-wide transition-all flex items-center justify-center gap-3 ${isGenerating || (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' && submission?.prototypeUrl) ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100' : 'btn-blue shadow-lg shadow-blue-100 hover:-translate-y-1'}`}
+                      disabled={isGenerating || (submission?.status === 'SUBMITTED')} 
+                      className={`w-full py-4 rounded-2xl font-bold uppercase text-xs tracking-wide transition-all flex items-center justify-center gap-3 ${isGenerating || (submission?.status === 'SUBMITTED') ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100' : 'btn-blue shadow-lg shadow-blue-100 hover:-translate-y-1'}`}
                     >
-                      {isGenerating ? 'Processing...' : (submission?.pptUrl && !submission?.prototypeUrl) ? 'Finish Submission' : (submission?.canRegenerate === false && submission?.status === 'SUBMITTED' ? 'Locked' : 'Create Presentation')}
+                      {isGenerating ? 'Processing...' : (submission?.pptUrl && !submission?.prototypeUrl) ? 'Finish Submission' : (submission?.status === 'SUBMITTED' ? 'Locked' : 'Create Presentation')}
                     </button>
                     {teamData?.config?.allowCertificateDetails && (
                        <button onClick={() => setShowCertModal(true)} className="w-full py-4 border-2 border-slate-200 rounded-2xl font-bold uppercase text-xs tracking-wide text-slate-500 hover:bg-slate-50 transition-all">Enter Team Names</button>
