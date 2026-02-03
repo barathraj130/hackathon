@@ -71,11 +71,10 @@ export default function HomePage() {
           <div className="relative">
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] border-8 border-white bg-slate-100 group">
               <Image 
-                src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5M3V5/3o7TKSjRrfIPjeiB5C/giphy.gif"
+                src="/images/hero_engine.png"
                 alt="Synthesis Engine" 
                 fill 
                 className="object-cover transition-scale duration-700 group-hover:scale-105 opacity-90"
-                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
               
@@ -97,13 +96,13 @@ export default function HomePage() {
 
         <div className="grid md:grid-cols-3 gap-8 mt-40">
           {[
-            { icon: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHYzeThtM2I4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/6ozwFj8zeUpq0/giphy.gif', title: 'Seamless Flow', desc: 'Watch your mission data transform into structured artifacts in real-time.' },
-            { icon: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHYzeThtM2I4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/7frPNo8e0m8A8/giphy.gif', title: 'Asset Logic', desc: 'Intelligent persistence ensures your vision is never lost during the mission.' },
-            { icon: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHYzeThtM2I4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4Y2dtZ2M4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3og0IPbUvZH0SEK2wE/giphy.gif', title: 'Final Delivery', desc: 'Expert-grade PPTX synthesized with precise institutional formatting.' }
+            { icon: '/images/feature_flow.png', title: 'Seamless Flow', desc: 'Watch your mission data transform into structured artifacts in real-time.' },
+            { icon: '/images/feature_logic.png', title: 'Asset Logic', desc: 'Intelligent persistence ensures your vision is never lost during the mission.' },
+            { icon: '/images/feature_delivery.png', title: 'Final Delivery', desc: 'Expert-grade PPTX synthesized with precise institutional formatting.' }
           ].map((feature, i) => (
             <div key={i} className="bg-white/70 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white hover:-translate-y-2 transition-all duration-300 group cursor-default">
               <div className="w-20 h-20 mb-8 rounded-2xl overflow-hidden shadow-inner bg-slate-50 border border-slate-100 relative">
-                <Image src={feature.icon} alt="Icon" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
+                <Image src={feature.icon} alt="Icon" fill className="object-cover transition-transform group-hover:scale-110" />
               </div>
               <h3 className="font-extrabold text-2xl text-slate-900 mb-3 tracking-tight">{feature.title}</h3>
               <p className="text-slate-500 text-sm leading-relaxed font-medium">{feature.desc}</p>
