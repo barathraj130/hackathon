@@ -407,7 +407,9 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4">
                            <div className="flex flex-wrap gap-2">
                               <button onClick={() => { setSelectedTeam(s); setShowCertModal(true); }} className="text-[10px] font-bold text-blue-500 uppercase px-2 py-1 rounded bg-blue-50 border border-blue-100 hover:bg-blue-500 hover:text-white transition-all">Edit Names</button>
-                              <button onClick={() => handleUnlockTeam(s.teamId || s.team?.id)} className="text-[10px] font-bold text-orange-500 uppercase px-2 py-1 rounded bg-orange-50 border border-orange-100 hover:bg-orange-500 hover:text-white transition-all">Unlock</button>
+                              <button onClick={() => handleUnlockTeam(s.teamId || s.team?.id)} className={`text-[10px] font-bold uppercase px-2 py-1 rounded border transition-all ${s.status === 'LOCKED' || s.status === 'SUBMITTED' ? 'text-orange-500 bg-orange-50 border-orange-100 hover:bg-orange-500 hover:text-white' : 'text-slate-400 bg-slate-50 border-slate-100 cursor-not-allowed'}`}>
+                                {s.status === 'LOCKED' || s.status === 'SUBMITTED' ? 'Unlock' : 'Locked'}
+                              </button>
                               <button onClick={() => handleGenerateCerts(s.teamId || s.team?.id)} className="text-[10px] font-bold text-green-500 uppercase px-2 py-1 rounded bg-green-50 border border-green-100 hover:bg-green-500 hover:text-white transition-all">Finish all</button>
                            </div>
                         </td>
