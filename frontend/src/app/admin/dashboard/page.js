@@ -465,7 +465,7 @@ export default function AdminDashboard() {
                     {problemStatements.map(ps => (
                       <div key={ps.id} className="p-4 hover:bg-slate-50 transition-all flex justify-between items-center group">
                          <div className="flex items-center gap-4 flex-1">
-                            <div className="w-10 h-10 bg-slate-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm"># {ps.questionNo} {ps.subDivisions && `- ${ps.subDivisions}`}</div>
+                            <div className="px-3 h-10 w-fit min-w-[2.5rem] bg-slate-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm whitespace-nowrap"># {ps.questionNo} {ps.subDivisions && `- ${ps.subDivisions}`}</div>
                             <div className="truncate"><h4 className="text-sm font-bold text-slate-800 truncate">{ps.title}</h4><p className="text-[10px] font-bold text-slate-400">{ps.allottedTo ? `Group: ${ps.allottedTo}` : 'Available'}</p></div>
                          </div>
                          <button onClick={() => handleDeleteStatement(ps.id)} className="text-rose-500 text-xs font-bold hover:underline opacity-0 group-hover:opacity-100 transition-all px-4">Delete</button>
