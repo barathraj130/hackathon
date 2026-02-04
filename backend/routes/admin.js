@@ -362,6 +362,8 @@ router.get('/dashboard', async (req, res) => {
 
         res.json({
             total_candidates: teams.length,
+            total_problems: problems.length,
+            allotted_problems: problems.filter(p => p.allottedTo).length,
             statuses: { 
                 in_progress: submissions.filter(s => s.status === 'IN_PROGRESS').length, 
                 submitted: submissions.filter(s => s.status === 'SUBMITTED' || s.status === 'LOCKED').length,

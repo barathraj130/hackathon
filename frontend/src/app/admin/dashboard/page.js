@@ -378,20 +378,22 @@ export default function AdminDashboard() {
         </header>
 
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-5 gap-6">
+          <div className="grid grid-cols-4 md:grid-cols-7 gap-4">
              {[
                { label: 'Groups', val: stats.total_candidates || 0, color: 'text-slate-800', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg> },
-               { label: 'Pending Task', val: stats.statuses?.pending_selection || 0, color: 'text-rose-500', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+               { label: 'Uploaded', val: stats.total_problems || 0, color: 'text-cyan-600', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> },
+               { label: 'Allotted', val: stats.allotted_problems || 0, color: 'text-indigo-600', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg> },
+               { label: 'Pending Choice', val: stats.statuses?.pending_selection || 0, color: 'text-rose-500', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
                { label: 'In Progress', val: stats.statuses?.in_progress || 0, color: 'text-emerald-500', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> },
                { label: 'Completed', val: stats.statuses?.submitted || 0, color: 'text-blue-500', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
                { label: 'Names Added', val: stats.certificates?.collected || 0, color: 'text-orange-500', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg> }
              ].map((c, i) => (
-               <div key={i} className="card-premium group hover:border-slate-300 transition-all">
-                 <div className="flex justify-between items-start mb-4">
-                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{c.label}</span>
-                   <div className={`${c.color} bg-slate-50 p-2 rounded-lg opacity-60 group-hover:opacity-100 transition-opacity`}>{c.icon}</div>
+               <div key={i} className="card-premium group hover:border-slate-300 transition-all !p-4">
+                 <div className="flex justify-between items-start mb-2">
+                   <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em]">{c.label}</span>
+                   <div className={`${c.color} bg-slate-50 p-1.5 rounded-lg opacity-60 group-hover:opacity-100 transition-opacity`}>{c.icon}</div>
                  </div>
-                 <p className={`text-4xl font-bold ${c.color} tracking-tight`}>{c.val}</p>
+                 <p className={`text-2xl font-black ${c.color} tracking-tight`}>{c.val}</p>
                </div>
              ))}
           </div>
@@ -497,7 +499,13 @@ export default function AdminDashboard() {
                  </form>
               </div>
               <div className="col-span-8 card-premium !p-0 overflow-hidden h-fit">
-                 <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50"><h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest">All Tasks</h2></div>
+                 <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                   <h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest">All Tasks</h2>
+                   <div className="flex gap-4">
+                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest"><span className="text-cyan-600">{stats.total_problems || 0}</span> UPLOADED</span>
+                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest"><span className="text-indigo-600">{stats.allotted_problems || 0}</span> ALLOTTED</span>
+                   </div>
+                 </div>
                  <div className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
                     {problemStatements.length === 0 ? (
                       <div className="p-12 text-center space-y-4">
