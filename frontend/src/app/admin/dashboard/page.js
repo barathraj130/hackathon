@@ -381,8 +381,8 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-4 md:grid-cols-7 gap-4">
              {[
                { label: 'Groups', val: stats.total_candidates || 0, color: 'text-slate-800', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg> },
-               { label: 'Uploaded', val: stats.total_problems || 0, color: 'text-cyan-600', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> },
-               { label: 'Allotted', val: stats.allotted_problems || 0, color: 'text-indigo-600', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg> },
+               { label: 'Uploaded', val: problemStatements.length, color: 'text-cyan-600', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> },
+               { label: 'Allotted', val: problemStatements.filter(ps => ps.allottedTo).length, color: 'text-indigo-600', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg> },
                { label: 'Pending Choice', val: stats.statuses?.pending_selection || 0, color: 'text-rose-500', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
                { label: 'In Progress', val: stats.statuses?.in_progress || 0, color: 'text-emerald-500', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> },
                { label: 'Completed', val: stats.statuses?.submitted || 0, color: 'text-blue-500', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
@@ -502,8 +502,8 @@ export default function AdminDashboard() {
                  <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                    <h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest">All Tasks</h2>
                    <div className="flex gap-4">
-                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest"><span className="text-cyan-600">{stats.total_problems || 0}</span> UPLOADED</span>
-                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest"><span className="text-indigo-600">{stats.allotted_problems || 0}</span> ALLOTTED</span>
+                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest"><span className="text-cyan-600">{problemStatements.length}</span> UPLOADED</span>
+                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest"><span className="text-indigo-600">{problemStatements.filter(ps => ps.allottedTo).length}</span> ALLOTTED</span>
                    </div>
                  </div>
                  <div className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
