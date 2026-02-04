@@ -48,8 +48,14 @@ export default function TeamDashboard() {
       }
       if (res.data?.selectedProblem) {
         setProblemStatement(res.data.selectedProblem);
-      } else if (res.data?.problemStatements?.length === 1) {
-        setProblemStatement(res.data.problemStatements[0]);
+      } else if (res.data?.problemStatements?.length > 0) {
+        const sorted = [...res.data.problemStatements].sort((a, b) => {
+          const qComp = a.questionNo.localeCompare(b.questionNo, undefined, { numeric: true });
+          if (qComp !== 0) return qComp;
+          return (a.subDivisions || '').localeCompare(b.subDivisions || '');
+        });
+        setTeamData(prev => ({ ...prev, problemStatements: sorted }));
+        if (sorted.length === 1) setProblemStatement(sorted[0]);
       }
       
       // Removed automatic modal popup to prevent interruption during task selection
@@ -223,7 +229,7 @@ export default function TeamDashboard() {
                           </div>
                           <div className="bg-slate-50 px-6 py-4 rounded-2xl text-center border border-slate-100 min-w-[120px]">
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Task ID</p>
-                            <p className="text-3xl font-bold text-slate-800">{problemStatement.questionNo}</p>
+                            <p className="text-3xl font-bold text-slate-800">{problemStatement.questionNo} {problemStatement.subDivisions && `- ${problemStatement.subDivisions}`}</p>
                           </div>
                        </div>
                     </div>

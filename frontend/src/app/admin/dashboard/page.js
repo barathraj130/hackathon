@@ -78,15 +78,21 @@ export default function AdminDashboard() {
   async function fetchTeams() {
     try {
       const res = await axios.get(`${getApiUrl()}/admin/candidates`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
-      setTeams(res.data.candidates || []);
+      const sorted = (res.data.candidates || []).sort((a, b) => a.teamName.localeCompare(b.teamName));
+      setTeams(sorted);
     } catch (err) { console.error(err); }
   }
 
   async function fetchProblemStatements() {
     try {
       const res = await axios.get(`${getApiUrl()}/admin/problem-statements`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
-      setProblemStatements(res.data || []);
-      console.log('[FetchPS] Problem statements:', res.data?.map(ps => ({ id: ps.id, no: ps.questionNo, allottedTo: ps.allottedTo })));
+      const sorted = (res.data || []).sort((a, b) => {
+        const qComp = a.questionNo.localeCompare(b.questionNo, undefined, { numeric: true });
+        if (qComp !== 0) return qComp;
+        return (a.subDivisions || '').localeCompare(b.subDivisions || '');
+      });
+      setProblemStatements(sorted);
+      console.log('[FetchPS] Problem statements:', sorted.map(ps => ({ id: ps.id, no: ps.questionNo, allottedTo: ps.allottedTo })));
     } catch (err) { console.error(err); }
   }
 
@@ -459,7 +465,7 @@ export default function AdminDashboard() {
                     {problemStatements.map(ps => (
                       <div key={ps.id} className="p-4 hover:bg-slate-50 transition-all flex justify-between items-center group">
                          <div className="flex items-center gap-4 flex-1">
-                            <div className="w-10 h-10 bg-slate-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm"># {ps.questionNo}</div>
+                            <div className="w-10 h-10 bg-slate-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm"># {ps.questionNo} {ps.subDivisions && `- ${ps.subDivisions}`}</div>
                             <div className="truncate"><h4 className="text-sm font-bold text-slate-800 truncate">{ps.title}</h4><p className="text-[10px] font-bold text-slate-400">{ps.allottedTo ? `Group: ${ps.allottedTo}` : 'Available'}</p></div>
                          </div>
                          <button onClick={() => handleDeleteStatement(ps.id)} className="text-rose-500 text-xs font-bold hover:underline opacity-0 group-hover:opacity-100 transition-all px-4">Delete</button>

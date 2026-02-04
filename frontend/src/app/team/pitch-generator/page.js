@@ -637,7 +637,7 @@ export default function PitchGenerator() {
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-2xl mx-auto mt-12 bg-slate-50 p-8 rounded-3xl border border-slate-100">
                          <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm"><p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Project Name</p><p className="text-sm font-bold text-slate-800">{data.projectName || 'Unnamed Project'}</p></div>
                          <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm"><p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Team</p><p className="text-sm font-bold text-slate-800">{data.teamName || 'Unknown Team'}</p></div>
-                         <div className="p-4 bg-[var(--secondary-blue)] rounded-2xl border border-blue-200 shadow-sm"><p className="text-[10px] font-bold text-white/60 uppercase mb-2">Question</p><p className="text-sm font-bold text-white">{selectedProblem ? `Q.${selectedProblem.questionNo}` : (data.s3_coreProblem ? 'Custom' : 'NONE')}</p></div>
+                         <div className="p-4 bg-[var(--secondary-blue)] rounded-2xl border border-blue-200 shadow-sm"><p className="text-[10px] font-bold text-white/60 uppercase mb-2">Question</p><p className="text-sm font-bold text-white">{selectedProblem ? `Q.${selectedProblem.questionNo} ${selectedProblem.subDivisions ? `- ${selectedProblem.subDivisions}` : ''}` : (data.s3_coreProblem ? 'Custom' : 'NONE')}</p></div>
                       </div>
                     </div>
                   )}
