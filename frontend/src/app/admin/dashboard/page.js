@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const [submissions, setSubmissions] = useState([]);
   const [subFilter, setSubFilter] = useState('ALL');
   const [mounted, setMounted] = useState(false);
+  const [editingStatement, setEditingStatement] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [showCertModal, setShowCertModal] = useState(false);
   const socketRef = useRef();
@@ -242,10 +243,28 @@ export default function AdminDashboard() {
   async function handleCreateStatement(e) {
     e.preventDefault();
     try {
-      await axios.post(`${getApiUrl()}/admin/problem-statements`, newStatement, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      if (editingStatement) {
+        await axios.put(`${getApiUrl()}/admin/problem-statements/${editingStatement.id}`, newStatement, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+        setEditingStatement(null);
+      } else {
+        await axios.post(`${getApiUrl()}/admin/problem-statements`, newStatement, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      }
       setNewStatement({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' });
       fetchProblemStatements();
-    } catch (err) { alert("Failed to add task."); }
+    } catch (err) { alert("Failed to save task."); }
+  }
+
+  function startEditing(ps) {
+    setEditingStatement(ps);
+    setNewStatement({ 
+      questionNo: ps.questionNo || '', 
+      subDivisions: ps.subDivisions || '', 
+      title: ps.title || '', 
+      description: ps.description || '', 
+      allottedTo: ps.allottedTo || '' 
+    });
+    // Auto scroll to top of form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function handleDeleteStatement(id) {
@@ -462,12 +481,19 @@ export default function AdminDashboard() {
         {activeTab === 'problems' && (
            <div className="grid grid-cols-12 gap-8">
               <div className="col-span-4 card-premium h-fit space-y-6">
-                 <h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest">Add Task</h2>
+                 <div className="flex justify-between items-center">
+                    <h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest">{editingStatement ? 'Update Task' : 'Add Task'}</h2>
+                    {editingStatement && (
+                      <button onClick={() => { setEditingStatement(null); setNewStatement({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' }); }} className="text-[10px] font-bold text-rose-500 uppercase">Cancel</button>
+                    )}
+                 </div>
                  <form onSubmit={handleCreateStatement} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4"><input className="input-premium py-2" placeholder="ID" value={newStatement.questionNo} onChange={e => setNewStatement({...newStatement, questionNo: e.target.value})} required /><input className="input-premium py-2" placeholder="Div" value={newStatement.subDivisions} onChange={e => setNewStatement({...newStatement, subDivisions: e.target.value})} /></div>
                     <input className="input-premium py-2" placeholder="Task Title" value={newStatement.title} onChange={e => setNewStatement({...newStatement, title: e.target.value})} required />
                     <textarea className="input-premium min-h-[100px]" placeholder="Details..." value={newStatement.description} onChange={e => setNewStatement({...newStatement, description: e.target.value})} required />
-                    <button className="w-full btn-green !py-3 text-xs uppercase font-bold tracking-widest">Add Task</button>
+                    <button className={`w-full !py-3 text-xs uppercase font-bold tracking-widest ${editingStatement ? 'btn-blue' : 'btn-green'}`}>
+                      {editingStatement ? 'Update Task' : 'Add Task'}
+                    </button>
                  </form>
               </div>
               <div className="col-span-8 card-premium !p-0 overflow-hidden h-fit">
@@ -485,7 +511,10 @@ export default function AdminDashboard() {
                             <div className="px-3 h-10 w-fit min-w-[2.5rem] bg-slate-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm whitespace-nowrap"># {ps.questionNo} {ps.subDivisions && `- ${ps.subDivisions}`}</div>
                             <div className="truncate"><h4 className="text-sm font-bold text-slate-800 truncate">{ps.title}</h4><p className="text-[10px] font-bold text-slate-400">{ps.allottedTo ? `Group: ${ps.allottedTo}` : 'Available'}</p></div>
                          </div>
-                         <button onClick={() => handleDeleteStatement(ps.id)} className="text-rose-500 text-xs font-bold hover:underline opacity-0 group-hover:opacity-100 transition-all px-4">Delete</button>
+                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                            <button onClick={() => startEditing(ps)} className="text-blue-500 text-xs font-bold hover:underline px-2">Edit</button>
+                            <button onClick={() => handleDeleteStatement(ps.id)} className="text-rose-500 text-xs font-bold hover:underline px-2 border-l border-slate-200">Delete</button>
+                         </div>
                       </div>
                     ))}
                  </div>

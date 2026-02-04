@@ -629,6 +629,19 @@ router.post('/problem-statements', async (req, res) => {
     } catch (e) { res.status(500).json({ error: "Fail" }); }
 });
 
+router.put('/problem-statements/:id', async (req, res) => {
+    try {
+        await prisma.problemStatement.update({ 
+            where: { id: req.params.id }, 
+            data: req.body 
+        });
+        res.json({ success: true });
+    } catch (e) { 
+        console.error("[UpdatePS] Error:", e);
+        res.status(500).json({ error: "Update failed" }); 
+    }
+});
+
 router.delete('/problem-statements/:id', async (req, res) => {
     try {
         await prisma.problemStatement.delete({ where: { id: req.params.id } });
