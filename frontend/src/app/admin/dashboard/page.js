@@ -86,14 +86,25 @@ export default function AdminDashboard() {
   async function fetchProblemStatements() {
     try {
       const res = await axios.get(`${getApiUrl()}/admin/problem-statements`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
-      const sorted = (res.data || []).sort((a, b) => {
-        const qComp = a.questionNo.localeCompare(b.questionNo, undefined, { numeric: true });
+      let data = Array.isArray(res.data) ? res.data : [];
+      
+      const sorted = data.sort((a, b) => {
+        const aNo = String(a.questionNo || '');
+        const bNo = String(b.questionNo || '');
+        const qComp = aNo.localeCompare(bNo, undefined, { numeric: true });
         if (qComp !== 0) return qComp;
-        return (a.subDivisions || '').localeCompare(b.subDivisions || '');
+        
+        const aDiv = String(a.subDivisions || '');
+        const bDiv = String(b.subDivisions || '');
+        return aDiv.localeCompare(bDiv);
       });
+      
       setProblemStatements(sorted);
       console.log('[FetchPS] Problem statements:', sorted.map(ps => ({ id: ps.id, no: ps.questionNo, allottedTo: ps.allottedTo })));
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error("[FetchPS] Error:", err);
+      // Fallback to empty to prevent UI hang, but the state is already []
+    }
   }
 
   async function fetchSubmissions() {

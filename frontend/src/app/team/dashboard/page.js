@@ -50,9 +50,14 @@ export default function TeamDashboard() {
         setProblemStatement(res.data.selectedProblem);
       } else if (res.data?.problemStatements?.length > 0) {
         const sorted = [...res.data.problemStatements].sort((a, b) => {
-          const qComp = a.questionNo.localeCompare(b.questionNo, undefined, { numeric: true });
+          const aNo = String(a.questionNo || '');
+          const bNo = String(b.questionNo || '');
+          const qComp = aNo.localeCompare(bNo, undefined, { numeric: true });
           if (qComp !== 0) return qComp;
-          return (a.subDivisions || '').localeCompare(b.subDivisions || '');
+          
+          const aDiv = String(a.subDivisions || '');
+          const bDiv = String(b.subDivisions || '');
+          return aDiv.localeCompare(bDiv);
         });
         setTeamData(prev => ({ ...prev, problemStatements: sorted }));
         if (sorted.length === 1) setProblemStatement(sorted[0]);
