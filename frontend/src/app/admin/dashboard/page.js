@@ -473,7 +473,13 @@ export default function AdminDashboard() {
               <div className="col-span-8 card-premium !p-0 overflow-hidden h-fit">
                  <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50"><h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest">All Tasks</h2></div>
                  <div className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
-                    {problemStatements.map(ps => (
+                    {problemStatements.length === 0 ? (
+                      <div className="p-12 text-center space-y-4">
+                        <div className="text-4xl opacity-20">📂</div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">No registry entries found</p>
+                        <p className="text-xs text-slate-500 font-medium">Use the panel on the left to initialize new tasks.</p>
+                      </div>
+                    ) : problemStatements.map(ps => (
                       <div key={ps.id} className="p-4 hover:bg-slate-50 transition-all flex justify-between items-center group">
                          <div className="flex items-center gap-4 flex-1">
                             <div className="px-3 h-10 w-fit min-w-[2.5rem] bg-slate-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm whitespace-nowrap"># {ps.questionNo} {ps.subDivisions && `- ${ps.subDivisions}`}</div>
