@@ -275,7 +275,7 @@ export default function PitchGenerator() {
                   </div>
                 </div>
                 
-                <nav className="space-y-3 max-h-[calc(100vh-320px)] pr-2 overflow-y-auto custom-scrollbar pt-2">
+                <nav className="space-y-3 max-h-[calc(100vh-500px)] pr-2 overflow-y-auto custom-scrollbar pt-2">
                   {stepsList.map((label, i) => {
                     const isActive = step === (i + 1);
                     const isCompleted = (i + 1) < step;
@@ -320,6 +320,19 @@ export default function PitchGenerator() {
                     );
                   })}
                 </nav>
+
+                {selectedProblem && (
+                  <div className="mt-8 p-5 bg-white/10 rounded-3xl border border-white/10 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Original Reference</span>
+                      <span className="text-[10px] font-bold text-blue-300">Q.{selectedProblem.questionNo}</span>
+                    </div>
+                    <h4 className="text-[11px] font-bold text-white leading-tight">{selectedProblem.title}</h4>
+                    <p className="text-[10px] text-white/60 leading-relaxed whitespace-pre-line overflow-y-auto max-h-[150px] pr-2 custom-scrollbar-white">
+                      {selectedProblem.description}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </aside>
