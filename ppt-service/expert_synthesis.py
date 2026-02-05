@@ -397,7 +397,7 @@ def draw_solution_flow(slide, data):
             v_conn.line.end_arrowhead = 1
 
 def draw_lean(slide, data):
-    w = 1.68; m = 0.8; pillars = [('PROBLEM','s10_leanProblem',m,4.0), ('SOLUTION','s10_leanSolution',m+w,2.0), ('USP','s10_leanUSP',m+2*w,4.0), ('ADVANAGE','s10_leanUnfair',m+3*w,2.0), ('SEGMENTS','s10_leanSegments',m+4*w,4.0)]
+    w = 1.68; m = 0.8; pillars = [('PROBLEM','s10_leanProblem',m,4.0), ('SOLUTION','s10_leanSolution',m+w,2.0), ('USP','s10_leanUSP',m+2*w,4.0), ('ADVANTAGE','s10_leanUnfair',m+3*w,2.0), ('SEGMENTS','s10_leanSegments',m+4*w,4.0)]
     for t,k,x,h in pillars:
         add_clean_box(slide, t, Inches(x), Inches(1.6), Inches(w-0.05), Inches(0.35), 9, True, PRIMARY_COLOR, None, BG_LIGHT)
         add_clean_box(slide, clean_text(data.get(k), 10 if h < 3 else 25), Inches(x), Inches(2.0), Inches(w-0.05), Inches(h-0.4), 8)

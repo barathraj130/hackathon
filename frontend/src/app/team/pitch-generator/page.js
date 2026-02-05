@@ -652,6 +652,69 @@ export default function PitchGenerator() {
                          <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm"><p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Team</p><p className="text-sm font-bold text-slate-800">{data.teamName || 'Unknown Team'}</p></div>
                          <div className="p-4 bg-[var(--secondary-blue)] rounded-2xl border border-blue-200 shadow-sm"><p className="text-[10px] font-bold text-white/60 uppercase mb-2">Question</p><p className="text-sm font-bold text-white">{selectedProblem ? `Q.${selectedProblem.questionNo} ${selectedProblem.subDivisions ? `- ${selectedProblem.subDivisions}` : ''}` : (data.s3_coreProblem ? 'Custom' : 'NONE')}</p></div>
                       </div>
+
+                      {/* FIELD AUDIT SECTION */}
+                      <div className="max-w-4xl mx-auto mt-12 text-left bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
+                        <div className="px-8 py-6 bg-slate-900 flex justify-between items-center">
+                          <div className="space-y-1">
+                            <h3 className="text-sm font-black text-white uppercase tracking-widest">Repository Integrity Scan</h3>
+                            <p className="text-[9px] text-slate-400 font-bold uppercase">System-wide field verification</p>
+                          </div>
+                          <div className="flex gap-4">
+                            <div className="text-right">
+                              <p className="text-[9px] text-slate-400 font-bold uppercase">Filled</p>
+                              <p className="text-xl font-black text-[var(--primary-green)]">
+                                {Object.values(data).filter(v => typeof v === 'string' ? v.length > 0 : (Array.isArray(v) ? v.some(i => typeof i === 'string' ? i.length > 0 : !!i) : !!v)).length}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-[9px] text-slate-400 font-bold uppercase">Critical Blanks</p>
+                              <p className="text-xl font-black text-rose-500">
+                                {[
+                                  'projectName', 'teamName', 'institutionName', 'leaderName',
+                                  's2_domain', 's2_context', 's2_rootReason',
+                                  's3_coreProblem', 's3_affected', 's3_whyItMatters',
+                                  's8_solution', 's8_coreTech', 's9_howItWorks',
+                                  's10_leanProblem', 's10_leanSolution', 's10_leanUSP', 's10_leanCosts', 's10_leanRevenue',
+                                  's13_tam', 's13_sam', 's13_som'
+                                ].filter(k => !data[k]).length}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-h-[400px] overflow-y-auto custom-scrollbar">
+                           <div className="space-y-6">
+                              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest pb-2 border-b border-slate-50">Identity & Context</h4>
+                              {[
+                                {k: 'projectName', l: 'Project Name', s: 1}, {k: 'teamName', l: 'Team Name', s: 1}, 
+                                {k: 'institutionName', l: 'Institution', s: 1}, {k: 'leaderName', l: 'Leader Name', s: 1},
+                                {k: 's2_domain', l: 'Strategic Domain', s: 2}, {k: 's2_context', l: 'Operational Context', s: 2}, {k: 's2_rootReason', l: 'Root Catalyst', s: 2}
+                              ].map(f => (
+                                <div key={f.k} className="flex items-center justify-between group cursor-pointer" onClick={() => setStep(f.s)}>
+                                  <span className={`text-[11px] font-bold ${!data[f.k] ? 'text-rose-400' : 'text-slate-600'}`}>{f.l}</span>
+                                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${!data[f.k] ? 'bg-rose-50 text-rose-500' : 'bg-green-50 text-[var(--primary-green)] opacity-40'}`}>{!data[f.k] ? 'MISSING' : 'VALID'}</span>
+                                </div>
+                              ))}
+                           </div>
+                           <div className="space-y-6">
+                              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest pb-2 border-b border-slate-50">Problem & Lean Logic</h4>
+                              {[
+                                {k: 's3_coreProblem', l: 'Core Problem', s: 3}, {k: 's8_solution', l: 'Primary Solution', s: 8}, {k: 's9_howItWorks', l: 'Technical Flow', s: 9},
+                                {k: 's10_leanSolution', l: 'Lean Solution Fix', s: 10}, {k: 's10_leanUSP', l: 'Unique Selling Prop', s: 10},
+                                {k: 's10_leanCosts', l: 'Cost Structure', s: 10}, {k: 's10_leanRevenue', l: 'Revenue Streams', s: 10}
+                              ].map(f => (
+                                <div key={f.k} className="flex items-center justify-between group cursor-pointer" onClick={() => setStep(f.s)}>
+                                  <span className={`text-[11px] font-bold ${!data[f.k] ? 'text-rose-400' : 'text-slate-600'}`}>{f.l}</span>
+                                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${!data[f.k] ? 'bg-rose-50 text-rose-500' : 'bg-green-50 text-[var(--primary-green)] opacity-40'}`}>{!data[f.k] ? 'MISSING' : 'VALID'}</span>
+                                </div>
+                              ))}
+                           </div>
+                        </div>
+                        <div className="bg-slate-50 px-8 py-4 border-t border-slate-100 italic text-[10px] text-slate-400 font-medium">
+                          Note: Mandatory fields must be filled for reliable artifact synthesis. Missing data may result in placeholder text on slides.
+                        </div>
+                      </div>
                     </div>
                   )}
              </div>
