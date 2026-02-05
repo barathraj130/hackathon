@@ -214,7 +214,7 @@ export default function TeamDashboard() {
                             </span>
                           </div>
                           <h4 className="font-bold text-slate-800 mb-3 group-hover:text-[var(--secondary-blue)]">{ps.title}</h4>
-                          <p className="text-xs text-slate-500 line-clamp-3">{ps.description}</p>
+                          <p className="text-xs text-slate-500 whitespace-pre-line">{ps.description}</p>
                         </div>
                         <button className="mt-6 w-full py-3 bg-[var(--secondary-blue)] text-white font-bold text-xs uppercase rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">Select This Task</button>
                       </div>
@@ -229,7 +229,7 @@ export default function TeamDashboard() {
                           <div className="flex-1">
                             <span className="text-xs font-bold text-[var(--secondary-blue)] uppercase tracking-widest">My Task</span>
                             <h3 className="text-2xl font-bold text-slate-900 mt-2">{problemStatement.title}</h3>
-                            <p className="text-slate-500 font-medium mt-4 leading-relaxed">{problemStatement.description}</p>
+                            <p className="text-slate-500 font-medium mt-4 leading-relaxed whitespace-pre-line">{problemStatement.description}</p>
                           </div>
                           <div className="bg-slate-50 px-6 py-4 rounded-2xl text-center border border-slate-100 min-w-[120px]">
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Task ID</p>
