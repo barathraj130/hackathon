@@ -82,19 +82,21 @@ export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, a
     try {
       const token = localStorage.getItem('token');
       
-      // Validate all fields are filled
-      const allFilled = participants.every(p => 
-        p.name.trim() && p.college.trim() && p.dept.trim() && p.year
-      );
+      // Validate Leader fields are filled, Member is optional
+      const leader = participants.find(p => p.role === 'Leader');
+      const leaderFilled = leader && leader.name.trim() && leader.college.trim() && leader.dept.trim() && leader.year;
       
-      if (!allFilled) {
-        setError("Please fill in all certificate details for both participants.");
+      if (!leaderFilled) {
+        setError("Please fill in all certificate details for the Team Leader.");
         setIsSubmitting(false);
         return;
       }
       
+      // Filter out empty members before saving
+      const validParticipants = participants.filter(p => p.role === 'Leader' || p.name.trim());
+      
       await axios.post(`${apiUrl}/team/update-certificates`, 
-        { participants },
+        { participants: validParticipants },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
@@ -234,7 +236,7 @@ export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, a
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Full Name *</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Full Name {p.role === 'Leader' && '*'}</label>
                       <input 
                         className="input-premium py-2 !text-xs !bg-white" 
                         value={p.name} 
@@ -247,7 +249,7 @@ export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, a
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Institution *</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Institution {p.role === 'Leader' && '*'}</label>
                       <input 
                         className="input-premium py-2 !text-xs !bg-white" 
                         value={p.college} 
@@ -259,7 +261,7 @@ export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, a
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Department *</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Department {p.role === 'Leader' && '*'}</label>
                       <input 
                         className="input-premium py-2 !text-xs !bg-white" 
                         value={p.dept} 
@@ -271,7 +273,7 @@ export default function SubmissionWorkflowModal({ isOpen, onClose, onComplete, a
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Year of Study *</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Year of Study {p.role === 'Leader' && '*'}</label>
                       <select 
                         className="input-premium py-2 !text-xs !bg-white font-bold" 
                         value={p.year} 

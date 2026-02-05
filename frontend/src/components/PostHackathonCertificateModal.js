@@ -40,8 +40,9 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
     setStatus(null);
     try {
       const token = localStorage.getItem('token');
+      const filteredParticipants = participants.filter(p => p.role === 'Leader' || p.name.trim());
       await axios.post(`${apiUrl}/team/certificate-details`, {
-        participants
+        participants: filteredParticipants
       }, { headers: { Authorization: `Bearer ${token}` } });
       setStatus({ type: 'success', message: 'Names saved successfully!' });
     } catch (err) {
@@ -57,7 +58,8 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
     try {
       const token = localStorage.getItem('token');
       // Save names first to ensure latest are used
-      await axios.post(`${apiUrl}/team/certificate-details`, { participants }, { 
+      const filteredParticipants = participants.filter(p => p.role === 'Leader' || p.name.trim());
+      await axios.post(`${apiUrl}/team/certificate-details`, { participants: filteredParticipants }, { 
         headers: { Authorization: `Bearer ${token}` } 
       });
       
