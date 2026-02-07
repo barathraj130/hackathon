@@ -53,25 +53,49 @@ router.post('/login', async (req, res) => {
           console.warn("[Auth] Team lookup skipped or failed:", teamErr.message);
       }
 
-      // 2. Try Reviewer Login (Safe Guarded)
+      // 2. Try Reviewer Login (Robus Hybrid: ORM + Raw Fallback)
+      let reviewerAccount = null;
+
+      // Attempt 1: Standard ORM
       if (prisma.reviewer) {
           try {
-             const reviewerAccount = await prisma.reviewer.findUnique({ where: { email: loginEmail } });
-             if (reviewerAccount) {
-                 const validPass = await bcrypt.compare(password, reviewerAccount.password);
-                 if (validPass) {
-                   console.log(`[Auth] Reviewer login success: ${username}`);
-                   const token = jwt.sign(
-                     { id: reviewerAccount.id, role: 'REVIEWER' }, 
-                     'INSTITUTIONAL_SYNTHESIS_SECRET_2026_MASTER', 
-                     { expiresIn: '24h' }
-                   );
-                   return res.json({ token, role: 'REVIEWER' });
-                 }
-             }
+             reviewerAccount = await prisma.reviewer.findUnique({ where: { email: loginEmail } });
           } catch (revErr) {
-             console.warn("[Auth] Reviewer lookup failed:", revErr.message);
+             console.warn("[Auth] Reviewer ORM lookup failed:", revErr.message);
           }
+      }
+
+      // Attempt 2: Raw SQL Fallback (if ORM failed or schema out of sync)
+      if (!reviewerAccount) {
+          try {
+             // SECURE: Use tagged template literal for parameterization
+             const rawRes = await prisma.$queryRaw`SELECT * FROM "Reviewer" WHERE email = ${loginEmail} LIMIT 1`;
+             if (Array.isArray(rawRes) && rawRes.length > 0) {
+                 reviewerAccount = rawRes[0];
+                 console.log(`[Auth] Reviewer found via Raw SQL Fallback: ${username}`);
+             }
+          } catch (rawErr) {
+             console.warn("[Auth] Reviewer Raw SQL lookup failed (Table likely missing):", rawErr.message);
+          }
+      }
+
+      if (reviewerAccount) {
+         try {
+             const validPass = await bcrypt.compare(password, reviewerAccount.password);
+             if (validPass) {
+               console.log(`[Auth] Reviewer login success: ${username}`);
+               const token = jwt.sign(
+                 { id: reviewerAccount.id, role: 'REVIEWER' }, 
+                 'INSTITUTIONAL_SYNTHESIS_SECRET_2026_MASTER', 
+                 { expiresIn: '24h' }
+               );
+               return res.json({ token, role: 'REVIEWER' });
+             } else {
+                 console.log(`[Auth] Reviewer login FAILED (Invalid Password): ${username}`);
+             }
+         } catch (cryptErr) {
+             console.warn("[Auth] Password comparison error:", cryptErr.message);
+         }
       }
 
       // 3. Admin Login
