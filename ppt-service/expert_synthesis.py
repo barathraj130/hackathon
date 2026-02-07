@@ -98,6 +98,15 @@ def add_clean_box(slide, text, x, y, w, h, sz, bold=False, txt_color=TEXT_MAIN, 
 
 
 def create_expert_deck(team_name, college, data):
+    # Ensure data is a dictionary for robust key access
+    if isinstance(data, str):
+        import json
+        try: data = json.loads(data)
+        except: pass
+    
+    if not isinstance(data, dict):
+        data = {}
+
     prs = Presentation()
     
     # ... (Cover Slide Logic - Unchanged)
@@ -165,6 +174,7 @@ def create_expert_deck(team_name, college, data):
         ("Our User", lambda s: draw_persona(s, data)),
         ("What's Missing?", lambda s: draw_gap(s, data)),
         ("Our Solution", lambda s: draw_solution_statement(s, data)),
+        ("Evidence", lambda s: draw_prototype(s, data)),
         ("How it Works", lambda s: draw_solution_flow(s, data)),
         ("The Plan", lambda s: draw_lean(s, data)),
         ("Growth", lambda s: draw_balloon(s, data)),
@@ -366,7 +376,7 @@ def draw_solution_flow(slide, data):
     m = 1.0; w = 8.0
     add_clean_box(slide, clean_text(data.get('s9_oneline'), 15), Inches(m), Inches(1.5), Inches(w), Inches(0.6), 22, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
     
-    sps = [clean_text(s, 12) for s in data.get('s9_flowSteps', []) if s.strip()][:6]
+    sps = [clean_text(s, 12) for s in data.get('s9_flowSteps', []) if str(s).strip()][:6]
     bw, bh = (w-0.6)/3, 1.1
     gx, gy = 0.3, 0.4
     
@@ -412,7 +422,7 @@ def draw_balloon(slide, data):
     env = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(3.2), Inches(1.5), Inches(3.6), Inches(3.6))
     env.fill.solid(); env.fill.fore_color.rgb = PRIMARY_COLOR; env.line.color.rgb = SECONDARY_COLOR; env.line.width = Pt(1)
     add_text_box_centered(slide, "LIFTS (DRIVERS)", 3.4, 2.0, 3.2, 0.4, 12, True, WHITE)
-    ls = "\n".join([f"• {clean_text(x, 6)}" for x in data.get('s11_lifts', []) if x.strip()][:4])
+    ls = "\n".join([f"• {clean_text(x, 6)}" for x in data.get('s11_lifts', []) if str(x).strip()][:4])
     add_text_box_centered(slide, ls, 3.4, 2.4, 3.2, 1.5, 10, False, WHITE)
     bk = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(4.2), Inches(5.6), Inches(1.6), Inches(1.0))
     bk.fill.solid(); bk.fill.fore_color.rgb = SECONDARY_COLOR; bk.line.width = 0
@@ -420,10 +430,10 @@ def draw_balloon(slide, data):
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(3.7), Inches(4.8), Inches(4.2), Inches(5.6)).line.color.rgb=SECONDARY_COLOR
     slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(6.3), Inches(4.8), Inches(5.8), Inches(5.6)).line.color.rgb=SECONDARY_COLOR
     add_clean_box(slide, "PULLS (ANCHORS)", Inches(0.4), Inches(4.0), Inches(2.7), Inches(0.35), 11, True, ERROR_ZONE, BG_LIGHT, BG_LIGHT)
-    pl = "\n".join([f"• {clean_text(x, 6)}" for x in data.get('s11_pulls', []) if x.strip()][:4])
+    pl = "\n".join([f"• {clean_text(x, 6)}" for x in data.get('s11_pulls', []) if str(x).strip()][:4])
     add_clean_box(slide, pl, Inches(0.4), Inches(4.4), Inches(2.7), Inches(1.8), 10)
     add_clean_box(slide, "OUTCOMES (ALTITUDE)", Inches(6.9), Inches(4.0), Inches(2.7), Inches(0.35), 11, True, PRIMARY_COLOR, BG_LIGHT, BG_LIGHT)
-    os = "\n".join([f"• {clean_text(x, 6)}" for x in data.get('s11_outcomes', []) if x.strip()][:4])
+    os = "\n".join([f"• {clean_text(x, 6)}" for x in data.get('s11_outcomes', []) if str(x).strip()][:4])
     add_clean_box(slide, os, Inches(6.9), Inches(4.4), Inches(2.7), Inches(1.8), 10)
 
 def draw_market_matrix(slide, data):

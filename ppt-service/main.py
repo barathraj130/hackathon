@@ -8,6 +8,7 @@ from certificate_engine import create_certificate
 from fastapi.responses import FileResponse
 import uvicorn
 import os
+import json
 import traceback
 
 app = FastAPI(title="Institutional Synthesis Hub 4.5")
@@ -123,6 +124,11 @@ def unified_handler(data: dict = Body(...)):
             is_expert = True
 
         if is_expert:
+            if isinstance(payload, str):
+                try:
+                    payload = json.loads(payload)
+                except:
+                    pass
             file_path = create_expert_deck(team_name, college_name, payload)
         else:
             processed = polish_content(payload)
