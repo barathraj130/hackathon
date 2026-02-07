@@ -138,8 +138,7 @@ def create_expert_deck(team_name, college, data):
     p_org.font.size = Pt(14); p_org.font.bold = False; p_org.font.color.rgb = TEXT_MAIN; p_org.alignment = PP_ALIGN.CENTER
     
     p_coll = tf_s.add_paragraph()
-    college_text = college if college and college != "Institution" else "JANSONS INSTITUTE OF TECHNOLOGY"
-    p_coll.text = college_text.upper()
+    p_coll.text = "JANSONS INSTITUTE OF TECHNOLOGY"
     p_coll.font.size = Pt(24); p_coll.font.bold = True; p_coll.font.color.rgb = TEXT_MAIN; p_coll.alignment = PP_ALIGN.CENTER
     
     # Project Name Box (Separate, below subtitle)
@@ -157,7 +156,8 @@ def create_expert_deck(team_name, college, data):
     p_team.text = f"TEAM {team_name.upper()}"; p_team.font.size = Pt(22); p_team.font.bold = True; p_team.font.color.rgb = TEXT_MAIN
     
     p_from = tf_t.add_paragraph(); p_from.alignment = PP_ALIGN.CENTER
-    p_from.text = f"from {college_text.upper()}"; p_from.font.size = Pt(14); p_from.font.italic = True; p_from.font.color.rgb = TEXT_MAIN
+    team_college = college if college and college != "Institution" else "JANSONS INSTITUTE OF TECHNOLOGY"
+    p_from.text = f"from {team_college.upper()}"; p_from.font.size = Pt(14); p_from.font.italic = True; p_from.font.color.rgb = TEXT_MAIN
     
     p_leader = tf_t.add_paragraph(); p_leader.alignment = PP_ALIGN.CENTER
     p_leader.text = f"Team Leader: {data.get('leaderName', 'N/A').upper()}"; p_leader.font.size = Pt(16); p_leader.font.bold = True; p_leader.font.color.rgb = TEXT_MAIN
