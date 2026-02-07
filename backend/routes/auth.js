@@ -48,6 +48,23 @@ router.post('/login', async (req, res) => {
     }
   }
 
+  // 2. Try Reviewer Login
+  const reviewerAccount = await prisma.reviewer.findUnique({ where: { email: loginEmail } });
+  if (reviewerAccount) {
+     const validPass = await bcrypt.compare(password, reviewerAccount.password);
+     if (validPass) {
+       console.log(`[Auth] Reviewer login success: ${username}`);
+       const token = jwt.sign(
+         { id: reviewerAccount.id, role: 'REVIEWER' }, 
+         'INSTITUTIONAL_SYNTHESIS_SECRET_2026_MASTER', 
+         { expiresIn: '24h' }
+       );
+       return res.json({ token, role: 'REVIEWER' });
+     } else {
+       console.log(`[Auth] Reviewer login FAILED (Invalid Password): ${username}`);
+     }
+  }
+
   const admin = await prisma.admin.findUnique({ where: { email: loginEmail } });
   if (admin) {
     const validPass = await bcrypt.compare(password, admin.password);

@@ -35,6 +35,37 @@ model Submission {
   certificateYear    Int?
   certificates       ParticipantCertificate[]
   team               Team                     @relation(fields: [teamId], references: [id])
+  scores             Score[]
+}
+
+model Reviewer {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  domain    String?
+  scores    Score[]
+  createdAt DateTime @default(now())
+}
+
+model Score {
+  id           String     @id @default(uuid())
+  submissionId String
+  reviewerId   String
+  innovation   Int        @default(0)
+  feasibility  Int        @default(0)
+  techStack    Int        @default(0)
+  presentation Int        @default(0)
+  impact       Int        @default(0)
+  total        Int        @default(0)
+  comments     String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  submission   Submission @relation(fields: [submissionId], references: [id])
+  reviewer     Reviewer   @relation(fields: [reviewerId], references: [id])
+
+  @@unique([submissionId, reviewerId]) // Prevent duplicate scores
 }
 
 model ParticipantCertificate {

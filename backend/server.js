@@ -182,6 +182,7 @@ app.use('/v1/admin', require('./routes/admin'));
 app.use('/v1/team', require('./routes/team'));
 app.use('/v1/team', require('./routes/submission-workflow')); // Prototype and certificate submission
 app.use('/v1/candidate', require('./routes/team')); // Alias for safety
+app.use('/v1/reviewer', require('./routes/reviewer')); // Reviewer Portal Routes
 
 // Export io and timer state for use in routes
 app.set('socketio', io);
@@ -251,6 +252,46 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
     } catch (tblErr) {
       console.warn("⚠️ Registry Sync Warning:", tblErr.message);
     }
+
+    // EVALUATION PROTOCOLS: Reviewer & Score Tables
+    try {
+      await prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "Reviewer" (
+          "id" TEXT NOT NULL,
+          "email" TEXT NOT NULL,
+          "password" TEXT NOT NULL,
+          "name" TEXT NOT NULL,
+          "domain" TEXT,
+          "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT "Reviewer_pkey" PRIMARY KEY ("id"),
+          CONSTRAINT "Reviewer_email_key" UNIQUE ("email")
+        );
+      `);
+      
+      await prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "Score" (
+          "id" TEXT NOT NULL,
+          "submissionId" TEXT NOT NULL,
+          "reviewerId" TEXT NOT NULL,
+          "innovation" INTEGER NOT NULL DEFAULT 0,
+          "feasibility" INTEGER NOT NULL DEFAULT 0,
+          "techStack" INTEGER NOT NULL DEFAULT 0,
+          "presentation" INTEGER NOT NULL DEFAULT 0,
+          "impact" INTEGER NOT NULL DEFAULT 0,
+          "total" INTEGER NOT NULL DEFAULT 0,
+          "comments" TEXT,
+          "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT "Score_pkey" PRIMARY KEY ("id"),
+          CONSTRAINT "Score_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "Submission"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+          CONSTRAINT "Score_reviewerId_fkey" FOREIGN KEY ("reviewerId") REFERENCES "Reviewer"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+          CONSTRAINT "Score_submissionId_reviewerId_key" UNIQUE ("submissionId", "reviewerId")
+        );
+      `);
+      console.log("⚖️ Evaluation Matrix Deployed.");
+    } catch (evalErr) {
+      console.warn("⚠️ Evaluation Sync Warning:", evalErr.message);
+    }
     
     // REPOSITORY RECALIBRATION: Fix legacy relative PPT links to absolute verified paths
     try {
@@ -285,6 +326,25 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
       console.log("👤 Administrative Profile Secured.");
     } catch (seedErr) {
       console.warn("⚠️ Admin Seed Warning:", seedErr.message);
+    }
+
+    // AUTO-SEED REVIEWER: reviewer@institution.com / review2026
+    try {
+      const { v4: uuidv4 } = require('uuid');
+      const rEmail = 'reviewer@institution.com';
+      const rPass = await bcrypt.hash('review2026', 10);
+      const newReviewerId = uuidv4();
+      
+      // Check if exists because ON CONFLICT syntax varies or might be tricky with ID generation
+      // Actually Postgres supports ON CONFLICT
+      await prisma.$executeRawUnsafe(`
+        INSERT INTO "Reviewer" ("id", "email", "password", "name", "createdAt")
+        VALUES ('${newReviewerId}', '${rEmail}', '${rPass}', 'Lead Reviewer', NOW())
+        ON CONFLICT ("email") DO UPDATE SET "password" = '${rPass}';
+      `);
+      console.log("🧐 Reviewer Access Granted: reviewer@institution.com");
+    } catch (rSeedErr) {
+       console.warn("⚠️ Reviewer Seed Warning:", rSeedErr.message);
     }
   } catch (dbErr) {
     console.warn("⚠️ Native Sync Warning (Non-critical):", dbErr.message);

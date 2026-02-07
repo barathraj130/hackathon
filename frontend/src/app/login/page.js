@@ -22,6 +22,8 @@ export default function LoginPage() {
       
       if (res.data.role === 'ADMIN') {
         router.push('/admin/dashboard');
+      } else if (res.data.role === 'REVIEWER') {
+        router.push('/reviewer/dashboard');
       } else {
         router.push('/team/dashboard');
       }
