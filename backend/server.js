@@ -44,7 +44,7 @@ const setTimeRemaining = (value) => { timeRemaining = value; };
 app.get('/v1/sys/status', (req, res) => {
     res.json({
         status: 'online',
-        version: '2.1.0-restrict-fix',
+        version: '2.2.0-reviewer-beta',
         timestamp: new Date().toISOString()
     });
 });
@@ -104,6 +104,52 @@ app.get('/setup-db', async (req, res) => {
       update: {},
       create: { id: 1, durationMinutes: 1440, isPaused: true }
     });
+
+    // 3. Create Reviewer Tables & Seed
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "Reviewer" (
+        "id" TEXT NOT NULL,
+        "email" TEXT NOT NULL,
+        "password" TEXT NOT NULL,
+        "name" TEXT NOT NULL,
+        "domain" TEXT,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "Reviewer_pkey" PRIMARY KEY ("id"),
+        CONSTRAINT "Reviewer_email_key" UNIQUE ("email")
+      );
+    `);
+    
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "Score" (
+        "id" TEXT NOT NULL,
+        "submissionId" TEXT NOT NULL,
+        "reviewerId" TEXT NOT NULL,
+        "innovation" INTEGER NOT NULL DEFAULT 0,
+        "feasibility" INTEGER NOT NULL DEFAULT 0,
+        "techStack" INTEGER NOT NULL DEFAULT 0,
+        "presentation" INTEGER NOT NULL DEFAULT 0,
+        "impact" INTEGER NOT NULL DEFAULT 0,
+        "total" INTEGER NOT NULL DEFAULT 0,
+        "comments" TEXT,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "Score_pkey" PRIMARY KEY ("id"),
+        CONSTRAINT "Score_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "Submission"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+        CONSTRAINT "Score_reviewerId_fkey" FOREIGN KEY ("reviewerId") REFERENCES "Reviewer"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+        CONSTRAINT "Score_submissionId_reviewerId_key" UNIQUE ("submissionId", "reviewerId")
+      );
+    `);
+
+    const { v4: uuidv4 } = require('uuid');
+    const rEmail = 'reviewer@institution.com';
+    const rPass = await bcrypt.hash('review2026', 10);
+    const newReviewerId = uuidv4();
+    
+    await prisma.$executeRawUnsafe(`
+      INSERT INTO "Reviewer" ("id", "email", "password", "name", "createdAt")
+      VALUES ('${newReviewerId}', '${rEmail}', '${rPass}', 'Lead Reviewer', NOW())
+      ON CONFLICT ("email") DO UPDATE SET "password" = '${rPass}';
+    `);
 
     res.send(`
       <div style="font-family: sans-serif; padding: 50px; text-align: center;">
