@@ -53,6 +53,35 @@ const checkOperationalStatus = async (req, res, next) => {
     next();
 };
 
+/**
+ * @route   GET /v1/team/proxy-download
+ * @desc    Proxies file download from internal service if cloud storage fails.
+ *          Public access allowed for direct browser downloads.
+ */
+router.get('/proxy-download', async (req, res) => {
+    try {
+        const { file, host } = req.query;
+        if (!file || !host) return res.status(400).send("Invalid download request.");
+
+        const targetUrl = `${host}/outputs/${file}`;
+        console.log(`[PROXY] Streaming from: ${targetUrl}`);
+
+        const response = await axios.get(targetUrl, { 
+            responseType: 'stream',
+            timeout: 30000
+        });
+
+        res.setHeader('Content-Disposition', `attachment; filename="${file}"`);
+        if (response.headers['content-type']) {
+            res.setHeader('Content-Type', response.headers['content-type']);
+        }
+        response.data.pipe(res);
+    } catch (error) {
+        console.error("[PROXY FAIL]", error.message);
+        res.status(502).send("File download proxy failed. Please try again.");
+    }
+});
+
 // Authenticate all routes in this module
 router.use(verifyToken);
 
@@ -427,7 +456,12 @@ router.post('/generate-pitch-deck', checkOperationalStatus, async (req, res) => 
             console.log(`☁️ [Supabase] Expert Migration Successful: ${finalExpertUrl}`);
         } catch (syncErr) {
             console.error("⚠️ [Supabase] Cloud sync failed, falling back to local link:", syncErr.message);
-            finalExpertUrl = mapInternalToPublic(internalDownloadUrl);
+            console.error("⚠️ [Supabase] Cloud sync failed, falling back to local link:", syncErr.message);
+            // Fallback to Proxy: Use the successful internal host to stream the file through the backend
+            const publicHost = req.get('host') || 'localhost:3000';
+            const protocol = req.protocol || 'http';
+            finalExpertUrl = `${protocol}://${publicHost}/v1/team/proxy-download?file=${fileName}&host=${encodeURIComponent(successfulHost)}`;
+            console.log(`[FALLBACK] Using Proxy URL: ${finalExpertUrl}`);
         }
 
         // Lock the submission after synthesis
