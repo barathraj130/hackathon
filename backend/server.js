@@ -64,9 +64,9 @@ async function initEngine() {
       const hash = await bcrypt.hash('admin_portal_2026', 10);
       
       await prisma.admin.upsert({
-        where: { email: 'admin@institution.com' },
+        where: { email: 'admin' },
         update: { password: hash },
-        create: { email: 'admin@institution.com', password: hash }
+        create: { email: 'admin', password: hash }
       });
 
       await prisma.hackathonConfig.upsert({
@@ -74,7 +74,7 @@ async function initEngine() {
         update: {},
         create: { id: 1, durationMinutes: 1440, isPaused: true }
       });
-      console.log('✅ Default Admin account created: admin@institution.com');
+      console.log('✅ Default Admin account created: admin');
     }
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
@@ -87,7 +87,7 @@ async function initEngine() {
 app.get('/setup-db', async (req, res) => {
   try {
     const bcrypt = require('bcryptjs');
-    const email = 'admin@institution.com';
+    const email = 'admin';
     const password = 'admin_portal_2026';
     const hash = await bcrypt.hash(password, 10);
 
@@ -141,7 +141,7 @@ app.get('/setup-db', async (req, res) => {
     `);
 
     const { v4: uuidv4 } = require('uuid');
-    const rEmail = 'reviewer@institution.com';
+    const rEmail = 'reviewer';
     const rPass = await bcrypt.hash('review2026', 10);
     const newReviewerId = uuidv4();
     
@@ -154,10 +154,13 @@ app.get('/setup-db', async (req, res) => {
     res.send(`
       <div style="font-family: sans-serif; padding: 50px; text-align: center;">
         <h1 style="color: #10b981;">✅ Database Synchronized</h1>
-        <p>Admin account and system configuration have been initialized.</p>
+        <p>Admin and Reviewer accounts have been initialized with SIMPLIFIED Usernames.</p>
         <div style="background: #f3f4f6; padding: 20px; border-radius: 10px; display: inline-block; text-align: left;">
-          <strong>Email:</strong> admin@institution.com<br>
-          <strong>Password:</strong> admin_portal_2026
+          <strong>Admin Username:</strong> admin<br>
+          <strong>Admin Password:</strong> admin_portal_2026<br>
+          <hr style="opacity: 0.2; margin: 10px 0;">
+          <strong>Reviewer Username:</strong> reviewer<br>
+          <strong>Reviewer Password:</strong> review2026
         </div>
         <br><br>
         <a href="${process.env.FRONTEND_URL || '#'}" style="color: #3b82f6; text-decoration: none;">Return to Login →</a>
@@ -354,10 +357,10 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
 
     console.log("✅ Database Integrity Verified.");
 
-    // AUTO-SEED ADMIN: Ensure admin@institution.com exists
+    // AUTO-SEED ADMIN: Ensure admin exists
     try {
       const bcrypt = require('bcryptjs');
-      const adminEmail = 'admin@institution.com';
+      const adminEmail = 'admin';
       const adminPassword = 'admin_portal_2026';
       const hash = await bcrypt.hash(adminPassword, 10);
       
@@ -369,15 +372,16 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
           password: hash
         }
       });
-      console.log("👤 Administrative Profile Secured.");
+      console.log("👤 Administrative Profile Secured: admin");
     } catch (seedErr) {
       console.warn("⚠️ Admin Seed Warning:", seedErr.message);
     }
 
-    // AUTO-SEED REVIEWER: reviewer@institution.com / review2026
+    // AUTO-SEED REVIEWER: reviewer / review2026
     try {
       const { v4: uuidv4 } = require('uuid');
-      const rEmail = 'reviewer@institution.com';
+      const bcrypt = require('bcryptjs');
+      const rEmail = 'reviewer';
       const rPass = await bcrypt.hash('review2026', 10);
       const newReviewerId = uuidv4();
       
@@ -388,7 +392,7 @@ server.listen(PORT, '0.0.0.0', async () => { // Changed to async to allow await 
         VALUES ('${newReviewerId}', '${rEmail}', '${rPass}', 'Lead Reviewer', NOW())
         ON CONFLICT ("email") DO UPDATE SET "password" = '${rPass}';
       `);
-      console.log("🧐 Reviewer Access Granted: reviewer@institution.com");
+      console.log("🧐 Reviewer Access Granted: reviewer");
     } catch (rSeedErr) {
        console.warn("⚠️ Reviewer Seed Warning:", rSeedErr.message);
     }
