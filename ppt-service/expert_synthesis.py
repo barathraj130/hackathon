@@ -138,7 +138,7 @@ def create_expert_deck(team_name, college, data):
     p_org.font.size = Pt(14); p_org.font.bold = False; p_org.font.color.rgb = TEXT_MAIN; p_org.alignment = PP_ALIGN.CENTER
     
     p_coll = tf_s.add_paragraph()
-    p_coll.text = "JANSONS INSTITUTE OF TECHNOLOGY"
+    p_coll.text = "JANSONS INSTITUTE OF TECHNOLOGY" # Branding Enforced
     p_coll.font.size = Pt(24); p_coll.font.bold = True; p_coll.font.color.rgb = TEXT_MAIN; p_coll.alignment = PP_ALIGN.CENTER
     
     # Project Name Box (Separate, below subtitle)
