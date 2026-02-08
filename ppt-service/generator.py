@@ -52,7 +52,7 @@ def create_pptx(team_name, college, slides_data):
     p_org.alignment = PP_ALIGN.CENTER
     
     p_coll = tf_s.add_paragraph()
-    p_coll.text = "JANSONS INSTITUTE OF TECHNOLOGY"
+    p_coll.text = "JANSONS INSTITUTE OF TECHNOLOGY" # Branding Enforced
     p_coll.font.size = Pt(24); p_coll.font.bold = True; p_coll.font.name = 'Times New Roman'
     p_coll.font.color.rgb = RGBColor(0, 0, 0)
     p_coll.alignment = PP_ALIGN.CENTER
