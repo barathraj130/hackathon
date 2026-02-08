@@ -353,6 +353,10 @@ router.get('/dashboard', async (req, res) => {
         const problems = await prisma.problemStatement.findMany();
         const config = await prisma.hackathonConfig.findUnique({ where: { id: 1 } });
         
+        // Fetch real-time in-memory timer state
+        const timerState = req.app.get('timerState');
+        const currentTimer = timerState ? timerState.getTimerState() : { timeRemaining: 1440*60, timerPaused: true };
+
         const submissions = teams.map(t => t.submission).filter(Boolean);
         
         const pendingSelection = teams.filter(t => {
@@ -373,7 +377,11 @@ router.get('/dashboard', async (req, res) => {
                 collected: submissions.filter(s => s.certificates.some(c => c.certificateUrl)).length,
                 names_entered: submissions.filter(s => s.certificates.length > 0 && s.certificates.every(c => c.name)).length
             },
-            config
+            config,
+            timer: {
+                timeLeft: currentTimer.timeRemaining,
+                paused: currentTimer.timerPaused
+            }
         });
     } catch (e) { 
         console.error("[AdminDashboard] Error:", e);

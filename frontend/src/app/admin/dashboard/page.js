@@ -73,6 +73,19 @@ export default function AdminDashboard() {
     try {
       const res = await axios.get(`${getApiUrl()}/admin/dashboard`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       setStats(res.data);
+      if (res.data.timer) {
+          const h = Math.floor(res.data.timer.timeLeft / 3600);
+          const m = Math.floor((res.data.timer.timeLeft % 3600) / 60);
+          const s = res.data.timer.timeLeft % 60;
+          const formatted = [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
+          
+          setTimer(prev => ({ 
+              ...prev, 
+              timeLeft: res.data.timer.timeLeft, 
+              timerPaused: res.data.timer.paused,
+              formattedTime: formatted
+          }));
+      }
     } catch (err) { console.error(err); }
   }
 
