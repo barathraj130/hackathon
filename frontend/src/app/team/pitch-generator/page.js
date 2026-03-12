@@ -21,7 +21,7 @@ export default function PitchGenerator() {
 
   const [data, setData] = useState({
     // S1: Identity
-    projectName: '', teamName: '', institutionName: '', leaderName: '', memberNames: '',
+    projectName: '', teamName: '', institutionName: '', leaderName: '', memberNames: '', memberList: [''],
     // S2: Strategic Context
     s2_domain: '', s2_context: '', s2_rootReason: '',
     // S3: Problem Statement
@@ -115,20 +115,27 @@ export default function PitchGenerator() {
               s10_leanProblem: coreProblem
            };
 
-           if (res.data.submission?.content) {
-              const savedContent = typeof res.data.submission.content === 'string' 
-                ? JSON.parse(res.data.submission.content) 
-                : res.data.submission.content;
-              
-              if (savedContent && Object.keys(savedContent).length > 0) {
-                 setData(prev => ({ ...prev, ...profileData, ...savedContent }));
-                 console.log(`[INIT] Hydrated mission state with ${Object.keys(savedContent).length} data points.`);
-              } else {
-                 setData(prev => ({ ...prev, ...profileData }));
-              }
-           } else {
-              setData(prev => ({ ...prev, ...profileData }));
-           }
+            if (res.data.submission?.content) {
+               const savedContent = typeof res.data.submission.content === 'string' 
+                 ? JSON.parse(res.data.submission.content) 
+                 : res.data.submission.content;
+               
+               if (savedContent && Object.keys(savedContent).length > 0) {
+                  // Migration: ensure memberList exists if memberNames does
+                  if (savedContent.memberNames && (!savedContent.memberList || savedContent.memberList.length === 0)) {
+                    savedContent.memberList = savedContent.memberNames.split(',').map(m => m.trim()).filter(m => m);
+                  }
+                  if (!savedContent.memberList || savedContent.memberList.length === 0) {
+                    savedContent.memberList = [''];
+                  }
+                  setData(prev => ({ ...prev, ...profileData, ...savedContent }));
+                  console.log(`[INIT] Hydrated mission state with ${Object.keys(savedContent).length} data points.`);
+               } else {
+                  setData(prev => ({ ...prev, ...profileData, memberList: [''] }));
+               }
+            } else {
+               setData(prev => ({ ...prev, ...profileData, memberList: [''] }));
+            }
         }
         setTeamId(res.data.id);
         teamIdRef.current = res.data.id;
@@ -189,7 +196,12 @@ export default function PitchGenerator() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${apiUrl}/team/save-draft`, data, { headers: { Authorization: `Bearer ${token}` } });
+      // Sync memberNames from memberList before saving
+      const finalData = {
+        ...data,
+        memberNames: (data.memberList || []).filter(m => m.trim()).join(', ')
+      };
+      await axios.post(`${apiUrl}/team/save-draft`, finalData, { headers: { Authorization: `Bearer ${token}` } });
       if (!silent) router.push('/team/dashboard');
     } catch (err) { console.error("Save failed", err); } finally { if (!silent) setSaving(false); }
   }
@@ -206,7 +218,12 @@ export default function PitchGenerator() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hackathon-production-7c99.up.railway.app/v1';
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`${apiUrl}/team/generate-pitch-deck`, data, { 
+      // Sync memberNames from memberList before submitting
+      const finalData = {
+        ...data,
+        memberNames: (data.memberList || []).filter(m => m.trim()).join(', ')
+      };
+      const res = await axios.post(`${apiUrl}/team/generate-pitch-deck`, finalData, { 
         headers: { Authorization: `Bearer ${token}` },
         timeout: 180000 
       });
@@ -347,7 +364,43 @@ export default function PitchGenerator() {
                         <div><label className="label-premium">Team Name</label><input className="input-premium" value={data.teamName} onChange={e => setData({...data, teamName: e.target.value})} /></div>
                         <div><label className="label-premium">Institution</label><input className="input-premium" value={data.institutionName} onChange={e => setData({...data, institutionName: e.target.value})} /></div>
                         <div><label className="label-premium">Leader</label><input className="input-premium" value={data.leaderName} onChange={e => setData({...data, leaderName: e.target.value})} /></div>
-                        <div><label className="label-premium">Members (Max 15 Words)</label><input className="input-premium" value={data.memberNames} onChange={e => setData({...data, memberNames: limitWords(e.target.value, 15)})} /></div>
+                        <div className="col-span-2 space-y-4">
+                          <label className="label-premium">Team Members</label>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {(data.memberList || ['']).map((member, idx) => (
+                              <div key={idx} className="flex gap-2 group/member">
+                                <input 
+                                  className="input-premium !py-2 !text-xs" 
+                                  value={member} 
+                                  onChange={e => {
+                                    const newList = [...data.memberList];
+                                    newList[idx] = e.target.value;
+                                    setData({...data, memberList: newList});
+                                  }} 
+                                  placeholder={`Member ${idx + 1} Name`}
+                                />
+                                {idx > 0 && (
+                                  <button 
+                                    onClick={() => {
+                                      const newList = [...data.memberList];
+                                      newList.splice(idx, 1);
+                                      setData({...data, memberList: newList});
+                                    }}
+                                    className="px-3 bg-rose-50 text-rose-500 rounded-xl border border-rose-100 opacity-0 group-hover/member:opacity-100 transition-opacity"
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          <button 
+                            onClick={() => setData({...data, memberList: [...(data.memberList || []), '']})}
+                            className="text-[10px] font-black uppercase tracking-widest text-[#2563eb] hover:underline"
+                          >
+                            + Add Another Member
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -651,69 +704,6 @@ export default function PitchGenerator() {
                          <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm"><p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Project Name</p><p className="text-sm font-bold text-slate-800">{data.projectName || 'Unnamed Project'}</p></div>
                          <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm"><p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Team</p><p className="text-sm font-bold text-slate-800">{data.teamName || 'Unknown Team'}</p></div>
                          <div className="p-4 bg-[var(--secondary-blue)] rounded-2xl border border-blue-200 shadow-sm"><p className="text-[10px] font-bold text-white/60 uppercase mb-2">Question</p><p className="text-sm font-bold text-white">{selectedProblem ? `Q.${selectedProblem.questionNo} ${selectedProblem.subDivisions ? `- ${selectedProblem.subDivisions}` : ''}` : (data.s3_coreProblem ? 'Custom' : 'NONE')}</p></div>
-                      </div>
-
-                      {/* FIELD AUDIT SECTION */}
-                      <div className="max-w-4xl mx-auto mt-12 text-left bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
-                        <div className="px-8 py-6 bg-slate-900 flex justify-between items-center">
-                          <div className="space-y-1">
-                            <h3 className="text-sm font-black text-white uppercase tracking-widest">Repository Integrity Scan</h3>
-                            <p className="text-[9px] text-slate-400 font-bold uppercase">System-wide field verification</p>
-                          </div>
-                          <div className="flex gap-4">
-                            <div className="text-right">
-                              <p className="text-[9px] text-slate-400 font-bold uppercase">Filled</p>
-                              <p className="text-xl font-black text-[var(--primary-green)]">
-                                {Object.values(data).filter(v => typeof v === 'string' ? v.length > 0 : (Array.isArray(v) ? v.some(i => typeof i === 'string' ? i.length > 0 : !!i) : !!v)).length}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-[9px] text-slate-400 font-bold uppercase">Critical Blanks</p>
-                              <p className="text-xl font-black text-rose-500">
-                                {[
-                                  'projectName', 'teamName', 'institutionName', 'leaderName',
-                                  's2_domain', 's2_context', 's2_rootReason',
-                                  's3_coreProblem', 's3_affected', 's3_whyItMatters',
-                                  's8_solution', 's8_coreTech', 's9_howItWorks',
-                                  's10_leanProblem', 's10_leanSolution', 's10_leanUSP', 's10_leanCosts', 's10_leanRevenue',
-                                  's13_tam', 's13_sam', 's13_som'
-                                ].filter(k => !data[k]).length}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-h-[400px] overflow-y-auto custom-scrollbar">
-                           <div className="space-y-6">
-                              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest pb-2 border-b border-slate-50">Identity & Context</h4>
-                              {[
-                                {k: 'projectName', l: 'Project Name', s: 1}, {k: 'teamName', l: 'Team Name', s: 1}, 
-                                {k: 'institutionName', l: 'Institution', s: 1}, {k: 'leaderName', l: 'Leader Name', s: 1},
-                                {k: 's2_domain', l: 'Strategic Domain', s: 2}, {k: 's2_context', l: 'Operational Context', s: 2}, {k: 's2_rootReason', l: 'Root Catalyst', s: 2}
-                              ].map(f => (
-                                <div key={f.k} className="flex items-center justify-between group cursor-pointer" onClick={() => setStep(f.s)}>
-                                  <span className={`text-[11px] font-bold ${!data[f.k] ? 'text-rose-400' : 'text-slate-600'}`}>{f.l}</span>
-                                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${!data[f.k] ? 'bg-rose-50 text-rose-500' : 'bg-green-50 text-[var(--primary-green)] opacity-40'}`}>{!data[f.k] ? 'MISSING' : 'VALID'}</span>
-                                </div>
-                              ))}
-                           </div>
-                           <div className="space-y-6">
-                              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest pb-2 border-b border-slate-50">Problem & Lean Logic</h4>
-                              {[
-                                {k: 's3_coreProblem', l: 'Core Problem', s: 3}, {k: 's8_solution', l: 'Primary Solution', s: 8}, {k: 's9_howItWorks', l: 'Technical Flow', s: 9},
-                                {k: 's10_leanSolution', l: 'Lean Solution Fix', s: 10}, {k: 's10_leanUSP', l: 'Unique Selling Prop', s: 10},
-                                {k: 's10_leanCosts', l: 'Cost Structure', s: 10}, {k: 's10_leanRevenue', l: 'Revenue Streams', s: 10}
-                              ].map(f => (
-                                <div key={f.k} className="flex items-center justify-between group cursor-pointer" onClick={() => setStep(f.s)}>
-                                  <span className={`text-[11px] font-bold ${!data[f.k] ? 'text-rose-400' : 'text-slate-600'}`}>{f.l}</span>
-                                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${!data[f.k] ? 'bg-rose-50 text-rose-500' : 'bg-green-50 text-[var(--primary-green)] opacity-40'}`}>{!data[f.k] ? 'MISSING' : 'VALID'}</span>
-                                </div>
-                              ))}
-                           </div>
-                        </div>
-                        <div className="bg-slate-50 px-8 py-4 border-t border-slate-100 italic text-[10px] text-slate-400 font-medium">
-                          Note: Mandatory fields must be filled for reliable artifact synthesis. Missing data may result in placeholder text on slides.
-                        </div>
                       </div>
                     </div>
                   )}

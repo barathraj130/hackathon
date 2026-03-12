@@ -67,9 +67,9 @@ def add_header(slide, title="SLIDE TITLE"):
     frame = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(m), Inches(m), Inches(10-2*m), Inches(7.5-2*m))
     frame.fill.background(); frame.line.color.rgb = ORANGE_MARGIN; frame.line.width = Pt(1.5)
 
-    # TITANIC LOGO (Top-Right Positioning)
-    if os.path.exists("hackathon_logo.png"):
-        logo = slide.shapes.add_picture("hackathon_logo.png", Inches(8.8), Inches(0.3), height=Inches(0.6))
+    # INSTITUTIONAL LOGO (Top-Right Positioning)
+    if os.path.exists("institution_logo.png"):
+        logo = slide.shapes.add_picture("institution_logo.png", Inches(8.8), Inches(0.3), height=Inches(0.6))
         disable_shadow(logo)
 
     # SLIDE TITLE (Centrally Aligned in Top Safety Zone)
@@ -121,25 +121,21 @@ def create_expert_deck(team_name, college, data):
     frame.fill.background(); frame.line.color.rgb = ORANGE_MARGIN; frame.line.width = Pt(1.5)
 
     # Logo (Centered at top)
-    if os.path.exists("hackathon_logo.png"):
-        slide.shapes.add_picture("hackathon_logo.png", Inches(4.35), Inches(0.5), height=Inches(0.8))
+    if os.path.exists("institution_logo.png"):
+        slide.shapes.add_picture("institution_logo.png", Inches(4.35), Inches(0.5), height=Inches(0.8))
 
     # Title (Large, Bold, Centered)
     tx_title = slide.shapes.add_textbox(Inches(1.0), Inches(1.6), Inches(8.0), Inches(1.0))
     p_title = tx_title.text_frame.paragraphs[0]
-    p_title.text = "BRILLIANT BHARAT HACKATHON"
+    p_title.text = "JANSONS INSTITUTE OF TECHNOLOGY"
     p_title.font.size = Pt(44); p_title.font.bold = True; p_title.font.color.rgb = TEXT_MAIN; p_title.alignment = PP_ALIGN.CENTER
     
-    # Subtitle (Split into 'Organised by' + College Name)
+    # Subtitle (Branding Enforced - JIT)
     tx_subtitle = slide.shapes.add_textbox(Inches(1.0), Inches(2.6), Inches(8.0), Inches(1.0))
     tf_s = tx_subtitle.text_frame
     p_org = tf_s.paragraphs[0]
-    p_org.text = "Organised by"
-    p_org.font.size = Pt(14); p_org.font.bold = False; p_org.font.color.rgb = TEXT_MAIN; p_org.alignment = PP_ALIGN.CENTER
-    
-    p_coll = tf_s.add_paragraph()
-    p_coll.text = "JANSONS INSTITUTE OF TECHNOLOGY" # Branding Enforced
-    p_coll.font.size = Pt(24); p_coll.font.bold = True; p_coll.font.color.rgb = TEXT_MAIN; p_coll.alignment = PP_ALIGN.CENTER
+    p_org.text = "JIT INNOVATION CENTER"
+    p_org.font.size = Pt(18); p_org.font.bold = True; p_org.font.color.rgb = TEXT_MAIN; p_org.alignment = PP_ALIGN.CENTER
     
     # Project Name Box (Separate, below subtitle)
     project_display = data.get('projectName') or data.get('project_data', {}).get('projectName', 'PROJECT NAME')
@@ -191,8 +187,8 @@ def create_expert_deck(team_name, college, data):
 
     # CLOSURE
     slide = prs.slides.add_slide(prs.slide_layouts[6]); set_slide_bg(slide)
-    if os.path.exists("hackathon_logo.png"):
-        slide.shapes.add_picture("hackathon_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
+    if os.path.exists("institution_logo.png"):
+        slide.shapes.add_picture("institution_logo.png", Inches(4.25), Inches(0.5), height=Inches(1.2))
 
     tx = slide.shapes.add_textbox(Inches(0), Inches(3.2), Inches(10), Inches(1.5))
     p = tx.text_frame.paragraphs[0]; p.text = "THANK YOU."; p.font.size = Pt(64); p.font.bold = True; p.font.color.rgb = TEXT_MAIN; p.alignment = PP_ALIGN.CENTER

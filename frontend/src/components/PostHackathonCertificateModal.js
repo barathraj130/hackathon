@@ -10,6 +10,21 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [status, setStatus] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
+
+  const addParticipant = () => {
+    setParticipants([...participants, { name: '', role: 'Member', college: teamData?.collegeName || '', year: '1', dept: 'N/A' }]);
+  };
+
+  const removeParticipant = (index) => {
+    if (participants[index].role === 'Leader' || participants[index].role === 'LEADER') {
+        alert("Team Leader cannot be removed.");
+        return;
+    }
+    const newList = [...participants];
+    newList.splice(index, 1);
+    setParticipants(newList);
+  };
 
   useEffect(() => {
     let initialParticipants = [];
@@ -101,11 +116,21 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
         <div className="space-y-6">
           {participants.map((p, idx) => (
             <div key={idx} className="p-5 bg-white/50 rounded-2xl border border-slate-200/50 space-y-4 shadow-sm">
-               <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[10px] font-bold bg-blue-100/80 text-blue-600 px-3 py-1 rounded-full backdrop-blur-sm">{p.role === 'Leader' || p.role === 'LEADER' ? '01' : '02'}</span>
-                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">{p.role} Details</span>
-               </div>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex justify-between items-center mb-2">
+                   <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-bold bg-blue-100/80 text-blue-600 px-3 py-1 rounded-full backdrop-blur-sm">{idx < 9 ? `0${idx + 1}` : idx + 1}</span>
+                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">{p.role} Details</span>
+                   </div>
+                   {idx > 0 && (
+                      <button 
+                        onClick={() => removeParticipant(idx)}
+                        className="text-[10px] font-bold text-rose-500 hover:text-rose-700 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-lg transition-colors border border-rose-100"
+                      >
+                        Remove
+                      </button>
+                   )}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Full Name</label>
                     <input 
@@ -157,13 +182,21 @@ export default function PostHackathonCertificateModal({ isOpen, onClose, teamDat
              </div>
            ))}
          </div>
- 
-         {status && (
-           <div className={`p-4 rounded-xl text-xs font-bold uppercase text-center ${status.type === 'success' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-rose-50 text-rose-600 border border-rose-100'} animate-pulse`}>
-             {status.message}
-           </div>
-         )}
- 
+          {status && (
+            <div className={`p-4 rounded-xl text-xs font-bold uppercase text-center ${status.type === 'success' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-rose-50 text-rose-600 border border-rose-100'} animate-pulse`}>
+              {status.message}
+            </div>
+          )}
+
+          <div className="flex justify-center">
+            <button 
+              onClick={addParticipant}
+              className="px-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-slate-200"
+            >
+              + Add Team Member
+            </button>
+          </div>
+  
          <div className="flex gap-4 border-t border-slate-200/50 pt-6">
            <button 
              onClick={onClose} 

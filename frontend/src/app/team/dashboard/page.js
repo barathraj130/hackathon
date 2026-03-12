@@ -2,6 +2,9 @@
 // Frontend Sync: V_2.0.2 - Force Sync
 import PostHackathonCertificateModal from '@/components/PostHackathonCertificateModal';
 import SubmissionWorkflowModal from '@/components/SubmissionWorkflowModal';
+import Card3D from '@/components/Card3D';
+import Button3D from '@/components/Button3D';
+import FloatingOrbs from '@/components/FloatingOrbs';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -175,11 +178,9 @@ export default function TeamDashboard() {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen bg-innovation font-sans tracking-tight relative overflow-hidden">
-          {/* Background Decor */}
-          <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none fixed"></div>
-          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
-          <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-green-400/5 blur-[150px] rounded-full animate-pulse fixed pointer-events-none"></div>
+        <div className="min-h-screen bg-innovation font-sans tracking-tight relative overflow-hidden" style={{ perspective: '1200px' }}>
+          <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none fixed" />
+          <FloatingOrbs />
 
           <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/40 flex justify-between items-center px-8 py-4 shadow-[0_4px_30px_rgba(0,0,0,0.03)]">
             <div className="flex items-center gap-3">
@@ -198,7 +199,7 @@ export default function TeamDashboard() {
           <main className="max-w-7xl mx-auto py-10 px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8 space-y-8">
               {teamData?.problemStatements?.length > 1 && !teamData?.selectedProblemId ? (
-                <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-xl space-y-8 animate-fade">
+                <Card3D className="p-10 space-y-8 animate-fade" glowColor="rgba(249, 115, 22, 0.15)">
                   <div className="space-y-2">
                     <span className="text-xs font-bold text-[var(--accent-orange)] uppercase tracking-widest">Action Required</span>
                     <h2 className="text-3xl font-bold text-slate-900">Choose Your Question</h2>
@@ -220,11 +221,11 @@ export default function TeamDashboard() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </Card3D>
               ) : (
                 <>
                   {problemStatement && (
-                    <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 border-l-8 border-l-[var(--secondary-blue)]">
+                    <Card3D className="p-8 border-l-8 border-l-[var(--secondary-blue)]" glowColor="rgba(59, 130, 246, 0.15)">
                        <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                           <div className="flex-1">
                             <span className="text-xs font-bold text-[var(--secondary-blue)] uppercase tracking-widest">My Task</span>
@@ -236,9 +237,9 @@ export default function TeamDashboard() {
                             <p className="text-3xl font-bold text-slate-800">{problemStatement.questionNo} {problemStatement.subDivisions && `- ${problemStatement.subDivisions}`}</p>
                           </div>
                        </div>
-                    </div>
+                    </Card3D>
                   )}
-                   <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
+                   <Card3D className="p-10" glowColor="rgba(34, 197, 94, 0.12)">
                     <div className="max-w-xl space-y-6">
                       <span className="text-xs font-bold text-[var(--primary-green)] uppercase tracking-widest">Start Here</span>
                       <h2 className="text-4xl font-bold text-slate-900 leading-tight">Create Your Deck</h2>
@@ -256,34 +257,35 @@ export default function TeamDashboard() {
                         </span>
                       </Link>
                     </div>
-                  </div>
+                  </Card3D>
                 </>
               )}
             </div>
 
             <div className="lg:col-span-4 space-y-8 sticky top-28">
-               <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
+               <Card3D className="p-8 space-y-8" glowColor="rgba(59, 130, 246, 0.12)">
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Open Tool</h3>
                 <div className="space-y-4">
-                    <button 
+                    <Button3D
+                      variant="blue"
+                      className="w-full py-4 rounded-2xl text-xs flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0"
                       onClick={() => {
                         if (submission?.pptUrl && !submission?.prototypeUrl) {
                           setShowWorkflowModal(true);
                         } else {
                           handleGenerateStandardPPT();
                         }
-                      }} 
-                      disabled={isGenerating || (submission?.status === 'SUBMITTED')} 
-                      className={`w-full py-4 rounded-2xl font-bold uppercase text-xs tracking-wide transition-all flex items-center justify-center gap-3 ${isGenerating || (submission?.status === 'SUBMITTED') ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100' : 'btn-blue shadow-lg shadow-blue-100 hover:-translate-y-1'}`}
+                      }}
+                      disabled={isGenerating || (submission?.status === 'SUBMITTED')}
                     >
                       {isGenerating ? 'Processing...' : (submission?.pptUrl && !submission?.prototypeUrl) ? 'Finish Submission' : (submission?.status === 'SUBMITTED' ? 'Locked' : 'Create Presentation')}
-                    </button>
+                    </Button3D>
                     {teamData?.config?.allowCertificateDetails && (
                        <button onClick={() => setShowCertModal(true)} className="w-full py-4 border-2 border-slate-200 rounded-2xl font-bold uppercase text-xs tracking-wide text-slate-500 hover:bg-slate-50 transition-all">Enter Team Names</button>
                     )}
                 </div>
-              </div>
-              <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+              </Card3D>
+              <Card3D className="p-8 space-y-6" glowColor="rgba(100, 116, 139, 0.08)">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Submission Status</h3>
                   <button onClick={fetchInitialData} className="text-xs font-bold text-[var(--secondary-blue)] hover:text-[var(--accent-orange)] transition-colors">Refresh</button>
@@ -394,7 +396,7 @@ export default function TeamDashboard() {
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">No Artifacts Found</p>
                   </div>
                 )}
-              </div>
+              </Card3D>
             </div>
           </main>
 
