@@ -265,7 +265,10 @@ export default function AdminDashboard() {
       }
       setNewStatement({ questionNo: '', subDivisions: '', title: '', description: '', allottedTo: '' });
       fetchProblemStatements();
-    } catch (err) { alert("Failed to save task."); }
+    } catch (err) { 
+      const errorMsg = err.response?.data?.error || err.message;
+      alert("Failed to save task: " + errorMsg); 
+    }
   }
 
   function startEditing(ps) {

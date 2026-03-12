@@ -634,21 +634,40 @@ router.post('/toggle-certificate-collection', async (req, res) => {
 
 router.post('/problem-statements', async (req, res) => {
     try {
-        const ps = await prisma.problemStatement.create({ data: req.body });
+        const { questionNo, subDivisions, title, description, allottedTo } = req.body;
+        const ps = await prisma.problemStatement.create({ 
+            data: { 
+                questionNo, 
+                subDivisions, 
+                title, 
+                description, 
+                allottedTo: allottedTo || null 
+            } 
+        });
         res.json({ success: true, statement: ps });
-    } catch (e) { res.status(500).json({ error: "Fail" }); }
+    } catch (e) { 
+        console.error("[CreatePS] Error:", e);
+        res.status(500).json({ error: e.message || "Failed to create task" }); 
+    }
 });
 
 router.put('/problem-statements/:id', async (req, res) => {
     try {
+        const { questionNo, subDivisions, title, description, allottedTo } = req.body;
         await prisma.problemStatement.update({ 
             where: { id: req.params.id }, 
-            data: req.body 
+            data: {
+                questionNo,
+                subDivisions,
+                title,
+                description,
+                allottedTo: allottedTo || null
+            } 
         });
         res.json({ success: true });
     } catch (e) { 
         console.error("[UpdatePS] Error:", e);
-        res.status(500).json({ error: "Update failed" }); 
+        res.status(500).json({ error: e.message || "Update failed" }); 
     }
 });
 
