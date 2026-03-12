@@ -410,8 +410,11 @@ router.get('/candidates', async (req, res) => {
 });
 
 router.post('/create-team', async (req, res) => {
-    const { teamName, collegeName, problemStatementIds } = req.body;
+    let { teamName, collegeName, problemStatementIds } = req.body;
     try {
+        teamName = String(teamName || "").trim();
+        collegeName = String(collegeName || "").trim();
+        
         const team = await prisma.team.create({ data: { teamName, collegeName, member1: teamName, member2: 'Member', dept: 'N/A', year: 1 } });
         if (problemStatementIds && Array.isArray(problemStatementIds)) {
             for (const id of problemStatementIds) {
@@ -425,8 +428,9 @@ router.post('/create-team', async (req, res) => {
 });
 
 router.post('/reallot-team', async (req, res) => {
-    const { teamName, newProblemStatementIds } = req.body; // Expecting an array [id1, id2]
+    let { teamName, newProblemStatementIds } = req.body; // Expecting an array [id1, id2]
     try {
+        teamName = String(teamName || "").trim();
         await prisma.problemStatement.updateMany({ where: { allottedTo: teamName }, data: { allottedTo: null } });
         if (newProblemStatementIds && Array.isArray(newProblemStatementIds)) {
             for (const id of newProblemStatementIds) {
